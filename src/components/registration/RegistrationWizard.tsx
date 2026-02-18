@@ -10,16 +10,41 @@ import { StepAddress } from "./StepAddress";
 import { StepLogin } from "./StepLogin";
 import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle2, Loader2 } from "lucide-react";
+import { WizardData } from "@/types/wizard";
 
 const TOTAL_STEPS = 4;
 
-export const RegistrationWizard = () => {
+interface Props {
+  initialData?: WizardData;
+  onComplete: (data: WizardData) => void;
+}
+
+export const RegistrationWizard = ({ initialData = {}, onComplete }: Props) => {
   const { t, language } = useLanguage();
   const [step, setStep] = useState(1);
-  const [data, setData] = useState<Record<string, string>>({});
+  const [data, setData] = useState<Record<string, string>>({
+    fullName: initialData.fullName ?? "",
+    birthDate: initialData.birthDate ?? "",
+    document: initialData.document ?? "",
+    gender: initialData.gender ?? "",
+    email: initialData.email ?? "",
+    phone: initialData.phone ?? "",
+    country: initialData.country ?? "",
+    countryIso2: initialData.countryIso2 ?? "",
+    zipCode: initialData.zipCode ?? "",
+    street: initialData.street ?? "",
+    number: initialData.number ?? "",
+    complement: initialData.complement ?? "",
+    neighborhood: initialData.neighborhood ?? "",
+    city: initialData.city ?? "",
+    state: initialData.state ?? "",
+    username: initialData.username ?? "",
+    password: initialData.password ?? "",
+    confirmPassword: initialData.confirmPassword ?? "",
+    foreignerNoCpf: initialData.foreignerNoCpf ?? "false",
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [apiError, setApiError] = useState("");
 
   const onChange = (field: string, value: string) => {
@@ -34,23 +59,38 @@ export const RegistrationWizard = () => {
   const validateStep = (): boolean => {
     const newErrors: Record<string, string> = {};
     const req = t("validation.required");
+    const isForeigner = data.foreignerNoCpf === "true";
 
     if (step === 1) {
       if (!data.fullName?.trim()) newErrors.fullName = req;
-      if (!data.birthDate) newErrors.birthDate = req;
-      if (!data.document?.trim()) newErrors.document = req;
+      if (!data.birthDate) {
+        newErrors.birthDate = req;
+      } else {
+        const birth = new Date(data.birthDate);
+        const today = new Date();
+        const age = today.getFullYear() - birth.getFullYear() -
+          (today < new Date(today.getFullYear(), birth.getMonth(), birth.getDate()) ? 1 : 0);
+        if (age < 18) newErrors.birthDate = t("validation.ageMin18");
+      }
+      if (!isForeigner) {
+        if (!data.document?.trim()) {
+          newErrors.document = req;
+        } else if (!validateCPF(data.document)) {
+          newErrors.document = t("validation.cpfInvalid");
+        }
+      }
       if (!data.gender) newErrors.gender = req;
     } else if (step === 2) {
       if (!data.email?.trim()) newErrors.email = req;
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) newErrors.email = t("validation.email");
       if (!data.phone?.trim()) newErrors.phone = req;
     } else if (step === 3) {
+      if (!data.country?.trim()) newErrors.country = req;
       if (!data.zipCode?.trim()) newErrors.zipCode = req;
       if (!data.street?.trim()) newErrors.street = req;
       if (!data.number?.trim()) newErrors.number = req;
       if (!data.city?.trim()) newErrors.city = req;
       if (!data.state?.trim()) newErrors.state = req;
-      if (!data.country?.trim()) newErrors.country = req;
     } else if (step === 4) {
       if (!data.username?.trim()) newErrors.username = req;
       if (!data.password) newErrors.password = req;
@@ -77,19 +117,15 @@ export const RegistrationWizard = () => {
     setApiError("");
 
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { error: signUpError, data: authData } = await supabase.auth.signUp({
         email: data.email.trim(),
         password: data.password,
-        options: {
-          emailRedirectTo: window.location.origin,
-        },
+        options: { emailRedirectTo: window.location.origin },
       });
 
       if (signUpError) throw signUpError;
 
-      // Get the new user session to update profile
-      const { data: sessionData } = await supabase.auth.getSession();
-      const userId = sessionData.session?.user?.id;
+      const userId = authData?.user?.id;
 
       if (userId) {
         await supabase.from("profiles").update({
@@ -111,28 +147,33 @@ export const RegistrationWizard = () => {
         }).eq("user_id", userId);
       }
 
-      setSuccess(true);
-    } catch (err: any) {
-      setApiError(err?.message || t("error.generic"));
+      onComplete({
+        ...initialData,
+        fullName: data.fullName,
+        birthDate: data.birthDate,
+        document: data.document,
+        gender: data.gender,
+        email: data.email,
+        phone: data.phone,
+        country: data.country,
+        countryIso2: data.countryIso2,
+        zipCode: data.zipCode,
+        street: data.street,
+        number: data.number,
+        complement: data.complement,
+        neighborhood: data.neighborhood,
+        city: data.city,
+        state: data.state,
+        username: data.username,
+        userId: userId ? "TML-" + userId.slice(0, 8).toUpperCase() : undefined,
+      });
+    } catch (err: unknown) {
+      const e = err as Error;
+      setApiError(e?.message || t("error.generic"));
     } finally {
       setLoading(false);
     }
   };
-
-  if (success) {
-    return (
-      <Card className="w-full max-w-lg mx-auto">
-        <CardContent className="flex flex-col items-center gap-4 py-12">
-          <CheckCircle2 className="h-16 w-16 text-green-500" />
-          <h2 className="text-2xl font-bold">{t("success.title")}</h2>
-          <p className="text-muted-foreground text-center">{t("success.message")}</p>
-          <Button variant="outline" onClick={() => window.location.reload()}>
-            {t("success.back")}
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
 
   const stepTitles = [
     t("step1.title"),
@@ -142,7 +183,7 @@ export const RegistrationWizard = () => {
   ];
 
   return (
-    <Card className="w-full max-w-lg mx-auto">
+    <Card className="w-full max-w-lg mx-auto shadow-lg">
       <CardHeader className="space-y-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl">{t("app.title")}</CardTitle>
@@ -180,7 +221,7 @@ export const RegistrationWizard = () => {
             <Button onClick={handleNext}>{t("btn.next")}</Button>
           ) : (
             <Button onClick={handleSubmit} disabled={loading}>
-              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+              {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               {t("btn.submit")}
             </Button>
           )}
@@ -189,3 +230,20 @@ export const RegistrationWizard = () => {
     </Card>
   );
 };
+
+// CPF validation
+function validateCPF(cpf: string): boolean {
+  const clean = cpf.replace(/\D/g, "");
+  if (clean.length !== 11) return false;
+  if (/^(\d)\1+$/.test(clean)) return false;
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += parseInt(clean[i]) * (10 - i);
+  let r = (sum * 10) % 11;
+  if (r === 10 || r === 11) r = 0;
+  if (r !== parseInt(clean[9])) return false;
+  sum = 0;
+  for (let i = 0; i < 10; i++) sum += parseInt(clean[i]) * (11 - i);
+  r = (sum * 10) % 11;
+  if (r === 10 || r === 11) r = 0;
+  return r === parseInt(clean[10]);
+}
