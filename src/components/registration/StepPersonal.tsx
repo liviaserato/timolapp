@@ -2,6 +2,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Info } from "lucide-react";
 
 interface Props {
   data: Record<string, string>;
@@ -9,8 +11,18 @@ interface Props {
   errors: Record<string, string>;
 }
 
+// CPF mask: 000.000.000-00
+function maskCPF(value: string) {
+  const d = value.replace(/\D/g, "").slice(0, 11);
+  return d
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+}
+
 export const StepPersonal = ({ data, onChange, errors }: Props) => {
   const { t } = useLanguage();
+  const isForeigner = data.foreignerNoCpf === "true";
 
   const genderOptions = [
     { value: "male", label: t("step1.gender.male") },
@@ -19,8 +31,14 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
     { value: "preferNotSay", label: t("step1.gender.preferNotSay") },
   ];
 
+  const today = new Date();
+  const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
+    .toISOString()
+    .split("T")[0];
+
   return (
     <div className="space-y-4">
+      {/* Full Name */}
       <div className="space-y-2">
         <Label htmlFor="fullName">{t("step1.fullName")}</Label>
         <Input
@@ -32,30 +50,60 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
         {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
       </div>
 
+      {/* Birth Date — max = 18 years ago */}
       <div className="space-y-2">
         <Label htmlFor="birthDate">{t("step1.birthDate")}</Label>
         <Input
           id="birthDate"
           type="date"
-          placeholder={t("step1.birthDate.placeholder")}
+          max={maxDate}
           value={data.birthDate || ""}
           onChange={(e) => onChange("birthDate", e.target.value)}
         />
-        {errors.birthDate && <p className="text-sm text-destructive">{errors.birthDate}</p>}
+        {errors.birthDate && (
+          <p className="text-sm text-destructive flex items-start gap-1.5">
+            <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+            {errors.birthDate}
+          </p>
+        )}
       </div>
 
+      {/* Document / CPF */}
       <div className="space-y-2">
-        <Label htmlFor="document">{t("step1.document")}</Label>
-        <Input
-          id="document"
-          placeholder={t("step1.document.placeholder")}
-          value={data.document || ""}
-          onChange={(e) => onChange("document", e.target.value)}
-          maxLength={20}
-        />
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <Label htmlFor="document">{t("step1.document")}</Label>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="foreignerNoCpf"
+              checked={isForeigner}
+              onCheckedChange={(v) => {
+                onChange("foreignerNoCpf", v ? "true" : "false");
+                if (v) onChange("document", "");
+              }}
+            />
+            <Label htmlFor="foreignerNoCpf" className="text-sm font-normal cursor-pointer">
+              {t("step1.notBrazilian")}
+            </Label>
+          </div>
+        </div>
+        {!isForeigner ? (
+          <Input
+            id="document"
+            placeholder={t("step1.document.placeholder")}
+            value={data.document || ""}
+            onChange={(e) => onChange("document", maskCPF(e.target.value))}
+            maxLength={14}
+          />
+        ) : (
+          <div className="rounded-md border bg-muted/40 px-3 py-2.5 text-sm text-muted-foreground flex items-start gap-2">
+            <Info className="h-4 w-4 mt-0.5 flex-shrink-0 text-warning" />
+            <span>{t("step1.foreignerHint")}</span>
+          </div>
+        )}
         {errors.document && <p className="text-sm text-destructive">{errors.document}</p>}
       </div>
 
+      {/* Gender */}
       <div className="space-y-2">
         <Label>{t("step1.gender")}</Label>
         <RadioGroup

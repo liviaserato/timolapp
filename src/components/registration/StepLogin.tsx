@@ -2,7 +2,9 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
 interface Props {
   data: Record<string, string>;
@@ -31,23 +33,66 @@ const strengthColors: Record<string, string> = {
 
 export const StepLogin = ({ data, onChange, errors }: Props) => {
   const { t } = useLanguage();
+  const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
+  const [usernameTimer, setUsernameTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   const strength = useMemo(
     () => getPasswordStrength(data.password || ""),
     [data.password]
   );
 
+  const handleUsernameChange = (val: string) => {
+    onChange("username", val);
+    setUsernameStatus("idle");
+    if (usernameTimer) clearTimeout(usernameTimer);
+    if (val.trim().length >= 3) {
+      setUsernameStatus("checking");
+      const timer = setTimeout(async () => {
+        try {
+          const { data: existing, error } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("username", val.trim())
+            .maybeSingle();
+          if (error) throw error;
+          setUsernameStatus(existing ? "taken" : "available");
+        } catch {
+          setUsernameStatus("idle");
+        }
+      }, 600);
+      setUsernameTimer(timer);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="username">{t("step4.username")}</Label>
-        <Input
-          id="username"
-          placeholder={t("step4.username.placeholder")}
-          value={data.username || ""}
-          onChange={(e) => onChange("username", e.target.value)}
-          maxLength={50}
-        />
+        <div className="relative">
+          <Input
+            id="username"
+            placeholder={t("step4.username.placeholder")}
+            value={data.username || ""}
+            onChange={(e) => handleUsernameChange(e.target.value)}
+            maxLength={50}
+        className={[
+              "pr-9",
+              usernameStatus === "available" ? "border-success" : "",
+              usernameStatus === "taken" ? "border-destructive" : "",
+            ].join(" ")}
+          />
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            {usernameStatus === "checking" && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+            {usernameStatus === "available" && <CheckCircle2 className="h-4 w-4 text-success" />}
+            {usernameStatus === "taken" && <XCircle className="h-4 w-4 text-destructive" />}
+          </div>
+        </div>
+        {usernameStatus === "available" && (
+          <p className="text-xs text-success">{t("step4.username.available")}</p>
+        )}
+        {usernameStatus === "taken" && (
+          <p className="text-xs text-destructive">{t("step4.username.taken")}</p>
+        )}
         {errors.username && <p className="text-sm text-destructive">{errors.username}</p>}
       </div>
 

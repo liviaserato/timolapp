@@ -1,6 +1,10 @@
+import { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { countries, getCountryByDialCode, getCountryName } from "@/data/countries";
+import { Loader2, X } from "lucide-react";
 
 interface Props {
   data: Record<string, string>;
@@ -8,35 +12,212 @@ interface Props {
   errors: Record<string, string>;
 }
 
-export const StepAddress = ({ data, onChange, errors }: Props) => {
-  const { t } = useLanguage();
+interface ViaCepResponse {
+  logradouro?: string;
+  bairro?: string;
+  localidade?: string;
+  uf?: string;
+  erro?: boolean;
+}
 
-  const fields = [
-    { key: "zipCode", prefix: "step3.zipCode", maxLength: 10 },
-    { key: "street", prefix: "step3.street", maxLength: 200 },
+export const StepAddress = ({ data, onChange, errors }: Props) => {
+  const { t, language } = useLanguage();
+  const [loadingCep, setLoadingCep] = useState(false);
+  const [cepError, setCepError] = useState("");
+  const [countrySearch, setCountrySearch] = useState("");
+  const [showCountryList, setShowCountryList] = useState(false);
+
+  // Auto-fill country from phone DDI
+  useEffect(() => {
+    if (data.countryDetected && !data.country) {
+      const detected = countries.find((c) => c.iso2 === data.countryDetected);
+      if (detected) {
+        onChange("country", getCountryName(detected, language));
+        onChange("countryIso2", detected.iso2);
+      }
+    }
+  }, [data.countryDetected]);
+
+  // Also try from phone field
+  useEffect(() => {
+    if (data.phone && !data.country) {
+      const c = getCountryByDialCode(data.phone);
+      if (c) {
+        onChange("country", getCountryName(c, language));
+        onChange("countryIso2", c.iso2);
+      }
+    }
+  }, []);
+
+  const isBrazil = data.countryIso2 === "BR";
+
+  const fetchCep = async (cep: string) => {
+    const clean = cep.replace(/\D/g, "");
+    if (clean.length !== 8) return;
+    setLoadingCep(true);
+    setCepError("");
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${clean}/json/`);
+      const json: ViaCepResponse = await res.json();
+      if (json.erro) {
+        setCepError(t("step3.cep.notFound"));
+      } else {
+        if (json.logradouro) onChange("street", json.logradouro);
+        if (json.bairro) onChange("neighborhood", json.bairro);
+        if (json.localidade) onChange("city", json.localidade);
+        if (json.uf) onChange("state", json.uf);
+      }
+    } catch {
+      setCepError(t("step3.cep.error"));
+    } finally {
+      setLoadingCep(false);
+    }
+  };
+
+  const handleCepChange = (val: string) => {
+    const masked = val
+      .replace(/\D/g, "")
+      .slice(0, 8)
+      .replace(/(\d{5})(\d)/, "$1-$2");
+    onChange("zipCode", masked);
+    if (masked.replace(/\D/g, "").length === 8 && isBrazil) {
+      fetchCep(masked);
+    }
+  };
+
+  const filteredCountries = countries.filter((c) =>
+    getCountryName(c, language).toLowerCase().includes(countrySearch.toLowerCase())
+  );
+
+  const selectCountry = (iso2: string) => {
+    const c = countries.find((x) => x.iso2 === iso2);
+    if (c) {
+      onChange("country", getCountryName(c, language));
+      onChange("countryIso2", iso2);
+    }
+    setShowCountryList(false);
+    setCountrySearch("");
+  };
+
+  const clearCountry = () => {
+    onChange("country", "");
+    onChange("countryIso2", "");
+    setCountrySearch("");
+  };
+
+  const selectedCountry = countries.find((c) => c.iso2 === data.countryIso2);
+
+  const addressFields = [
+    { key: "street", prefix: "step3.street", maxLength: 200, colSpan: "sm:col-span-2" },
     { key: "number", prefix: "step3.number", maxLength: 10 },
     { key: "complement", prefix: "step3.complement", maxLength: 100 },
     { key: "neighborhood", prefix: "step3.neighborhood", maxLength: 100 },
     { key: "city", prefix: "step3.city", maxLength: 100 },
     { key: "state", prefix: "step3.state", maxLength: 100 },
-    { key: "country", prefix: "step3.country", maxLength: 100 },
   ];
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      {fields.map((field) => (
-        <div key={field.key} className="space-y-2">
-          <Label htmlFor={field.key}>{t(field.prefix)}</Label>
+    <div className="space-y-4">
+      {/* Country — FIRST */}
+      <div className="space-y-2 relative">
+        <Label htmlFor="country">{t("step3.country")}</Label>
+        <div className="relative">
           <Input
-            id={field.key}
-            placeholder={t(`${field.prefix}.placeholder`)}
-            value={data[field.key] || ""}
-            onChange={(e) => onChange(field.key, e.target.value)}
-            maxLength={field.maxLength}
+            id="country"
+            placeholder={t("step3.country.placeholder")}
+            value={data.country || countrySearch}
+            readOnly={!!data.country}
+            onClick={() => { if (!data.country) setShowCountryList(true); }}
+            onChange={(e) => {
+              if (!data.country) {
+                setCountrySearch(e.target.value);
+                setShowCountryList(true);
+              }
+            }}
+            className="pr-8"
           />
-          {errors[field.key] && <p className="text-sm text-destructive">{errors[field.key]}</p>}
+          {data.country && (
+            <button
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              onClick={clearCountry}
+              title={t("step3.country.clear")}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+          {selectedCountry && !data.country && (
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              {selectedCountry.flag}
+            </span>
+          )}
+          {selectedCountry && (
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-lg">
+              {selectedCountry.flag}
+            </span>
+          )}
         </div>
-      ))}
+        {/* Country dropdown */}
+        {showCountryList && (
+          <div className="absolute z-50 w-full bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto mt-1">
+            <div className="p-2 sticky top-0 bg-background border-b">
+              <Input
+                placeholder={t("step3.country.search")}
+                value={countrySearch}
+                onChange={(e) => setCountrySearch(e.target.value)}
+                autoFocus
+                className="h-8 text-sm"
+              />
+            </div>
+            {filteredCountries.map((c) => (
+              <button
+                key={c.iso2}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2"
+                onClick={() => selectCountry(c.iso2)}
+              >
+                <span className="text-base">{c.flag}</span>
+                <span>{getCountryName(c, language)}</span>
+                <span className="text-muted-foreground ml-auto text-xs">{c.dialCode}</span>
+              </button>
+            ))}
+          </div>
+        )}
+        {errors.country && <p className="text-sm text-destructive">{errors.country}</p>}
+      </div>
+
+      {/* CEP (Brazil) / Zip */}
+      <div className="space-y-2">
+        <Label htmlFor="zipCode">{t("step3.zipCode")}</Label>
+        <div className="relative">
+          <Input
+            id="zipCode"
+            placeholder={isBrazil ? "00000-000" : t("step3.zipCode.placeholder")}
+            value={data.zipCode || ""}
+            onChange={(e) => handleCepChange(e.target.value)}
+            maxLength={9}
+          />
+          {loadingCep && (
+            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+          )}
+        </div>
+        {cepError && <p className="text-sm text-destructive">{cepError}</p>}
+        {errors.zipCode && <p className="text-sm text-destructive">{errors.zipCode}</p>}
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        {addressFields.map((field) => (
+          <div key={field.key} className={`space-y-2 ${field.colSpan ?? ""}`}>
+            <Label htmlFor={field.key}>{t(field.prefix)}</Label>
+            <Input
+              id={field.key}
+              placeholder={t(`${field.prefix}.placeholder`)}
+              value={data[field.key] || ""}
+              onChange={(e) => onChange(field.key, e.target.value)}
+              maxLength={field.maxLength}
+            />
+            {errors[field.key] && <p className="text-sm text-destructive">{errors[field.key]}</p>}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
