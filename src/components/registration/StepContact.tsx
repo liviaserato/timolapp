@@ -11,6 +11,7 @@ interface Props {
 
 export const StepContact = ({ data, onChange, errors }: Props) => {
   const { t } = useLanguage();
+  const isForeigner = data.foreignerNoCpf === "true";
 
   const detectedCountry = getCountryByDialCode(data.phone || "");
 
@@ -18,8 +19,14 @@ export const StepContact = ({ data, onChange, errors }: Props) => {
     onChange("phone", val);
     const country = getCountryByDialCode(val);
     if (country) {
-      // Auto-fill country in address step data
       onChange("countryDetected", country.iso2);
+    }
+  };
+
+  // Default +55 for non-foreigners when phone is empty
+  const handleFocus = () => {
+    if (!isForeigner && !data.phone) {
+      onChange("phone", "+55 ");
     }
   };
 
@@ -52,6 +59,7 @@ export const StepContact = ({ data, onChange, errors }: Props) => {
             id="phone"
             placeholder={t("step2.phone.placeholder")}
             value={data.phone || ""}
+            onFocus={handleFocus}
             onChange={(e) => handlePhoneChange(e.target.value)}
             maxLength={20}
             className={detectedCountry ? "pl-10" : ""}

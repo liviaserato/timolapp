@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { countries, getCountryByDialCode, getCountryName } from "@/data/countries";
 import { Loader2, X } from "lucide-react";
 
@@ -38,7 +37,7 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
     }
   }, [data.countryDetected]);
 
-  // Also try from phone field
+  // Also try from phone field on mount
   useEffect(() => {
     if (data.phone && !data.country) {
       const c = getCountryByDialCode(data.phone);
@@ -105,8 +104,6 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
     setCountrySearch("");
   };
 
-  const selectedCountry = countries.find((c) => c.iso2 === data.countryIso2);
-
   const addressFields = [
     { key: "street", prefix: "step3.street", maxLength: 200, colSpan: "sm:col-span-2" },
     { key: "number", prefix: "step3.number", maxLength: 10 },
@@ -145,16 +142,6 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
               <X className="h-4 w-4" />
             </button>
           )}
-          {selectedCountry && !data.country && (
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-              {selectedCountry.flag}
-            </span>
-          )}
-          {selectedCountry && (
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-lg">
-              {selectedCountry.flag}
-            </span>
-          )}
         </div>
         {/* Country dropdown */}
         {showCountryList && (
@@ -174,9 +161,7 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
                 className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2"
                 onClick={() => selectCountry(c.iso2)}
               >
-                <span className="text-base">{c.flag}</span>
                 <span>{getCountryName(c, language)}</span>
-                <span className="text-muted-foreground ml-auto text-xs">{c.dialCode}</span>
               </button>
             ))}
           </div>

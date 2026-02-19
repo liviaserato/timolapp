@@ -44,6 +44,11 @@ export interface WizardData {
 
   // User ID after registration
   userId?: string;
+
+  // Payment info
+  paymentMethod?: "pix" | "credit";
+  cardLast4?: string;
+  cardInstallments?: number;
 }
 
 export type AppScreen =

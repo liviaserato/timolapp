@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { LanguageSelector } from "@/components/LanguageSelector";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { StepPersonal } from "./StepPersonal";
@@ -185,9 +184,9 @@ export const RegistrationWizard = ({ initialData = {}, onComplete }: Props) => {
   return (
     <Card className="w-full max-w-lg mx-auto shadow-lg">
       <CardHeader className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <img src="/favicon.svg" alt="Timol" className="h-8 w-8 flex-shrink-0" />
           <CardTitle className="text-xl">{t("app.title")}</CardTitle>
-          <LanguageSelector />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm text-muted-foreground">

@@ -71,7 +71,9 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
       {/* Document / CPF */}
       <div className="space-y-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <Label htmlFor="document">{t("step1.document")}</Label>
+          <Label htmlFor="document">
+            {isForeigner ? t("step1.document.foreigner") : t("step1.document")}
+          </Label>
           <div className="flex items-center gap-2">
             <Checkbox
               id="foreignerNoCpf"
@@ -86,17 +88,23 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
             </Label>
           </div>
         </div>
-        {!isForeigner ? (
-          <Input
-            id="document"
-            placeholder={t("step1.document.placeholder")}
-            value={data.document || ""}
-            onChange={(e) => onChange("document", maskCPF(e.target.value))}
-            maxLength={14}
-          />
-        ) : (
-          <div className="rounded-md border bg-muted/40 px-3 py-2.5 text-sm text-muted-foreground flex items-start gap-2">
-            <Info className="h-4 w-4 mt-0.5 flex-shrink-0 text-warning" />
+
+        <Input
+          id="document"
+          placeholder={isForeigner ? t("step1.document.foreigner.placeholder") : t("step1.document.placeholder")}
+          value={data.document || ""}
+          onChange={(e) =>
+            onChange(
+              "document",
+              isForeigner ? e.target.value : maskCPF(e.target.value)
+            )
+          }
+          maxLength={isForeigner ? 50 : 14}
+        />
+
+        {isForeigner && (
+          <div className="rounded-md border bg-amber-50 border-amber-200 px-3 py-2 text-sm text-amber-700 flex items-start gap-2">
+            <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
             <span>{t("step1.foreignerHint")}</span>
           </div>
         )}
