@@ -7,7 +7,6 @@ import { SummaryScreen } from "@/components/screens/SummaryScreen";
 import { PaymentScreen } from "@/components/screens/PaymentScreen";
 import { PaymentConfirmationScreen } from "@/components/screens/PaymentConfirmationScreen";
 import { AppScreen, WizardData } from "@/types/wizard";
-import timolLogo from "@/assets/timol-logo.svg";
 
 const Index = () => {
   const [screen, setScreen] = useState<AppScreen>("sponsor");
@@ -60,7 +59,10 @@ const Index = () => {
         return (
           <PaymentScreen
             data={wizardData}
-            onConfirm={() => setScreen("paymentConfirmation")}
+            onConfirm={(paymentInfo: Partial<WizardData>) => {
+              updateData(paymentInfo);
+              setScreen("paymentConfirmation");
+            }}
             onBack={() => setScreen("summary")}
           />
         );
@@ -72,13 +74,7 @@ const Index = () => {
   return (
     <LanguageProvider>
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary/10">
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container flex h-14 items-center gap-2 px-4">
-            <img src={timolLogo} alt="Timol" className="h-8 w-8" />
-            <span className="font-bold text-primary tracking-wide text-lg">TIMOL</span>
-          </div>
-        </header>
-        <main className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center p-4 sm:p-6">
+        <main className="flex min-h-screen items-center justify-center p-4 sm:p-6">
           {renderScreen()}
         </main>
       </div>

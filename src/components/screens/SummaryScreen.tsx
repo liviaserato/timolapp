@@ -34,11 +34,19 @@ export const SummaryScreen = ({ data, onConfirm, onBack }: Props) => {
     onConfirm();
   };
 
-  const mockId = data.userId ?? "TML-" + Math.floor(10000 + Math.random() * 90000);
+  const mockId = data.userId ?? String(Math.floor(100000 + Math.random() * 900000));
+
+  // Format price based on currency
+  const price = data.franchisePrice ?? 0;
+  const isBrazil = (data.countryIso2 ?? "BR") === "BR";
+  const isEuro = ["AT","BE","CY","EE","FI","FR","DE","GR","IE","IT","LV","LT","LU","MT","NL","PT","SK","SI","ES"].includes(data.countryIso2 ?? "");
+  const sym = isBrazil ? "R$" : isEuro ? "€" : "US$";
+  const locale = isBrazil ? "pt-BR" : isEuro ? "de-DE" : "en-US";
 
   return (
     <div className="w-full max-w-lg mx-auto space-y-4">
       <div className="text-center space-y-1">
+        <img src="/favicon.svg" alt="Timol" className="h-10 w-10 mx-auto" />
         <h2 className="text-2xl font-bold text-primary">{t("summary.title")}</h2>
         <p className="text-muted-foreground text-sm">{t("summary.subtitle")}</p>
       </div>
@@ -79,7 +87,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack }: Props) => {
             label={t("summary.price")}
             value={
               <span className="font-bold text-lg text-primary">
-                R$ {(data.franchisePrice ?? 0).toLocaleString("pt-BR")}
+                {sym} {price.toLocaleString(locale)}
               </span>
             }
           />
@@ -96,6 +104,16 @@ export const SummaryScreen = ({ data, onConfirm, onBack }: Props) => {
             />
             <Label htmlFor="agreeRules" className="text-sm leading-relaxed cursor-pointer">
               {t("summary.agreeRules")}
+              <a
+                href="https://timolsystem.com.br/contrato"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline underline-offset-2 hover:text-primary/80"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {t("summary.agreeRules.link")}
+              </a>
+              {t("summary.agreeRules.suffix")}
             </Label>
           </div>
           <div className="flex items-start gap-3">

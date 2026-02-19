@@ -4,9 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { WizardData } from "@/types/wizard";
-import { Search, Users, Phone, X } from "lucide-react";
+import { Search, Users, Phone, X, ChevronRight } from "lucide-react";
 import timolLogo from "@/assets/timol-logo.svg";
 
 interface Props {
@@ -15,10 +22,12 @@ interface Props {
 
 // Mock data for random sponsor suggestion
 const mockSponsors = [
-  { id: "TML-00042", name: "Carlos Alberto Silva", city: "São Paulo", state: "SP", countryFlag: "🇧🇷" },
-  { id: "TML-00087", name: "Maria Fernanda Costa", city: "Rio de Janeiro", state: "RJ", countryFlag: "🇧🇷" },
-  { id: "TML-00123", name: "João Pedro Santos", city: "Belo Horizonte", state: "MG", countryFlag: "🇧🇷" },
+  { id: "421893", name: "Carlos Alberto Silva", city: "São Paulo", state: "SP", countryFlag: "🇧🇷" },
+  { id: "087342", name: "Maria Fernanda Costa", city: "Rio de Janeiro", state: "RJ", countryFlag: "🇧🇷" },
+  { id: "123765", name: "João Pedro Santos", city: "Belo Horizonte", state: "MG", countryFlag: "🇧🇷" },
 ];
+
+type ContactStep = "options" | "contact-form" | "contact-success";
 
 export const SponsorScreen = ({ onNext }: Props) => {
   const { t } = useLanguage();
@@ -26,15 +35,24 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const [sponsorName, setSponsorName] = useState("");
   const [foundSponsor, setFoundSponsor] = useState<(typeof mockSponsors)[0] | null>(null);
   const [showNoSponsorBox, setShowNoSponsorBox] = useState(false);
+  const [noSponsorStep, setNoSponsorStep] = useState<ContactStep>("options");
   const [showConfirmBox, setShowConfirmBox] = useState(false);
   const [error, setError] = useState("");
+
+  // Contact form state
+  const [contactName, setContactName] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [contactCity, setContactCity] = useState("");
+  const [contactState, setContactState] = useState("");
+  const [contactBestTime, setContactBestTime] = useState("");
+  const [contactHowKnew, setContactHowKnew] = useState("");
+  const [contactOther, setContactOther] = useState("");
 
   const handleSearch = () => {
     if (!sponsorId.trim() && !sponsorName.trim()) {
       setError(t("sponsor.error.empty"));
       return;
     }
-    // Simulate search — in production connect to DB
     const found = mockSponsors.find(
       (s) =>
         s.id.toLowerCase().includes(sponsorId.toLowerCase()) ||
@@ -66,6 +84,23 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setShowNoSponsorBox(false);
     setShowConfirmBox(true);
   };
+
+  const handleContactSend = () => {
+    // In production, send to backend
+    setNoSponsorStep("contact-success");
+  };
+
+  const openNoSponsor = () => {
+    setNoSponsorStep("options");
+    setShowNoSponsorBox(true);
+  };
+
+  const howKnewOptions = [
+    { value: "live", label: t("sponsor.noSponsorBox.contactHowKnew.live") },
+    { value: "showroom", label: t("sponsor.noSponsorBox.contactHowKnew.showroom") },
+    { value: "friend", label: t("sponsor.noSponsorBox.contactHowKnew.friend") },
+    { value: "other", label: t("sponsor.noSponsorBox.contactHowKnew.other") },
+  ];
 
   return (
     <div className="w-full max-w-md mx-auto space-y-6">
@@ -116,7 +151,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
           <div className="text-center">
             <button
               className="text-sm text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
-              onClick={() => setShowNoSponsorBox(true)}
+              onClick={openNoSponsor}
             >
               {t("sponsor.noSponsor")}
             </button>
@@ -130,26 +165,115 @@ export const SponsorScreen = ({ onNext }: Props) => {
           <Card className="w-full max-w-sm shadow-2xl">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base">{t("sponsor.noSponsorBox.title")}</CardTitle>
+                <CardTitle className="text-base">
+                  {noSponsorStep === "contact-form"
+                    ? t("sponsor.noSponsorBox.contactTitle")
+                    : noSponsorStep === "contact-success"
+                    ? "✓"
+                    : t("sponsor.noSponsorBox.title")}
+                </CardTitle>
                 <button onClick={() => setShowNoSponsorBox(false)}>
                   <X className="h-4 w-4 text-muted-foreground" />
                 </button>
               </div>
-              <CardDescription className="text-xs">{t("sponsor.noSponsorBox.description")}</CardDescription>
+              {noSponsorStep === "options" && (
+                <CardDescription className="text-xs">{t("sponsor.noSponsorBox.description")}</CardDescription>
+              )}
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button variant="outline" className="w-full justify-start gap-2" onClick={handleRandomSponsor}>
-                <Users className="h-4 w-4" />
-                {t("sponsor.noSponsorBox.random")}
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-2" onClick={() => {
-                setShowNoSponsorBox(false);
-                // In production, open contact form
-                alert(t("sponsor.noSponsorBox.contactAlert"));
-              }}>
-                <Phone className="h-4 w-4" />
-                {t("sponsor.noSponsorBox.contact")}
-              </Button>
+              {noSponsorStep === "options" && (
+                <>
+                  <Button variant="outline" className="w-full justify-start gap-2" onClick={handleRandomSponsor}>
+                    <Users className="h-4 w-4" />
+                    {t("sponsor.noSponsorBox.random")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start gap-2"
+                    onClick={() => setNoSponsorStep("contact-form")}
+                  >
+                    <Phone className="h-4 w-4" />
+                    {t("sponsor.noSponsorBox.contact")}
+                    <ChevronRight className="h-4 w-4 ml-auto" />
+                  </Button>
+                </>
+              )}
+
+              {noSponsorStep === "contact-form" && (
+                <>
+                  <p className="text-xs text-muted-foreground">{t("sponsor.noSponsorBox.contactDesc")}</p>
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <Label className="text-xs">{t("sponsor.noSponsorBox.contactFullName")}</Label>
+                      <Input value={contactName} onChange={(e) => setContactName(e.target.value)} className="h-8 text-sm" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <Label className="text-xs">{t("sponsor.noSponsorBox.contactPhone")}</Label>
+                        <Input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} className="h-8 text-sm" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">{t("sponsor.noSponsorBox.contactBestTime")}</Label>
+                        <Input
+                          placeholder={t("sponsor.noSponsorBox.contactBestTime.placeholder")}
+                          value={contactBestTime}
+                          onChange={(e) => setContactBestTime(e.target.value)}
+                          className="h-8 text-sm"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <Label className="text-xs">{t("sponsor.noSponsorBox.contactCity")}</Label>
+                        <Input value={contactCity} onChange={(e) => setContactCity(e.target.value)} className="h-8 text-sm" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">{t("sponsor.noSponsorBox.contactState")}</Label>
+                        <Input value={contactState} onChange={(e) => setContactState(e.target.value)} className="h-8 text-sm" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">{t("sponsor.noSponsorBox.contactHowKnew")}</Label>
+                      <Select value={contactHowKnew} onValueChange={setContactHowKnew}>
+                        <SelectTrigger className="h-8 text-sm">
+                          <SelectValue placeholder="—" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {howKnewOptions.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {contactHowKnew === "other" && (
+                      <div className="space-y-1">
+                        <Input
+                          placeholder={t("sponsor.noSponsorBox.contactHowKnew.other.placeholder")}
+                          value={contactOther}
+                          onChange={(e) => setContactOther(e.target.value)}
+                          className="h-8 text-sm"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <Button variant="outline" size="sm" className="flex-1" onClick={() => setNoSponsorStep("options")}>
+                      {t("btn.back")}
+                    </Button>
+                    <Button size="sm" className="flex-1" onClick={handleContactSend}>
+                      {t("sponsor.noSponsorBox.contactSend")}
+                    </Button>
+                  </div>
+                </>
+              )}
+
+              {noSponsorStep === "contact-success" && (
+                <div className="text-center space-y-3 py-2">
+                  <div className="text-4xl">✅</div>
+                  <p className="text-sm text-muted-foreground">{t("sponsor.noSponsorBox.contactSuccess")}</p>
+                  <Button className="w-full" onClick={() => setShowNoSponsorBox(false)}>OK</Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -175,7 +299,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
                 </div>
                 <div className="min-w-0">
                   <p className="font-semibold text-sm truncate">{foundSponsor.name}</p>
-                  <p className="text-xs text-muted-foreground">{foundSponsor.id}</p>
+                  <p className="text-xs text-muted-foreground">ID: {foundSponsor.id}</p>
                   <p className="text-xs text-muted-foreground">
                     {foundSponsor.city}, {foundSponsor.state} {foundSponsor.countryFlag}
                   </p>

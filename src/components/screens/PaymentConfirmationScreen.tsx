@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { WizardData } from "@/types/wizard";
 import { CheckCircle2, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import timolLogo from "@/assets/timol-logo.svg";
 
 interface Props {
   data: WizardData;
@@ -11,46 +10,56 @@ interface Props {
 
 export const PaymentConfirmationScreen = ({ data }: Props) => {
   const { t } = useLanguage();
-  const mockId = data.userId ?? "TML-" + Math.floor(10000 + Math.random() * 90000);
+  const mockId = data.userId ?? String(Math.floor(100000 + Math.random() * 900000));
+
+  const isBrazil = (data.countryIso2 ?? "BR") === "BR";
+  const isEuro = ["AT","BE","CY","EE","FI","FR","DE","GR","IE","IT","LV","LT","LU","MT","NL","PT","SK","SI","ES"].includes(data.countryIso2 ?? "");
+  const sym = isBrazil ? "R$" : isEuro ? "€" : "US$";
+  const locale = isBrazil ? "pt-BR" : isEuro ? "de-DE" : "en-US";
+  const price = data.franchisePrice ?? 0;
+  const formatPrice = (v: number) => `${sym} ${v.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const franchiseName = data.franchise ? t(`franchise.${data.franchise}`) : "—";
+
+  // Payment summary text
+  let paymentSummary = "";
+  if (data.paymentMethod === "pix") {
+    paymentSummary = "PIX";
+  } else if (data.paymentMethod === "credit" && data.cardLast4) {
+    const n = data.cardInstallments ?? 1;
+    const installValue = n > 5
+      ? (price * Math.pow(1.03, n)) / n
+      : price / n;
+    paymentSummary = `Cartão de crédito final ${data.cardLast4} — ${n === 1 ? "à vista" : `${n}× ${formatPrice(installValue)}`}`;
+  }
 
   return (
     <div className="w-full max-w-md mx-auto">
       <Card className="shadow-xl text-center">
         <CardContent className="flex flex-col items-center gap-5 py-10 px-6">
-          <div className="relative">
-            <div className="h-24 w-24 rounded-full bg-success/10 flex items-center justify-center">
-              <CheckCircle2 className="h-14 w-14 text-success" />
-            </div>
-            <img
-              src={timolLogo}
-              alt="Timol"
-              className="absolute -bottom-1 -right-1 h-9 w-9 rounded-full bg-white p-0.5 shadow"
-            />
+          <div className="h-20 w-20 rounded-full bg-green-100 flex items-center justify-center">
+            <CheckCircle2 className="h-12 w-12 text-green-600" />
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-2">
+            <img src="/favicon.svg" alt="Timol" className="h-10 w-10 mx-auto" />
             <h2 className="text-2xl font-bold text-primary">{t("paymentDone.title")}</h2>
-            <p className="text-muted-foreground text-sm">{t("paymentDone.subtitle")}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
+              {t("paymentDone.welcome")}
+            </p>
           </div>
 
-          <div className="w-full bg-primary/5 rounded-xl p-4 space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">{t("paymentDone.yourId")}</span>
-              <span className="font-bold text-primary text-base">{mockId}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">{t("paymentDone.franchise")}</span>
-              <span className="font-semibold capitalize">{t(`franchise.${data.franchise}`)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">{t("paymentDone.status")}</span>
-              <span className="font-semibold text-success">{t("paymentDone.active")}</span>
-            </div>
+          <div className="w-full bg-primary/5 rounded-xl p-4 space-y-2 text-sm text-left">
+            <DataRow label={t("paymentDone.yourId")} value={<span className="font-bold text-primary text-base">{mockId}</span>} />
+            <DataRow label={t("paymentDone.franchise")} value={<span className="font-semibold">{franchiseName}</span>} />
+            <DataRow label={t("paymentDone.status")} value={<span className="font-semibold text-green-600">{t("paymentDone.active")}</span>} />
+            {paymentSummary && (
+              <DataRow label="Pagamento" value={<span className="text-xs text-muted-foreground">{paymentSummary}</span>} />
+            )}
           </div>
 
-          <div className="text-sm text-muted-foreground leading-relaxed space-y-1">
+          <div className="text-sm text-muted-foreground leading-relaxed space-y-1 text-center">
             <p>{t("paymentDone.instructions")}</p>
-            <p className="font-medium">{t("paymentDone.emailNote")}</p>
           </div>
 
           <Button
@@ -61,9 +70,21 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
             timolsystem.com.br
           </Button>
 
-          <p className="text-xs text-muted-foreground">{t("paymentDone.firstAccess")}</p>
+          <div className="text-xs text-muted-foreground text-center space-y-1">
+            <p>{t("paymentDone.emailNote")}</p>
+            <p>{t("paymentDone.firstAccess")}</p>
+          </div>
         </CardContent>
       </Card>
     </div>
   );
 };
+
+function DataRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex justify-between items-center border-b border-border/40 py-1 last:border-0">
+      <span className="text-muted-foreground">{label}</span>
+      <span>{value}</span>
+    </div>
+  );
+}
