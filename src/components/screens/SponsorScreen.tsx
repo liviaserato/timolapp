@@ -108,8 +108,8 @@ export const SponsorScreen = ({ onNext }: Props) => {
   };
 
   const handleRandomSponsor = () => {
-    // For now just close - will be connected to API later
     setShowNoSponsorBox(false);
+    onNext({ sponsorId: "auto", sponsorName: "" });
   };
 
   const handleContactSubmit = () => {
