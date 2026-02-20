@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { WizardData } from "@/types/wizard";
-import { ChevronLeft, User, MapPin, Shield, Gem, Crown, Star } from "lucide-react";
+import { ChevronLeft, User, MapPin, Shield, Gem, Crown, Star, Ticket, Loader2 } from "lucide-react";
 
 const franchiseIcons: Record<string, React.ReactNode> = {
   bronze: <Shield className="h-4 w-4" />,
@@ -18,13 +19,19 @@ interface Props {
   data: WizardData;
   onConfirm: () => void;
   onBack: () => void;
+  onEditPersonal?: () => void;
+  onEditAddress?: () => void;
+  onChangeFranchise?: () => void;
 }
 
-export const SummaryScreen = ({ data, onConfirm, onBack }: Props) => {
+export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditAddress, onChangeFranchise }: Props) => {
   const { t } = useLanguage();
   const [agreeRules, setAgreeRules] = useState(data.agreeRules ?? false);
   const [agreeCommunications, setAgreeCommunications] = useState(data.agreeCommunications ?? false);
   const [errors, setErrors] = useState<string[]>([]);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponStatus, setCouponStatus] = useState<"idle" | "checking" | "valid" | "invalid" | "expired" | "notfound">("idle");
+  const [couponDiscount, setCouponDiscount] = useState(0);
 
   const handleConfirm = () => {
     const errs: string[] = [];
@@ -34,7 +41,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack }: Props) => {
     onConfirm();
   };
 
-  const mockId = data.userId ?? String(Math.floor(100000 + Math.random() * 900000));
+  const mockId = data.userId ?? "123456";
 
   // Format price based on currency
   const price = data.franchisePrice ?? 0;
@@ -42,6 +49,28 @@ export const SummaryScreen = ({ data, onConfirm, onBack }: Props) => {
   const isEuro = ["AT","BE","CY","EE","FI","FR","DE","GR","IE","IT","LV","LT","LU","MT","NL","PT","SK","SI","ES"].includes(data.countryIso2 ?? "");
   const sym = isBrazil ? "R$" : isEuro ? "€" : "US$";
   const locale = isBrazil ? "pt-BR" : isEuro ? "de-DE" : "en-US";
+  const formatPrice = (v: number) => `${sym} ${v.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const discountedPrice = couponStatus === "valid" ? price - couponDiscount : price;
+
+  const handleCouponCheck = () => {
+    if (!couponCode.trim()) return;
+    setCouponStatus("checking");
+    // Simulated coupon validation
+    setTimeout(() => {
+      const code = couponCode.trim().toUpperCase();
+      if (code === "TIMOL10") {
+        setCouponDiscount(price * 0.1);
+        setCouponStatus("valid");
+      } else if (code === "EXPIRED") {
+        setCouponStatus("expired");
+      } else {
+        setCouponStatus("notfound");
+      }
+    }, 1000);
+  };
+
+  const isForeigner = data.foreignerNoCpf === "true";
 
   return (
     <div className="w-full max-w-lg mx-auto space-y-4">
@@ -51,27 +80,70 @@ export const SummaryScreen = ({ data, onConfirm, onBack }: Props) => {
         <p className="text-muted-foreground text-sm">{t("summary.subtitle")}</p>
       </div>
 
+      {/* Personal Data */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <User className="h-4 w-4" />
-            {t("summary.personal")}
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2">
+              <User className="h-4 w-4" />
+              {t("summary.personal")}
+            </CardTitle>
+            {onEditPersonal && (
+              <button onClick={onEditPersonal} className="text-xs text-primary/70 hover:text-primary font-medium uppercase tracking-wide">
+                {t("summary.edit")}
+              </button>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="space-y-1 text-sm">
           <Row label={t("summary.fullName")} value={data.fullName ?? "—"} />
           <Row label="ID" value={mockId} highlight />
+          <Row label={t("summary.username")} value={data.username ?? "—"} />
+          <Row label={isForeigner ? t("summary.document") : "CPF"} value={data.document ?? "—"} />
+          <Row label={t("summary.birthDate")} value={data.birthDate ? new Date(data.birthDate + "T00:00:00").toLocaleDateString(locale) : "—"} />
           <Row label={t("summary.sponsor")} value={`${data.sponsorName ?? "—"} (${data.sponsorId ?? "—"})`} />
           <Row label={t("summary.email")} value={data.email ?? "—"} />
         </CardContent>
       </Card>
 
+      {/* Address */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            {t("summary.franchise")}
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              {t("summary.address")}
+            </CardTitle>
+            {onEditAddress && (
+              <button onClick={onEditAddress} className="text-xs text-primary/70 hover:text-primary font-medium uppercase tracking-wide">
+                {t("summary.edit")}
+              </button>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-1 text-sm">
+          <Row label={t("summary.addressLine")} value={`${data.street ?? ""}${data.number ? `, ${data.number}` : ""}${data.complement ? ` - ${data.complement}` : ""}`} />
+          {data.neighborhood && <Row label={t("summary.neighborhood")} value={data.neighborhood} />}
+          <Row label={t("summary.cityState")} value={`${data.city ?? "—"}, ${data.state ?? "—"}`} />
+          <Row label={t("summary.country")} value={data.country ?? "—"} />
+          <Row label={t("summary.zipCode")} value={data.zipCode ?? "—"} />
+        </CardContent>
+      </Card>
+
+      {/* Franchise */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2">
+              {franchiseIcons[data.franchise ?? "bronze"]}
+              {t("summary.franchise")}
+            </CardTitle>
+            {onChangeFranchise && (
+              <button onClick={onChangeFranchise} className="text-xs text-primary/70 hover:text-primary font-medium uppercase tracking-wide">
+                {t("summary.change")}
+              </button>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="space-y-1 text-sm">
           <Row
@@ -86,14 +158,64 @@ export const SummaryScreen = ({ data, onConfirm, onBack }: Props) => {
           <Row
             label={t("summary.price")}
             value={
-              <span className="font-bold text-lg text-primary">
-                {sym} {price.toLocaleString(locale)}
-              </span>
+              couponStatus === "valid" ? (
+                <div className="text-right">
+                  <span className="text-sm text-muted-foreground relative">
+                    <span className="relative inline-block">
+                      {formatPrice(price)}
+                      <span className="absolute left-0 right-0 top-1/2 h-[2px] bg-destructive -rotate-6" />
+                    </span>
+                  </span>
+                  <br />
+                  <span className="font-bold text-lg text-primary">{formatPrice(discountedPrice)}</span>
+                  <p className="text-xs text-success">{t("summary.coupon.discountLabel")}</p>
+                </div>
+              ) : (
+                <span className="font-bold text-lg text-primary">{formatPrice(price)}</span>
+              )
             }
           />
         </CardContent>
       </Card>
 
+      {/* Coupon */}
+      <Card>
+        <CardContent className="pt-4 space-y-2">
+          <Label className="text-sm flex items-center gap-1.5">
+            <Ticket className="h-4 w-4" />
+            {t("summary.coupon")}
+          </Label>
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Input
+                placeholder={t("summary.coupon.placeholder")}
+                value={couponCode}
+                onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); setCouponStatus("idle"); }}
+                maxLength={20}
+                className="pr-10"
+              />
+              <Ticket className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            </div>
+            <Button variant="outline" size="sm" onClick={handleCouponCheck} disabled={couponStatus === "checking"}>
+              {couponStatus === "checking" ? <Loader2 className="h-4 w-4 animate-spin" /> : t("summary.coupon.apply")}
+            </Button>
+          </div>
+          {couponStatus === "valid" && (
+            <p className="text-xs text-success">{t("summary.coupon.valid")}</p>
+          )}
+          {couponStatus === "notfound" && (
+            <p className="text-xs text-destructive">{t("summary.coupon.notfound")}</p>
+          )}
+          {couponStatus === "invalid" && (
+            <p className="text-xs text-destructive">{t("summary.coupon.invalid")}</p>
+          )}
+          {couponStatus === "expired" && (
+            <p className="text-xs text-amber-600">{t("summary.coupon.expired")}</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Agreements */}
       <Card>
         <CardContent className="pt-4 space-y-3">
           <div className="flex items-start gap-3">

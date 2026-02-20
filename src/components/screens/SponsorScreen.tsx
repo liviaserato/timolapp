@@ -14,30 +14,31 @@ import {
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { WizardData } from "@/types/wizard";
-import { Search, Users, Phone, X, ChevronRight, ThumbsUp } from "lucide-react";
+import { Search, Users, Phone, X, ChevronRight, ThumbsUp, Loader2 } from "lucide-react";
 import timolLogo from "@/assets/timol-logo.svg";
 
 interface Props {
   onNext: (data: Partial<WizardData>) => void;
 }
 
-// Mock data for sponsor lookup (will be replaced by real API)
-const mockSponsors = [
-  { id: "421893", name: "Carlos Alberto Silva", city: "São Paulo", state: "SP", countryFlag: "🇧🇷", photo: "" },
-  { id: "087342", name: "Maria Fernanda Costa", city: "Rio de Janeiro", state: "RJ", countryFlag: "🇧🇷", photo: "" },
-  { id: "123765", name: "João Pedro Santos", city: "Belo Horizonte", state: "MG", countryFlag: "🇧🇷", photo: "" },
-];
-
 type NoSponsorStep = "contact-form" | "how-continue" | "contact-success";
+
+interface SponsorApiResult {
+  name: string;
+  city: string;
+  state: string;
+  photo: string;
+}
 
 export const SponsorScreen = ({ onNext }: Props) => {
   const { t, language } = useLanguage();
   const [sponsorId, setSponsorId] = useState("");
-  const [foundSponsor, setFoundSponsor] = useState<(typeof mockSponsors)[0] | null>(null);
+  const [foundSponsor, setFoundSponsor] = useState<{ id: string; name: string; city: string; state: string; countryFlag: string; photo: string } | null>(null);
   const [showNoSponsorBox, setShowNoSponsorBox] = useState(false);
   const [noSponsorStep, setNoSponsorStep] = useState<NoSponsorStep>("contact-form");
   const [showConfirmBox, setShowConfirmBox] = useState(false);
   const [error, setError] = useState("");
+  const [searching, setSearching] = useState(false);
 
   // Contact form state
   const [contactName, setContactName] = useState("");
@@ -56,18 +57,38 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setError("");
   }, [language]);
 
-  const handleSearch = useCallback(() => {
-    if (!sponsorId.trim()) {
+  const handleSearch = useCallback(async () => {
+    const trimmed = sponsorId.trim();
+    if (!trimmed) {
       setError(t("sponsor.error.empty"));
       return;
     }
-    const found = mockSponsors.find((s) => s.id === sponsorId.trim());
-    if (found) {
-      setFoundSponsor(found);
+    setSearching(true);
+    setError("");
+    try {
+      const res = await fetch(`https://api.timolsystem.com.br/api/cliente/patrocinio/${trimmed}`);
+      if (!res.ok) {
+        setError(t("sponsor.error.notFound"));
+        return;
+      }
+      const json = await res.json();
+      // Map API fields — names are similar, map only what we need
+      const name = json.nome || json.name || json.nomeCompleto || "";
+      const city = json.cidade || json.city || "";
+      const state = json.estado || json.state || json.uf || "";
+      const photo = json.foto || json.photo || json.urlFoto || "";
+
+      if (!name) {
+        setError(t("sponsor.error.notFound"));
+        return;
+      }
+
+      setFoundSponsor({ id: trimmed, name, city, state, countryFlag: "", photo });
       setShowConfirmBox(true);
-      setError("");
-    } else {
+    } catch {
       setError(t("sponsor.error.notFound"));
+    } finally {
+      setSearching(false);
     }
   }, [sponsorId, t]);
 
@@ -87,10 +108,8 @@ export const SponsorScreen = ({ onNext }: Props) => {
   };
 
   const handleRandomSponsor = () => {
-    const random = mockSponsors[Math.floor(Math.random() * mockSponsors.length)];
-    setFoundSponsor(random);
+    // For now just close - will be connected to API later
     setShowNoSponsorBox(false);
-    setShowConfirmBox(true);
   };
 
   const handleContactSubmit = () => {
@@ -150,16 +169,18 @@ export const SponsorScreen = ({ onNext }: Props) => {
               value={sponsorId}
               onChange={(e) => { setSponsorId(e.target.value); setError(""); }}
               onKeyDown={handleKeyDown}
+              onBlur={() => { if (sponsorId.trim()) handleSearch(); }}
               className="pr-10"
               maxLength={6}
             />
             <button
               type="button"
               onClick={handleSearch}
+              disabled={searching}
               className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
               aria-label="Search"
             >
-              <Search className="h-4 w-4" />
+              {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
             </button>
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
@@ -320,7 +341,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
                   <p className="font-semibold text-sm truncate">{foundSponsor.name}</p>
                   <p className="text-xs text-muted-foreground">ID: {foundSponsor.id}</p>
                   <p className="text-xs text-muted-foreground">
-                    {foundSponsor.city}, {foundSponsor.state} {foundSponsor.countryFlag}
+                    {foundSponsor.city}{foundSponsor.state ? `, ${foundSponsor.state}` : ""}
                   </p>
                 </div>
               </div>

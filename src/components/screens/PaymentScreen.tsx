@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { WizardData } from "@/types/wizard";
-import { ChevronLeft, CreditCard, QrCode, Loader2, Eye, EyeOff } from "lucide-react";
+import { ChevronLeft, CreditCard, QrCode, Loader2, Eye, EyeOff, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -23,9 +23,8 @@ interface Props {
 
 type PaymentMethod = "pix" | "credit";
 
-// Interest rate: 3% per installment from 6x onwards
 const INTEREST_RATE = 0.03;
-const FREE_INSTALLMENTS = 5; // 1-5 = no interest, 6+ = interest
+const FREE_INSTALLMENTS = 5;
 
 function getInstallmentOptions(price: number) {
   const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -38,7 +37,6 @@ function getInstallmentOptions(price: number) {
   });
 }
 
-// Card brand detection
 function detectCardBrand(number: string): string {
   const clean = number.replace(/\s/g, "");
   if (/^4/.test(clean)) return "visa";
@@ -64,6 +62,8 @@ const brandColors: Record<string, string> = {
   other: "text-muted-foreground",
 };
 
+const PIX_CODE = "00020126580014BR.GOV.BCB.PIX0136timol-pix-key@timol.com.br5204000053039865802BR5913TIMOL SISTEMA6009SAO PAULO62070503***6304ABCD";
+
 export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
   const { t } = useLanguage();
   const isBrazilian = (data.countryIso2 ?? "BR") === "BR";
@@ -76,12 +76,12 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
   const [showCvv, setShowCvv] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [pixCopied, setPixCopied] = useState(false);
 
   const price = data.franchisePrice ?? 0;
   const installmentOptions = getInstallmentOptions(price);
   const selectedInstallment = installmentOptions.find((o) => o.n === parseInt(installments)) ?? installmentOptions[0];
 
-  // Currency
   const isEuro = ["AT","BE","CY","EE","FI","FR","DE","GR","IE","IT","LV","LT","LU","MT","NL","PT","SK","SI","ES"].includes(data.countryIso2 ?? "");
   const sym = isBrazilian ? "R$" : isEuro ? "€" : "US$";
   const locale = isBrazilian ? "pt-BR" : isEuro ? "de-DE" : "en-US";
@@ -124,6 +124,16 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
     }, 2000);
   };
 
+  const handleCopyPix = async () => {
+    try {
+      await navigator.clipboard.writeText(PIX_CODE);
+      setPixCopied(true);
+      setTimeout(() => setPixCopied(false), 2000);
+    } catch {
+      // fallback
+    }
+  };
+
   const franchiseName = data.franchise ? t(`franchise.${data.franchise}`) : "";
 
   return (
@@ -132,8 +142,8 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
         <img src="/favicon.svg" alt="Timol" className="h-10 w-10 mx-auto" />
         <h2 className="text-2xl font-bold text-primary">{t("payment.title")}</h2>
         {franchiseName && (
-          <p className="text-sm font-medium text-muted-foreground">
-            {t("payment.franchise.label")}: <span className="text-foreground font-semibold">{franchiseName}</span>
+          <p className="text-sm font-medium">
+            {t("payment.franchise.label")} <span className="text-primary font-semibold">{franchiseName}</span>
           </p>
         )}
         <p className="text-muted-foreground text-sm">
@@ -157,7 +167,6 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
           >
             <QrCode className="h-7 w-7" />
             <span className="font-semibold text-sm">PIX</span>
-            <span className="text-xs text-muted-foreground">{t("payment.pix.discount")}</span>
           </button>
           <button
             role="tab"
@@ -172,7 +181,6 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
           >
             <CreditCard className="h-7 w-7" />
             <span className="font-semibold text-sm">{t("payment.credit")}</span>
-            <span className="text-xs text-muted-foreground">{t("payment.credit.sub")}</span>
           </button>
         </div>
       )}
@@ -185,8 +193,16 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
               <QrCode className="h-24 w-24 text-muted-foreground" />
             </div>
             <p className="text-xs text-muted-foreground">{t("payment.pix.scan")}</p>
-            <div className="bg-muted rounded p-2 text-xs font-mono break-all select-all">
-              00020126580014BR.GOV.BCB.PIX0136timol-pix-key@timol.com.br5204000053039865802BR5913TIMOL SISTEMA6009SAO PAULO62070503***6304ABCD
+            <div className="relative bg-muted rounded p-2 text-xs font-mono break-all select-all pr-10">
+              {PIX_CODE}
+              <button
+                type="button"
+                onClick={handleCopyPix}
+                className="absolute right-2 top-2 p-1 rounded hover:bg-accent transition-colors"
+                title="Copiar"
+              >
+                {pixCopied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4 text-muted-foreground" />}
+              </button>
             </div>
             <p className="text-xs text-green-600 font-medium">{t("payment.pix.expiry")}</p>
           </CardContent>
@@ -285,7 +301,6 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
               {selectedInstallment.n > 1 && (
                 <p className="text-xs text-muted-foreground">
                   Total: {formatPrice(selectedInstallment.value * selectedInstallment.n)}
-                  {selectedInstallment.hasInterest && ` (3% ${t("payment.installments.fees").toLowerCase()})`}
                 </p>
               )}
             </div>
