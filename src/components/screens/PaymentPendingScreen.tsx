@@ -27,11 +27,16 @@ export const PaymentPendingScreen = ({ data, onConfirmed, onChangePayment }: Pro
   const isPix = data.paymentMethod === "pix";
   const isForeigner = data.foreignerNoCpf === "true";
 
-  const paymentLabel = isPix
-    ? "PIX"
-    : data.cardLast4
-      ? `${t("paymentPending.card")} •••• ${data.cardLast4}`
-      : t("paymentPending.card");
+  // Build dynamic payment label with installments
+  const buildPaymentLabel = () => {
+    if (isPix) return "PIX";
+    const n = data.cardInstallments ?? 1;
+    const cardEnd = data.cardLast4 ? `${t("paymentPending.card")} •••• ${data.cardLast4}` : t("paymentPending.card");
+    if (n === 1) return `${cardEnd} — ${t("paymentDone.inFull")}`;
+    const hasInterest = n > 5;
+    return `${cardEnd} — ${n}× ${hasInterest ? t("payment.installments.fees") : t("payment.installments.nofees")}`;
+  };
+  const paymentLabel = buildPaymentLabel();
 
   const handleRefresh = () => {
     setChecking(true);

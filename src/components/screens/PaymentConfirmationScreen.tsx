@@ -20,8 +20,9 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
   const formatPrice = (v: number) => `${sym} ${v.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   const franchiseName = data.franchise ? t(`franchise.${data.franchise}`) : "—";
+  const isForeigner = data.foreignerNoCpf === "true";
 
-  // Build i18n payment summary
+  // Build i18n payment summary with installments
   let paymentSummary = "";
   if (data.paymentMethod === "pix") {
     paymentSummary = "PIX";
@@ -33,7 +34,7 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
     const cardEnd = `${t("paymentDone.cardEnd")} ${data.cardLast4}`;
     const installmentText = n === 1
       ? t("paymentDone.inFull")
-      : `${n}× ${formatPrice(installValue)}`;
+      : `${n}× ${formatPrice(installValue)} (${n > 5 ? t("payment.installments.fees") : t("payment.installments.nofees")})`;
     paymentSummary = `${cardEnd} — ${installmentText}`;
   }
 

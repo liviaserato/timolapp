@@ -120,6 +120,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
         paymentMethod: method,
         cardLast4: method === "credit" ? last4 : undefined,
         cardInstallments: method === "credit" ? parseInt(installments) : undefined,
+        cardHolderName: method === "credit" ? cardName.trim() : undefined,
       });
     }, 2000);
   };

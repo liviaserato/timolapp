@@ -49,6 +49,7 @@ export interface WizardData {
   paymentMethod?: "pix" | "credit";
   cardLast4?: string;
   cardInstallments?: number;
+  cardHolderName?: string;
 }
 
 export type AppScreen =
