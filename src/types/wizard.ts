@@ -55,6 +55,7 @@ export interface WizardData {
 export type AppScreen =
   | "sponsor"
   | "registration"
+  | "registrationAddress"
   | "franchise"
   | "summary"
   | "payment"

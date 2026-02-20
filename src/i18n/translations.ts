@@ -186,10 +186,11 @@ export const translations: Record<Language, Record<string, string>> = {
     "payment.error.cardHolder": "Nome do titular obrigatório",
     "payment.error.cardExpiry": "Validade inválida",
     "payment.error.cardCvv": "CVV inválido",
+    "payment.error.cardExpired": "Este cartão parece estar vencido. Verifique a data de validade.",
 
     // Payment Confirmation
     "paymentDone.title": "Pagamento Confirmado!",
-    "paymentDone.welcome": "Estamos muito felizes que você faz parte de uma equipe empenhada em proporcionar qualidade de vida às pessoas. Seja muito bem-vindo!",
+    "paymentDone.welcome": "Estamos felizes em ter você com a gente, fazendo parte de uma equipe dedicada a levar mais qualidade de vida às pessoas.\nSeja muito bem-vindo!",
     "paymentDone.subtitle": "Sua franquia já está ativa",
     "paymentDone.yourId": "Seu ID Timol",
     "paymentDone.franchise": "Franquia",
@@ -198,9 +199,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.paymentLabel": "Pagamento",
     "paymentDone.cardEnd": "Cartão final",
     "paymentDone.inFull": "à vista",
-    "paymentDone.accessNow": "Você já pode acessar o TimolSystem! Sua franquia está ativa e pronta para uso.",
-    "paymentDone.sponsorContact": "Nos próximos dias, seu patrocinador ou um atendente da Timol entrará em contato para acompanhar o início da sua jornada.",
-    "paymentDone.instructions": "Para acessar seu escritório digital, acesse:",
+    "paymentDone.accessNow": "Sua franquia já está ativa e pronta para uso. Nos próximos dias, seu patrocinador ou um atendente da Timol entrará em contato para acompanhar você no início da sua jornada.",
+    "paymentDone.sponsorContact": "Você já pode acessar seu escritório digital. Para entrar, acesse:",
+    "paymentDone.instructions": "",
     "paymentDone.emailNote": "Verifique seu e-mail com as instruções de primeiro acesso.",
 
     // Payment Pending
@@ -414,9 +415,10 @@ export const translations: Record<Language, Record<string, string>> = {
     "payment.error.cardHolder": "Cardholder name is required",
     "payment.error.cardExpiry": "Invalid expiry date",
     "payment.error.cardCvv": "Invalid CVV",
+    "payment.error.cardExpired": "This card appears to be expired. Please check the expiry date.",
 
     "paymentDone.title": "Payment Confirmed!",
-    "paymentDone.welcome": "We are so happy you are part of a team committed to providing quality of life for people. Welcome aboard!",
+    "paymentDone.welcome": "We're happy to have you with us, being part of a team dedicated to bringing more quality of life to people.\nWelcome aboard!",
     "paymentDone.subtitle": "Your franchise is now active",
     "paymentDone.yourId": "Your Timol ID",
     "paymentDone.franchise": "Franchise",
@@ -425,9 +427,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.paymentLabel": "Payment",
     "paymentDone.cardEnd": "Card ending",
     "paymentDone.inFull": "in full",
-    "paymentDone.accessNow": "You can now access TimolSystem! Your franchise is active and ready to use.",
-    "paymentDone.sponsorContact": "In the coming days, your sponsor or a Timol representative will reach out to support you as you begin your journey.",
-    "paymentDone.instructions": "To access your digital office, visit:",
+    "paymentDone.accessNow": "Your franchise is already active and ready to use. In the coming days, your sponsor or a Timol representative will reach out to support you as you begin your journey.",
+    "paymentDone.sponsorContact": "You can already access your digital office. To log in, visit:",
+    "paymentDone.instructions": "",
     "paymentDone.emailNote": "Also check your email for first access instructions.",
 
     // Payment Pending
@@ -638,9 +640,10 @@ export const translations: Record<Language, Record<string, string>> = {
     "payment.error.cardHolder": "Nombre del titular obligatorio",
     "payment.error.cardExpiry": "Vencimiento inválido",
     "payment.error.cardCvv": "CVV inválido",
+    "payment.error.cardExpired": "Esta tarjeta parece estar vencida. Verifique la fecha de vencimiento.",
 
     "paymentDone.title": "¡Pago Confirmado!",
-    "paymentDone.welcome": "Estamos muy felices de que seas parte de un equipo comprometido con brindar calidad de vida a las personas. ¡Bienvenido!",
+    "paymentDone.welcome": "Estamos felices de tenerte con nosotros, formando parte de un equipo dedicado a llevar más calidad de vida a las personas.\n¡Bienvenido!",
     "paymentDone.subtitle": "Su franquicia ya está activa",
     "paymentDone.yourId": "Su ID Timol",
     "paymentDone.franchise": "Franquicia",
@@ -649,9 +652,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.paymentLabel": "Pago",
     "paymentDone.cardEnd": "Tarjeta final",
     "paymentDone.inFull": "al contado",
-    "paymentDone.accessNow": "¡Ya puedes acceder a TimolSystem! Tu franquicia está activa y lista para usar.",
-    "paymentDone.sponsorContact": "En los próximos días, tu patrocinador o un representante de Timol se pondrá en contacto para acompañarte en el inicio de tu jornada.",
-    "paymentDone.instructions": "Para acceder a su oficina digital, visite:",
+    "paymentDone.accessNow": "Tu franquicia ya está activa y lista para usar. En los próximos días, tu patrocinador o un representante de Timol se pondrá en contacto para acompañarte en el inicio de tu jornada.",
+    "paymentDone.sponsorContact": "Ya puedes acceder a tu oficina digital. Para ingresar, visita:",
+    "paymentDone.instructions": "",
     "paymentDone.emailNote": "También revise su correo con las instrucciones de primer acceso.",
 
     // Payment Pending

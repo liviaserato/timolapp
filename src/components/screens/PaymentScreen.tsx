@@ -103,7 +103,17 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
     if (method === "credit") {
       if (cardNumber.replace(/\s/g, "").length < 16) e.cardNumber = t("payment.error.cardNumber");
       if (!cardName.trim()) e.cardName = t("payment.error.cardHolder");
-      if (cardExpiry.length < 5) e.cardExpiry = t("payment.error.cardExpiry");
+      if (cardExpiry.length < 5) {
+        e.cardExpiry = t("payment.error.cardExpiry");
+      } else {
+        const [mm, yy] = cardExpiry.split("/").map(Number);
+        const now = new Date();
+        const currentMonth = now.getMonth() + 1;
+        const currentYear = now.getFullYear() % 100;
+        if (yy < currentYear || (yy === currentYear && mm < currentMonth)) {
+          e.cardExpiry = t("payment.error.cardExpired");
+        }
+      }
       if (cardCvv.length < 3) e.cardCvv = t("payment.error.cardCvv");
     }
     setErrors(e);
