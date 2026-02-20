@@ -5,6 +5,7 @@ import { RegistrationWizard } from "@/components/registration/RegistrationWizard
 import { FranchiseScreen } from "@/components/screens/FranchiseScreen";
 import { SummaryScreen } from "@/components/screens/SummaryScreen";
 import { PaymentScreen } from "@/components/screens/PaymentScreen";
+import { PaymentPendingScreen } from "@/components/screens/PaymentPendingScreen";
 import { PaymentConfirmationScreen } from "@/components/screens/PaymentConfirmationScreen";
 import { AppScreen, WizardData } from "@/types/wizard";
 
@@ -64,9 +65,25 @@ const Index = () => {
             data={wizardData}
             onConfirm={(paymentInfo: Partial<WizardData>) => {
               updateData(paymentInfo);
-              setScreen("paymentConfirmation");
+              // Simulate: PIX always goes to pending, credit randomly
+              const method = paymentInfo.paymentMethod ?? "credit";
+              if (method === "pix") {
+                setScreen("paymentPending");
+              } else {
+                // In production, check real payment status
+                const approved = Math.random() > 0.5;
+                setScreen(approved ? "paymentConfirmation" : "paymentPending");
+              }
             }}
             onBack={() => setScreen("summary")}
+          />
+        );
+      case "paymentPending":
+        return (
+          <PaymentPendingScreen
+            data={wizardData}
+            onConfirmed={() => setScreen("paymentConfirmation")}
+            onChangePayment={() => setScreen("payment")}
           />
         );
       case "paymentConfirmation":

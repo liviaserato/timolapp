@@ -199,6 +199,21 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.emailNote": "Verifique seu e-mail com as instruções de primeiro acesso.",
     "paymentDone.firstAccess": "Em caso de dúvidas, entre em contato com seu patrocinador.",
 
+    // Payment Pending
+    "paymentPending.title": "Pagamento Pendente",
+    "paymentPending.statusBadge": "Pendente",
+    "paymentPending.plan": "Plano",
+    "paymentPending.amount": "Valor",
+    "paymentPending.method": "Forma de pagamento",
+    "paymentPending.card": "Cartão de Crédito",
+    "paymentPending.refresh": "Atualizar status",
+    "paymentPending.changeMethod": "Trocar forma de pagamento",
+    "paymentPending.pix.message": "O PIX ainda não foi identificado e a transação está como pendente. Assim que confirmar, você receberá um e-mail de confirmação.",
+    "paymentPending.pix.hint": "Se você já realizou o pagamento, aguarde alguns minutos e clique em \"Atualizar status\".",
+    "paymentPending.card.message": "Não foi possível confirmar o pagamento e a transação está como pendente.",
+    "paymentPending.card.reasons": "Isso pode acontecer por análise do banco, limite insuficiente ou validações de segurança.",
+    "paymentPending.card.hint": "Você pode tentar novamente, usar outro cartão ou escolher PIX. Assim que o pagamento for confirmado, você receberá um e-mail de confirmação.",
+
     // Validation
     "validation.required": "Campo obrigatório",
     "validation.email": "E-mail inválido",
@@ -406,6 +421,21 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.emailNote": "Also check your email for first access instructions.",
     "paymentDone.firstAccess": "If you have questions, contact your sponsor.",
 
+    // Payment Pending
+    "paymentPending.title": "Payment Pending",
+    "paymentPending.statusBadge": "Pending",
+    "paymentPending.plan": "Plan",
+    "paymentPending.amount": "Amount",
+    "paymentPending.method": "Payment method",
+    "paymentPending.card": "Credit Card",
+    "paymentPending.refresh": "Refresh status",
+    "paymentPending.changeMethod": "Change payment method",
+    "paymentPending.pix.message": "The PIX payment has not been identified yet and the transaction is pending. Once confirmed, you will receive a confirmation email.",
+    "paymentPending.pix.hint": "If you have already made the payment, wait a few minutes and click \"Refresh status\".",
+    "paymentPending.card.message": "We were unable to confirm the payment and the transaction is pending.",
+    "paymentPending.card.reasons": "This may happen due to bank analysis, insufficient limit, or security checks.",
+    "paymentPending.card.hint": "You can try again, use another card, or choose PIX. Once the payment is confirmed, you will receive a confirmation email.",
+
     "validation.required": "Required field",
     "validation.email": "Invalid email",
     "validation.passwordMin": "Minimum 6 characters",
@@ -609,6 +639,21 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.instructions": "Para acceder a su oficina digital, visite:",
     "paymentDone.emailNote": "También revise su correo con las instrucciones de primer acceso.",
     "paymentDone.firstAccess": "En caso de dudas, contacte a su patrocinador.",
+
+    // Payment Pending
+    "paymentPending.title": "Pago Pendiente",
+    "paymentPending.statusBadge": "Pendiente",
+    "paymentPending.plan": "Plan",
+    "paymentPending.amount": "Monto",
+    "paymentPending.method": "Forma de pago",
+    "paymentPending.card": "Tarjeta de Crédito",
+    "paymentPending.refresh": "Actualizar estado",
+    "paymentPending.changeMethod": "Cambiar forma de pago",
+    "paymentPending.pix.message": "El PIX aún no ha sido identificado y la transacción está pendiente. Cuando se confirme, recibirás un correo de confirmación.",
+    "paymentPending.pix.hint": "Si ya realizaste el pago, espera unos minutos y haz clic en \"Actualizar estado\".",
+    "paymentPending.card.message": "No fue posible confirmar el pago y la transacción está pendiente.",
+    "paymentPending.card.reasons": "Esto puede ocurrir por análisis del banco, límite insuficiente o validaciones de seguridad.",
+    "paymentPending.card.hint": "Puedes intentar nuevamente, usar otra tarjeta o elegir PIX. Cuando el pago se confirme, recibirás un correo de confirmación.",
 
     "validation.required": "Campo obligatorio",
     "validation.email": "Correo inválido",

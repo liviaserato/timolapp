@@ -57,4 +57,5 @@ export type AppScreen =
   | "franchise"
   | "summary"
   | "payment"
+  | "paymentPending"
   | "paymentConfirmation";
