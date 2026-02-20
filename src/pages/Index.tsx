@@ -53,6 +53,9 @@ const Index = () => {
             data={wizardData}
             onConfirm={() => setScreen("payment")}
             onBack={() => setScreen("franchise")}
+            onEditPersonal={() => setScreen("registration")}
+            onEditAddress={() => setScreen("registration")}
+            onChangeFranchise={() => setScreen("franchise")}
           />
         );
       case "payment":

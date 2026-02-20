@@ -8,7 +8,7 @@ import { StepContact } from "./StepContact";
 import { StepAddress } from "./StepAddress";
 import { StepLogin } from "./StepLogin";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { WizardData } from "@/types/wizard";
 
 const TOTAL_STEPS = 4;
@@ -83,6 +83,7 @@ export const RegistrationWizard = ({ initialData = {}, onComplete }: Props) => {
       if (!data.email?.trim()) newErrors.email = req;
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) newErrors.email = t("validation.email");
       if (!data.phone?.trim()) newErrors.phone = req;
+      else if (data.phone.replace(/\D/g, "").length < 7) newErrors.phone = t("validation.phoneMin");
     } else if (step === 3) {
       if (!data.country?.trim()) newErrors.country = req;
       if (!data.zipCode?.trim()) newErrors.zipCode = req;
@@ -164,7 +165,7 @@ export const RegistrationWizard = ({ initialData = {}, onComplete }: Props) => {
         city: data.city,
         state: data.state,
         username: data.username,
-        userId: userId ? "TML-" + userId.slice(0, 8).toUpperCase() : undefined,
+        userId: userId ? String(Math.floor(100000 + Math.random() * 900000)) : undefined,
       });
     } catch (err: unknown) {
       const e = err as Error;

@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Eye, EyeOff } from "lucide-react";
 
 interface Props {
   data: Record<string, string>;
@@ -35,6 +35,8 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
   const { t } = useLanguage();
   const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
   const [usernameTimer, setUsernameTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const strength = useMemo(
     () => getPasswordStrength(data.password || ""),
@@ -75,7 +77,7 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
             value={data.username || ""}
             onChange={(e) => handleUsernameChange(e.target.value)}
             maxLength={50}
-        className={[
+            className={[
               "pr-9",
               usernameStatus === "available" ? "border-success" : "",
               usernameStatus === "taken" ? "border-destructive" : "",
@@ -98,14 +100,25 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
 
       <div className="space-y-2">
         <Label htmlFor="password">{t("step4.password")}</Label>
-        <Input
-          id="password"
-          type="password"
-          placeholder={t("step4.password.placeholder")}
-          value={data.password || ""}
-          onChange={(e) => onChange("password", e.target.value)}
-          maxLength={100}
-        />
+        <div className="relative">
+          <Input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            placeholder={t("step4.password.placeholder")}
+            value={data.password || ""}
+            onChange={(e) => onChange("password", e.target.value)}
+            maxLength={100}
+            className="pr-9"
+          />
+          <button
+            type="button"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => setShowPassword(!showPassword)}
+            tabIndex={-1}
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
         {data.password && (
           <div className="space-y-1">
             <Progress
@@ -123,14 +136,25 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
 
       <div className="space-y-2">
         <Label htmlFor="confirmPassword">{t("step4.confirmPassword")}</Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          placeholder={t("step4.confirmPassword.placeholder")}
-          value={data.confirmPassword || ""}
-          onChange={(e) => onChange("confirmPassword", e.target.value)}
-          maxLength={100}
-        />
+        <div className="relative">
+          <Input
+            id="confirmPassword"
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder={t("step4.confirmPassword.placeholder")}
+            value={data.confirmPassword || ""}
+            onChange={(e) => onChange("confirmPassword", e.target.value)}
+            maxLength={100}
+            className="pr-9"
+          />
+          <button
+            type="button"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            tabIndex={-1}
+          >
+            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
         {errors.confirmPassword && (
           <p className="text-sm text-destructive">{errors.confirmPassword}</p>
         )}

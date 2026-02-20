@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +25,7 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
   const [cepError, setCepError] = useState("");
   const [countrySearch, setCountrySearch] = useState("");
   const [showCountryList, setShowCountryList] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Auto-fill country from phone DDI
   useEffect(() => {
@@ -46,6 +47,17 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
         onChange("countryIso2", c.iso2);
       }
     }
+  }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowCountryList(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   const isBrazil = data.countryIso2 === "BR";
@@ -115,46 +127,42 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
 
   return (
     <div className="space-y-4">
-      {/* Country — FIRST */}
-      <div className="space-y-2 relative">
+      {/* Country — single field with inline search */}
+      <div className="space-y-2 relative" ref={containerRef}>
         <Label htmlFor="country">{t("step3.country")}</Label>
         <div className="relative">
-          <Input
-            id="country"
-            placeholder={t("step3.country.placeholder")}
-            value={data.country || countrySearch}
-            readOnly={!!data.country}
-            onClick={() => { if (!data.country) setShowCountryList(true); }}
-            onChange={(e) => {
-              if (!data.country) {
+          {data.country ? (
+            <>
+              <Input
+                id="country"
+                value={data.country}
+                readOnly
+                className="pr-8"
+              />
+              <button
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                onClick={clearCountry}
+                title={t("step3.country.clear")}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </>
+          ) : (
+            <Input
+              id="country"
+              placeholder={t("step3.country.placeholder")}
+              value={countrySearch}
+              onChange={(e) => {
                 setCountrySearch(e.target.value);
                 setShowCountryList(true);
-              }
-            }}
-            className="pr-8"
-          />
-          {data.country && (
-            <button
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              onClick={clearCountry}
-              title={t("step3.country.clear")}
-            >
-              <X className="h-4 w-4" />
-            </button>
+              }}
+              onFocus={() => setShowCountryList(true)}
+            />
           )}
         </div>
         {/* Country dropdown */}
-        {showCountryList && (
+        {showCountryList && !data.country && (
           <div className="absolute z-50 w-full bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto mt-1">
-            <div className="p-2 sticky top-0 bg-background border-b">
-              <Input
-                placeholder={t("step3.country.search")}
-                value={countrySearch}
-                onChange={(e) => setCountrySearch(e.target.value)}
-                autoFocus
-                className="h-8 text-sm"
-              />
-            </div>
             {filteredCountries.map((c) => (
               <button
                 key={c.iso2}
