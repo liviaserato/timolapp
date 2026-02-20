@@ -142,56 +142,59 @@ export const SponsorScreen = ({ onNext }: Props) => {
   ];
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6">
-      {/* Logo + Title inline */}
-      <div className="text-center space-y-3">
-        <div className="flex items-center justify-center gap-3">
-          <img src={timolLogo} alt="Timol" className="h-12 w-12" />
-          <h1 className="text-2xl sm:text-3xl font-bold text-primary">{t("sponsor.title")}</h1>
-        </div>
-        <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-          {t("sponsor.subtitle")}
-        </p>
-      </div>
-
-      {/* Language selector outside card */}
-      <LanguageSelector />
-
+    <div className="w-full max-w-md mx-auto">
       <Card className="shadow-lg">
-        <CardHeader className="space-y-2 pb-4">
-          <CardTitle className="text-lg">{t("sponsor.card.title")}</CardTitle>
-          <CardDescription>{t("sponsor.card.description")}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="relative">
-            <Input
-              placeholder={t("sponsor.id.placeholder")}
-              value={sponsorId}
-              onChange={(e) => { setSponsorId(e.target.value); setError(""); }}
-              onKeyDown={handleKeyDown}
-              onBlur={() => { if (sponsorId.trim()) handleSearch(); }}
-              className="pr-10"
-              maxLength={6}
-            />
-            <button
-              type="button"
-              onClick={handleSearch}
-              disabled={searching}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
-              aria-label="Search"
-            >
-              {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-            </button>
+        <CardContent className="pt-6 space-y-5">
+          {/* Logo + Title */}
+          <div className="text-center space-y-3">
+            <div className="flex items-center justify-center gap-3">
+              <img src={timolLogo} alt="Timol" className="h-12 w-12" />
+              <h1 className="text-2xl sm:text-3xl font-bold text-primary">{t("sponsor.title")}</h1>
+            </div>
+            <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+              {t("sponsor.subtitle")}
+            </p>
           </div>
-          {error && <p className="text-sm text-destructive">{error}</p>}
 
-          <div className="text-center">
-            <button
-              className="text-sm text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
-              onClick={openNoSponsor}
-            >
-              {t("sponsor.noSponsor")}
-            </button>
+          {/* Language selector */}
+          <LanguageSelector />
+
+          {/* Sponsor ID block */}
+          <div className="space-y-2">
+            <div>
+              <h3 className="text-lg font-semibold">{t("sponsor.card.title")}</h3>
+              <p className="text-sm text-muted-foreground">{t("sponsor.card.description")}</p>
+            </div>
+            <div className="relative">
+              <Input
+                placeholder={t("sponsor.id.placeholder")}
+                value={sponsorId}
+                onChange={(e) => { setSponsorId(e.target.value); setError(""); }}
+                onKeyDown={handleKeyDown}
+                onBlur={() => { if (sponsorId.trim()) handleSearch(); }}
+                className="pr-10"
+                maxLength={6}
+              />
+              <button
+                type="button"
+                onClick={handleSearch}
+                disabled={searching}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+                aria-label="Search"
+              >
+                {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+              </button>
+            </div>
+            {error && <p className="text-sm text-destructive">{error}</p>}
+
+            <div className="text-center">
+              <button
+                className="text-sm text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+                onClick={openNoSponsor}
+              >
+                {t("sponsor.noSponsor")}
+              </button>
+            </div>
           </div>
         </CardContent>
       </Card>
