@@ -69,7 +69,7 @@ const Index = () => {
               updateData(paymentInfo);
               // Simulate: PIX always goes to pending, credit randomly
               const method = paymentInfo.paymentMethod ?? "credit";
-              if (method === "pix") {
+              if (method === "pix" && wizardData.foreignerNoCpf !== "true") {
                 setScreen("paymentPending");
               } else {
                 // Test bypass: cardholder name "LIVIA" auto-approves

@@ -66,8 +66,10 @@ const PIX_CODE = "00020126580014BR.GOV.BCB.PIX0136timol-pix-key@timol.com.br5204
 
 export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
   const { t } = useLanguage();
-  const isBrazilian = (data.countryIso2 ?? "BR") === "BR";
-  const [method, setMethod] = useState<PaymentMethod>(isBrazilian ? "pix" : "credit");
+  const isBrazilAddress = (data.countryIso2 ?? "BR") === "BR";
+  const isForeigner = data.foreignerNoCpf === "true";
+  const canUsePix = !isForeigner;
+  const [method, setMethod] = useState<PaymentMethod>(canUsePix ? "pix" : "credit");
   const [installments, setInstallments] = useState("1");
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
@@ -83,8 +85,8 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
   const selectedInstallment = installmentOptions.find((o) => o.n === parseInt(installments)) ?? installmentOptions[0];
 
   const isEuro = ["AT","BE","CY","EE","FI","FR","DE","GR","IE","IT","LV","LT","LU","MT","NL","PT","SK","SI","ES"].includes(data.countryIso2 ?? "");
-  const sym = isBrazilian ? "R$" : isEuro ? "€" : "US$";
-  const locale = isBrazilian ? "pt-BR" : isEuro ? "de-DE" : "en-US";
+  const sym = isBrazilAddress ? "R$" : isEuro ? "€" : "US$";
+  const locale = isBrazilAddress ? "pt-BR" : isEuro ? "de-DE" : "en-US";
 
   const formatPrice = (v: number) => `${sym} ${v.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
@@ -162,8 +164,8 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
         </p>
       </div>
 
-      {/* Method Selection — only show for Brazilians */}
-      {isBrazilian && (
+      {/* Method Selection — only show if PIX is available */}
+      {canUsePix && (
         <div className="grid grid-cols-2 gap-3" role="tablist">
           <button
             role="tab"
@@ -197,7 +199,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
       )}
 
       {/* PIX */}
-      {method === "pix" && isBrazilian && (
+      {method === "pix" && canUsePix && (
         <Card>
           <CardContent className="pt-4 space-y-3 text-center">
             <div className="mx-auto w-40 h-40 bg-muted rounded-xl flex items-center justify-center">

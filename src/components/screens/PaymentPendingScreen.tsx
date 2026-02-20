@@ -15,10 +15,10 @@ export const PaymentPendingScreen = ({ data, onConfirmed, onChangePayment }: Pro
   const { t } = useLanguage();
   const [checking, setChecking] = useState(false);
 
-  const isBrazil = (data.countryIso2 ?? "BR") === "BR";
+  const isBrazilAddress = (data.countryIso2 ?? "BR") === "BR";
   const isEuro = ["AT","BE","CY","EE","FI","FR","DE","GR","IE","IT","LV","LT","LU","MT","NL","PT","SK","SI","ES"].includes(data.countryIso2 ?? "");
-  const sym = isBrazil ? "R$" : isEuro ? "€" : "US$";
-  const locale = isBrazil ? "pt-BR" : isEuro ? "de-DE" : "en-US";
+  const sym = isBrazilAddress ? "R$" : isEuro ? "€" : "US$";
+  const locale = isBrazilAddress ? "pt-BR" : isEuro ? "de-DE" : "en-US";
   const price = data.franchisePrice ?? 0;
   const formatPrice = (v: number) =>
     `${sym} ${v.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
