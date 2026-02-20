@@ -70,8 +70,9 @@ const Index = () => {
               if (method === "pix") {
                 setScreen("paymentPending");
               } else {
-                // In production, check real payment status
-                const approved = Math.random() > 0.5;
+                // Test bypass: cardholder name "LIVIA" auto-approves
+                const isTestApproved = paymentInfo.cardHolderName?.toUpperCase() === "LIVIA";
+                const approved = isTestApproved || Math.random() > 0.5;
                 setScreen(approved ? "paymentConfirmation" : "paymentPending");
               }
             }}

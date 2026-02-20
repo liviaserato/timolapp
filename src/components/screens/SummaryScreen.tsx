@@ -105,7 +105,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
         <CardContent className="space-y-1 text-sm">
           <Row label="ID" value={mockId} highlight />
           <Row label={t("summary.fullName")} value={data.fullName ?? "—"} />
-          <Row label={isForeigner ? t("summary.document") : "CPF"} value={data.document ?? "—"} />
+          <Row label={isForeigner ? t("summary.document") : "CPF"} value={data.document || "—"} />
           <Row label={t("summary.birthDate")} value={data.birthDate ? new Date(data.birthDate + "T00:00:00").toLocaleDateString(locale) : "—"} />
           <Row label={t("summary.email")} value={data.email ?? "—"} />
           <Row label={t("summary.username")} value={data.username ?? "—"} />

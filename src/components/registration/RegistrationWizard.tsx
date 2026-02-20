@@ -71,12 +71,10 @@ export const RegistrationWizard = ({ initialData = {}, onComplete }: Props) => {
           (today < new Date(today.getFullYear(), birth.getMonth(), birth.getDate()) ? 1 : 0);
         if (age < 18) newErrors.birthDate = t("validation.ageMin18");
       }
-      if (!isForeigner) {
-        if (!data.document?.trim()) {
-          newErrors.document = req;
-        } else if (!validateCPF(data.document)) {
-          newErrors.document = t("validation.cpfInvalid");
-        }
+      if (!data.document?.trim()) {
+        newErrors.document = req;
+      } else if (!isForeigner && !validateCPF(data.document)) {
+        newErrors.document = t("validation.cpfInvalid");
       }
       if (!data.gender) newErrors.gender = req;
     } else if (step === 2) {
@@ -152,6 +150,7 @@ export const RegistrationWizard = ({ initialData = {}, onComplete }: Props) => {
         fullName: data.fullName,
         birthDate: data.birthDate,
         document: data.document,
+        foreignerNoCpf: data.foreignerNoCpf,
         gender: data.gender,
         email: data.email,
         phone: data.phone,
