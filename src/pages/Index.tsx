@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LanguageProvider } from "@/i18n/LanguageContext";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { SponsorScreen } from "@/components/screens/SponsorScreen";
 import { RegistrationWizard } from "@/components/registration/RegistrationWizard";
 import { FranchiseScreen } from "@/components/screens/FranchiseScreen";
@@ -75,13 +75,11 @@ const Index = () => {
   };
 
   return (
-    <LanguageProvider>
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary/10">
-        <main className="flex min-h-screen items-center justify-center p-4 sm:p-6">
-          {renderScreen()}
-        </main>
-      </div>
-    </LanguageProvider>
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary/10">
+      <main className="flex min-h-screen items-center justify-center p-4 sm:p-6">
+        {renderScreen()}
+      </main>
+    </div>
   );
 };
 
