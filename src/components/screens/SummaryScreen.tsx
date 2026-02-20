@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { WizardData } from "@/types/wizard";
-import { ChevronLeft, User, MapPin, Shield, Gem, Crown, Star, Ticket, Loader2 } from "lucide-react";
+import { ChevronLeft, User, MapPin, Shield, Gem, Crown, Star, Ticket, Loader2, X } from "lucide-react";
 
 const franchiseIcons: Record<string, React.ReactNode> = {
   bronze: <Shield className="h-4 w-4" />,
@@ -43,7 +43,6 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
 
   const mockId = data.userId ?? "123456";
 
-  // Format price based on currency
   const price = data.franchisePrice ?? 0;
   const isBrazil = (data.countryIso2 ?? "BR") === "BR";
   const isEuro = ["AT","BE","CY","EE","FI","FR","DE","GR","IE","IT","LV","LT","LU","MT","NL","PT","SK","SI","ES"].includes(data.countryIso2 ?? "");
@@ -56,11 +55,13 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
   const handleCouponCheck = () => {
     if (!couponCode.trim()) return;
     setCouponStatus("checking");
-    // Simulated coupon validation
     setTimeout(() => {
       const code = couponCode.trim().toUpperCase();
       if (code === "TIMOL10") {
         setCouponDiscount(price * 0.1);
+        setCouponStatus("valid");
+      } else if (code === "TESTE") {
+        setCouponDiscount(10);
         setCouponStatus("valid");
       } else if (code === "EXPIRED") {
         setCouponStatus("expired");
@@ -68,6 +69,12 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
         setCouponStatus("notfound");
       }
     }, 1000);
+  };
+
+  const handleCouponClear = () => {
+    setCouponCode("");
+    setCouponStatus("idle");
+    setCouponDiscount(0);
   };
 
   const isForeigner = data.foreignerNoCpf === "true";
@@ -80,7 +87,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
         <p className="text-muted-foreground text-sm">{t("summary.subtitle")}</p>
       </div>
 
-      {/* Personal Data */}
+      {/* Personal Data — order: ID, Nome, CPF, Nascimento, Email, Usuário */}
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
@@ -96,17 +103,16 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
           </div>
         </CardHeader>
         <CardContent className="space-y-1 text-sm">
-          <Row label={t("summary.fullName")} value={data.fullName ?? "—"} />
           <Row label="ID" value={mockId} highlight />
-          <Row label={t("summary.username")} value={data.username ?? "—"} />
+          <Row label={t("summary.fullName")} value={data.fullName ?? "—"} />
           <Row label={isForeigner ? t("summary.document") : "CPF"} value={data.document ?? "—"} />
           <Row label={t("summary.birthDate")} value={data.birthDate ? new Date(data.birthDate + "T00:00:00").toLocaleDateString(locale) : "—"} />
-          <Row label={t("summary.sponsor")} value={`${data.sponsorName ?? "—"} (${data.sponsorId ?? "—"})`} />
           <Row label={t("summary.email")} value={data.email ?? "—"} />
+          <Row label={t("summary.username")} value={data.username ?? "—"} />
         </CardContent>
       </Card>
 
-      {/* Address */}
+      {/* Address — order: logradouro, bairro, cidade/estado, CEP, país */}
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
@@ -125,12 +131,12 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
           <Row label={t("summary.addressLine")} value={`${data.street ?? ""}${data.number ? `, ${data.number}` : ""}${data.complement ? ` - ${data.complement}` : ""}`} />
           {data.neighborhood && <Row label={t("summary.neighborhood")} value={data.neighborhood} />}
           <Row label={t("summary.cityState")} value={`${data.city ?? "—"}, ${data.state ?? "—"}`} />
-          <Row label={t("summary.country")} value={data.country ?? "—"} />
           <Row label={t("summary.zipCode")} value={data.zipCode ?? "—"} />
+          <Row label={t("summary.country")} value={data.country ?? "—"} />
         </CardContent>
       </Card>
 
-      {/* Franchise */}
+      {/* Franchise — order: patrocinador, plano, valor */}
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
@@ -146,6 +152,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
           </div>
         </CardHeader>
         <CardContent className="space-y-1 text-sm">
+          <Row label={t("summary.sponsor")} value={`${data.sponsorName ?? "—"} (${data.sponsorId ?? "—"})`} />
           <Row
             label={t("summary.franchiseChosen")}
             value={
@@ -194,7 +201,17 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
                 maxLength={20}
                 className="pr-10"
               />
-              <Ticket className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              {couponCode ? (
+                <button
+                  type="button"
+                  onClick={handleCouponClear}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              ) : (
+                <Ticket className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              )}
             </div>
             <Button variant="outline" size="sm" onClick={handleCouponCheck} disabled={couponStatus === "checking"}>
               {couponStatus === "checking" ? <Loader2 className="h-4 w-4 animate-spin" /> : t("summary.coupon.apply")}
@@ -215,16 +232,17 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
         </CardContent>
       </Card>
 
-      {/* Agreements */}
+      {/* Agreements — vertically centered checkboxes */}
       <Card>
         <CardContent className="pt-4 space-y-3">
-          <div className="flex items-start gap-3">
+          <div className="flex items-center gap-3">
             <Checkbox
               id="agreeRules"
               checked={agreeRules}
               onCheckedChange={(v) => { setAgreeRules(!!v); setErrors([]); }}
+              className="mt-0"
             />
-            <Label htmlFor="agreeRules" className="text-sm leading-relaxed cursor-pointer">
+            <Label htmlFor="agreeRules" className="text-sm leading-snug cursor-pointer">
               {t("summary.agreeRules")}
               <a
                 href="https://timolsystem.com.br/contrato"
@@ -238,13 +256,14 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
               {t("summary.agreeRules.suffix")}
             </Label>
           </div>
-          <div className="flex items-start gap-3">
+          <div className="flex items-center gap-3">
             <Checkbox
               id="agreeCommunications"
               checked={agreeCommunications}
               onCheckedChange={(v) => setAgreeCommunications(!!v)}
+              className="mt-0"
             />
-            <Label htmlFor="agreeCommunications" className="text-sm leading-relaxed cursor-pointer">
+            <Label htmlFor="agreeCommunications" className="text-sm leading-snug cursor-pointer">
               {t("summary.agreeCommunications")}
             </Label>
           </div>

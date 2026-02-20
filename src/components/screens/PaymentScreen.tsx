@@ -102,7 +102,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
     const e: Record<string, string> = {};
     if (method === "credit") {
       if (cardNumber.replace(/\s/g, "").length < 16) e.cardNumber = t("payment.error.cardNumber");
-      if (!cardName.trim()) e.cardName = t("payment.error.cardName");
+      if (!cardName.trim()) e.cardName = t("payment.error.cardHolder");
       if (cardExpiry.length < 5) e.cardExpiry = t("payment.error.cardExpiry");
       if (cardCvv.length < 3) e.cardCvv = t("payment.error.cardCvv");
     }
@@ -236,9 +236,9 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
             </div>
 
             <div className="space-y-1">
-              <Label>{t("payment.card.name")}</Label>
+              <Label>{t("payment.card.holder")}</Label>
               <Input
-                placeholder={t("payment.card.name.placeholder")}
+                placeholder={t("payment.card.holder.placeholder")}
                 value={cardName}
                 onChange={(e) => setCardName(e.target.value.toUpperCase())}
                 maxLength={60}

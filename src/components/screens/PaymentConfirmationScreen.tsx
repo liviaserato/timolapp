@@ -1,7 +1,7 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { WizardData } from "@/types/wizard";
-import { CheckCircle2, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Props {
@@ -21,7 +21,6 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
 
   const franchiseName = data.franchise ? t(`franchise.${data.franchise}`) : "—";
 
-  // Payment summary text
   let paymentSummary = "";
   if (data.paymentMethod === "pix") {
     paymentSummary = "PIX";
@@ -30,24 +29,22 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
     const installValue = n > 5
       ? (price * Math.pow(1.03, n)) / n
       : price / n;
-    paymentSummary = `Cartão de crédito final ${data.cardLast4} — ${n === 1 ? "à vista" : `${n}× ${formatPrice(installValue)}`}`;
+    paymentSummary = `Cartão final ${data.cardLast4} — ${n === 1 ? "à vista" : `${n}× ${formatPrice(installValue)}`}`;
   }
 
   return (
     <div className="w-full max-w-md mx-auto">
       <Card className="shadow-xl text-center">
         <CardContent className="flex flex-col items-center gap-5 py-10 px-6">
-          <div className="h-20 w-20 rounded-full bg-green-100 flex items-center justify-center">
-            <CheckCircle2 className="h-12 w-12 text-green-600" />
+          {/* Logo left of title */}
+          <div className="flex items-center gap-3">
+            <img src="/favicon.svg" alt="Timol" className="h-10 w-10 flex-shrink-0" />
+            <h2 className="text-2xl font-bold text-primary">{t("paymentDone.title")}</h2>
           </div>
 
-          <div className="space-y-2">
-            <img src="/favicon.svg" alt="Timol" className="h-10 w-10 mx-auto" />
-            <h2 className="text-2xl font-bold text-primary">{t("paymentDone.title")}</h2>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
-              {t("paymentDone.welcome")}
-            </p>
-          </div>
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
+            {t("paymentDone.welcome")}
+          </p>
 
           <div className="w-full bg-primary/5 rounded-xl p-4 space-y-2 text-sm text-left">
             <DataRow label={t("paymentDone.yourId")} value={<span className="font-bold text-primary text-base">{mockId}</span>} />
