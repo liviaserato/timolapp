@@ -68,7 +68,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
   const { t } = useLanguage();
   const isBrazilAddress = (data.countryIso2 ?? "BR") === "BR";
   const isForeigner = data.foreignerNoCpf === "true";
-  const canUsePix = !isForeigner;
+  const canUsePix = !isForeigner && isBrazilAddress;
   const [method, setMethod] = useState<PaymentMethod>(canUsePix ? "pix" : "credit");
   const [installments, setInstallments] = useState("1");
   const [cardNumber, setCardNumber] = useState("");
