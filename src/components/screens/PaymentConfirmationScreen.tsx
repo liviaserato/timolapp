@@ -48,7 +48,7 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
             <h2 className="text-2xl font-bold text-primary">{t("paymentDone.title")}</h2>
           </div>
 
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto whitespace-pre-line">
             {t("paymentDone.welcome")}
           </p>
 
@@ -61,13 +61,10 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
             )}
           </div>
 
+
           <div className="text-sm text-muted-foreground leading-relaxed space-y-2 text-center">
             <p>{t("paymentDone.accessNow")}</p>
             <p>{t("paymentDone.sponsorContact")}</p>
-          </div>
-
-          <div className="text-sm text-muted-foreground leading-relaxed space-y-1 text-center">
-            <p>{t("paymentDone.instructions")}</p>
           </div>
 
           <Button

@@ -15,12 +15,13 @@ const TOTAL_STEPS = 4;
 
 interface Props {
   initialData?: WizardData;
+  initialStep?: number;
   onComplete: (data: WizardData) => void;
 }
 
-export const RegistrationWizard = ({ initialData = {}, onComplete }: Props) => {
+export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComplete }: Props) => {
   const { t, language } = useLanguage();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(initialStep);
   const [data, setData] = useState<Record<string, string>>({
     fullName: initialData.fullName ?? "",
     birthDate: initialData.birthDate ?? "",
@@ -115,34 +116,39 @@ export const RegistrationWizard = ({ initialData = {}, onComplete }: Props) => {
     setApiError("");
 
     try {
-      const { error: signUpError, data: authData } = await supabase.auth.signUp({
-        email: data.email.trim(),
-        password: data.password,
-        options: { emailRedirectTo: window.location.origin },
-      });
+      // If user already registered (editing from summary), skip signUp
+      const alreadyRegistered = !!initialData.userId;
+      let userId: string | undefined;
 
-      if (signUpError) throw signUpError;
+      if (!alreadyRegistered) {
+        const { error: signUpError, data: authData } = await supabase.auth.signUp({
+          email: data.email.trim(),
+          password: data.password,
+          options: { emailRedirectTo: window.location.origin },
+        });
 
-      const userId = authData?.user?.id;
+        if (signUpError) throw signUpError;
+        userId = authData?.user?.id;
 
-      if (userId) {
-        await supabase.from("profiles").update({
-          full_name: data.fullName?.trim(),
-          birth_date: data.birthDate || null,
-          document: data.document?.trim(),
-          gender: data.gender,
-          phone: data.phone?.trim(),
-          zip_code: data.zipCode?.trim(),
-          street: data.street?.trim(),
-          number: data.number?.trim(),
-          complement: data.complement?.trim() || null,
-          neighborhood: data.neighborhood?.trim() || null,
-          city: data.city?.trim(),
-          state: data.state?.trim(),
-          country: data.country?.trim(),
-          username: data.username?.trim(),
-          preferred_language: language,
-        }).eq("user_id", userId);
+        if (userId) {
+          await supabase.from("profiles").update({
+            full_name: data.fullName?.trim(),
+            birth_date: data.birthDate || null,
+            document: data.document?.trim(),
+            gender: data.gender,
+            phone: data.phone?.trim(),
+            zip_code: data.zipCode?.trim(),
+            street: data.street?.trim(),
+            number: data.number?.trim(),
+            complement: data.complement?.trim() || null,
+            neighborhood: data.neighborhood?.trim() || null,
+            city: data.city?.trim(),
+            state: data.state?.trim(),
+            country: data.country?.trim(),
+            username: data.username?.trim(),
+            preferred_language: language,
+          }).eq("user_id", userId);
+        }
       }
 
       onComplete({
@@ -164,7 +170,7 @@ export const RegistrationWizard = ({ initialData = {}, onComplete }: Props) => {
         city: data.city,
         state: data.state,
         username: data.username,
-        userId: userId ? String(Math.floor(100000 + Math.random() * 900000)) : undefined,
+        userId: initialData.userId ?? (userId ? String(Math.floor(100000 + Math.random() * 900000)) : undefined),
       });
     } catch (err: unknown) {
       const e = err as Error;

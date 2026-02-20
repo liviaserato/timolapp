@@ -28,9 +28,11 @@ const Index = () => {
           />
         );
       case "registration":
+      case "registrationAddress":
         return (
           <RegistrationWizard
             initialData={wizardData}
+            initialStep={screen === "registrationAddress" ? 3 : 1}
             onComplete={(data) => {
               updateData(data);
               setScreen("franchise");
@@ -55,7 +57,7 @@ const Index = () => {
             onConfirm={() => setScreen("payment")}
             onBack={() => setScreen("franchise")}
             onEditPersonal={() => setScreen("registration")}
-            onEditAddress={() => setScreen("registration")}
+            onEditAddress={() => setScreen("registrationAddress")}
             onChangeFranchise={() => setScreen("franchise")}
           />
         );
