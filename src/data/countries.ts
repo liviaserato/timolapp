@@ -5,6 +5,8 @@ export interface Country {
   iso2: string;
   dialCode: string;
   flag: string;
+  areaCodes?: string[];
+  priority?: number; // lower = higher priority when multiple countries share dialCode
 }
 
 export const countries: Country[] = [
@@ -40,7 +42,7 @@ export const countries: Country[] = [
   { name: "Cabo Verde", nameEn: "Cape Verde", nameEs: "Cabo Verde", iso2: "CV", dialCode: "+238", flag: "🇨🇻" },
   { name: "Camarões", nameEn: "Cameroon", nameEs: "Camerún", iso2: "CM", dialCode: "+237", flag: "🇨🇲" },
   { name: "Camboja", nameEn: "Cambodia", nameEs: "Camboya", iso2: "KH", dialCode: "+855", flag: "🇰🇭" },
-  { name: "Canadá", nameEn: "Canada", nameEs: "Canadá", iso2: "CA", dialCode: "+1", flag: "🇨🇦" },
+  { name: "Canadá", nameEn: "Canada", nameEs: "Canadá", iso2: "CA", dialCode: "+1", flag: "🇨🇦", priority: 1 },
   { name: "Catar", nameEn: "Qatar", nameEs: "Catar", iso2: "QA", dialCode: "+974", flag: "🇶🇦" },
   { name: "Cazaquistão", nameEn: "Kazakhstan", nameEs: "Kazajistán", iso2: "KZ", dialCode: "+7", flag: "🇰🇿" },
   { name: "Chade", nameEn: "Chad", nameEs: "Chad", iso2: "TD", dialCode: "+235", flag: "🇹🇩" },
@@ -67,7 +69,7 @@ export const countries: Country[] = [
   { name: "Eslováquia", nameEn: "Slovakia", nameEs: "Eslovaquia", iso2: "SK", dialCode: "+421", flag: "🇸🇰" },
   { name: "Eslovênia", nameEn: "Slovenia", nameEs: "Eslovenia", iso2: "SI", dialCode: "+386", flag: "🇸🇮" },
   { name: "Espanha", nameEn: "Spain", nameEs: "España", iso2: "ES", dialCode: "+34", flag: "🇪🇸" },
-  { name: "Estados Unidos", nameEn: "United States", nameEs: "Estados Unidos", iso2: "US", dialCode: "+1", flag: "🇺🇸" },
+  { name: "Estados Unidos", nameEn: "United States", nameEs: "Estados Unidos", iso2: "US", dialCode: "+1", flag: "🇺🇸", priority: 0 },
   { name: "Estônia", nameEn: "Estonia", nameEs: "Estonia", iso2: "EE", dialCode: "+372", flag: "🇪🇪" },
   { name: "Etiópia", nameEn: "Ethiopia", nameEs: "Etiopía", iso2: "ET", dialCode: "+251", flag: "🇪🇹" },
   { name: "Fiji", nameEn: "Fiji", nameEs: "Fiyi", iso2: "FJ", dialCode: "+679", flag: "🇫🇯" },
@@ -144,6 +146,8 @@ export const countries: Country[] = [
   { name: "Peru", nameEn: "Peru", nameEs: "Perú", iso2: "PE", dialCode: "+51", flag: "🇵🇪" },
   { name: "Polônia", nameEn: "Poland", nameEs: "Polonia", iso2: "PL", dialCode: "+48", flag: "🇵🇱" },
   { name: "Portugal", nameEn: "Portugal", nameEs: "Portugal", iso2: "PT", dialCode: "+351", flag: "🇵🇹" },
+  // NANP territories with area codes
+  { name: "Porto Rico", nameEn: "Puerto Rico", nameEs: "Puerto Rico", iso2: "PR", dialCode: "+1", flag: "🇵🇷", areaCodes: ["787", "939"], priority: 2 },
   { name: "Quênia", nameEn: "Kenya", nameEs: "Kenia", iso2: "KE", dialCode: "+254", flag: "🇰🇪" },
   { name: "Quirguistão", nameEn: "Kyrgyzstan", nameEs: "Kirguistán", iso2: "KG", dialCode: "+996", flag: "🇰🇬" },
   { name: "Reino Unido", nameEn: "United Kingdom", nameEs: "Reino Unido", iso2: "GB", dialCode: "+44", flag: "🇬🇧" },
@@ -153,6 +157,8 @@ export const countries: Country[] = [
   { name: "Romênia", nameEn: "Romania", nameEs: "Rumanía", iso2: "RO", dialCode: "+40", flag: "🇷🇴" },
   { name: "Ruanda", nameEn: "Rwanda", nameEs: "Ruanda", iso2: "RW", dialCode: "+250", flag: "🇷🇼" },
   { name: "Rússia", nameEn: "Russia", nameEs: "Rusia", iso2: "RU", dialCode: "+7", flag: "🇷🇺" },
+  // NANP territory
+  { name: "Samoa Americana", nameEn: "American Samoa", nameEs: "Samoa Americana", iso2: "AS", dialCode: "+1", flag: "🇦🇸", areaCodes: ["684"], priority: 2 },
   { name: "São Tomé e Príncipe", nameEn: "São Tomé and Príncipe", nameEs: "Santo Tomé y Príncipe", iso2: "ST", dialCode: "+239", flag: "🇸🇹" },
   { name: "Samoa", nameEn: "Samoa", nameEs: "Samoa", iso2: "WS", dialCode: "+685", flag: "🇼🇸" },
   { name: "Senegal", nameEn: "Senegal", nameEs: "Senegal", iso2: "SN", dialCode: "+221", flag: "🇸🇳" },
@@ -183,17 +189,39 @@ export const countries: Country[] = [
   { name: "Vanuatu", nameEn: "Vanuatu", nameEs: "Vanuatu", iso2: "VU", dialCode: "+678", flag: "🇻🇺" },
   { name: "Venezuela", nameEn: "Venezuela", nameEs: "Venezuela", iso2: "VE", dialCode: "+58", flag: "🇻🇪" },
   { name: "Vietnã", nameEn: "Vietnam", nameEs: "Vietnam", iso2: "VN", dialCode: "+84", flag: "🇻🇳" },
+  // NANP territories
+  { name: "Ilhas Virgens Americanas", nameEn: "U.S. Virgin Islands", nameEs: "Islas Vírgenes de EE.UU.", iso2: "VI", dialCode: "+1", flag: "🇻🇮", areaCodes: ["340"], priority: 2 },
+  { name: "Guam", nameEn: "Guam", nameEs: "Guam", iso2: "GU", dialCode: "+1", flag: "🇬🇺", areaCodes: ["671"], priority: 2 },
+  { name: "Ilhas Marianas do Norte", nameEn: "Northern Mariana Islands", nameEs: "Islas Marianas del Norte", iso2: "MP", dialCode: "+1", flag: "🇲🇵", areaCodes: ["670"], priority: 2 },
   { name: "Zimbábue", nameEn: "Zimbabwe", nameEs: "Zimbabue", iso2: "ZW", dialCode: "+263", flag: "🇿🇼" },
 ];
 
-/** Returns country matching a dial code prefix from phone string like "+55..." */
+/**
+ * Returns country matching a phone string like "+55..." or "+1787...".
+ * For NANP (+1) numbers, checks area codes (first 3 digits after country code)
+ * to identify territories. Defaults to US when only "+1" with no area code match.
+ */
 export function getCountryByDialCode(phone: string): Country | undefined {
   const digits = phone.replace(/\D/g, "");
-  // Try longest match first (up to 4 digits)
+
+  // Special handling for NANP (+1): check 3-digit area codes first
+  if (digits.startsWith("1") && digits.length >= 4) {
+    const areaCode = digits.slice(1, 4);
+    const territory = countries.find(
+      (c) => c.dialCode === "+1" && c.areaCodes?.includes(areaCode)
+    );
+    if (territory) return territory;
+  }
+
+  // Try longest match first (up to 4 digits) for non-NANP
   for (let len = 4; len >= 1; len--) {
     const prefix = "+" + digits.slice(0, len);
-    const found = countries.find((c) => c.dialCode === prefix);
-    if (found) return found;
+    const matches = countries.filter((c) => c.dialCode === prefix);
+    if (matches.length > 0) {
+      // Return highest priority (lowest number); default priority = 99
+      matches.sort((a, b) => (a.priority ?? 99) - (b.priority ?? 99));
+      return matches[0];
+    }
   }
   return undefined;
 }

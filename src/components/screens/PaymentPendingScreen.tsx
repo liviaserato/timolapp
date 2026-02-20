@@ -25,6 +25,7 @@ export const PaymentPendingScreen = ({ data, onConfirmed, onChangePayment }: Pro
 
   const franchiseName = data.franchise ? t(`franchise.${data.franchise}`) : "—";
   const isPix = data.paymentMethod === "pix";
+  const isForeigner = data.foreignerNoCpf === "true";
 
   const paymentLabel = isPix
     ? "PIX"
@@ -34,11 +35,8 @@ export const PaymentPendingScreen = ({ data, onConfirmed, onChangePayment }: Pro
 
   const handleRefresh = () => {
     setChecking(true);
-    // Simulate checking payment status — replace with real API call
     setTimeout(() => {
       setChecking(false);
-      // For now always stays pending. In production, call your API and
-      // if confirmed, call onConfirmed() to redirect.
     }, 2000);
   };
 
@@ -59,9 +57,9 @@ export const PaymentPendingScreen = ({ data, onConfirmed, onChangePayment }: Pro
             </span>
           </div>
 
-          {/* Message based on payment method */}
+          {/* Message based on payment method and foreigner status */}
           <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
-            {isPix ? (
+            {isPix && !isForeigner ? (
               <>
                 <p>{t("paymentPending.pix.message")}</p>
                 <p>{t("paymentPending.pix.hint")}</p>
@@ -70,7 +68,7 @@ export const PaymentPendingScreen = ({ data, onConfirmed, onChangePayment }: Pro
               <>
                 <p>{t("paymentPending.card.message")}</p>
                 <p>{t("paymentPending.card.reasons")}</p>
-                <p>{t("paymentPending.card.hint")}</p>
+                <p>{isForeigner ? t("paymentPending.card.hint.foreigner") : t("paymentPending.card.hint")}</p>
               </>
             )}
           </div>

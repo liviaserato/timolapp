@@ -132,7 +132,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "summary.personal": "Dados Pessoais",
     "summary.fullName": "Nome",
     "summary.username": "Usuário",
-    "summary.document": "Documento",
+    "summary.document": "Documento / Passaporte",
     "summary.birthDate": "Nascimento",
     "summary.sponsor": "Patrocinador",
     "summary.email": "E-mail",
@@ -195,9 +195,13 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.franchise": "Franquia",
     "paymentDone.status": "Status",
     "paymentDone.active": "Ativa ✓",
+    "paymentDone.paymentLabel": "Pagamento",
+    "paymentDone.cardEnd": "Cartão final",
+    "paymentDone.inFull": "à vista",
+    "paymentDone.accessNow": "Você já pode acessar o TimolSystem! Sua franquia está ativa e pronta para uso.",
+    "paymentDone.sponsorContact": "Nos próximos dias, seu patrocinador ou um atendente da Timol entrará em contato para acompanhar o início da sua jornada.",
     "paymentDone.instructions": "Para acessar seu escritório digital, acesse:",
     "paymentDone.emailNote": "Verifique seu e-mail com as instruções de primeiro acesso.",
-    "paymentDone.firstAccess": "Em caso de dúvidas, entre em contato com seu patrocinador.",
 
     // Payment Pending
     "paymentPending.title": "Pagamento Pendente",
@@ -213,6 +217,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentPending.card.message": "Não foi possível confirmar o pagamento e a transação está como pendente.",
     "paymentPending.card.reasons": "Isso pode acontecer por análise do banco, limite insuficiente ou validações de segurança.",
     "paymentPending.card.hint": "Você pode tentar novamente, usar outro cartão ou escolher PIX. Assim que o pagamento for confirmado, você receberá um e-mail de confirmação.",
+    "paymentPending.card.hint.foreigner": "Você pode tentar novamente ou usar outro cartão. Assim que o pagamento for confirmado, você receberá um e-mail de confirmação.",
 
     // Validation
     "validation.required": "Campo obrigatório",
@@ -356,7 +361,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "summary.personal": "Personal Details",
     "summary.fullName": "Name",
     "summary.username": "Username",
-    "summary.document": "Document",
+    "summary.document": "Document / Passport",
     "summary.birthDate": "Date of birth",
     "summary.sponsor": "Sponsor",
     "summary.email": "Email",
@@ -417,9 +422,13 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.franchise": "Franchise",
     "paymentDone.status": "Status",
     "paymentDone.active": "Active ✓",
+    "paymentDone.paymentLabel": "Payment",
+    "paymentDone.cardEnd": "Card ending",
+    "paymentDone.inFull": "in full",
+    "paymentDone.accessNow": "You can now access TimolSystem! Your franchise is active and ready to use.",
+    "paymentDone.sponsorContact": "In the coming days, your sponsor or a Timol representative will reach out to support you as you begin your journey.",
     "paymentDone.instructions": "To access your digital office, visit:",
     "paymentDone.emailNote": "Also check your email for first access instructions.",
-    "paymentDone.firstAccess": "If you have questions, contact your sponsor.",
 
     // Payment Pending
     "paymentPending.title": "Payment Pending",
@@ -435,6 +444,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentPending.card.message": "We were unable to confirm the payment and the transaction is pending.",
     "paymentPending.card.reasons": "This may happen due to bank analysis, insufficient limit, or security checks.",
     "paymentPending.card.hint": "You can try again, use another card, or choose PIX. Once the payment is confirmed, you will receive a confirmation email.",
+    "paymentPending.card.hint.foreigner": "You can try again or use another card. Once the payment is confirmed, you will receive a confirmation email.",
 
     "validation.required": "Required field",
     "validation.email": "Invalid email",
@@ -575,7 +585,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "summary.personal": "Datos Personales",
     "summary.fullName": "Nombre",
     "summary.username": "Usuario",
-    "summary.document": "Documento",
+    "summary.document": "Documento / Pasaporte",
     "summary.birthDate": "Nacimiento",
     "summary.sponsor": "Patrocinador",
     "summary.email": "Correo",
@@ -636,9 +646,13 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.franchise": "Franquicia",
     "paymentDone.status": "Estado",
     "paymentDone.active": "Activa ✓",
+    "paymentDone.paymentLabel": "Pago",
+    "paymentDone.cardEnd": "Tarjeta final",
+    "paymentDone.inFull": "al contado",
+    "paymentDone.accessNow": "¡Ya puedes acceder a TimolSystem! Tu franquicia está activa y lista para usar.",
+    "paymentDone.sponsorContact": "En los próximos días, tu patrocinador o un representante de Timol se pondrá en contacto para acompañarte en el inicio de tu jornada.",
     "paymentDone.instructions": "Para acceder a su oficina digital, visite:",
     "paymentDone.emailNote": "También revise su correo con las instrucciones de primer acceso.",
-    "paymentDone.firstAccess": "En caso de dudas, contacte a su patrocinador.",
 
     // Payment Pending
     "paymentPending.title": "Pago Pendiente",
@@ -654,6 +668,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentPending.card.message": "No fue posible confirmar el pago y la transacción está pendiente.",
     "paymentPending.card.reasons": "Esto puede ocurrir por análisis del banco, límite insuficiente o validaciones de seguridad.",
     "paymentPending.card.hint": "Puedes intentar nuevamente, usar otra tarjeta o elegir PIX. Cuando el pago se confirme, recibirás un correo de confirmación.",
+    "paymentPending.card.hint.foreigner": "Puedes intentar nuevamente o usar otra tarjeta. Cuando el pago se confirme, recibirás un correo de confirmación.",
 
     "validation.required": "Campo obligatorio",
     "validation.email": "Correo inválido",
