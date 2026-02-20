@@ -21,6 +21,7 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
 
   const franchiseName = data.franchise ? t(`franchise.${data.franchise}`) : "—";
 
+  // Build i18n payment summary
   let paymentSummary = "";
   if (data.paymentMethod === "pix") {
     paymentSummary = "PIX";
@@ -29,7 +30,11 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
     const installValue = n > 5
       ? (price * Math.pow(1.03, n)) / n
       : price / n;
-    paymentSummary = `Cartão final ${data.cardLast4} — ${n === 1 ? "à vista" : `${n}× ${formatPrice(installValue)}`}`;
+    const cardEnd = `${t("paymentDone.cardEnd")} ${data.cardLast4}`;
+    const installmentText = n === 1
+      ? t("paymentDone.inFull")
+      : `${n}× ${formatPrice(installValue)}`;
+    paymentSummary = `${cardEnd} — ${installmentText}`;
   }
 
   return (
@@ -51,8 +56,13 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
             <DataRow label={t("paymentDone.franchise")} value={<span className="font-semibold">{franchiseName}</span>} />
             <DataRow label={t("paymentDone.status")} value={<span className="font-semibold text-green-600">{t("paymentDone.active")}</span>} />
             {paymentSummary && (
-              <DataRow label="Pagamento" value={<span className="text-xs text-muted-foreground">{paymentSummary}</span>} />
+              <DataRow label={t("paymentDone.paymentLabel")} value={<span className="text-xs text-muted-foreground">{paymentSummary}</span>} />
             )}
+          </div>
+
+          <div className="text-sm text-muted-foreground leading-relaxed space-y-2 text-center">
+            <p>{t("paymentDone.accessNow")}</p>
+            <p>{t("paymentDone.sponsorContact")}</p>
           </div>
 
           <div className="text-sm text-muted-foreground leading-relaxed space-y-1 text-center">
@@ -69,7 +79,6 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
 
           <div className="text-xs text-muted-foreground text-center space-y-1">
             <p>{t("paymentDone.emailNote")}</p>
-            <p>{t("paymentDone.firstAccess")}</p>
           </div>
         </CardContent>
       </Card>
