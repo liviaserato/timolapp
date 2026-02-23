@@ -20,7 +20,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.title": "Bem-vindo à Timol",
     "sponsor.subtitle": "Para adquirir uma franquia Timol é necessário ser convidado por um franqueado, que se tornará seu patrocinador.",
     "sponsor.card.title": "Quem te indicou?",
-    "sponsor.card.description": "Informe o Id do seu Patrocinador",
+    "sponsor.card.description": "Informe o ID do seu Patrocinador",
     "sponsor.id.placeholder": "Digite o ID",
     "sponsor.noSponsor": "Ainda não tenho patrocinador",
     "sponsor.noSponsorBox.title": "Vamos entrar em contato com você",
@@ -48,6 +48,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.confirm.warning.title": "Atenção!",
     "sponsor.confirm.warning.text": "Esta informação não poderá ser alterada após a confirmação.",
     "sponsor.confirm.confirm": "Confirmar e Continuar",
+    "sponsor.confirm.suggestAnother": "Sugerir outro patrocinador",
     "sponsor.error.empty": "Informe o ID do patrocinador",
     "sponsor.error.notFound": "Patrocinador não encontrado. Verifique o ID e tente novamente.",
 
@@ -287,6 +288,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.confirm.warning.title": "Attention!",
     "sponsor.confirm.warning.text": "This information cannot be changed after confirmation.",
     "sponsor.confirm.confirm": "Confirm and Continue",
+    "sponsor.confirm.suggestAnother": "Suggest another sponsor",
     "sponsor.error.empty": "Please enter the sponsor's ID",
     "sponsor.error.notFound": "Sponsor not found. Check the ID and try again.",
 
@@ -515,6 +517,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.confirm.warning.title": "¡Atención!",
     "sponsor.confirm.warning.text": "Esta información no podrá ser modificada tras la confirmación.",
     "sponsor.confirm.confirm": "Confirmar y Continuar",
+    "sponsor.confirm.suggestAnother": "Sugerir otro patrocinador",
     "sponsor.error.empty": "Ingresa el ID del patrocinador",
     "sponsor.error.notFound": "Patrocinador no encontrado. Verifica el ID e intenta nuevamente.",
 
