@@ -29,7 +29,7 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
     paymentLine1 = "PIX";
   } else if (data.paymentMethod === "credit" && data.cardLast4) {
     const n = data.cardInstallments ?? 1;
-    paymentLine1 = `${t("paymentDone.cardEnd")} ${data.cardLast4}`;
+    paymentLine1 = `${t("paymentPending.card")} •••• ${data.cardLast4}`;
     if (n === 1) {
       paymentLine2 = t("paymentDone.inFull");
     } else {

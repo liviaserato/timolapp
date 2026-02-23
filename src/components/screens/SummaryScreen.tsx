@@ -297,9 +297,9 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
 
 function Row({ label, value, highlight }: { label: string; value: React.ReactNode; highlight?: boolean }) {
   return (
-    <div className="flex justify-between items-center py-1 border-b border-border/50 last:border-0">
-      <span className="text-muted-foreground">{label}</span>
-      <span className={highlight ? "font-bold text-primary" : "font-medium"}>{value}</span>
+    <div className="flex justify-between gap-3 py-1 border-b border-border/50 last:border-0">
+      <span className="text-muted-foreground flex-shrink-0">{label}</span>
+      <span className={`text-right break-words min-w-0 ${highlight ? "font-bold text-primary" : "font-medium"}`}>{value}</span>
     </div>
   );
 }
