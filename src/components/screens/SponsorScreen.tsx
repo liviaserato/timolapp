@@ -400,6 +400,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
                   <X className="h-4 w-4 text-muted-foreground" />
                 </button>
               </div>
+              <p className="text-xs text-muted-foreground mt-1">{t("sponsor.confirm.instruction")}</p>
             </CardHeader>
             <CardContent className="space-y-4">
                <div
