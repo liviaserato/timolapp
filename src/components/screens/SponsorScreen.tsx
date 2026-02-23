@@ -39,6 +39,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const [showNoSponsorBox, setShowNoSponsorBox] = useState(false);
   const [noSponsorStep, setNoSponsorStep] = useState<NoSponsorStep>("contact-form");
   const [showConfirmBox, setShowConfirmBox] = useState(false);
+  const [fromNoSponsorFlow, setFromNoSponsorFlow] = useState(false);
   const [error, setError] = useState("");
   const [searching, setSearching] = useState(false);
 
@@ -92,6 +93,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
       const countryFlag = countryDataResult?.flag || "";
 
       setFoundSponsor({ id: trimmed, name, city, state, countryFlag, photo });
+      setFromNoSponsorFlow(false);
       setShowConfirmBox(true);
     } catch {
       setError(t("sponsor.error.notFound"));
@@ -115,13 +117,12 @@ export const SponsorScreen = ({ onNext }: Props) => {
     });
   };
 
-  const handleRandomSponsor = async () => {
-    setShowNoSponsorBox(false);
+  const fetchSponsorById = async (id: string) => {
     setSearching(true);
     setError("");
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-lookup?id=31`,
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-lookup?id=${id}`,
         { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
       );
       if (!res.ok) {
@@ -143,13 +144,25 @@ export const SponsorScreen = ({ onNext }: Props) => {
       const countryDataResult = countries.find(c => c.iso2 === countryIso);
       const countryFlag = countryDataResult?.flag || "";
 
-      setFoundSponsor({ id: "31", name, city, state, countryFlag, photo });
+      setFoundSponsor({ id, name, city, state, countryFlag, photo });
       setShowConfirmBox(true);
     } catch {
       setError(t("sponsor.error.notFound"));
     } finally {
       setSearching(false);
     }
+  };
+
+  const handleRandomSponsor = async () => {
+    setShowNoSponsorBox(false);
+    setFromNoSponsorFlow(true);
+    await fetchSponsorById("31");
+  };
+
+  const handleSuggestAnother = async () => {
+    if (!foundSponsor) return;
+    const nextId = foundSponsor.id === "31" ? "27" : "31";
+    await fetchSponsorById(nextId);
   };
 
   const handleContactSubmit = () => {
@@ -271,21 +284,10 @@ export const SponsorScreen = ({ onNext }: Props) => {
                       <Input value={contactName} onChange={(e) => { setContactName(e.target.value); setContactErrors((p) => ({ ...p, name: "" })); }} className="h-8 text-sm" />
                       {contactErrors.name && <p className="text-xs text-destructive">{contactErrors.name}</p>}
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="space-y-1">
-                        <Label className="text-xs">{t("sponsor.noSponsorBox.contactPhone")} *</Label>
-                        <Input value={contactPhone} onChange={(e) => { setContactPhone(e.target.value); setContactErrors((p) => ({ ...p, phone: "" })); }} className="h-8 text-sm" />
-                        {contactErrors.phone && <p className="text-xs text-destructive">{contactErrors.phone}</p>}
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs">{t("sponsor.noSponsorBox.contactBestTime")}</Label>
-                        <Input
-                          placeholder={t("sponsor.noSponsorBox.contactBestTime.placeholder")}
-                          value={contactBestTime}
-                          onChange={(e) => setContactBestTime(e.target.value)}
-                          className="h-8 text-sm"
-                        />
-                      </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">{t("sponsor.noSponsorBox.contactPhone")} *</Label>
+                      <Input value={contactPhone} onChange={(e) => { setContactPhone(e.target.value); setContactErrors((p) => ({ ...p, phone: "" })); }} className="h-8 text-sm" />
+                      {contactErrors.phone && <p className="text-xs text-destructive">{contactErrors.phone}</p>}
                     </div>
                     <div className="space-y-1">
                       <Label className="text-xs">{t("sponsor.noSponsorBox.contactCityState")} *</Label>
@@ -297,6 +299,15 @@ export const SponsorScreen = ({ onNext }: Props) => {
                       />
                       {contactErrors.cityState && <p className="text-xs text-destructive">{contactErrors.cityState}</p>}
                       <p className="text-xs text-muted-foreground">{t("sponsor.noSponsorBox.contactCityState.hint")}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">{t("sponsor.noSponsorBox.contactBestTime")}</Label>
+                      <Input
+                        placeholder={t("sponsor.noSponsorBox.contactBestTime.placeholder")}
+                        value={contactBestTime}
+                        onChange={(e) => setContactBestTime(e.target.value)}
+                        className="h-8 text-sm"
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label className="text-xs">{t("sponsor.noSponsorBox.contactHowKnew")}</Label>
@@ -389,6 +400,20 @@ export const SponsorScreen = ({ onNext }: Props) => {
                    </p>
                  </div>
               </div>
+
+              {fromNoSponsorFlow && (
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={handleSuggestAnother}
+                    disabled={searching}
+                    className="text-xs text-muted-foreground underline underline-offset-2 hover:text-primary transition-colors"
+                  >
+                    {searching ? <Loader2 className="h-3 w-3 animate-spin inline mr-1" /> : null}
+                    {t("sponsor.confirm.suggestAnother")}
+                  </button>
+                </div>
+              )}
 
               <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
                 <p className="font-semibold">⚠️ {t("sponsor.confirm.warning.title")}</p>
