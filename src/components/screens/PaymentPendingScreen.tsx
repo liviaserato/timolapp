@@ -80,7 +80,8 @@ export const PaymentPendingScreen = ({ data, onConfirmed, onChangePayment }: Pro
 
           {/* Purchase details */}
           <div className="w-full bg-primary/5 rounded-xl p-4 space-y-2 text-sm">
-            <DataRow label={t("paymentPending.plan")} value={<span className="font-semibold">{franchiseName}</span>} />
+            <DataRow label="ID" value={<span className="font-bold text-primary">{data.userId ?? "123456"}</span>} />
+            <DataRow label={t("paymentPending.franchise")} value={<span className="font-semibold">{franchiseName}</span>} />
             <DataRow label={t("paymentPending.amount")} value={<span className="font-bold text-primary">{formatPrice(price)}</span>} />
             <DataRow label={t("paymentPending.method")} value={<span className="text-muted-foreground">{paymentLabel}</span>} />
           </div>

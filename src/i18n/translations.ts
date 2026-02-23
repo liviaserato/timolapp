@@ -207,7 +207,8 @@ export const translations: Record<Language, Record<string, string>> = {
     // Payment Pending
     "paymentPending.title": "Pagamento Pendente",
     "paymentPending.statusBadge": "Pendente",
-    "paymentPending.plan": "Plano",
+    "paymentPending.plan": "Franquia",
+    "paymentPending.franchise": "Franquia",
     "paymentPending.amount": "Valor",
     "paymentPending.method": "Forma de pagamento",
     "paymentPending.card": "Cartão de Crédito",
@@ -435,7 +436,8 @@ export const translations: Record<Language, Record<string, string>> = {
     // Payment Pending
     "paymentPending.title": "Payment Pending",
     "paymentPending.statusBadge": "Pending",
-    "paymentPending.plan": "Plan",
+    "paymentPending.plan": "Franchise",
+    "paymentPending.franchise": "Franchise",
     "paymentPending.amount": "Amount",
     "paymentPending.method": "Payment method",
     "paymentPending.card": "Credit Card",
@@ -660,7 +662,8 @@ export const translations: Record<Language, Record<string, string>> = {
     // Payment Pending
     "paymentPending.title": "Pago Pendiente",
     "paymentPending.statusBadge": "Pendiente",
-    "paymentPending.plan": "Plan",
+    "paymentPending.plan": "Franquicia",
+    "paymentPending.franchise": "Franquicia",
     "paymentPending.amount": "Monto",
     "paymentPending.method": "Forma de pago",
     "paymentPending.card": "Tarjeta de Crédito",
