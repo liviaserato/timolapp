@@ -77,6 +77,8 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
             value={data.username || ""}
             onChange={(e) => handleUsernameChange(e.target.value)}
             maxLength={50}
+            autoCapitalize="none"
+            autoCorrect="off"
             className={[
               "pr-9",
               usernameStatus === "available" ? "border-success" : "",
@@ -108,6 +110,8 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
             value={data.password || ""}
             onChange={(e) => onChange("password", e.target.value)}
             maxLength={100}
+            autoCapitalize="none"
+            autoCorrect="off"
             className="pr-9"
           />
           <button
@@ -144,6 +148,8 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
             value={data.confirmPassword || ""}
             onChange={(e) => onChange("confirmPassword", e.target.value)}
             maxLength={100}
+            autoCapitalize="none"
+            autoCorrect="off"
             className="pr-9"
           />
           <button
