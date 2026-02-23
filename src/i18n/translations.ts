@@ -17,8 +17,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "lang.es": "Espanhol",
 
     // Sponsor
-    "sponsor.title": "Bem-vindo à Timol",
-    "sponsor.subtitle": "Para adquirir uma franquia Timol é necessário ser convidado por um franqueado, que se tornará seu patrocinador.",
+    "sponsor.title": "Cadastro de Franquia",
+    "sponsor.subtitle": "Para fazer parte da Timol, você precisa de um convite. Quem te convidou será seu patrocinador.",
     "sponsor.card.title": "Quem te indicou?",
     "sponsor.card.description": "Informe o ID do seu Patrocinador",
     "sponsor.id.placeholder": "Digite o ID",
@@ -257,8 +257,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "lang.es": "Spanish",
 
     // Sponsor
-    "sponsor.title": "Welcome to Timol",
-    "sponsor.subtitle": "To acquire a Timol franchise, you must be invited by a franchisee, who will become your sponsor.",
+    "sponsor.title": "Franchise Registration",
+    "sponsor.subtitle": "To be part of Timol, you need an invitation. The person who invited you will be your sponsor.",
     "sponsor.card.title": "Who referred you?",
     "sponsor.card.description": "Enter your Sponsor's ID",
     "sponsor.id.placeholder": "Enter the ID",
@@ -486,8 +486,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "lang.es": "Español",
 
     // Sponsor
-    "sponsor.title": "Bienvenido a Timol",
-    "sponsor.subtitle": "Para adquirir una franquicia Timol es necesario ser invitado por un franquiciado, quien se convertirá en tu patrocinador.",
+    "sponsor.title": "Registro de Franquicia",
+    "sponsor.subtitle": "Para formar parte de Timol, necesitas una invitación. Quien te invitó será tu patrocinador.",
     "sponsor.card.title": "¿Quién te recomendó?",
     "sponsor.card.description": "Ingresa el ID de tu Patrocinador",
     "sponsor.id.placeholder": "Ingresa el ID",
