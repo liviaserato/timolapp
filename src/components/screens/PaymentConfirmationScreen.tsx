@@ -55,9 +55,10 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
           </p>
 
           <div className="w-full bg-primary/5 rounded-xl p-4 space-y-2 text-sm text-left">
-            <DataRow label={t("paymentDone.yourId")} value={<span className="font-bold text-primary text-base">{mockId}</span>} />
-            <DataRow label={t("paymentDone.franchise")} value={<span className="font-semibold">{franchiseName}</span>} />
             <DataRow label={t("paymentDone.status")} value={<span className="font-semibold text-green-600">{t("paymentDone.active")}</span>} />
+            <DataRow label={t("paymentDone.yourId")} value={<span className="font-semibold">{mockId}</span>} />
+            <DataRow label={t("paymentDone.franchise")} value={<span className="font-semibold">{franchiseName}</span>} />
+            <DataRow label={t("summary.price")} value={<span className="font-semibold">{formatPrice(price)}</span>} />
             {paymentLine1 && (
               <DataRow label={t("paymentDone.paymentLabel")} value={
                 <div className="text-right">

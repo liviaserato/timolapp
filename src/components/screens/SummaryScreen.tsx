@@ -105,14 +105,14 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
               {t("summary.personal")}
             </CardTitle>
             {onEditPersonal && (
-              <button onClick={onEditPersonal} className="text-xs text-primary/70 hover:text-primary font-medium uppercase tracking-wide">
+              <button onClick={onEditPersonal} className="text-xs text-primary/30 hover:text-primary/60 font-medium uppercase tracking-wide">
                 {t("summary.edit")}
               </button>
             )}
           </div>
         </CardHeader>
         <CardContent className="space-y-1 text-sm">
-          <Row label="ID" value={mockId} highlight />
+          <Row label="ID" value={mockId} />
           <Row label={t("summary.fullName")} value={data.fullName ?? "—"} />
           <Row label={isForeigner ? t("summary.document") : "CPF"} value={data.document || "—"} />
           <Row label={t("summary.birthDate")} value={data.birthDate ? formatBirthDate(data.birthDate, data.countryIso2) : "—"} />
@@ -130,7 +130,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
               {t("summary.address")}
             </CardTitle>
             {onEditAddress && (
-              <button onClick={onEditAddress} className="text-xs text-primary/70 hover:text-primary font-medium uppercase tracking-wide">
+              <button onClick={onEditAddress} className="text-xs text-primary/30 hover:text-primary/60 font-medium uppercase tracking-wide">
                 {t("summary.edit")}
               </button>
             )}
@@ -154,7 +154,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
               {t("summary.franchise")}
             </CardTitle>
             {onChangeFranchise && (
-              <button onClick={onChangeFranchise} className="text-xs text-primary/70 hover:text-primary font-medium uppercase tracking-wide">
+              <button onClick={onChangeFranchise} className="text-xs text-primary/30 hover:text-primary/60 font-medium uppercase tracking-wide">
                 {t("summary.change")}
               </button>
             )}
@@ -165,7 +165,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
           <Row
             label={t("summary.franchiseChosen")}
             value={
-              <span className="flex items-center gap-1.5 font-semibold text-primary">
+              <span className="flex items-center gap-1.5 font-semibold">
                 {franchiseIcons[data.franchise ?? "bronze"]}
                 {t(`franchise.${data.franchise}`)}
               </span>
@@ -183,11 +183,11 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
                     </span>
                   </span>
                   <br />
-                  <span className="font-bold text-lg text-primary">{formatPrice(discountedPrice)}</span>
+                  <span className="font-bold">{formatPrice(discountedPrice)}</span>
                   <p className="text-xs text-success">{t("summary.coupon.discountLabel")}</p>
                 </div>
               ) : (
-                <span className="font-bold text-lg text-primary">{formatPrice(price)}</span>
+                <span className="font-bold">{formatPrice(price)}</span>
               )
             }
           />
@@ -208,7 +208,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
                 value={couponCode}
                 onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); setCouponStatus("idle"); }}
                 maxLength={20}
-                className="pr-10"
+                className="pr-10 text-sm placeholder:text-xs sm:placeholder:text-sm"
               />
               {couponCode ? (
                 <button

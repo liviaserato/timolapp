@@ -242,14 +242,11 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
                   maxLength={19}
                   className="pr-28"
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                  {brand
-                    ? <img src={brandIcon[brand]} alt={brand} className="h-5" />
-                    : allBrandKeys.map((k) => (
-                        <img key={k} src={brandIcon[k]} alt={k} className="h-4 opacity-40" />
-                      ))
-                  }
-                </div>
+                {brand && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
+                    <img src={brandIcon[brand]} alt={brand} className="h-5" />
+                  </div>
+                )}
               </div>
               {errors.cardNumber && <p className="text-xs text-destructive">{errors.cardNumber}</p>}
             </div>

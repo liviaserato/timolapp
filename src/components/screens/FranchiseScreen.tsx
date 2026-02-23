@@ -128,35 +128,29 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
               )}
               onClick={() => setSelected(f.id)}
             >
-              {/* Image header */}
-              <div className={cn(
-                "flex items-center justify-center py-5",
-                isSelected ? "bg-yellow-100/60" : "bg-muted/40"
-              )}>
-                <img src={f.image} alt={t(f.nameKey)} className="h-12 w-12 object-contain" />
+              {/* Header: name+price left, icon right */}
+              <div className="flex items-center justify-between p-4 pb-2">
+                <div>
+                  <h3 className="text-lg font-bold text-primary">{t(f.nameKey)}</h3>
+                  <div className="text-xl font-bold text-foreground mt-0.5">
+                    {sym} {formatPrice(f.prices[currency])}
+                  </div>
+                  <span className="text-xs text-muted-foreground">{t("franchise.once")}</span>
+                </div>
+                <img src={f.image} alt={t(f.nameKey)} className="h-14 w-14 object-contain flex-shrink-0" />
               </div>
 
-              {/* Content */}
-              <div className="flex-1 flex flex-col p-4 pt-3 gap-2">
-                <div>
-                  <h3 className="text-base font-semibold text-foreground">{t(f.nameKey)}</h3>
-                  <div className="text-xl font-bold text-primary mt-0.5">
-                    {sym} {formatPrice(f.prices[currency])}
-                    <span className="text-xs font-normal text-muted-foreground ml-1">{t("franchise.once")}</span>
+              {/* Benefits */}
+              <div className="flex-1 flex flex-col px-4 pb-4 gap-1.5">
+                {f.benefits[lang].map((b, i) => (
+                  <div key={i} className="flex items-start gap-1.5 text-xs text-muted-foreground">
+                    <Check className={cn(
+                      "h-3.5 w-3.5 mt-0.5 flex-shrink-0",
+                      isSelected ? "text-yellow-600" : "text-primary/60"
+                    )} />
+                    <span>{b}</span>
                   </div>
-                </div>
-
-                <div className="space-y-1.5 mt-1">
-                  {f.benefits[lang].map((b, i) => (
-                    <div key={i} className="flex items-start gap-1.5 text-xs text-muted-foreground">
-                      <Check className={cn(
-                        "h-3.5 w-3.5 mt-0.5 flex-shrink-0",
-                        isSelected ? "text-yellow-600" : "text-primary/60"
-                      )} />
-                      <span>{b}</span>
-                    </div>
-                  ))}
-                </div>
+                ))}
               </div>
 
               {/* Selected indicator */}
