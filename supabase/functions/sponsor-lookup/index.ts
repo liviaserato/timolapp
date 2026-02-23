@@ -21,7 +21,7 @@ serve(async (req) => {
   }
 
   try {
-    const apiUrl = `https://api.timolsystem.com.br/api/cliente/patrocinio/${sponsorId}`;
+    const apiUrl = `https://www.timolweb.com.br/gateway/cliente/patrocinio/${sponsorId}`;
     const res = await fetch(apiUrl, {
       headers: {
         "Accept": "application/json",

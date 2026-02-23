@@ -22,20 +22,22 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
   const franchiseName = data.franchise ? t(`franchise.${data.franchise}`) : "—";
   const isForeigner = data.foreignerNoCpf === "true";
 
-  // Build i18n payment summary with installments
-  let paymentSummary = "";
+  // Build payment summary lines
+  let paymentLine1 = "";
+  let paymentLine2 = "";
   if (data.paymentMethod === "pix") {
-    paymentSummary = "PIX";
+    paymentLine1 = "PIX";
   } else if (data.paymentMethod === "credit" && data.cardLast4) {
     const n = data.cardInstallments ?? 1;
-    const installValue = n > 5
-      ? (price * Math.pow(1.03, n)) / n
-      : price / n;
-    const cardEnd = `${t("paymentDone.cardEnd")} ${data.cardLast4}`;
-    const installmentText = n === 1
-      ? t("paymentDone.inFull")
-      : `${n}× ${formatPrice(installValue)} (${n > 5 ? t("payment.installments.fees") : t("payment.installments.nofees")})`;
-    paymentSummary = `${cardEnd} — ${installmentText}`;
+    paymentLine1 = `${t("paymentDone.cardEnd")} ${data.cardLast4}`;
+    if (n === 1) {
+      paymentLine2 = t("paymentDone.inFull");
+    } else {
+      const installValue = n > 5
+        ? (price * Math.pow(1.03, n)) / n
+        : price / n;
+      paymentLine2 = `${n}× ${formatPrice(installValue)}`;
+    }
   }
 
   return (
@@ -56,8 +58,13 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
             <DataRow label={t("paymentDone.yourId")} value={<span className="font-bold text-primary text-base">{mockId}</span>} />
             <DataRow label={t("paymentDone.franchise")} value={<span className="font-semibold">{franchiseName}</span>} />
             <DataRow label={t("paymentDone.status")} value={<span className="font-semibold text-green-600">{t("paymentDone.active")}</span>} />
-            {paymentSummary && (
-              <DataRow label={t("paymentDone.paymentLabel")} value={<span className="text-xs text-muted-foreground">{paymentSummary}</span>} />
+            {paymentLine1 && (
+              <DataRow label={t("paymentDone.paymentLabel")} value={
+                <div className="text-right">
+                  <span className="text-xs text-muted-foreground">{paymentLine1}</span>
+                  {paymentLine2 && <p className="text-xs text-muted-foreground">{paymentLine2}</p>}
+                </div>
+              } />
             )}
           </div>
 

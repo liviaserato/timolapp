@@ -16,6 +16,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { WizardData } from "@/types/wizard";
 import { Search, Users, Phone, X, ChevronRight, ThumbsUp, Loader2 } from "lucide-react";
 import timolLogo from "@/assets/timol-logo.svg";
+import { countries } from "@/data/countries";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
   onNext: (data: Partial<WizardData>) => void;
@@ -66,24 +68,30 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setSearching(true);
     setError("");
     try {
-      const res = await fetch(`https://api.timolsystem.com.br/api/cliente/patrocinio/${trimmed}`);
+      const res = await fetch(`https://www.timolweb.com.br/gateway/cliente/patrocinio/${trimmed}`);
       if (!res.ok) {
         setError(t("sponsor.error.notFound"));
         return;
       }
       const json = await res.json();
-      // Map API fields — names are similar, map only what we need
-      const name = json.nome || json.name || json.nomeCompleto || "";
-      const city = json.cidade || json.city || "";
-      const state = json.estado || json.state || json.uf || "";
-      const photo = json.foto || json.photo || json.urlFoto || "";
-
-      if (!name) {
+      // API returns an array
+      const record = Array.isArray(json) ? json[0] : json;
+      if (!record || !record.nome) {
         setError(t("sponsor.error.notFound"));
         return;
       }
+      const name = record.nome || "";
+      // Parse city from "UBERLÂNDIA - MG" format
+      const cidadeParts = (record.cidade || "").split(" - ");
+      const city = cidadeParts[0]?.trim() || "";
+      const state = cidadeParts[1]?.trim() || record.estado || "";
+      const photo = record.foto || record.photo || "";
+      const countryIso = record.pais_cod_iso || "";
+      // Find flag from countries data
+      const countryData = countries.find(c => c.iso2 === countryIso);
+      const countryFlag = countryData?.flag || "";
 
-      setFoundSponsor({ id: trimmed, name, city, state, countryFlag: "", photo });
+      setFoundSponsor({ id: trimmed, name, city, state, countryFlag, photo });
       setShowConfirmBox(true);
     } catch {
       setError(t("sponsor.error.notFound"));
@@ -142,29 +150,27 @@ export const SponsorScreen = ({ onNext }: Props) => {
   ];
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full max-w-md mx-auto space-y-5">
+      {/* Logo + Title + Text + Language — OUTSIDE the card */}
+      <div className="text-center space-y-3">
+        <div className="flex items-center justify-center gap-3">
+          <img src={timolLogo} alt="Timol" className="h-12 w-12" />
+          <h1 className="text-2xl sm:text-3xl font-bold text-primary">{t("sponsor.title")}</h1>
+        </div>
+        <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+          {t("sponsor.subtitle")}
+        </p>
+        <LanguageSelector />
+      </div>
+
+      {/* Sponsor ID block — INSIDE the card */}
       <Card className="shadow-lg">
-        <CardContent className="pt-6 space-y-5">
-          {/* Logo + Title */}
-          <div className="text-center space-y-3">
-            <div className="flex items-center justify-center gap-3">
-              <img src={timolLogo} alt="Timol" className="h-12 w-12" />
-              <h1 className="text-2xl sm:text-3xl font-bold text-primary">{t("sponsor.title")}</h1>
-            </div>
-            <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-              {t("sponsor.subtitle")}
-            </p>
+        <CardContent className="pt-6 space-y-4">
+          <div className="text-center space-y-1">
+            <h3 className="text-lg font-semibold">{t("sponsor.card.title")}</h3>
+            <p className="text-sm text-muted-foreground">{t("sponsor.card.description")}</p>
           </div>
-
-          {/* Language selector */}
-          <LanguageSelector />
-
-          {/* Sponsor ID block */}
-          <div className="space-y-2">
-            <div>
-              <h3 className="text-lg font-semibold">{t("sponsor.card.title")}</h3>
-              <p className="text-sm text-muted-foreground">{t("sponsor.card.description")}</p>
-            </div>
+          <div className="max-w-xs mx-auto">
             <div className="relative">
               <Input
                 placeholder={t("sponsor.id.placeholder")}
@@ -185,16 +191,16 @@ export const SponsorScreen = ({ onNext }: Props) => {
                 {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
               </button>
             </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && <p className="text-sm text-destructive mt-1">{error}</p>}
+          </div>
 
-            <div className="text-center">
-              <button
-                className="text-sm text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
-                onClick={openNoSponsor}
-              >
-                {t("sponsor.noSponsor")}
-              </button>
-            </div>
+          <div className="text-center">
+            <button
+              className="text-sm text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+              onClick={openNoSponsor}
+            >
+              {t("sponsor.noSponsor")}
+            </button>
           </div>
         </CardContent>
       </Card>
@@ -340,13 +346,14 @@ export const SponsorScreen = ({ onNext }: Props) => {
                     {foundSponsor.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
                   </AvatarFallback>
                 </Avatar>
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm truncate">{foundSponsor.name}</p>
-                  <p className="text-xs text-muted-foreground">ID: {foundSponsor.id}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {foundSponsor.city}{foundSponsor.state ? `, ${foundSponsor.state}` : ""}
-                  </p>
-                </div>
+                 <div className="min-w-0">
+                   <p className="font-semibold text-sm truncate">{foundSponsor.name}</p>
+                   <p className="text-xs text-muted-foreground">ID: {foundSponsor.id}</p>
+                   <p className="text-xs text-muted-foreground">
+                     {foundSponsor.city}{foundSponsor.state ? `, ${foundSponsor.state}` : ""}
+                     {foundSponsor.countryFlag ? ` ${foundSponsor.countryFlag}` : ""}
+                   </p>
+                 </div>
               </div>
 
               <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
