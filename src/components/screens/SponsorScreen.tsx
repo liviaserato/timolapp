@@ -15,7 +15,7 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { WizardData } from "@/types/wizard";
 import { Search, Users, Phone, X, ChevronRight, ThumbsUp, Loader2 } from "lucide-react";
-import timolLogoAzul from "@/assets/logo-timol-azul-claro.svg";
+import timolLogoAzul from "@/assets/logo-timol-azul-escuro.svg";
 import { countries } from "@/data/countries";
 
 
@@ -221,8 +221,8 @@ export const SponsorScreen = ({ onNext }: Props) => {
     <div className="w-full max-w-md mx-auto space-y-5">
       {/* Logo + Title + Text + Language — OUTSIDE the card */}
       <div className="text-center space-y-3">
-        <h1 className="text-2xl sm:text-3xl font-bold text-primary">{t("sponsor.title")}</h1>
         <img src={timolLogoAzul} alt="Timol" className="h-auto w-44 mx-auto" />
+        <h1 className="text-2xl sm:text-3xl font-bold text-primary">{t("sponsor.title")}</h1>
         <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
           {t("sponsor.subtitle")}
         </p>
