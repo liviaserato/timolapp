@@ -14,6 +14,12 @@ import {
 import { WizardData } from "@/types/wizard";
 import { ChevronLeft, CreditCard, QrCode, Loader2, Eye, EyeOff, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import visaIcon from "@/assets/credit-card-visa.svg";
+import masterIcon from "@/assets/credit-card-master.svg";
+import amexIcon from "@/assets/credit-card-amex.svg";
+import eloIcon from "@/assets/credit-card-elo.svg";
+import dinersIcon from "@/assets/credit-card-diners.svg";
+import discoverIcon from "@/assets/credit-card-discover.svg";
 
 interface Props {
   data: WizardData;
@@ -43,24 +49,21 @@ function detectCardBrand(number: string): string {
   if (/^5[1-5]/.test(clean) || /^2[2-7]/.test(clean)) return "mastercard";
   if (/^3[47]/.test(clean)) return "amex";
   if (/^(4011|4312|4389|4514|4573|5041|5067|5090|6277|6362|6363|650|6516|6550)/.test(clean)) return "elo";
-  return clean.length > 0 ? "other" : "";
+  if (/^(36|38|30[0-5])/.test(clean)) return "diners";
+  if (/^6011|^65|^644|^645|^646|^647|^648|^649/.test(clean)) return "discover";
+  return "";
 }
 
-const brandLabel: Record<string, string> = {
-  visa: "VISA",
-  mastercard: "MC",
-  amex: "AMEX",
-  elo: "ELO",
-  other: "●●●",
+const brandIcon: Record<string, string> = {
+  visa: visaIcon,
+  mastercard: masterIcon,
+  amex: amexIcon,
+  elo: eloIcon,
+  diners: dinersIcon,
+  discover: discoverIcon,
 };
 
-const brandColors: Record<string, string> = {
-  visa: "text-blue-600",
-  mastercard: "text-red-500",
-  amex: "text-blue-400",
-  elo: "text-yellow-600",
-  other: "text-muted-foreground",
-};
+const allBrandKeys = ["visa", "mastercard", "amex", "elo", "diners", "discover"];
 
 const PIX_CODE = "00020126580014BR.GOV.BCB.PIX0136timol-pix-key@timol.com.br5204000053039865802BR5913TIMOL SISTEMA6009SAO PAULO62070503***6304ABCD";
 
@@ -237,13 +240,16 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
                   value={cardNumber}
                   onChange={(e) => setCardNumber(formatCard(e.target.value))}
                   maxLength={19}
-                  className="pr-14"
+                  className="pr-28"
                 />
-                {brand && (
-                  <span className={cn("absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold", brandColors[brand])}>
-                    {brandLabel[brand]}
-                  </span>
-                )}
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  {brand
+                    ? <img src={brandIcon[brand]} alt={brand} className="h-5" />
+                    : allBrandKeys.map((k) => (
+                        <img key={k} src={brandIcon[k]} alt={k} className="h-4 opacity-40" />
+                      ))
+                  }
+                </div>
               </div>
               {errors.cardNumber && <p className="text-xs text-destructive">{errors.cardNumber}</p>}
             </div>
