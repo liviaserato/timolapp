@@ -105,7 +105,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
               {t("summary.personal")}
             </CardTitle>
             {onEditPersonal && (
-              <button onClick={onEditPersonal} className="text-xs text-primary/30 hover:text-primary/60 font-medium uppercase tracking-wide">
+              <button onClick={onEditPersonal} className="text-[10px] text-primary/20 hover:text-primary/40 font-medium uppercase tracking-wide">
                 {t("summary.edit")}
               </button>
             )}
@@ -130,7 +130,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
               {t("summary.address")}
             </CardTitle>
             {onEditAddress && (
-              <button onClick={onEditAddress} className="text-xs text-primary/30 hover:text-primary/60 font-medium uppercase tracking-wide">
+              <button onClick={onEditAddress} className="text-[10px] text-primary/20 hover:text-primary/40 font-medium uppercase tracking-wide">
                 {t("summary.edit")}
               </button>
             )}
@@ -154,7 +154,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
               {t("summary.franchise")}
             </CardTitle>
             {onChangeFranchise && (
-              <button onClick={onChangeFranchise} className="text-xs text-primary/30 hover:text-primary/60 font-medium uppercase tracking-wide">
+              <button onClick={onChangeFranchise} className="text-[10px] text-primary/20 hover:text-primary/40 font-medium uppercase tracking-wide">
                 {t("summary.change")}
               </button>
             )}

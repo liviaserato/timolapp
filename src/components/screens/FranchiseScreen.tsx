@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { WizardData } from "@/types/wizard";
 import { Check, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 import bronzeImg from "@/assets/franquia-bronze.svg";
 import prataImg from "@/assets/franquia-prata.svg";
@@ -18,6 +20,7 @@ interface FranchiseOption {
   prices: Record<Currency, number>;
   image: string;
   benefits: { pt: string[]; en: string[]; es: string[] };
+  recommended?: boolean;
 }
 
 const franchiseOptions: FranchiseOption[] = [
@@ -48,6 +51,7 @@ const franchiseOptions: FranchiseOption[] = [
     nameKey: "franchise.gold",
     prices: { BRL: 1997, USD: 399, EUR: 359 },
     image: ouroImg,
+    recommended: true,
     benefits: {
       pt: ["Tudo do Prata", "Comissão de 25% nas vendas", "Gerente de contas dedicado", "Acesso a eventos exclusivos", "Loja virtual personalizada", "Bônus de liderança de equipe"],
       en: ["Everything in Silver", "25% commission on sales", "Dedicated account manager", "Access to exclusive events", "Custom online store", "Team leadership bonus"],
@@ -103,6 +107,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
 
   const firstName = data.fullName?.split(" ")[0] ?? "";
   const lang = language as "pt" | "en" | "es";
+  const mockId = data.userId ?? "123456";
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
@@ -112,6 +117,9 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
           {t("franchise.title")}{firstName ? `, ${firstName}` : ""}!
         </h2>
         <p className="text-muted-foreground">{t("franchise.subtitle")}</p>
+        <p className="text-base font-semibold text-primary">
+          {t("franchise.yourId")} {mockId}.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -121,27 +129,43 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
             <div
               key={f.id}
               className={cn(
-                "relative rounded-lg border-2 cursor-pointer transition-all duration-200 flex flex-col overflow-hidden bg-card",
+                "relative rounded-lg border-2 cursor-pointer transition-all duration-200 flex flex-col overflow-hidden",
                 isSelected
                   ? "border-yellow-500 bg-yellow-50 ring-2 ring-yellow-400 shadow-lg scale-[1.02]"
-                  : "border-border hover:shadow-md hover:scale-[1.01]"
+                  : "border-border bg-card hover:shadow-md hover:scale-[1.01]"
               )}
               onClick={() => setSelected(f.id)}
             >
-              {/* Header: name+price left, icon right */}
-              <div className="flex items-center justify-between p-4 pb-2">
-                <div>
-                  <h3 className="text-lg font-bold text-primary">{t(f.nameKey)}</h3>
-                  <div className="text-xl font-bold text-foreground mt-0.5">
-                    {sym} {formatPrice(f.prices[currency])}
-                  </div>
-                  <span className="text-xs text-muted-foreground">{t("franchise.once")}</span>
+              {/* Recommended badge */}
+              {f.recommended && (
+                <div className="absolute top-2 right-2 z-10">
+                  <Badge className="bg-yellow-500 text-white border-0 text-[10px] px-2 py-0.5 shadow-sm">
+                    {t("franchise.bestChoice")}
+                  </Badge>
                 </div>
+              )}
+
+              {/* Header: icon left, name+price right */}
+              <div className={cn(
+                "flex items-center gap-3 p-4",
+                isSelected ? "bg-yellow-100/50" : "bg-muted/30"
+              )}>
                 <img src={f.image} alt={t(f.nameKey)} className="h-14 w-14 object-contain flex-shrink-0" />
+                <div className="min-w-0">
+                  <h3 className="text-lg font-bold text-primary">{t(f.nameKey)}</h3>
+                  <div className="flex flex-wrap items-baseline gap-x-1.5">
+                    <span className="text-xl font-bold text-foreground">
+                      {sym} {formatPrice(f.prices[currency])}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground whitespace-nowrap">{t("franchise.once")}</span>
+                  </div>
+                </div>
               </div>
 
+              <Separator className={isSelected ? "bg-yellow-300/60" : ""} />
+
               {/* Benefits */}
-              <div className="flex-1 flex flex-col px-4 pb-4 gap-1.5">
+              <div className="flex-1 flex flex-col px-4 py-3 gap-1.5">
                 {f.benefits[lang].map((b, i) => (
                   <div key={i} className="flex items-start gap-1.5 text-xs text-muted-foreground">
                     <Check className={cn(
@@ -154,7 +178,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
               </div>
 
               {/* Selected indicator */}
-              {isSelected && (
+              {isSelected && !f.recommended && (
                 <div className="absolute top-2 right-2 bg-yellow-500 text-white rounded-full p-0.5">
                   <Check className="h-3.5 w-3.5" />
                 </div>
