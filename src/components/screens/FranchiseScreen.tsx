@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { WizardData } from "@/types/wizard";
-import { Check, ChevronLeft, Star, Crown, Shield, Gem } from "lucide-react";
+import { Check, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+import bronzeImg from "@/assets/franquia-bronze.svg";
+import prataImg from "@/assets/franquia-prata.svg";
+import ouroImg from "@/assets/franquia-ouro.svg";
+import platinaImg from "@/assets/franquia-platina.svg";
 
 type Currency = "BRL" | "USD" | "EUR";
 
@@ -12,11 +16,8 @@ interface FranchiseOption {
   id: string;
   nameKey: string;
   prices: Record<Currency, number>;
-  icon: React.ReactNode;
-  borderColor: string;
-  bgColor: string;
+  image: string;
   benefits: { pt: string[]; en: string[]; es: string[] };
-  highlight?: boolean;
 }
 
 const franchiseOptions: FranchiseOption[] = [
@@ -24,9 +25,7 @@ const franchiseOptions: FranchiseOption[] = [
     id: "bronze",
     nameKey: "franchise.bronze",
     prices: { BRL: 497, USD: 99, EUR: 89 },
-    icon: <Shield className="h-6 w-6" />,
-    borderColor: "border-amber-700",
-    bgColor: "bg-amber-50",
+    image: bronzeImg,
     benefits: {
       pt: ["Acesso à plataforma básica", "Suporte por e-mail", "Comissão de 15% nas vendas", "Materiais de divulgação digitais", "Treinamento introdutório online"],
       en: ["Access to basic platform", "Email support", "15% commission on sales", "Digital marketing materials", "Introductory online training"],
@@ -37,9 +36,7 @@ const franchiseOptions: FranchiseOption[] = [
     id: "silver",
     nameKey: "franchise.silver",
     prices: { BRL: 997, USD: 199, EUR: 179 },
-    icon: <Star className="h-6 w-6" />,
-    borderColor: "border-slate-400",
-    bgColor: "bg-slate-50",
+    image: prataImg,
     benefits: {
       pt: ["Tudo do Bronze", "Suporte prioritário via WhatsApp", "Comissão de 20% nas vendas", "Materiais impressos + digitais", "Treinamento avançado + mentoria mensal", "Área exclusiva de produtos"],
       en: ["Everything in Bronze", "Priority WhatsApp support", "20% commission on sales", "Print + digital materials", "Advanced training + monthly mentoring", "Exclusive product area"],
@@ -50,10 +47,7 @@ const franchiseOptions: FranchiseOption[] = [
     id: "gold",
     nameKey: "franchise.gold",
     prices: { BRL: 1997, USD: 399, EUR: 359 },
-    icon: <Crown className="h-6 w-6" />,
-    borderColor: "border-yellow-500",
-    bgColor: "bg-yellow-50",
-    highlight: true,
+    image: ouroImg,
     benefits: {
       pt: ["Tudo do Prata", "Comissão de 25% nas vendas", "Gerente de contas dedicado", "Acesso a eventos exclusivos", "Loja virtual personalizada", "Bônus de liderança de equipe"],
       en: ["Everything in Silver", "25% commission on sales", "Dedicated account manager", "Access to exclusive events", "Custom online store", "Team leadership bonus"],
@@ -64,9 +58,7 @@ const franchiseOptions: FranchiseOption[] = [
     id: "platinum",
     nameKey: "franchise.platinum",
     prices: { BRL: 3997, USD: 799, EUR: 719 },
-    icon: <Gem className="h-6 w-6" />,
-    borderColor: "border-purple-500",
-    bgColor: "bg-purple-50",
+    image: platinaImg,
     benefits: {
       pt: ["Tudo do Ouro", "Comissão de 30% nas vendas", "Participação nos resultados", "Acesso antecipado a novos produtos", "Suporte 24/7 exclusivo", "Convite para board de franqueados", "Viagem de incentivo anual"],
       en: ["Everything in Gold", "30% commission on sales", "Profit sharing", "Early access to new products", "24/7 exclusive support", "Franchisee board invitation", "Annual incentive trip"],
@@ -80,7 +72,6 @@ const currencyLocale: Record<Currency, string> = { BRL: "pt-BR", USD: "en-US", E
 
 function getCurrencyFromCountry(countryIso2?: string): Currency {
   if (!countryIso2) return "BRL";
-  // Euro countries (simplified)
   const euroCountries = ["AT","BE","CY","EE","FI","FR","DE","GR","IE","IT","LV","LT","LU","MT","NL","PT","SK","SI","ES"];
   if (euroCountries.includes(countryIso2)) return "EUR";
   if (countryIso2 === "BR") return "BRL";
@@ -127,62 +118,54 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
         {franchiseOptions.map((f) => {
           const isSelected = selected === f.id;
           return (
-            <Card
+            <div
               key={f.id}
               className={cn(
-                "relative cursor-pointer transition-all duration-200 border-2 flex flex-col",
-                f.borderColor,
-                f.bgColor,
+                "relative rounded-lg border-2 cursor-pointer transition-all duration-200 flex flex-col overflow-hidden bg-card",
                 isSelected
-                  ? "ring-2 ring-primary shadow-lg scale-[1.02]"
-                  : "hover:shadow-md hover:scale-[1.01]",
-                f.highlight && !isSelected && "ring-1 ring-yellow-400"
+                  ? "border-yellow-500 bg-yellow-50 ring-2 ring-yellow-400 shadow-lg scale-[1.02]"
+                  : "border-border hover:shadow-md hover:scale-[1.01]"
               )}
               onClick={() => setSelected(f.id)}
             >
-              {f.highlight && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-0.5 rounded-full">
-                  {t("franchise.popular")}
+              {/* Image header */}
+              <div className={cn(
+                "flex items-center justify-center py-5",
+                isSelected ? "bg-yellow-100/60" : "bg-muted/40"
+              )}>
+                <img src={f.image} alt={t(f.nameKey)} className="h-12 w-12 object-contain" />
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 flex flex-col p-4 pt-3 gap-2">
+                <div>
+                  <h3 className="text-base font-semibold text-foreground">{t(f.nameKey)}</h3>
+                  <div className="text-xl font-bold text-primary mt-0.5">
+                    {sym} {formatPrice(f.prices[currency])}
+                    <span className="text-xs font-normal text-muted-foreground ml-1">{t("franchise.once")}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5 mt-1">
+                  {f.benefits[lang].map((b, i) => (
+                    <div key={i} className="flex items-start gap-1.5 text-xs text-muted-foreground">
+                      <Check className={cn(
+                        "h-3.5 w-3.5 mt-0.5 flex-shrink-0",
+                        isSelected ? "text-yellow-600" : "text-primary/60"
+                      )} />
+                      <span>{b}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Selected indicator */}
+              {isSelected && (
+                <div className="absolute top-2 right-2 bg-yellow-500 text-white rounded-full p-0.5">
+                  <Check className="h-3.5 w-3.5" />
                 </div>
               )}
-              <CardHeader className="pb-3 pt-5 flex-none">
-                <div className="flex items-center gap-2">
-                  <div className="text-primary">{f.icon}</div>
-                  <CardTitle className="text-lg">{t(f.nameKey)}</CardTitle>
-                </div>
-                <div className="text-2xl font-bold text-primary">
-                  {sym} {formatPrice(f.prices[currency])}
-                  <span className="text-sm font-normal text-muted-foreground ml-1">{t("franchise.once")}</span>
-                </div>
-              </CardHeader>
-
-              {/* Benefits grow to fill card */}
-              <div className="flex-1 px-6 space-y-2 pb-2">
-                {f.benefits[lang].map((b, i) => (
-                  <div key={i} className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span>{b}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Button always at the bottom */}
-              <div className="px-6 pb-5 pt-3 flex-none">
-                <Button
-                  className={cn(
-                    "w-full",
-                    isSelected
-                      ? "bg-green-600 hover:bg-green-700 text-white border-green-600"
-                      : ""
-                  )}
-                  variant={isSelected ? "default" : "outline"}
-                  size="sm"
-                  onClick={(e) => { e.stopPropagation(); setSelected(f.id); }}
-                >
-                  {isSelected ? t("franchise.selected") : t("franchise.select")}
-                </Button>
-              </div>
-            </Card>
+            </div>
           );
         })}
       </div>
