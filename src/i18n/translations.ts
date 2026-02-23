@@ -191,7 +191,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Payment Confirmation
     "paymentDone.title": "Pagamento Confirmado!",
-    "paymentDone.welcome": "Estamos felizes em ter você com a gente, fazendo parte de uma equipe dedicada a levar mais qualidade de vida às pessoas.\nSeja muito bem-vindo!",
+    "paymentDone.welcome": "Bem-vindo à Timol! Estamos felizes em ter você com a gente nessa missão.",
     "paymentDone.subtitle": "Sua franquia já está ativa",
     "paymentDone.yourId": "Seu ID Timol",
     "paymentDone.franchise": "Franquia",
@@ -200,10 +200,11 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.paymentLabel": "Pagamento",
     "paymentDone.cardEnd": "Cartão final",
     "paymentDone.inFull": "à vista",
-    "paymentDone.accessNow": "Sua franquia já está ativa e pronta para uso. Nos próximos dias, seu patrocinador ou um atendente da Timol entrará em contato para acompanhar você no início da sua jornada.",
-    "paymentDone.sponsorContact": "Você já pode acessar seu escritório digital. Para entrar, acesse:",
+    "paymentDone.accessNow": "Sua franquia já está ativa e pronta para uso. Você já pode acessar seu escritório digital.",
+    "paymentDone.sponsorContact": "",
     "paymentDone.instructions": "",
-    "paymentDone.emailNote": "Verifique seu e-mail com as instruções de primeiro acesso.",
+    "paymentDone.emailNote": "Confira também seu e-mail com as instruções de primeiro acesso.",
+    "paymentDone.portalButton": "Acessar meu Portal Timol",
 
     // Payment Pending
     "paymentPending.title": "Pagamento Pendente",
@@ -421,7 +422,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "payment.error.cardExpired": "This card appears to be expired. Please check the expiry date.",
 
     "paymentDone.title": "Payment Confirmed!",
-    "paymentDone.welcome": "We're happy to have you with us, being part of a team dedicated to bringing more quality of life to people.\nWelcome aboard!",
+    "paymentDone.welcome": "Welcome to Timol! We're happy to have you with us on this mission.",
     "paymentDone.subtitle": "Your franchise is now active",
     "paymentDone.yourId": "Your Timol ID",
     "paymentDone.franchise": "Franchise",
@@ -430,10 +431,11 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.paymentLabel": "Payment",
     "paymentDone.cardEnd": "Card ending",
     "paymentDone.inFull": "in full",
-    "paymentDone.accessNow": "Your franchise is already active and ready to use. In the coming days, your sponsor or a Timol representative will reach out to support you as you begin your journey.",
-    "paymentDone.sponsorContact": "You can already access your digital office. To log in, visit:",
+    "paymentDone.accessNow": "Your franchise is already active and ready to use. You can now access your digital office.",
+    "paymentDone.sponsorContact": "",
     "paymentDone.instructions": "",
     "paymentDone.emailNote": "Also check your email for first access instructions.",
+    "paymentDone.portalButton": "Access my Timol Portal",
 
     // Payment Pending
     "paymentPending.title": "Payment Pending",
@@ -648,7 +650,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "payment.error.cardExpired": "Esta tarjeta parece estar vencida. Verifique la fecha de vencimiento.",
 
     "paymentDone.title": "¡Pago Confirmado!",
-    "paymentDone.welcome": "Estamos felices de tenerte con nosotros, formando parte de un equipo dedicado a llevar más calidad de vida a las personas.\n¡Bienvenido!",
+    "paymentDone.welcome": "¡Bienvenido a Timol! Estamos felices de tenerte con nosotros en esta misión.",
     "paymentDone.subtitle": "Su franquicia ya está activa",
     "paymentDone.yourId": "Su ID Timol",
     "paymentDone.franchise": "Franquicia",
@@ -657,10 +659,11 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.paymentLabel": "Pago",
     "paymentDone.cardEnd": "Tarjeta final",
     "paymentDone.inFull": "al contado",
-    "paymentDone.accessNow": "Tu franquicia ya está activa y lista para usar. En los próximos días, tu patrocinador o un representante de Timol se pondrá en contacto para acompañarte en el inicio de tu jornada.",
-    "paymentDone.sponsorContact": "Ya puedes acceder a tu oficina digital. Para ingresar, visita:",
+    "paymentDone.accessNow": "Tu franquicia ya está activa y lista para usar. Ya puedes acceder a tu oficina digital.",
+    "paymentDone.sponsorContact": "",
     "paymentDone.instructions": "",
-    "paymentDone.emailNote": "También revise su correo con las instrucciones de primer acceso.",
+    "paymentDone.emailNote": "Revisa también tu correo con las instrucciones de primer acceso.",
+    "paymentDone.portalButton": "Acceder a mi Portal Timol",
 
     // Payment Pending
     "paymentPending.title": "Pago Pendiente",

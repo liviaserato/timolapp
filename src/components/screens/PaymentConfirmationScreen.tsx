@@ -50,7 +50,7 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
             <h2 className="text-2xl font-bold text-primary">{t("paymentDone.title")}</h2>
           </div>
 
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto whitespace-pre-line">
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
             {t("paymentDone.welcome")}
           </p>
 
@@ -69,9 +69,8 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
           </div>
 
 
-          <div className="text-sm text-muted-foreground leading-relaxed space-y-2 text-center">
+          <div className="text-sm text-muted-foreground leading-relaxed text-center">
             <p>{t("paymentDone.accessNow")}</p>
-            <p>{t("paymentDone.sponsorContact")}</p>
           </div>
 
           <Button
@@ -79,7 +78,7 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
             onClick={() => window.open("https://timolsystem.com.br", "_blank")}
           >
             <ExternalLink className="h-4 w-4" />
-            timolsystem.com.br
+            {t("paymentDone.portalButton")}
           </Button>
 
           <div className="text-xs text-muted-foreground text-center space-y-1">
