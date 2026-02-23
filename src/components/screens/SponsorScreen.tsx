@@ -428,6 +428,12 @@ export const SponsorScreen = ({ onNext }: Props) => {
                  </div>
               </div>
 
+              {sponsorSelected && (
+                <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
+                  <p>⚠️ {t("sponsor.confirm.warning.combined")}</p>
+                </div>
+              )}
+
               {fromNoSponsorFlow && (
                 <div className="text-center -mt-2">
                   <button
@@ -439,12 +445,6 @@ export const SponsorScreen = ({ onNext }: Props) => {
                     {searching ? <Loader2 className="h-3 w-3 animate-spin inline mr-1" /> : null}
                     {t("sponsor.confirm.suggestAnother")}
                   </button>
-                </div>
-              )}
-
-              {sponsorSelected && (
-                <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
-                  <p>⚠️ {t("sponsor.confirm.warning.combined")}</p>
                 </div>
               )}
 
