@@ -28,15 +28,16 @@ export const PaymentPendingScreen = ({ data, onConfirmed, onChangePayment }: Pro
   const isForeigner = data.foreignerNoCpf === "true";
 
   // Build dynamic payment label with installments
-  const buildPaymentLabel = () => {
-    if (isPix) return "PIX";
-    const n = data.cardInstallments ?? 1;
+  const buildPaymentLines = () => {
+    if (isPix) return { line1: "PIX", line2: "" };
     const cardEnd = data.cardLast4 ? `${t("paymentPending.card")} •••• ${data.cardLast4}` : t("paymentPending.card");
-    if (n === 1) return `${cardEnd} — ${t("paymentDone.inFull")}`;
+    const n = data.cardInstallments ?? 1;
+    if (n === 1) return { line1: cardEnd, line2: t("paymentDone.inFull") };
     const hasInterest = n > 5;
-    return `${cardEnd} — ${n}× ${hasInterest ? t("payment.installments.fees") : t("payment.installments.nofees")}`;
+    const installValue = hasInterest ? (price * Math.pow(1.03, n)) / n : price / n;
+    return { line1: cardEnd, line2: `${n}× ${formatPrice(installValue)}` };
   };
-  const paymentLabel = buildPaymentLabel();
+  const paymentLines = buildPaymentLines();
 
   const handleRefresh = () => {
     setChecking(true);
@@ -83,7 +84,12 @@ export const PaymentPendingScreen = ({ data, onConfirmed, onChangePayment }: Pro
             <DataRow label="ID" value={<span className="font-bold text-primary">{data.userId ?? "123456"}</span>} />
             <DataRow label={t("paymentPending.franchise")} value={<span className="font-semibold">{franchiseName}</span>} />
             <DataRow label={t("paymentPending.amount")} value={<span className="font-bold text-primary">{formatPrice(price)}</span>} />
-            <DataRow label={t("paymentPending.method")} value={<span className="text-muted-foreground">{paymentLabel}</span>} />
+            <DataRow label={t("paymentPending.method")} value={
+              <div className="text-right">
+                <span className="text-muted-foreground text-xs">{paymentLines.line1}</span>
+                {paymentLines.line2 && <p className="text-xs text-muted-foreground">{paymentLines.line2}</p>}
+              </div>
+            } />
           </div>
 
           {/* Actions */}

@@ -205,7 +205,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
             <div className="mx-auto w-40 h-40 bg-muted rounded-xl flex items-center justify-center">
               <QrCode className="h-24 w-24 text-muted-foreground" />
             </div>
-            <p className="text-xs text-muted-foreground">{t("payment.pix.scan")}</p>
+            <p className="text-xs text-muted-foreground">{t("payment.pix.scan.line1")}<br />{t("payment.pix.scan.line2")}</p>
             <div className="relative bg-muted rounded p-2 text-xs font-mono break-all select-all pr-10">
               {PIX_CODE}
               <button
@@ -311,8 +311,8 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
                   ))}
                 </SelectContent>
               </Select>
-              {selectedInstallment.n > 1 && (
-                <p className="text-xs text-muted-foreground">
+            {selectedInstallment.n > 1 && (
+                <p className="text-xs text-muted-foreground text-right mt-2">
                   Total: {formatPrice(selectedInstallment.value * selectedInstallment.n)}
                 </p>
               )}

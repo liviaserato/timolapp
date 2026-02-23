@@ -206,31 +206,44 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {step === 1 && <StepPersonal data={data} onChange={onChange} errors={errors} />}
-        {step === 2 && <StepContact data={data} onChange={onChange} errors={errors} />}
-        {step === 3 && <StepAddress data={data} onChange={onChange} errors={errors} />}
-        {step === 4 && <StepLogin data={data} onChange={onChange} errors={errors} />}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (step < TOTAL_STEPS) {
+              handleNext();
+            } else {
+              handleSubmit();
+            }
+          }}
+        >
+          <div className="space-y-6">
+            {step === 1 && <StepPersonal data={data} onChange={onChange} errors={errors} />}
+            {step === 2 && <StepContact data={data} onChange={onChange} errors={errors} />}
+            {step === 3 && <StepAddress data={data} onChange={onChange} errors={errors} />}
+            {step === 4 && <StepLogin data={data} onChange={onChange} errors={errors} />}
 
-        {apiError && <p className="text-sm text-destructive text-center">{apiError}</p>}
+            {apiError && <p className="text-sm text-destructive text-center">{apiError}</p>}
 
-        <div className="flex justify-between gap-2">
-          {step > 1 ? (
-            <Button variant="outline" onClick={handleBack} disabled={loading}>
-              {t("btn.back")}
-            </Button>
-          ) : (
-            <div />
-          )}
+            <div className="flex justify-between gap-2">
+              {step > 1 ? (
+                <Button type="button" variant="outline" onClick={handleBack} disabled={loading}>
+                  {t("btn.back")}
+                </Button>
+              ) : (
+                <div />
+              )}
 
-          {step < TOTAL_STEPS ? (
-            <Button onClick={handleNext}>{t("btn.next")}</Button>
-          ) : (
-            <Button onClick={handleSubmit} disabled={loading}>
-              {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-              {t("btn.submit")}
-            </Button>
-          )}
-        </div>
+              {step < TOTAL_STEPS ? (
+                <Button type="submit">{t("btn.next")}</Button>
+              ) : (
+                <Button type="submit" disabled={loading}>
+                  {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                  {t("btn.submit")}
+                </Button>
+              )}
+            </div>
+          </div>
+        </form>
       </CardContent>
     </Card>
   );
