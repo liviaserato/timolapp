@@ -253,6 +253,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "contract.dateLocation": "São Paulo, {date}.",
     "contract.witness": "Testemunha",
     "contract.endOfDocument": "Fim do documento",
+    "contract.back": "Voltar ao cadastro",
 
     // Errors
     "error.generic": "Ocorreu um erro. Tente novamente.",
@@ -498,6 +499,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "contract.dateLocation": "São Paulo, {date}.",
     "contract.witness": "Witness",
     "contract.endOfDocument": "End of document",
+    "contract.back": "Back to registration",
 
     "error.generic": "An error occurred. Please try again.",
   },
@@ -742,6 +744,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "contract.dateLocation": "São Paulo, {date}.",
     "contract.witness": "Testigo",
     "contract.endOfDocument": "Fin del documento",
+    "contract.back": "Volver al registro",
 
     "error.generic": "Ocurrió un error. Intente nuevamente.",
   },

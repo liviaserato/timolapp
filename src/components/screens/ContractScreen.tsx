@@ -1,18 +1,27 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { WizardData } from "@/types/wizard";
 import { Button } from "@/components/ui/button";
-import { Printer, Download } from "lucide-react";
+import { Printer, Download, X } from "lucide-react";
 import timolLogo from "@/assets/logo-timol-azul-escuro.svg";
+import favicon from "/favicon.svg";
 
 interface Props {
   data: WizardData;
+  onClose?: () => void;
 }
 
-export const ContractScreen = ({ data }: Props) => {
+export const ContractScreen = ({ data, onClose }: Props) => {
   const { t } = useLanguage();
 
   const handlePrint = () => window.print();
-  const handleSavePdf = () => window.print(); // browser print dialog allows save as PDF
+  const handleSavePdf = () => window.print();
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      window.close();
+    }
+  };
 
   const today = new Date();
   const dateStr = today.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
@@ -73,36 +82,48 @@ export const ContractScreen = ({ data }: Props) => {
     <>
       {/* Screen toolbar – hidden on print */}
       <div className="print:hidden fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-b border-border">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
-          <h1 className="text-lg font-semibold text-foreground">{t("contract.title")}</h1>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={handlePrint}>
-              <Printer className="h-4 w-4 mr-1.5" />
-              {t("contract.print")}
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <button
+              onClick={handleClose}
+              className="flex-shrink-0 p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+              aria-label={t("btn.back")}
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <h1 className="text-sm sm:text-lg font-semibold text-foreground truncate">{t("contract.title")}</h1>
+          </div>
+          <div className="flex gap-2 flex-shrink-0">
+            <Button variant="outline" size="sm" onClick={handlePrint} className="px-2 sm:px-3">
+              <Printer className="h-4 w-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">{t("contract.print")}</span>
             </Button>
-            <Button size="sm" onClick={handleSavePdf}>
-              <Download className="h-4 w-4 mr-1.5" />
-              {t("contract.savePdf")}
+            <Button size="sm" onClick={handleSavePdf} className="px-2 sm:px-3">
+              <Download className="h-4 w-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">{t("contract.savePdf")}</span>
             </Button>
           </div>
         </div>
       </div>
 
-      {/* A4 pages container */}
-      <div className="print:pt-0 pt-16 pb-8 bg-muted/30 print:bg-white min-h-screen">
-        <div className="contract-pages-wrapper max-w-[210mm] mx-auto print:max-w-none px-4 print:px-0">
-          {/* All content flows naturally; page breaks handled by CSS */}
-          <div className="bg-white print:shadow-none shadow-lg print:p-0 p-[20mm] print:pt-0" style={{ fontFamily: "'Times New Roman', 'Georgia', serif" }}>
+      {/* A4 document container */}
+      <div className="print:pt-0 pt-14 sm:pt-16 pb-8 bg-muted/30 print:bg-white min-h-screen">
+        <div className="contract-pages-wrapper max-w-[210mm] mx-auto print:max-w-none px-3 sm:px-4 print:px-0">
+          <div className="contract-document bg-white print:shadow-none shadow-lg print:p-0 p-6 sm:p-[20mm] print:pt-0">
+
             {/* Header */}
             <div className="text-center mb-8 print:mb-6 pt-4 print:pt-[20mm]">
               <img src={timolLogo} alt="Timol" className="h-14 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold tracking-wide uppercase text-foreground">{t("contract.heading")}</h2>
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <img src={favicon} alt="" className="h-5 w-5 print:hidden" />
+                <h1 className="contract-h1">{t("contract.heading")}</h1>
+              </div>
               <div className="w-24 h-0.5 bg-foreground/30 mx-auto mt-3" />
             </div>
 
             {/* Franchisee data block */}
-            <div className="mb-8 border border-border/50 rounded p-5 bg-muted/20 print:bg-transparent print:border-foreground/20">
-              <h3 className="text-sm font-bold uppercase tracking-wider mb-3 text-foreground">{t("contract.franchiseeData")}</h3>
+            <div className="mb-8 border border-border/50 rounded p-4 sm:p-5 bg-muted/20 print:bg-transparent print:border-foreground/20">
+              <h2 className="contract-h2 mb-3">{t("contract.franchiseeData")}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm">
                 <ContractField label="ID" value={mockId} />
                 <ContractField label={t("summary.fullName")} value={fullName} />
@@ -118,10 +139,10 @@ export const ContractScreen = ({ data }: Props) => {
             </div>
 
             {/* Clauses */}
-            <div className="space-y-6 text-sm leading-relaxed text-foreground/90">
+            <div className="contract-body space-y-6">
               {clauses.map((clause, i) => (
                 <div key={i} className="contract-clause">
-                  <h4 className="font-bold text-foreground mb-2">{clause.title}</h4>
+                  <h3 className="contract-h3">{clause.title}</h3>
                   <p className="whitespace-pre-line text-justify">{clause.text}</p>
                 </div>
               ))}
@@ -129,10 +150,10 @@ export const ContractScreen = ({ data }: Props) => {
 
             {/* Signature block */}
             <div className="mt-12 pt-8 border-t border-foreground/20">
-              <p className="text-sm text-center mb-10 text-foreground/70">
+              <p className="text-sm text-center mb-10 text-muted-foreground">
                 {t("contract.dateLocation").replace("{date}", dateStr)}
               </p>
-              <div className="grid grid-cols-2 gap-8 mt-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8">
                 <div className="text-center">
                   <div className="border-t border-foreground/40 pt-2 mx-4">
                     <p className="text-sm font-semibold">TIMOL SYSTEM LTDA.</p>
@@ -148,7 +169,7 @@ export const ContractScreen = ({ data }: Props) => {
               </div>
 
               {/* Witnesses */}
-              <div className="grid grid-cols-2 gap-8 mt-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-12">
                 <div className="text-center">
                   <div className="border-t border-foreground/40 pt-2 mx-8">
                     <p className="text-xs text-muted-foreground">{t("contract.witness")} 1</p>
@@ -164,7 +185,7 @@ export const ContractScreen = ({ data }: Props) => {
               </div>
             </div>
 
-            {/* Footer page number placeholder — print CSS handles actual numbering */}
+            {/* Footer */}
             <div className="mt-8 text-center text-xs text-muted-foreground print:hidden">
               — {t("contract.endOfDocument")} —
             </div>
@@ -172,21 +193,87 @@ export const ContractScreen = ({ data }: Props) => {
         </div>
       </div>
 
-      {/* Print styles */}
+      {/* Contract typography & print styles */}
       <style>{`
+        /* === Contract typography (uses system font stack) === */
+        .contract-document {
+          font-family: inherit;
+          color: hsl(var(--foreground));
+          line-height: 1.7;
+        }
+        .contract-h1 {
+          font-size: 1.5rem;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          color: hsl(var(--foreground));
+          line-height: 1.3;
+        }
+        .contract-h2 {
+          font-size: 0.8rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: hsl(var(--foreground));
+          line-height: 1.4;
+        }
+        .contract-h3 {
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: hsl(var(--foreground));
+          margin-bottom: 0.5rem;
+          line-height: 1.4;
+        }
+        .contract-body {
+          font-size: 0.875rem;
+          line-height: 1.75;
+          color: hsl(var(--foreground) / 0.9);
+        }
+        .contract-body p {
+          margin-bottom: 0;
+        }
+        .contract-body ul, .contract-body ol {
+          padding-left: 1.5rem;
+          margin: 0.5rem 0;
+        }
+        .contract-body li {
+          margin-bottom: 0.25rem;
+        }
+        .contract-body a {
+          color: hsl(var(--primary));
+          text-decoration: underline;
+        }
+        .contract-body strong, .contract-body b {
+          font-weight: 700;
+          color: hsl(var(--foreground));
+        }
+
+        /* === Print: B&W, A4 margins, page breaks === */
         @media print {
           @page {
             size: A4;
             margin: 20mm;
           }
-          body { 
-            -webkit-print-color-adjust: exact; 
-            print-color-adjust: exact; 
+          html, body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          /* Force black & white for print */
+          body * {
+            color: #000 !important;
+            border-color: #888 !important;
+          }
+          img {
+            filter: grayscale(100%) !important;
           }
           .contract-clause {
             break-inside: avoid;
           }
+          .contract-document {
+            padding: 0 !important;
+          }
         }
+
         @media (min-width: 1400px) {
           .contract-pages-wrapper {
             max-width: 210mm;
