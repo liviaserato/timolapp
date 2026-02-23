@@ -17,7 +17,7 @@ import { WizardData } from "@/types/wizard";
 import { Search, Users, Phone, X, ChevronRight, ThumbsUp, Loader2 } from "lucide-react";
 import timolLogo from "@/assets/timol-logo.svg";
 import { countries } from "@/data/countries";
-import { supabase } from "@/integrations/supabase/client";
+
 
 interface Props {
   onNext: (data: Partial<WizardData>) => void;
@@ -68,28 +68,43 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setSearching(true);
     setError("");
     try {
-      const res = await fetch(`https://www.timolweb.com.br/gateway/cliente/patrocinio/${trimmed}`);
+      // Simulate ID 31 for testing while API endpoint is not available
+      if (trimmed === "31") {
+        const countryData = countries.find(c => c.iso2 === "BR");
+        setFoundSponsor({
+          id: "31",
+          name: "CARLOS EDUARDO SILVA",
+          city: "UBERLÂNDIA",
+          state: "MG",
+          countryFlag: countryData?.flag || "🇧🇷",
+          photo: "",
+        });
+        setShowConfirmBox(true);
+        return;
+      }
+
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-lookup?id=${trimmed}`,
+        { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
+      );
       if (!res.ok) {
         setError(t("sponsor.error.notFound"));
         return;
       }
       const json = await res.json();
-      // API returns an array
       const record = Array.isArray(json) ? json[0] : json;
       if (!record || !record.nome) {
         setError(t("sponsor.error.notFound"));
         return;
       }
       const name = record.nome || "";
-      // Parse city from "UBERLÂNDIA - MG" format
       const cidadeParts = (record.cidade || "").split(" - ");
       const city = cidadeParts[0]?.trim() || "";
       const state = cidadeParts[1]?.trim() || record.estado || "";
       const photo = record.foto || record.photo || "";
       const countryIso = record.pais_cod_iso || "";
-      // Find flag from countries data
-      const countryData = countries.find(c => c.iso2 === countryIso);
-      const countryFlag = countryData?.flag || "";
+      const countryDataResult = countries.find(c => c.iso2 === countryIso);
+      const countryFlag = countryDataResult?.flag || "";
 
       setFoundSponsor({ id: trimmed, name, city, state, countryFlag, photo });
       setShowConfirmBox(true);
@@ -124,6 +139,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
     const errors: Record<string, string> = {};
     if (!contactName.trim()) errors.name = t("validation.required");
     if (!contactPhone.trim()) errors.phone = t("validation.required");
+    if (!contactCityState.trim()) errors.cityState = t("validation.required");
     if (Object.keys(errors).length > 0) {
       setContactErrors(errors);
       return;
@@ -255,13 +271,14 @@ export const SponsorScreen = ({ onNext }: Props) => {
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">{t("sponsor.noSponsorBox.contactCityState")}</Label>
+                      <Label className="text-xs">{t("sponsor.noSponsorBox.contactCityState")} *</Label>
                       <Input
                         placeholder={t("sponsor.noSponsorBox.contactCityState.placeholder")}
                         value={contactCityState}
-                        onChange={(e) => setContactCityState(e.target.value)}
+                        onChange={(e) => { setContactCityState(e.target.value); setContactErrors((p) => ({ ...p, cityState: "" })); }}
                         className="h-8 text-sm"
                       />
+                      {contactErrors.cityState && <p className="text-xs text-destructive">{contactErrors.cityState}</p>}
                       <p className="text-xs text-muted-foreground">{t("sponsor.noSponsorBox.contactCityState.hint")}</p>
                     </div>
                     <div className="space-y-1">
