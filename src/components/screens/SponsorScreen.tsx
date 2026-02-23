@@ -429,7 +429,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
               </div>
 
               {fromNoSponsorFlow && (
-                <div className="text-center">
+                <div className="text-center -mt-2">
                   <button
                     type="button"
                     onClick={handleSuggestAnother}
@@ -444,8 +444,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
 
               {sponsorSelected && (
                 <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
-                  <p className="font-semibold">⚠️ {t("sponsor.confirm.warning.title")}</p>
-                  <p>{t("sponsor.confirm.warning.text")}</p>
+                  <p>⚠️ {t("sponsor.confirm.warning.combined")}</p>
                 </div>
               )}
 
