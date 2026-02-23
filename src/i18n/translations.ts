@@ -242,6 +242,18 @@ export const translations: Record<Language, Record<string, string>> = {
     "success.message": "Verifique seu e-mail para confirmar sua conta.",
     "success.back": "Escolha sua franquia",
 
+    // Contract
+    "contract.title": "Contrato de Franquia",
+    "contract.heading": "Contrato de Franquia",
+    "contract.print": "Imprimir",
+    "contract.savePdf": "Salvar como PDF",
+    "contract.franchiseeData": "Dados do Franqueado",
+    "contract.document": "CPF / Documento",
+    "contract.sponsor": "Patrocinador",
+    "contract.dateLocation": "São Paulo, {date}.",
+    "contract.witness": "Testemunha",
+    "contract.endOfDocument": "Fim do documento",
+
     // Errors
     "error.generic": "Ocorreu um erro. Tente novamente.",
   },
@@ -476,6 +488,17 @@ export const translations: Record<Language, Record<string, string>> = {
     "success.message": "Check your email to confirm your account.",
     "success.back": "Choose your franchise",
 
+    "contract.title": "Franchise Agreement",
+    "contract.heading": "Franchise Agreement",
+    "contract.print": "Print",
+    "contract.savePdf": "Save as PDF",
+    "contract.franchiseeData": "Franchisee Details",
+    "contract.document": "CPF / Document",
+    "contract.sponsor": "Sponsor",
+    "contract.dateLocation": "São Paulo, {date}.",
+    "contract.witness": "Witness",
+    "contract.endOfDocument": "End of document",
+
     "error.generic": "An error occurred. Please try again.",
   },
 
@@ -708,6 +731,17 @@ export const translations: Record<Language, Record<string, string>> = {
     "success.title": "¡Registro completado!",
     "success.message": "Revise su correo para confirmar su cuenta.",
     "success.back": "Elija su franquicia",
+
+    "contract.title": "Contrato de Franquicia",
+    "contract.heading": "Contrato de Franquicia",
+    "contract.print": "Imprimir",
+    "contract.savePdf": "Guardar como PDF",
+    "contract.franchiseeData": "Datos del Franquiciado",
+    "contract.document": "CPF / Documento",
+    "contract.sponsor": "Patrocinador",
+    "contract.dateLocation": "São Paulo, {date}.",
+    "contract.witness": "Testigo",
+    "contract.endOfDocument": "Fin del documento",
 
     "error.generic": "Ocurrió un error. Intente nuevamente.",
   },
