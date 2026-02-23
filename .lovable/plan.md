@@ -1,60 +1,34 @@
 
 
-# Página de Cadastro de Usuário — Wizard Multi-Idioma
+## Ajuste do cabecalho da tela inicial
 
-## Visão Geral
-Formulário de cadastro dividido em etapas (wizard), com tradução completa da interface para Português, Inglês e Espanhol.
+### O que muda
 
----
+1. **Remover o favicon (icone pequeno) ao lado do titulo** -- a imagem `timol-logo.svg` de 12x12 que aparece ao lado do texto sera removida do cabecalho.
 
-## 🌐 Seleção de Idioma
-- Seletor de idioma no topo da página (PT / EN / ES)
-- Toda a interface traduz automaticamente: labels, placeholders, botões, mensagens de erro
-- Sistema de internacionalização (i18n) simples com arquivos de tradução
+2. **Alterar o titulo para "Cadastro de Franquia"** -- atualizar a chave `sponsor.title` nos 3 idiomas (pt, en, es).
 
----
+3. **Inserir a nova logo da Timol centralizada abaixo do titulo** -- copiar o arquivo `logo-timol-azul-claro.svg` enviado para `src/assets/` e renderizar como imagem centralizada entre o titulo e o texto descritivo.
 
-## 📝 Etapas do Wizard
-
-### Etapa 1 — Dados Pessoais
-- Nome completo
-- Data de nascimento
-- CPF / Documento
-- Gênero
-
-### Etapa 2 — Contato
-- E-mail
-- Telefone
-
-### Etapa 3 — Endereço
-- CEP
-- Rua / Logradouro
-- Número
-- Complemento
-- Bairro
-- Cidade
-- Estado
-- País
-
-### Etapa 4 — Login e Senha
-- Nome de usuário (login)
-- Senha
-- Confirmar senha
-- Indicador visual de força da senha
+4. **Alterar o texto descritivo abaixo da logo** -- atualizar a chave `sponsor.subtitle` para: "Para fazer parte da Timol, voce precisa de um convite. Quem te convidou sera seu patrocinador." (nos 3 idiomas com traducoes equivalentes).
 
 ---
 
-## 🎨 Experiência do Usuário
-- Barra de progresso mostrando a etapa atual
-- Botões "Voltar" e "Próximo" em cada etapa
-- Validação dos campos antes de avançar
-- Tela de confirmação/sucesso ao finalizar
+### Detalhes tecnicos
 
----
+**Arquivo: `src/components/screens/SponsorScreen.tsx`** (linhas 222-232)
 
-## 🗄️ Backend (Supabase)
-- Tabela `profiles` para armazenar dados pessoais, contato, endereço e idioma preferido
-- Autenticação via Supabase Auth (email + senha)
-- Trigger para criar perfil automaticamente no signup
-- Políticas de segurança (RLS) para proteger os dados
+- Remover o `<img src={timolLogo}>` e o container `flex` que agrupa icone + titulo.
+- Estrutura do cabecalho passara a ser:
+  1. `<h1>` com o titulo "Cadastro de Franquia", centralizado
+  2. `<img>` com a nova logo `logo-timol-azul-claro.svg`, centralizada, largura adequada (~180px)
+  3. `<p>` com o texto descritivo
+  4. `<LanguageSelector />`
+
+**Arquivo: `src/i18n/translations.ts`**
+
+- `sponsor.title`: "Cadastro de Franquia" (pt), "Franchise Registration" (en), "Registro de Franquicia" (es)
+- `sponsor.subtitle`: "Para fazer parte da Timol, voce precisa de um convite. Quem te convidou sera seu patrocinador." (pt), com traducoes equivalentes em en/es
+
+**Novo asset:** Copiar `user-uploads://logo-timol-azul-claro.svg` para `src/assets/logo-timol-azul-claro.svg` e importar no componente.
 
