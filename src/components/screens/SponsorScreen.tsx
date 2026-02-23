@@ -68,21 +68,6 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setSearching(true);
     setError("");
     try {
-      // Simulate ID 31 for testing while API endpoint is not available
-      if (trimmed === "31") {
-        const countryData = countries.find(c => c.iso2 === "BR");
-        setFoundSponsor({
-          id: "31",
-          name: "CARLOS EDUARDO SILVA",
-          city: "UBERLÂNDIA",
-          state: "MG",
-          countryFlag: countryData?.flag || "🇧🇷",
-          photo: "",
-        });
-        setShowConfirmBox(true);
-        return;
-      }
-
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-lookup?id=${trimmed}`,
         { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
@@ -130,9 +115,41 @@ export const SponsorScreen = ({ onNext }: Props) => {
     });
   };
 
-  const handleRandomSponsor = () => {
+  const handleRandomSponsor = async () => {
     setShowNoSponsorBox(false);
-    onNext({ sponsorId: "auto", sponsorName: "" });
+    setSearching(true);
+    setError("");
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-lookup?id=31`,
+        { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
+      );
+      if (!res.ok) {
+        setError(t("sponsor.error.notFound"));
+        return;
+      }
+      const json = await res.json();
+      const record = Array.isArray(json) ? json[0] : json;
+      if (!record || !record.nome) {
+        setError(t("sponsor.error.notFound"));
+        return;
+      }
+      const name = record.nome || "";
+      const cidadeParts = (record.cidade || "").split(" - ");
+      const city = cidadeParts[0]?.trim() || "";
+      const state = cidadeParts[1]?.trim() || record.estado || "";
+      const photo = record.foto || record.photo || "";
+      const countryIso = record.pais_cod_iso || "";
+      const countryDataResult = countries.find(c => c.iso2 === countryIso);
+      const countryFlag = countryDataResult?.flag || "";
+
+      setFoundSponsor({ id: "31", name, city, state, countryFlag, photo });
+      setShowConfirmBox(true);
+    } catch {
+      setError(t("sponsor.error.notFound"));
+    } finally {
+      setSearching(false);
+    }
   };
 
   const handleContactSubmit = () => {
