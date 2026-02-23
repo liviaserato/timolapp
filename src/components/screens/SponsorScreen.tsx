@@ -42,6 +42,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const [fromNoSponsorFlow, setFromNoSponsorFlow] = useState(false);
   const [error, setError] = useState("");
   const [searching, setSearching] = useState(false);
+  const [sponsorSelected, setSponsorSelected] = useState(false);
 
   // Contact form state
   const [contactName, setContactName] = useState("");
@@ -93,6 +94,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
       const countryFlag = countryDataResult?.flag || "";
 
       setFoundSponsor({ id: trimmed, name, city, state, countryFlag, photo });
+      setSponsorSelected(false);
       setFromNoSponsorFlow(false);
       setShowConfirmBox(true);
     } catch {
@@ -145,6 +147,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
       const countryFlag = countryDataResult?.flag || "";
 
       setFoundSponsor({ id, name, city, state, countryFlag, photo });
+      setSponsorSelected(false);
       setShowConfirmBox(true);
     } catch {
       setError(t("sponsor.error.notFound"));
@@ -161,8 +164,27 @@ export const SponsorScreen = ({ onNext }: Props) => {
 
   const handleSuggestAnother = async () => {
     if (!foundSponsor) return;
+    setSponsorSelected(false);
     const nextId = foundSponsor.id === "31" ? "27" : "31";
     await fetchSponsorById(nextId);
+  };
+
+  const resetAll = () => {
+    setSponsorId("");
+    setFoundSponsor(null);
+    setShowConfirmBox(false);
+    setSponsorSelected(false);
+    setShowNoSponsorBox(false);
+    setNoSponsorStep("contact-form");
+    setFromNoSponsorFlow(false);
+    setError("");
+    setContactName("");
+    setContactPhone("");
+    setContactCityState("");
+    setContactBestTime("");
+    setContactHowKnew("");
+    setContactOther("");
+    setContactErrors({});
   };
 
   const handleContactSubmit = () => {
@@ -361,7 +383,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
                 <div className="text-center space-y-3 py-2">
                   <ThumbsUp className="h-10 w-10 mx-auto text-primary" />
                   <p className="text-sm text-muted-foreground">{t("sponsor.noSponsorBox.contactSuccess")}</p>
-                  <Button className="w-full" onClick={() => setShowNoSponsorBox(false)}>OK</Button>
+                  <Button className="w-full" onClick={resetAll}>OK</Button>
                 </div>
               )}
             </CardContent>
@@ -382,7 +404,14 @@ export const SponsorScreen = ({ onNext }: Props) => {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center gap-4 rounded-lg border p-4 bg-muted/40">
+               <div
+                 className={`flex items-center gap-4 rounded-lg border-2 p-4 cursor-pointer transition-all ${
+                   sponsorSelected
+                     ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                     : "border-muted bg-muted/40 hover:border-muted-foreground/30"
+                 }`}
+                 onClick={() => setSponsorSelected(true)}
+               >
                 <Avatar className="h-14 w-14 flex-shrink-0">
                   {foundSponsor.photo ? (
                     <AvatarImage src={foundSponsor.photo} alt={foundSponsor.name} />
@@ -415,16 +444,18 @@ export const SponsorScreen = ({ onNext }: Props) => {
                 </div>
               )}
 
-              <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
-                <p className="font-semibold">⚠️ {t("sponsor.confirm.warning.title")}</p>
-                <p>{t("sponsor.confirm.warning.text")}</p>
-              </div>
+              {sponsorSelected && (
+                <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
+                  <p className="font-semibold">⚠️ {t("sponsor.confirm.warning.title")}</p>
+                  <p>{t("sponsor.confirm.warning.text")}</p>
+                </div>
+              )}
 
               <div className="flex gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setShowConfirmBox(false)}>
                   {t("btn.back")}
                 </Button>
-                <Button className="flex-1" onClick={handleConfirmSponsor}>
+                <Button className="flex-1" onClick={handleConfirmSponsor} disabled={!sponsorSelected}>
                   {t("sponsor.confirm.confirm")}
                 </Button>
               </div>
