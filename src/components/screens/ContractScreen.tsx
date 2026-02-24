@@ -124,6 +124,7 @@ export const ContractScreen = ({ data, onClose }: Props) => {
             >
               <X className="h-5 w-5" />
             </button>
+            <img src={favicon} alt="" className="h-5 w-5 flex-shrink-0" />
             <h1 className="text-sm sm:text-lg font-semibold text-foreground truncate">{t("contract.title")}</h1>
           </div>
           <div className="flex gap-2 flex-shrink-0">
@@ -147,25 +148,25 @@ export const ContractScreen = ({ data, onClose }: Props) => {
             {/* Header */}
             <div className="text-center mb-6 print:mb-5 pt-4 print:pt-[20mm]">
               <img src={timolLogo} alt="Timol" className="h-10 sm:h-12 mx-auto mb-3" />
-              <div className="flex items-center justify-center gap-1.5">
-                <img src={favicon} alt="" className="h-4 w-4" />
-                <h1 className="contract-h1">{t("contract.heading")}</h1>
-              </div>
+              <h1 className="contract-h1">{t("contract.heading")}</h1>
             </div>
 
             {/* Franchisee data block */}
             <div className="mb-6 border border-border/50 rounded p-4 sm:p-5 bg-muted/20 print:bg-transparent print:border-foreground/20">
               <h2 className="contract-h2 mb-3">{t("contract.franchiseeData")}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm">
-                <ContractField label="ID" value={mockId} />
-                <ContractField label={t("summary.fullName")} value={fullName} />
+                <ContractField label={t("summary.fullName")} value={fullName} spanFull />
                 <ContractField label={docLabel} value={doc} />
                 <ContractField label={t("summary.birthDate")} value={birthDate} />
-                <ContractField label={t("summary.email")} value={email} />
+                <ContractField label={t("summary.email")} value={email} spanFull />
                 <ContractField label={t("contract.address")} value={fullAddress} spanFull />
+              </div>
+              <div className="border-t border-border/30 my-3" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm">
+                <ContractField label="ID" value={mockId} />
                 <ContractField label={t("summary.franchiseChosen")} value={franchiseName} />
                 <ContractField label={t("contract.acquisitionDate")} value={todayShort} />
-                <ContractField label={t("contract.sponsor")} value={sponsorDisplay} spanFull />
+                <ContractField label={t("contract.sponsor")} value={sponsorDisplay} />
               </div>
             </div>
 
