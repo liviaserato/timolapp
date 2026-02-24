@@ -5,8 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { X, AlertTriangle, CheckCircle2, XCircle, MessageCircle, Loader2 } from "lucide-react";
 import { countries, getCountryName } from "@/data/countries";
-
-const WHATSAPP_NUMBER = "5534991258000";
+import { openWhatsAppLink } from "@/lib/whatsapp";
 
 export interface DocumentRecord {
   id: string;
@@ -80,12 +79,10 @@ export const DocumentCheckPopup = ({
   };
 
   const openWhatsApp = () => {
-    const message = encodeURIComponent(
-      t("docCheck.whatsapp.message")
-        .replace("{name}", userName)
-        .replace("{document}", document)
-    );
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
+    const message = t("docCheck.whatsapp.message")
+      .replace("{name}", userName)
+      .replace("{document}", document);
+    openWhatsAppLink(message);
   };
 
   return (

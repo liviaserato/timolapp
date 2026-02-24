@@ -18,9 +18,9 @@ import { Search, Users, Phone, X, ChevronRight, ThumbsUp, Loader2, MessageCircle
 import timolLogoAzul from "@/assets/logo-timol-azul-escuro.svg";
 import whatsappIcon from "@/assets/icon-logo-whatsapp.svg";
 import { countries } from "@/data/countries";
+import { openWhatsAppLink } from "@/lib/whatsapp";
 
 // Language to Google Places language map
-const WHATSAPP_NUMBER = "5534991258000";
 const LANG_MAP: Record<string, string> = { pt: "pt-BR", en: "en", es: "es" };
 
 interface Props {
@@ -281,10 +281,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
 
   // Open WhatsApp from confirm screen (Popup 2)
   const openWhatsAppFromConfirm = () => {
-    const message = encodeURIComponent(
-      `Olá, meu nome é ${contactName || "—"}. Quero escolher um patrocinador e preciso de ajuda.`
-    );
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
+    openWhatsAppLink(`Olá, meu nome é ${contactName || "—"}. Quero escolher um patrocinador e preciso de ajuda.`);
   };
   const howKnewOptions = [
     { value: "live", label: t("sponsor.noSponsorBox.contactHowKnew.live") },
@@ -496,10 +493,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
                     variant="outline"
                     className="w-full justify-start gap-2"
                     onClick={() => {
-                      const message = encodeURIComponent(
-                        `Olá, meu nome é ${contactName || "—"}. Quero escolher um patrocinador e preciso de ajuda.`
-                      );
-                      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
+                      openWhatsAppLink(`Olá, meu nome é ${contactName || "—"}. Quero escolher um patrocinador e preciso de ajuda.`);
                     }}
                   >
                     <img src={whatsappIcon} alt="WhatsApp" className="h-5 w-5" />
