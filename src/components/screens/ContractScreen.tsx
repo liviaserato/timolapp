@@ -55,15 +55,11 @@ export const ContractScreen = ({ data, onClose }: Props) => {
   const birthDate = data.birthDate ?? "—";
   const email = data.email ?? "—";
 
-  // Concatenated address
-  const addressParts = [
-    [data.street, data.number, data.complement].filter(Boolean).join(", "),
-    data.neighborhood,
-  ].filter(Boolean).join(" — ");
-  const cityStateParts = [data.city, data.state].filter(Boolean).join("/");
-  const fullAddress = [addressParts, cityStateParts, data.zipCode, data.country]
-    .filter(Boolean)
-    .join(", ") || "—";
+  // Address parts (structured)
+  const addressLine1 = [data.street, data.number].filter(Boolean).join(", ") || "";
+  const addressLine2 = data.complement || "";
+  const addressLine3 = [data.neighborhood, data.city, data.state].filter(Boolean).join(", ") || "";
+  const addressLine4 = [data.country, data.zipCode].filter(Boolean).join(" — ") || "";
 
   const franchiseName = data.franchise ? t(`franchise.${data.franchise}`) : "_______________";
   const sponsorDisplay = `${data.sponsorName ?? "—"} (${data.sponsorId ?? "—"})`;
@@ -158,8 +154,14 @@ export const ContractScreen = ({ data, onClose }: Props) => {
                 <ContractField label={t("summary.fullName")} value={fullName} spanFull />
                 <ContractField label={docLabel} value={doc} />
                 <ContractField label={t("summary.birthDate")} value={birthDate} />
-                <ContractField label={t("summary.email")} value={email} spanFull />
-                <ContractField label={t("contract.address")} value={fullAddress} spanFull />
+                {/* Address (left col) + Email (right col, aligned) */}
+                <div className="flex flex-col gap-0.5">
+                  <ContractField label={t("contract.address")} value={addressLine1 || "—"} />
+                  {addressLine2 && <div className="pl-[calc(0.5rem+0px)] ml-[0px]"><span className="text-muted-foreground font-medium flex-shrink-0 invisible">_:</span> <span className="font-semibold text-sm">{addressLine2}</span></div>}
+                  {addressLine3 && <div><span className="text-muted-foreground font-medium flex-shrink-0 invisible text-sm">_:</span> <span className="font-semibold text-sm">{addressLine3}</span></div>}
+                  {addressLine4 && <div><span className="text-muted-foreground font-medium flex-shrink-0 invisible text-sm">_:</span> <span className="font-semibold text-sm">{addressLine4}</span></div>}
+                </div>
+                <ContractField label={t("summary.email")} value={email} />
               </div>
               <div className="border-t border-border/30 my-3" />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm">
