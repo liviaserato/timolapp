@@ -107,7 +107,13 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
       if (!data.city?.trim()) newErrors.city = req;
       if (!data.state?.trim()) newErrors.state = req;
     } else if (step === 4) {
-      if (!data.username?.trim()) newErrors.username = req;
+      if (!data.username?.trim()) {
+        newErrors.username = req;
+      } else if (!/^[a-zA-Z0-9_]*$/.test(data.username)) {
+        newErrors.username = t("step4.username.invalidChars");
+      } else if (data.username.length > 20) {
+        newErrors.username = t("step4.username.hint");
+      }
       if (!data.password) newErrors.password = req;
       else if (data.password.length < 6) newErrors.password = t("validation.passwordMin");
       if (!data.confirmPassword) newErrors.confirmPassword = req;
