@@ -18,50 +18,8 @@ import { Search, Users, Phone, X, ChevronRight, ThumbsUp, Loader2, MessageCircle
 import timolLogoAzul from "@/assets/logo-timol-azul-escuro.svg";
 import { countries } from "@/data/countries";
 
-// Static list of locations for autocomplete
-const LOCATION_OPTIONS = [
-  // Brasil
-  "São Paulo, SP - Brasil", "Rio de Janeiro, RJ - Brasil", "Belo Horizonte, MG - Brasil",
-  "Brasília, DF - Brasil", "Salvador, BA - Brasil", "Fortaleza, CE - Brasil",
-  "Curitiba, PR - Brasil", "Manaus, AM - Brasil", "Recife, PE - Brasil",
-  "Porto Alegre, RS - Brasil", "Belém, PA - Brasil", "Goiânia, GO - Brasil",
-  "Guarulhos, SP - Brasil", "Campinas, SP - Brasil", "São Luís, MA - Brasil",
-  "Maceió, AL - Brasil", "Campo Grande, MS - Brasil", "Teresina, PI - Brasil",
-  "João Pessoa, PB - Brasil", "Natal, RN - Brasil", "Florianópolis, SC - Brasil",
-  "Vitória, ES - Brasil", "Cuiabá, MT - Brasil", "Aracaju, SE - Brasil",
-  "Porto Velho, RO - Brasil", "Macapá, AP - Brasil", "Rio Branco, AC - Brasil",
-  "Boa Vista, RR - Brasil", "Palmas, TO - Brasil",
-  "Uberlândia, MG - Brasil", "Ribeirão Preto, SP - Brasil", "Sorocaba, SP - Brasil",
-  "Santos, SP - Brasil", "Joinville, SC - Brasil", "Londrina, PR - Brasil",
-  "Maringá, PR - Brasil", "Juiz de Fora, MG - Brasil", "Niterói, RJ - Brasil",
-  "São José dos Campos, SP - Brasil", "Osasco, SP - Brasil",
-  // EUA
-  "New York, NY - USA", "Los Angeles, CA - USA", "Chicago, IL - USA",
-  "Houston, TX - USA", "Miami, FL - USA", "Dallas, TX - USA",
-  "San Francisco, CA - USA", "Orlando, FL - USA", "Boston, MA - USA",
-  // Argentina
-  "Buenos Aires, BA - Argentina", "Córdoba, CBA - Argentina", "Rosario, SF - Argentina",
-  // Paraguai
-  "Asunción, Central - Paraguay", "Ciudad del Este, Alto Paraná - Paraguay",
-  // Portugal
-  "Lisboa, LIS - Portugal", "Porto, PRT - Portugal",
-  // Espanha
-  "Madrid, MAD - España", "Barcelona, BCN - España",
-  // Colômbia
-  "Bogotá, DC - Colombia", "Medellín, ANT - Colombia",
-  // México
-  "Ciudad de México, CDMX - México", "Guadalajara, JAL - México",
-  // Chile
-  "Santiago, RM - Chile",
-  // Peru
-  "Lima, LIM - Perú",
-  // Uruguai
-  "Montevideo, MVD - Uruguay",
-  // Bolívia
-  "Santa Cruz, SCZ - Bolivia", "La Paz, LP - Bolivia",
-  // Japão
-  "Tokyo, TK - Japan", "Osaka, OS - Japan",
-];
+// Language to Google Places language map
+const LANG_MAP: Record<string, string> = { pt: "pt-BR", en: "en", es: "es" };
 
 interface Props {
   onNext: (data: Partial<WizardData>) => void;
@@ -297,14 +255,28 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setShowNoSponsorBox(true);
   };
 
+  const locationDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const handleLocationInput = (value: string) => {
     setContactCityState(value);
     setContactErrors((p) => ({ ...p, cityState: "" }));
+    if (locationDebounceRef.current) clearTimeout(locationDebounceRef.current);
     if (value.length >= 2) {
-      const lower = value.toLowerCase();
-      const filtered = LOCATION_OPTIONS.filter(opt => opt.toLowerCase().includes(lower)).slice(0, 8);
-      setLocationSuggestions(filtered);
-      setShowLocationDropdown(filtered.length > 0);
+      locationDebounceRef.current = setTimeout(async () => {
+        try {
+          const lang = LANG_MAP[language] || "pt-BR";
+          const res = await fetch(
+            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/places-autocomplete?input=${encodeURIComponent(value)}&language=${lang}`,
+            { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
+          );
+          const data = await res.json();
+          const suggestions = (data.predictions || []).map((p: any) => p.description);
+          setLocationSuggestions(suggestions);
+          setShowLocationDropdown(suggestions.length > 0);
+        } catch {
+          setShowLocationDropdown(false);
+        }
+      }, 300);
     } else {
       setShowLocationDropdown(false);
     }
@@ -458,10 +430,8 @@ export const SponsorScreen = ({ onNext }: Props) => {
                           value={contactCityState}
                           onChange={(e) => handleLocationInput(e.target.value)}
                           onFocus={() => {
-                            if (contactCityState.length >= 2) {
-                              const lower = contactCityState.toLowerCase();
-                              const filtered = LOCATION_OPTIONS.filter(opt => opt.toLowerCase().includes(lower)).slice(0, 8);
-                              if (filtered.length > 0) setShowLocationDropdown(true);
+                            if (contactCityState.length >= 2 && locationSuggestions.length > 0) {
+                              setShowLocationDropdown(true);
                             }
                           }}
                           className="h-8 text-sm"
