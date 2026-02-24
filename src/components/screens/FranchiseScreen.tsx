@@ -111,15 +111,14 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-3">
         <img src="/favicon.svg" alt="Timol" className="h-10 w-10 mx-auto" />
-        <h2 className="text-2xl sm:text-3xl font-bold text-primary">
-          {t("franchise.title")}{firstName ? `, ${firstName}` : ""}!
-        </h2>
-        <p className="text-muted-foreground">{t("franchise.subtitle")}</p>
-        <p className="text-base font-semibold text-primary">
-          {t("franchise.yourId")} {odataId}.
+        <p className="text-xl sm:text-2xl font-bold text-primary">
+          {t("franchise.yourId")} {odataId}
         </p>
+        <h2 className="text-lg sm:text-xl font-semibold text-foreground">
+          {t("franchise.subtitle")}
+        </h2>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -129,17 +128,18 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
             <div
               key={f.id}
               className={cn(
-                "relative rounded-lg border-2 cursor-pointer transition-all duration-200 flex flex-col overflow-hidden",
+                "relative rounded-lg border-2 cursor-pointer transition-all duration-200 flex flex-col",
+                f.recommended ? "mt-4" : "",
                 isSelected
                   ? "border-yellow-500 bg-yellow-50 ring-2 ring-yellow-400 shadow-lg scale-[1.02]"
                   : "border-border bg-card hover:shadow-md hover:scale-[1.01]"
               )}
               onClick={() => setSelected(f.id)}
             >
-              {/* Recommended badge */}
+              {/* Recommended badge — overlapping top border */}
               {f.recommended && (
-                <div className="absolute top-2 right-2 z-10">
-                  <Badge className="bg-yellow-500 text-white border-0 text-[10px] px-2 py-0.5 shadow-sm">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                  <Badge className="bg-yellow-500 text-white border-0 text-xs px-3 py-1 shadow-md whitespace-nowrap">
                     {t("franchise.bestChoice")}
                   </Badge>
                 </div>
@@ -147,7 +147,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
 
               {/* Header: icon left, name+price right */}
               <div className={cn(
-                "flex items-center gap-3 p-4",
+                "flex items-center gap-3 p-4 rounded-t-[calc(0.5rem-2px)]",
                 isSelected ? "bg-yellow-100/50" : "bg-muted/30"
               )}>
                 <img src={f.image} alt={t(f.nameKey)} className="h-14 w-14 object-contain flex-shrink-0" />
