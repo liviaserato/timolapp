@@ -13,15 +13,16 @@ serve(async (req) => {
   const url = new URL(req.url);
   const sponsorId = url.searchParams.get("id");
 
-  if (!sponsorId) {
+  // Validate sponsor ID: must be 1-10 digits only
+  if (!sponsorId || !/^[0-9]{1,10}$/.test(sponsorId)) {
     return new Response(
-      JSON.stringify({ error: "Missing sponsor id" }),
+      JSON.stringify({ error: "Invalid sponsor ID" }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
   try {
-    const apiUrl = `https://www.timolweb.com.br/gateway/cliente/patrocinio/${sponsorId}`;
+    const apiUrl = `https://www.timolweb.com.br/gateway/cliente/patrocinio/${encodeURIComponent(sponsorId)}`;
     const res = await fetch(apiUrl, {
       headers: {
         "Accept": "application/json",
@@ -45,8 +46,9 @@ serve(async (req) => {
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
+    console.error("Sponsor lookup failed:", err);
     return new Response(
-      JSON.stringify({ error: "fetch_failed", detail: String(err) }),
+      JSON.stringify({ error: "Service temporarily unavailable" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
