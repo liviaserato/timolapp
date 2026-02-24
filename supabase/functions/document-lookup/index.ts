@@ -24,38 +24,51 @@ serve(async (req) => {
       );
     }
 
-    // TODO: Replace this with the actual Timol API endpoint when provided
-    // Expected API: GET https://www.timolweb.com.br/api/???
-    // Parameters: document (CPF or passport number), foreigner flag, country
-    // Expected response: array of records with { id, nome, pais_cod_iso, patrocinador_id, ... }
-    //
-    // For now, return empty records (no existing registration found)
-    // This allows the flow to work end-to-end while waiting for the actual API path
+    // Clean document (digits only for CPF)
+    const cleanDoc = foreigner ? document.trim() : document.replace(/\D/g, "");
 
-    const records: Array<{
-      id: string;
-      name: string;
-      country: string;
-      countryIso2: string;
-      sponsorId: string;
-    }> = [];
+    const apiUrl = `https://www.timolweb.com.br/gateway/cliente/buscacpf?cpf_cnpj=${encodeURIComponent(cleanDoc)}`;
+    const apiRes = await fetch(apiUrl, {
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0 (compatible; TimolApp/1.0)",
+        "Origin": "https://timolsystem.com.br",
+        "Referer": "https://timolsystem.com.br/",
+      },
+    });
 
-    // Placeholder: when API is integrated, map the response like this:
-    // const apiResponse = await fetch(`https://www.timolweb.com.br/api/PATH?param=${document}`);
-    // const apiData = await apiResponse.json();
-    // records = apiData.map(r => ({
-    //   id: r.id_franquia || r.id,
-    //   name: r.nome,
-    //   country: r.pais,
-    //   countryIso2: r.pais_cod_iso,
-    //   sponsorId: r.patrocinador_id,
-    // }));
+    if (!apiRes.ok) {
+      // API error — return empty so user can proceed
+      return new Response(
+        JSON.stringify({ records: [] }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const apiData = await apiRes.json();
+    console.log("Timol buscacpf response:", JSON.stringify(apiData));
+
+    // Map API response to our record format
+    // The API may return an array or a single object — normalize
+    const rawRecords = Array.isArray(apiData) ? apiData : (apiData ? [apiData] : []);
+
+    const records = rawRecords
+      .filter((r: Record<string, unknown>) => r && (r.id || r.id_franquia))
+      .map((r: Record<string, unknown>) => ({
+        id: String(r.id_franquia || r.id || ""),
+        name: String(r.nome || r.name || ""),
+        country: String(r.pais || r.country || ""),
+        countryIso2: String(r.pais_cod_iso || r.countryIso2 || countryIso2),
+        sponsorId: String(r.patrocinador_id || r.sponsor_id || ""),
+      }));
 
     return new Response(
       JSON.stringify({ records }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
+    console.error("Document lookup error:", error);
     return new Response(
       JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
