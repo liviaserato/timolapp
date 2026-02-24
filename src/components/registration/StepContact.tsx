@@ -41,7 +41,11 @@ export const StepContact = ({ data, onChange, errors }: Props) => {
           placeholder={t("step2.phone.placeholder")}
           value={data.phone || ""}
           onFocus={handleFocus}
-          onChange={(e) => onChange("phone", e.target.value)}
+          onChange={(e) => {
+            const val = e.target.value.replace(/[^\d+\s()-]/g, "");
+            onChange("phone", val);
+          }}
+          inputMode="tel"
           maxLength={20}
         />
         {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}

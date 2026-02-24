@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,54 @@ import {
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { WizardData } from "@/types/wizard";
-import { Search, Users, Phone, X, ChevronRight, ThumbsUp, Loader2 } from "lucide-react";
+import { Search, Users, Phone, X, ChevronRight, ThumbsUp, Loader2, MessageCircle } from "lucide-react";
 import timolLogoAzul from "@/assets/logo-timol-azul-escuro.svg";
 import { countries } from "@/data/countries";
 
+// Static list of locations for autocomplete
+const LOCATION_OPTIONS = [
+  // Brasil
+  "São Paulo, SP - Brasil", "Rio de Janeiro, RJ - Brasil", "Belo Horizonte, MG - Brasil",
+  "Brasília, DF - Brasil", "Salvador, BA - Brasil", "Fortaleza, CE - Brasil",
+  "Curitiba, PR - Brasil", "Manaus, AM - Brasil", "Recife, PE - Brasil",
+  "Porto Alegre, RS - Brasil", "Belém, PA - Brasil", "Goiânia, GO - Brasil",
+  "Guarulhos, SP - Brasil", "Campinas, SP - Brasil", "São Luís, MA - Brasil",
+  "Maceió, AL - Brasil", "Campo Grande, MS - Brasil", "Teresina, PI - Brasil",
+  "João Pessoa, PB - Brasil", "Natal, RN - Brasil", "Florianópolis, SC - Brasil",
+  "Vitória, ES - Brasil", "Cuiabá, MT - Brasil", "Aracaju, SE - Brasil",
+  "Porto Velho, RO - Brasil", "Macapá, AP - Brasil", "Rio Branco, AC - Brasil",
+  "Boa Vista, RR - Brasil", "Palmas, TO - Brasil",
+  "Uberlândia, MG - Brasil", "Ribeirão Preto, SP - Brasil", "Sorocaba, SP - Brasil",
+  "Santos, SP - Brasil", "Joinville, SC - Brasil", "Londrina, PR - Brasil",
+  "Maringá, PR - Brasil", "Juiz de Fora, MG - Brasil", "Niterói, RJ - Brasil",
+  "São José dos Campos, SP - Brasil", "Osasco, SP - Brasil",
+  // EUA
+  "New York, NY - USA", "Los Angeles, CA - USA", "Chicago, IL - USA",
+  "Houston, TX - USA", "Miami, FL - USA", "Dallas, TX - USA",
+  "San Francisco, CA - USA", "Orlando, FL - USA", "Boston, MA - USA",
+  // Argentina
+  "Buenos Aires, BA - Argentina", "Córdoba, CBA - Argentina", "Rosario, SF - Argentina",
+  // Paraguai
+  "Asunción, Central - Paraguay", "Ciudad del Este, Alto Paraná - Paraguay",
+  // Portugal
+  "Lisboa, LIS - Portugal", "Porto, PRT - Portugal",
+  // Espanha
+  "Madrid, MAD - España", "Barcelona, BCN - España",
+  // Colômbia
+  "Bogotá, DC - Colombia", "Medellín, ANT - Colombia",
+  // México
+  "Ciudad de México, CDMX - México", "Guadalajara, JAL - México",
+  // Chile
+  "Santiago, RM - Chile",
+  // Peru
+  "Lima, LIM - Perú",
+  // Uruguai
+  "Montevideo, MVD - Uruguay",
+  // Bolívia
+  "Santa Cruz, SCZ - Bolivia", "La Paz, LP - Bolivia",
+  // Japão
+  "Tokyo, TK - Japan", "Osaka, OS - Japan",
+];
 
 interface Props {
   onNext: (data: Partial<WizardData>) => void;
@@ -43,6 +87,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const [error, setError] = useState("");
   const [searching, setSearching] = useState(false);
   const [sponsorSelected, setSponsorSelected] = useState(false);
+  const [notFound, setNotFound] = useState(false);
 
   // Contact form state
   const [contactName, setContactName] = useState("");
@@ -53,13 +98,33 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const [contactOther, setContactOther] = useState("");
   const [contactErrors, setContactErrors] = useState<Record<string, string>>({});
 
+  // Autocomplete state for location
+  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const locationRef = useRef<HTMLDivElement>(null);
+
+  // Contact Timol from confirm screen
+  const [showContactTimolSuccess, setShowContactTimolSuccess] = useState(false);
+
   // Reset search when language changes
   useEffect(() => {
     setSponsorId("");
     setFoundSponsor(null);
     setShowConfirmBox(false);
     setError("");
+    setNotFound(false);
   }, [language]);
+
+  // Close location dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (locationRef.current && !locationRef.current.contains(e.target as Node)) {
+        setShowLocationDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   const handleSearch = useCallback(async () => {
     const trimmed = sponsorId.trim();
@@ -67,8 +132,14 @@ export const SponsorScreen = ({ onNext }: Props) => {
       setError(t("sponsor.error.empty"));
       return;
     }
+    if (!/^\d+$/.test(trimmed)) {
+      setError(t("sponsor.error.numericOnly"));
+      setNotFound(true);
+      return;
+    }
     setSearching(true);
     setError("");
+    setNotFound(false);
     try {
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-lookup?id=${trimmed}`,
@@ -76,12 +147,14 @@ export const SponsorScreen = ({ onNext }: Props) => {
       );
       if (!res.ok) {
         setError(t("sponsor.error.notFound"));
+        setNotFound(true);
         return;
       }
       const json = await res.json();
       const record = Array.isArray(json) ? json[0] : json;
       if (!record || !record.nome) {
         setError(t("sponsor.error.notFound"));
+        setNotFound(true);
         return;
       }
       const name = record.nome || "";
@@ -97,8 +170,10 @@ export const SponsorScreen = ({ onNext }: Props) => {
       setSponsorSelected(false);
       setFromNoSponsorFlow(false);
       setShowConfirmBox(true);
+      setNotFound(false);
     } catch {
       setError(t("sponsor.error.notFound"));
+      setNotFound(true);
     } finally {
       setSearching(false);
     }
@@ -122,6 +197,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const fetchSponsorById = async (id: string) => {
     setSearching(true);
     setError("");
+    setNotFound(false);
     try {
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-lookup?id=${id}`,
@@ -129,12 +205,14 @@ export const SponsorScreen = ({ onNext }: Props) => {
       );
       if (!res.ok) {
         setError(t("sponsor.error.notFound"));
+        setNotFound(true);
         return;
       }
       const json = await res.json();
       const record = Array.isArray(json) ? json[0] : json;
       if (!record || !record.nome) {
         setError(t("sponsor.error.notFound"));
+        setNotFound(true);
         return;
       }
       const name = record.nome || "";
@@ -151,6 +229,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
       setShowConfirmBox(true);
     } catch {
       setError(t("sponsor.error.notFound"));
+      setNotFound(true);
     } finally {
       setSearching(false);
     }
@@ -169,15 +248,20 @@ export const SponsorScreen = ({ onNext }: Props) => {
     await fetchSponsorById(nextId);
   };
 
-  const resetAll = () => {
+  const clearSearch = () => {
     setSponsorId("");
     setFoundSponsor(null);
     setShowConfirmBox(false);
     setSponsorSelected(false);
+    setError("");
+    setNotFound(false);
+  };
+
+  const resetAll = () => {
+    clearSearch();
     setShowNoSponsorBox(false);
     setNoSponsorStep("contact-form");
     setFromNoSponsorFlow(false);
-    setError("");
     setContactName("");
     setContactPhone("");
     setContactCityState("");
@@ -185,12 +269,14 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setContactHowKnew("");
     setContactOther("");
     setContactErrors({});
+    setShowContactTimolSuccess(false);
   };
 
   const handleContactSubmit = () => {
     const errors: Record<string, string> = {};
     if (!contactName.trim()) errors.name = t("validation.required");
     if (!contactPhone.trim()) errors.phone = t("validation.required");
+    else if (contactPhone.replace(/\D/g, "").length < 7) errors.phone = t("validation.phoneMin");
     if (!contactCityState.trim()) errors.cityState = t("validation.required");
     if (Object.keys(errors).length > 0) {
       setContactErrors(errors);
@@ -205,9 +291,34 @@ export const SponsorScreen = ({ onNext }: Props) => {
   };
 
   const openNoSponsor = () => {
+    clearSearch();
     setNoSponsorStep("contact-form");
     setContactErrors({});
     setShowNoSponsorBox(true);
+  };
+
+  const handleLocationInput = (value: string) => {
+    setContactCityState(value);
+    setContactErrors((p) => ({ ...p, cityState: "" }));
+    if (value.length >= 2) {
+      const lower = value.toLowerCase();
+      const filtered = LOCATION_OPTIONS.filter(opt => opt.toLowerCase().includes(lower)).slice(0, 8);
+      setLocationSuggestions(filtered);
+      setShowLocationDropdown(filtered.length > 0);
+    } else {
+      setShowLocationDropdown(false);
+    }
+  };
+
+  const selectLocation = (value: string) => {
+    setContactCityState(value);
+    setShowLocationDropdown(false);
+    setContactErrors((p) => ({ ...p, cityState: "" }));
+  };
+
+  // Handle contact Timol from confirm screen
+  const handleContactTimolFromConfirm = () => {
+    setShowContactTimolSuccess(true);
   };
 
   const howKnewOptions = [
@@ -241,21 +352,39 @@ export const SponsorScreen = ({ onNext }: Props) => {
               <Input
                 placeholder={t("sponsor.id.placeholder")}
                 value={sponsorId}
-                onChange={(e) => { setSponsorId(e.target.value); setError(""); }}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "");
+                  setSponsorId(val);
+                  setError("");
+                  setNotFound(false);
+                }}
                 onKeyDown={handleKeyDown}
                 onBlur={() => { if (sponsorId.trim()) handleSearch(); }}
                 className="pr-10"
                 maxLength={6}
+                inputMode="numeric"
+                pattern="[0-9]*"
               />
-              <button
-                type="button"
-                onClick={handleSearch}
-                disabled={searching}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
-                aria-label="Search"
-              >
-                {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-              </button>
+              {notFound ? (
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-destructive hover:text-destructive/80 hover:bg-destructive/10 transition-colors"
+                  aria-label="Clear"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleSearch}
+                  disabled={searching}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+                  aria-label="Search"
+                >
+                  {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                </button>
+              )}
             </div>
             {error && <p className="text-sm text-destructive mt-1">{error}</p>}
           </div>
@@ -306,19 +435,53 @@ export const SponsorScreen = ({ onNext }: Props) => {
                     </div>
                     <div className="space-y-1">
                       <Label className="text-xs">{t("sponsor.noSponsorBox.contactPhone")} *</Label>
-                      <Input value={contactPhone} onChange={(e) => { setContactPhone(e.target.value); setContactErrors((p) => ({ ...p, phone: "" })); }} className="h-8 text-sm" />
+                      <Input
+                        placeholder={t("sponsor.noSponsorBox.contactPhone.placeholder")}
+                        value={contactPhone}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^\d+\s()-]/g, "");
+                          setContactPhone(val);
+                          setContactErrors((p) => ({ ...p, phone: "" }));
+                        }}
+                        inputMode="tel"
+                        className="h-8 text-sm"
+                        maxLength={20}
+                      />
                       {contactErrors.phone && <p className="text-xs text-destructive">{contactErrors.phone}</p>}
                     </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs">{t("sponsor.noSponsorBox.contactCityState")} *</Label>
-                      <Input
-                        placeholder={t("sponsor.noSponsorBox.contactCityState.placeholder")}
-                        value={contactCityState}
-                        onChange={(e) => { setContactCityState(e.target.value); setContactErrors((p) => ({ ...p, cityState: "" })); }}
-                        className="h-8 text-sm"
-                      />
+                    <div className="space-y-1" ref={locationRef}>
+                      <Label className="text-xs">{t("sponsor.noSponsorBox.contactLocation")} *</Label>
+                      <div className="relative">
+                        <Input
+                          placeholder={t("sponsor.noSponsorBox.contactLocation.placeholder")}
+                          value={contactCityState}
+                          onChange={(e) => handleLocationInput(e.target.value)}
+                          onFocus={() => {
+                            if (contactCityState.length >= 2) {
+                              const lower = contactCityState.toLowerCase();
+                              const filtered = LOCATION_OPTIONS.filter(opt => opt.toLowerCase().includes(lower)).slice(0, 8);
+                              if (filtered.length > 0) setShowLocationDropdown(true);
+                            }
+                          }}
+                          className="h-8 text-sm"
+                        />
+                        {showLocationDropdown && locationSuggestions.length > 0 && (
+                          <div className="absolute z-50 w-full mt-1 bg-background border rounded-md shadow-lg max-h-40 overflow-y-auto">
+                            {locationSuggestions.map((suggestion, i) => (
+                              <button
+                                key={i}
+                                type="button"
+                                className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
+                                onClick={() => selectLocation(suggestion)}
+                              >
+                                {suggestion}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       {contactErrors.cityState && <p className="text-xs text-destructive">{contactErrors.cityState}</p>}
-                      <p className="text-xs text-muted-foreground">{t("sponsor.noSponsorBox.contactCityState.hint")}</p>
+                      <p className="text-xs text-muted-foreground">{t("sponsor.noSponsorBox.contactLocation.hint")}</p>
                     </div>
                     <div className="space-y-1">
                       <Label className="text-xs">{t("sponsor.noSponsorBox.contactBestTime")}</Label>
@@ -389,6 +552,28 @@ export const SponsorScreen = ({ onNext }: Props) => {
         </div>
       )}
 
+      {/* Contact Timol Success Modal (from confirm screen) */}
+      {showContactTimolSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <Card className="w-full max-w-sm shadow-2xl">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-end">
+                <button onClick={() => setShowContactTimolSuccess(false)}>
+                  <X className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center space-y-3 py-2">
+                <ThumbsUp className="h-10 w-10 mx-auto text-primary" />
+                <p className="text-sm text-muted-foreground">{t("sponsor.noSponsorBox.contactSuccess")}</p>
+                <Button className="w-full" onClick={() => { setShowContactTimolSuccess(false); resetAll(); }}>OK</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Confirm Sponsor Modal */}
       {showConfirmBox && foundSponsor && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -396,7 +581,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">{t("sponsor.confirm.title")}</CardTitle>
-                <button onClick={() => setShowConfirmBox(false)}>
+                <button onClick={() => { setShowConfirmBox(false); clearSearch(); }}>
                   <X className="h-4 w-4 text-muted-foreground" />
                 </button>
               </div>
@@ -436,7 +621,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
               )}
 
               {fromNoSponsorFlow && (
-                <div className="text-center -mt-2">
+                <div className="text-center space-y-2 -mt-2">
                   <button
                     type="button"
                     onClick={handleSuggestAnother}
@@ -446,11 +631,20 @@ export const SponsorScreen = ({ onNext }: Props) => {
                     {searching ? <Loader2 className="h-3 w-3 animate-spin inline mr-1" /> : null}
                     {t("sponsor.confirm.suggestAnother")}
                   </button>
+                  <br />
+                  <button
+                    type="button"
+                    onClick={handleContactTimolFromConfirm}
+                    className="text-xs text-muted-foreground underline underline-offset-2 hover:text-primary transition-colors"
+                  >
+                    <MessageCircle className="h-3 w-3 inline mr-1" />
+                    {t("sponsor.confirm.contactTimol")}
+                  </button>
                 </div>
               )}
 
               <div className="flex gap-2">
-                <Button variant="outline" className="flex-1" onClick={() => setShowConfirmBox(false)}>
+                <Button variant="outline" className="flex-1" onClick={() => { setShowConfirmBox(false); clearSearch(); }}>
                   {t("btn.back")}
                 </Button>
                 <Button className="flex-1" onClick={handleConfirmSponsor} disabled={!sponsorSelected}>

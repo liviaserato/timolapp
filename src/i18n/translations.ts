@@ -31,9 +31,10 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.noSponsorBox.contact": "Quero que a Timol entre em contato",
     "sponsor.noSponsorBox.contactFullName": "Nome completo",
     "sponsor.noSponsorBox.contactPhone": "Telefone",
-    "sponsor.noSponsorBox.contactCityState": "Cidade e Estado",
-    "sponsor.noSponsorBox.contactCityState.placeholder": "Ex: Belo Horizonte, MG",
-    "sponsor.noSponsorBox.contactCityState.hint": "Se não for do Brasil, informe também o país.",
+    "sponsor.noSponsorBox.contactPhone.placeholder": "Ex: +55 11 99999-0000",
+    "sponsor.noSponsorBox.contactLocation": "Localidade",
+    "sponsor.noSponsorBox.contactLocation.placeholder": "Ex: Belo Horizonte, MG - Brasil",
+    "sponsor.noSponsorBox.contactLocation.hint": "Comece digitando sua cidade e selecione a opção correta.",
     "sponsor.noSponsorBox.contactBestTime": "Melhor horário para contato",
     "sponsor.noSponsorBox.contactBestTime.placeholder": "Ex: 10hs da manhã",
     "sponsor.noSponsorBox.contactHowKnew": "Como você conheceu a Timol?",
@@ -51,7 +52,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.confirm.warning.combined": "Atenção! Não poderá ser alterado depois.",
     "sponsor.confirm.confirm": "Confirmar e Continuar",
     "sponsor.confirm.suggestAnother": "Sugerir outro patrocinador",
+    "sponsor.confirm.contactTimol": "Quero que a Timol entre em contato",
     "sponsor.error.empty": "Informe o ID do patrocinador",
+    "sponsor.error.numericOnly": "O ID deve conter apenas números.",
     "sponsor.error.notFound": "Patrocinador não encontrado. Verifique o ID e tente novamente.",
 
     // Step 1 - Personal
@@ -77,7 +80,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "step2.email": "E-mail",
     "step2.email.placeholder": "seu@email.com",
     "step2.phone": "Telefone",
-    "step2.phone.placeholder": "+55 (00) 00000-0000",
+    "step2.phone.placeholder": "Ex: +55 11 99999-0000",
 
     // Step 3 - Address
     "step3.title": "Endereço",
@@ -236,6 +239,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "validation.passwordMatch": "As senhas não coincidem",
     "validation.ageMin18": "É necessário ter 18 anos ou mais para se cadastrar.",
     "validation.cpfInvalid": "CPF inválido. Verifique os dígitos informados.",
+    "validation.cpfRegistered": "Este CPF já está cadastrado no sistema.",
     "validation.phoneMin": "Telefone deve ter no mínimo 7 dígitos.",
 
     // Success
@@ -292,9 +296,10 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.noSponsorBox.contact": "I'd like Timol to contact me",
     "sponsor.noSponsorBox.contactFullName": "Full name",
     "sponsor.noSponsorBox.contactPhone": "Phone",
-    "sponsor.noSponsorBox.contactCityState": "City and State",
-    "sponsor.noSponsorBox.contactCityState.placeholder": "E.g.: New York, NY",
-    "sponsor.noSponsorBox.contactCityState.hint": "If not from Brazil, please also inform your country.",
+    "sponsor.noSponsorBox.contactPhone.placeholder": "E.g.: +1 555 123-4567",
+    "sponsor.noSponsorBox.contactLocation": "Location",
+    "sponsor.noSponsorBox.contactLocation.placeholder": "E.g.: New York, NY - USA",
+    "sponsor.noSponsorBox.contactLocation.hint": "Start typing your city and select the correct option.",
     "sponsor.noSponsorBox.contactBestTime": "Best time to contact you",
     "sponsor.noSponsorBox.contactBestTime.placeholder": "E.g.: 10am",
     "sponsor.noSponsorBox.contactHowKnew": "How did you hear about Timol?",
@@ -312,7 +317,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.confirm.warning.combined": "Attention! It cannot be changed later.",
     "sponsor.confirm.confirm": "Confirm and Continue",
     "sponsor.confirm.suggestAnother": "Suggest another sponsor",
+    "sponsor.confirm.contactTimol": "I'd like Timol to contact me",
     "sponsor.error.empty": "Please enter the sponsor's ID",
+    "sponsor.error.numericOnly": "The ID must contain only numbers.",
     "sponsor.error.notFound": "Sponsor not found. Check the ID and try again.",
 
     "step1.title": "Personal Information",
@@ -336,7 +343,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "step2.email": "Email",
     "step2.email.placeholder": "your@email.com",
     "step2.phone": "Phone",
-    "step2.phone.placeholder": "+1 (000) 000-0000",
+    "step2.phone.placeholder": "E.g.: +1 555 123-4567",
 
     "step3.title": "Address",
     "step3.country": "Country",
@@ -488,6 +495,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "validation.passwordMatch": "Passwords do not match",
     "validation.ageMin18": "You must be 18 years or older to register.",
     "validation.cpfInvalid": "Invalid CPF. Please check the digits entered.",
+    "validation.cpfRegistered": "This CPF is already registered in the system.",
     "validation.phoneMin": "Phone must have at least 7 digits.",
 
     "success.title": "Registration complete!",
@@ -541,9 +549,10 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.noSponsorBox.contact": "Quiero que Timol me contacte",
     "sponsor.noSponsorBox.contactFullName": "Nombre completo",
     "sponsor.noSponsorBox.contactPhone": "Teléfono",
-    "sponsor.noSponsorBox.contactCityState": "Ciudad y Estado",
-    "sponsor.noSponsorBox.contactCityState.placeholder": "Ej: Buenos Aires, BA",
-    "sponsor.noSponsorBox.contactCityState.hint": "Si no es de Brasil, informe también su país.",
+    "sponsor.noSponsorBox.contactPhone.placeholder": "Ej: +54 11 1234-5678",
+    "sponsor.noSponsorBox.contactLocation": "Localidad",
+    "sponsor.noSponsorBox.contactLocation.placeholder": "Ej: Buenos Aires, BA - Argentina",
+    "sponsor.noSponsorBox.contactLocation.hint": "Comience escribiendo su ciudad y seleccione la opción correcta.",
     "sponsor.noSponsorBox.contactBestTime": "Mejor horario para contacto",
     "sponsor.noSponsorBox.contactBestTime.placeholder": "Ej: 10hs de la mañana",
     "sponsor.noSponsorBox.contactHowKnew": "¿Cómo conociste Timol?",
@@ -561,7 +570,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.confirm.warning.combined": "¡Atención! No podrá ser cambiado después.",
     "sponsor.confirm.confirm": "Confirmar y Continuar",
     "sponsor.confirm.suggestAnother": "Sugerir otro patrocinador",
+    "sponsor.confirm.contactTimol": "Quiero que Timol me contacte",
     "sponsor.error.empty": "Ingresa el ID del patrocinador",
+    "sponsor.error.numericOnly": "El ID debe contener solo números.",
     "sponsor.error.notFound": "Patrocinador no encontrado. Verifica el ID e intenta nuevamente.",
 
     "step1.title": "Datos Personales",
@@ -585,7 +596,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "step2.email": "Correo electrónico",
     "step2.email.placeholder": "su@correo.com",
     "step2.phone": "Teléfono",
-    "step2.phone.placeholder": "+54 (000) 000-0000",
+    "step2.phone.placeholder": "Ej: +54 11 1234-5678",
 
     "step3.title": "Dirección",
     "step3.country": "País",
@@ -737,6 +748,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "validation.passwordMatch": "Las contraseñas no coinciden",
     "validation.ageMin18": "Debe tener 18 años o más para registrarse.",
     "validation.cpfInvalid": "CPF inválido. Verifique los dígitos ingresados.",
+    "validation.cpfRegistered": "Este CPF ya está registrado en el sistema.",
     "validation.phoneMin": "El teléfono debe tener al menos 7 dígitos.",
 
     "success.title": "¡Registro completado!",

@@ -109,6 +109,12 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
           </div>
         )}
         {errors.document && <p className="text-sm text-destructive">{errors.document}</p>}
+        {errors.documentRegistered && (
+          <p className="text-sm text-destructive flex items-start gap-1.5">
+            <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+            {errors.documentRegistered}
+          </p>
+        )}
       </div>
 
       {/* Gender */}
