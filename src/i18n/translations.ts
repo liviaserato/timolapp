@@ -18,7 +18,8 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Sponsor
     "sponsor.title": "Cadastro de Franquia",
-    "sponsor.subtitle": "Para fazer parte da Timol, você precisa de um convite. Quem te convidou será seu patrocinador.",
+    "sponsor.subtitle.line1": "Para fazer parte da Timol, você precisa de um convite.",
+    "sponsor.subtitle.line2": "Quem te convidou será seu patrocinador.",
     "sponsor.card.title": "Quem te indicou?",
     "sponsor.card.description": "Informe o ID do seu Patrocinador",
     "sponsor.id.placeholder": "Digite o ID",
@@ -283,7 +284,8 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Sponsor
     "sponsor.title": "Franchise Registration",
-    "sponsor.subtitle": "To be part of Timol, you need an invitation. The person who invited you will be your sponsor.",
+    "sponsor.subtitle.line1": "To be part of Timol, you need an invitation.",
+    "sponsor.subtitle.line2": "The person who invited you will be your sponsor.",
     "sponsor.card.title": "Who referred you?",
     "sponsor.card.description": "Enter your Sponsor's ID",
     "sponsor.id.placeholder": "Enter the ID",
@@ -536,7 +538,8 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Sponsor
     "sponsor.title": "Registro de Franquicia",
-    "sponsor.subtitle": "Para formar parte de Timol, necesitas una invitación. Quien te invitó será tu patrocinador.",
+    "sponsor.subtitle.line1": "Para formar parte de Timol, necesitas una invitación.",
+    "sponsor.subtitle.line2": "Quien te invitó será tu patrocinador.",
     "sponsor.card.title": "¿Quién te recomendó?",
     "sponsor.card.description": "Ingresa el ID de tu Patrocinador",
     "sponsor.id.placeholder": "Ingresa el ID",
