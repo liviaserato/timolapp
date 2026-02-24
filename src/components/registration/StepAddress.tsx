@@ -140,6 +140,7 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
                 className="pr-8"
               />
               <button
+                type="button"
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 onClick={clearCountry}
                 title={t("step3.country.clear")}
