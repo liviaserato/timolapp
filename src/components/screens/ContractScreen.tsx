@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { WizardData } from "@/types/wizard";
 import { Button } from "@/components/ui/button";
@@ -12,9 +13,28 @@ interface Props {
 
 export const ContractScreen = ({ data, onClose }: Props) => {
   const { t } = useLanguage();
+  const docRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = () => window.print();
-  const handleSavePdf = () => window.print();
+
+  const handleSavePdf = async () => {
+    const html2pdf = (await import("html2pdf.js")).default;
+    const el = docRef.current;
+    if (!el) return;
+    const fileName = `Contrato de Franquia ID ${mockId}.pdf`;
+    html2pdf()
+      .set({
+        margin: [20, 20, 20, 20],
+        filename: fileName,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+      })
+      .from(el)
+      .save();
+  };
+
   const handleClose = () => {
     if (onClose) {
       onClose();
@@ -25,15 +45,28 @@ export const ContractScreen = ({ data, onClose }: Props) => {
 
   const today = new Date();
   const dateStr = today.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
+  const todayShort = today.toLocaleDateString("pt-BR");
 
   const mockId = data.userId ?? "123456";
   const fullName = data.fullName ?? "_______________";
+  const isForeigner = data.foreignerNoCpf === "true";
+  const docLabel = isForeigner ? t("contract.documentPassport") : "CPF";
   const doc = data.document ?? "_______________";
-  const address = [data.street, data.number, data.complement].filter(Boolean).join(", ");
-  const cityState = [data.city, data.state].filter(Boolean).join(" - ");
-  const zipCode = data.zipCode ?? "";
-  const country = data.country ?? "";
+  const birthDate = data.birthDate ?? "—";
+  const email = data.email ?? "—";
+
+  // Concatenated address
+  const addressParts = [
+    [data.street, data.number, data.complement].filter(Boolean).join(", "),
+    data.neighborhood,
+  ].filter(Boolean).join(" — ");
+  const cityStateParts = [data.city, data.state].filter(Boolean).join("/");
+  const fullAddress = [addressParts, cityStateParts, data.zipCode, data.country]
+    .filter(Boolean)
+    .join(", ") || "—";
+
   const franchiseName = data.franchise ? t(`franchise.${data.franchise}`) : "_______________";
+  const sponsorDisplay = `${data.sponsorName ?? "—"} (${data.sponsorId ?? "—"})`;
 
   const clauses = [
     {
@@ -109,37 +142,35 @@ export const ContractScreen = ({ data, onClose }: Props) => {
       {/* A4 document container */}
       <div className="print:pt-0 pt-14 sm:pt-16 pb-8 bg-muted/30 print:bg-white min-h-screen">
         <div className="contract-pages-wrapper max-w-[210mm] mx-auto print:max-w-none px-3 sm:px-4 print:px-0">
-          <div className="contract-document bg-white print:shadow-none shadow-lg print:p-0 p-6 sm:p-[20mm] print:pt-0">
+          <div ref={docRef} className="contract-document bg-white print:shadow-none shadow-lg print:p-0 p-6 sm:p-[20mm] print:pt-0">
 
             {/* Header */}
-            <div className="text-center mb-8 print:mb-6 pt-4 print:pt-[20mm]">
-              <img src={timolLogo} alt="Timol" className="h-14 mx-auto mb-4" />
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <img src={favicon} alt="" className="h-5 w-5 print:hidden" />
+            <div className="text-center mb-6 print:mb-5 pt-4 print:pt-[20mm]">
+              <img src={timolLogo} alt="Timol" className="h-10 sm:h-12 mx-auto mb-3" />
+              <div className="flex items-center justify-center gap-1.5">
+                <img src={favicon} alt="" className="h-4 w-4" />
                 <h1 className="contract-h1">{t("contract.heading")}</h1>
               </div>
-              <div className="w-24 h-0.5 bg-foreground/30 mx-auto mt-3" />
             </div>
 
             {/* Franchisee data block */}
-            <div className="mb-8 border border-border/50 rounded p-4 sm:p-5 bg-muted/20 print:bg-transparent print:border-foreground/20">
+            <div className="mb-6 border border-border/50 rounded p-4 sm:p-5 bg-muted/20 print:bg-transparent print:border-foreground/20">
               <h2 className="contract-h2 mb-3">{t("contract.franchiseeData")}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm">
                 <ContractField label="ID" value={mockId} />
                 <ContractField label={t("summary.fullName")} value={fullName} />
-                <ContractField label={t("contract.document")} value={doc} />
-                <ContractField label={t("summary.email")} value={data.email ?? "—"} />
-                <ContractField label={t("summary.addressLine")} value={address || "—"} />
-                <ContractField label={t("summary.cityState")} value={cityState || "—"} />
-                <ContractField label={t("summary.zipCode")} value={zipCode || "—"} />
-                <ContractField label={t("summary.country")} value={country || "—"} />
+                <ContractField label={docLabel} value={doc} />
+                <ContractField label={t("summary.birthDate")} value={birthDate} />
+                <ContractField label={t("summary.email")} value={email} />
+                <ContractField label={t("contract.address")} value={fullAddress} spanFull />
                 <ContractField label={t("summary.franchiseChosen")} value={franchiseName} />
-                <ContractField label={t("contract.sponsor")} value={`${data.sponsorName ?? "—"} (${data.sponsorId ?? "—"})`} />
+                <ContractField label={t("contract.acquisitionDate")} value={todayShort} />
+                <ContractField label={t("contract.sponsor")} value={sponsorDisplay} spanFull />
               </div>
             </div>
 
             {/* Clauses */}
-            <div className="contract-body space-y-6">
+            <div className="contract-body space-y-3">
               {clauses.map((clause, i) => (
                 <div key={i} className="contract-clause">
                   <h3 className="contract-h3">{clause.title}</h3>
@@ -195,14 +226,13 @@ export const ContractScreen = ({ data, onClose }: Props) => {
 
       {/* Contract typography & print styles */}
       <style>{`
-        /* === Contract typography (uses system font stack) === */
         .contract-document {
           font-family: inherit;
           color: hsl(var(--foreground));
           line-height: 1.7;
         }
         .contract-h1 {
-          font-size: 1.5rem;
+          font-size: 1.3rem;
           font-weight: 700;
           letter-spacing: 0.04em;
           text-transform: uppercase;
@@ -221,72 +251,44 @@ export const ContractScreen = ({ data, onClose }: Props) => {
           font-size: 0.95rem;
           font-weight: 700;
           color: hsl(var(--foreground));
-          margin-bottom: 0.5rem;
+          margin-bottom: 0.3rem;
           line-height: 1.4;
         }
         .contract-body {
           font-size: 0.875rem;
-          line-height: 1.75;
+          line-height: 1.65;
           color: hsl(var(--foreground) / 0.9);
         }
-        .contract-body p {
-          margin-bottom: 0;
-        }
-        .contract-body ul, .contract-body ol {
-          padding-left: 1.5rem;
-          margin: 0.5rem 0;
-        }
-        .contract-body li {
-          margin-bottom: 0.25rem;
-        }
-        .contract-body a {
-          color: hsl(var(--primary));
-          text-decoration: underline;
-        }
-        .contract-body strong, .contract-body b {
-          font-weight: 700;
-          color: hsl(var(--foreground));
+        .contract-body p { margin-bottom: 0; }
+        .contract-body ul, .contract-body ol { padding-left: 1.5rem; margin: 0.25rem 0; }
+        .contract-body li { margin-bottom: 0.15rem; }
+        .contract-body a { color: hsl(var(--primary)); text-decoration: underline; }
+        .contract-body strong, .contract-body b { font-weight: 700; color: hsl(var(--foreground)); }
+
+        @media print {
+          @page { size: A4; margin: 20mm; }
+          html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          body * { color: #000 !important; border-color: #888 !important; }
+          img { filter: grayscale(100%) !important; }
+          .contract-clause { break-inside: avoid; }
+          .contract-document { padding: 0 !important; }
         }
 
-        /* === Print: B&W, A4 margins, page breaks === */
-        @media print {
-          @page {
-            size: A4;
-            margin: 20mm;
-          }
-          html, body {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-          }
-          /* Force black & white for print */
-          body * {
-            color: #000 !important;
-            border-color: #888 !important;
-          }
-          img {
-            filter: grayscale(100%) !important;
-          }
-          .contract-clause {
-            break-inside: avoid;
-          }
-          .contract-document {
-            padding: 0 !important;
-          }
+        @media (max-width: 640px) {
+          .contract-h1 { font-size: 1.1rem; }
         }
 
         @media (min-width: 1400px) {
-          .contract-pages-wrapper {
-            max-width: 210mm;
-          }
+          .contract-pages-wrapper { max-width: 210mm; }
         }
       `}</style>
     </>
   );
 };
 
-function ContractField({ label, value }: { label: string; value: string }) {
+function ContractField({ label, value, spanFull }: { label: string; value: string; spanFull?: boolean }) {
   return (
-    <div className="flex gap-2">
+    <div className={`flex gap-2 ${spanFull ? "sm:col-span-2" : ""}`}>
       <span className="text-muted-foreground font-medium flex-shrink-0">{label}:</span>
       <span className="font-semibold">{value}</span>
     </div>

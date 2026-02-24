@@ -256,7 +256,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
               <a
                 href={(() => {
                   const p = new URLSearchParams();
-                  const fields = ["userId","fullName","document","email","street","number","complement","neighborhood","city","state","zipCode","country","countryIso2","franchise","sponsorName","sponsorId"] as const;
+                  const fields = ["userId","fullName","document","foreignerNoCpf","birthDate","email","street","number","complement","neighborhood","city","state","zipCode","country","countryIso2","franchise","sponsorName","sponsorId"] as const;
                   fields.forEach(k => { if (data[k]) p.set(k, String(data[k])); });
                   return `/contrato?${p.toString()}`;
                 })()}
