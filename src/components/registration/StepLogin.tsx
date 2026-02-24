@@ -43,11 +43,18 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
     [data.password]
   );
 
+  const USERNAME_MAX = 20;
+  const USERNAME_REGEX = /^[a-zA-Z0-9_]*$/;
+
   const handleUsernameChange = (val: string) => {
-    onChange("username", val);
+    // Strip spaces always
+    const stripped = val.replace(/\s/g, "");
+    // Enforce max length
+    const trimmed = stripped.slice(0, USERNAME_MAX);
+    onChange("username", trimmed);
     setUsernameStatus("idle");
     if (usernameTimer) clearTimeout(usernameTimer);
-    if (val.trim().length >= 3) {
+    if (trimmed.length >= 3 && USERNAME_REGEX.test(trimmed)) {
       setUsernameStatus("checking");
       const timer = setTimeout(async () => {
         try {
@@ -76,7 +83,7 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
             placeholder={t("step4.username.placeholder")}
             value={data.username || ""}
             onChange={(e) => handleUsernameChange(e.target.value)}
-            maxLength={50}
+            maxLength={USERNAME_MAX}
             autoCapitalize="none"
             autoCorrect="off"
             className={[
@@ -97,6 +104,10 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
         {usernameStatus === "taken" && (
           <p className="text-xs text-destructive">{t("step4.username.taken")}</p>
         )}
+        {data.username && !USERNAME_REGEX.test(data.username) && (
+          <p className="text-xs text-destructive">{t("step4.username.invalidChars")}</p>
+        )}
+        <p className="text-xs text-muted-foreground">{t("step4.username.hint")}</p>
         {errors.username && <p className="text-sm text-destructive">{errors.username}</p>}
       </div>
 
