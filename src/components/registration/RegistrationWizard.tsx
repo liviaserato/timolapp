@@ -7,6 +7,7 @@ import { StepPersonal } from "./StepPersonal";
 import { StepContact } from "./StepContact";
 import { StepAddress } from "./StepAddress";
 import { StepLogin } from "./StepLogin";
+import { DocumentCheckPopup, DocumentRecord } from "./DocumentCheckPopup";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import { WizardData } from "@/types/wizard";
@@ -42,10 +43,18 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
     password: initialData.password ?? "",
     confirmPassword: initialData.confirmPassword ?? "",
     foreignerNoCpf: initialData.foreignerNoCpf ?? "false",
+    documentCountry: initialData.documentCountry ?? "",
+    documentCountryIso2: initialData.documentCountryIso2 ?? "",
+    documentCountryFlag: initialData.documentCountryFlag ?? "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
+
+  // Document check state
+  const [showDocCheck, setShowDocCheck] = useState(false);
+  const [docCheckRecords, setDocCheckRecords] = useState<DocumentRecord[]>([]);
+  const [documentCheckPassed, setDocumentCheckPassed] = useState(initialData.documentCheckPassed ?? false);
 
   const onChange = (field: string, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
@@ -54,6 +63,10 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
       delete next[field];
       return next;
     });
+    // Reset document check when document changes
+    if (field === "document" || field === "foreignerNoCpf") {
+      setDocumentCheckPassed(false);
+    }
   };
 
   const validateStep = (): boolean => {
@@ -71,6 +84,9 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         const age = today.getFullYear() - birth.getFullYear() -
           (today < new Date(today.getFullYear(), birth.getMonth(), birth.getDate()) ? 1 : 0);
         if (age < 18) newErrors.birthDate = t("validation.ageMin18");
+      }
+      if (isForeigner && !data.documentCountry?.trim()) {
+        newErrors.documentCountry = req;
       }
       if (!data.document?.trim()) {
         newErrors.document = req;
@@ -103,8 +119,53 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  const checkDocumentRegistration = async (): Promise<boolean> => {
+    // If already passed document check for this document, skip
+    if (documentCheckPassed) return true;
+
+    try {
+      // TODO: Replace with actual API call when endpoint is provided
+      // For now, this is a placeholder that will call the document-lookup edge function
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/document-lookup?document=${encodeURIComponent(data.document.trim())}&foreigner=${data.foreignerNoCpf === "true"}&countryIso2=${data.documentCountryIso2 || "BR"}`,
+        { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
+      );
+
+      if (!res.ok) {
+        // API error — let user proceed (don't block on network issues)
+        return true;
+      }
+
+      const json = await res.json();
+      const records: DocumentRecord[] = json.records || [];
+
+      if (records.length === 0) {
+        // No existing registration — proceed normally
+        setDocumentCheckPassed(true);
+        return true;
+      }
+
+      // Found existing records — show popup
+      setDocCheckRecords(records);
+      setShowDocCheck(true);
+      return false; // Block navigation until popup is resolved
+    } catch {
+      // Network error — let user proceed
+      return true;
+    }
+  };
+
+  const handleNext = async () => {
     if (!validateStep()) return;
+
+    // On step 1, check document before advancing
+    if (step === 1) {
+      setLoading(true);
+      const canProceed = await checkDocumentRegistration();
+      setLoading(false);
+      if (!canProceed) return;
+    }
+
     setStep((s) => Math.min(s + 1, TOTAL_STEPS));
   };
 
@@ -116,7 +177,6 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
     setApiError("");
 
     try {
-      // If user already registered (editing from summary), skip signUp
       const alreadyRegistered = !!initialData.userId;
       let userId: string | undefined;
 
@@ -157,6 +217,9 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         birthDate: data.birthDate,
         document: data.document,
         foreignerNoCpf: data.foreignerNoCpf,
+        documentCountry: data.documentCountry,
+        documentCountryIso2: data.documentCountryIso2,
+        documentCountryFlag: data.documentCountryFlag,
         gender: data.gender,
         email: data.email,
         phone: data.phone,
@@ -170,6 +233,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         city: data.city,
         state: data.state,
         username: data.username,
+        documentCheckPassed,
         userId: initialData.userId ?? (userId ? String(Math.floor(100000 + Math.random() * 900000)) : undefined),
       });
     } catch (err: unknown) {
@@ -188,64 +252,86 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
   ];
 
   return (
-    <Card className="w-full max-w-lg mx-auto shadow-lg">
-      <CardHeader className="space-y-4">
-        <div className="flex items-center gap-3">
-          <img src="/favicon.svg" alt="Timol" className="h-8 w-8 flex-shrink-0" />
-          <CardTitle className="text-xl">{t("app.title")}</CardTitle>
-        </div>
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>{stepTitles[step - 1]}</span>
-            <span>
-              {t("app.step")} {step} {t("app.of")} {TOTAL_STEPS}
-            </span>
+    <>
+      <Card className="w-full max-w-lg mx-auto shadow-lg">
+        <CardHeader className="space-y-4">
+          <div className="flex items-center gap-3">
+            <img src="/favicon.svg" alt="Timol" className="h-8 w-8 flex-shrink-0" />
+            <CardTitle className="text-xl">{t("app.title")}</CardTitle>
           </div>
-          <Progress value={(step / TOTAL_STEPS) * 100} className="h-2" />
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-6">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (step < TOTAL_STEPS) {
-              handleNext();
-            } else {
-              handleSubmit();
-            }
-          }}
-        >
-          <div className="space-y-6">
-            {step === 1 && <StepPersonal data={data} onChange={onChange} errors={errors} />}
-            {step === 2 && <StepContact data={data} onChange={onChange} errors={errors} />}
-            {step === 3 && <StepAddress data={data} onChange={onChange} errors={errors} />}
-            {step === 4 && <StepLogin data={data} onChange={onChange} errors={errors} />}
-
-            {apiError && <p className="text-sm text-destructive text-center">{apiError}</p>}
-
-            <div className="flex justify-between gap-2">
-              {step > 1 ? (
-                <Button type="button" variant="outline" onClick={handleBack} disabled={loading}>
-                  {t("btn.back")}
-                </Button>
-              ) : (
-                <div />
-              )}
-
-              {step < TOTAL_STEPS ? (
-                <Button type="submit">{t("btn.next")}</Button>
-              ) : (
-                <Button type="submit" disabled={loading}>
-                  {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                  {t("btn.submit")}
-                </Button>
-              )}
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>{stepTitles[step - 1]}</span>
+              <span>
+                {t("app.step")} {step} {t("app.of")} {TOTAL_STEPS}
+              </span>
             </div>
+            <Progress value={(step / TOTAL_STEPS) * 100} className="h-2" />
           </div>
-        </form>
-      </CardContent>
-    </Card>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (step < TOTAL_STEPS) {
+                handleNext();
+              } else {
+                handleSubmit();
+              }
+            }}
+          >
+            <div className="space-y-6">
+              {step === 1 && <StepPersonal data={data} onChange={onChange} errors={errors} />}
+              {step === 2 && <StepContact data={data} onChange={onChange} errors={errors} />}
+              {step === 3 && <StepAddress data={data} onChange={onChange} errors={errors} />}
+              {step === 4 && <StepLogin data={data} onChange={onChange} errors={errors} />}
+
+              {apiError && <p className="text-sm text-destructive text-center">{apiError}</p>}
+
+              <div className="flex justify-between gap-2">
+                {step > 1 ? (
+                  <Button type="button" variant="outline" onClick={handleBack} disabled={loading}>
+                    {t("btn.back")}
+                  </Button>
+                ) : (
+                  <div />
+                )}
+
+                {step < TOTAL_STEPS ? (
+                  <Button type="submit" disabled={loading}>
+                    {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                    {t("btn.next")}
+                  </Button>
+                ) : (
+                  <Button type="submit" disabled={loading}>
+                    {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                    {t("btn.submit")}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Document check popup */}
+      {showDocCheck && (
+        <DocumentCheckPopup
+          records={docCheckRecords}
+          document={data.document}
+          isForeigner={data.foreignerNoCpf === "true"}
+          currentSponsorId={initialData.sponsorId}
+          userName={data.fullName}
+          onContinue={() => {
+            setShowDocCheck(false);
+            setDocumentCheckPassed(true);
+            setStep((s) => Math.min(s + 1, TOTAL_STEPS));
+          }}
+          onClose={() => setShowDocCheck(false)}
+        />
+      )}
+    </>
   );
 };
 

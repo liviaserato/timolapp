@@ -1,9 +1,11 @@
+import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Info } from "lucide-react";
+import { Info, X } from "lucide-react";
+import { countries, getCountryName } from "@/data/countries";
 
 interface Props {
   data: Record<string, string>;
@@ -21,8 +23,48 @@ function maskCPF(value: string) {
 }
 
 export const StepPersonal = ({ data, onChange, errors }: Props) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const isForeigner = data.foreignerNoCpf === "true";
+
+  // Document country selector state
+  const [docCountrySearch, setDocCountrySearch] = useState("");
+  const [showDocCountryList, setShowDocCountryList] = useState(false);
+  const docCountryRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (docCountryRef.current && !docCountryRef.current.contains(e.target as Node)) {
+        setShowDocCountryList(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const filteredDocCountries = countries
+    .filter((c) => c.iso2 !== "BR") // Exclude Brazil since they're foreigners
+    .filter((c) =>
+      getCountryName(c, language).toLowerCase().includes(docCountrySearch.toLowerCase())
+    );
+
+  const selectDocCountry = (iso2: string) => {
+    const c = countries.find((x) => x.iso2 === iso2);
+    if (c) {
+      onChange("documentCountry", getCountryName(c, language));
+      onChange("documentCountryIso2", iso2);
+      onChange("documentCountryFlag", c.flag);
+    }
+    setShowDocCountryList(false);
+    setDocCountrySearch("");
+  };
+
+  const clearDocCountry = () => {
+    onChange("documentCountry", "");
+    onChange("documentCountryIso2", "");
+    onChange("documentCountryFlag", "");
+    setDocCountrySearch("");
+  };
 
   const genderOptions = [
     { value: "male", label: t("step1.gender.male") },
@@ -80,7 +122,14 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
               checked={isForeigner}
               onCheckedChange={(v) => {
                 onChange("foreignerNoCpf", v ? "true" : "false");
-                if (v) onChange("document", "");
+                if (v) {
+                  onChange("document", "");
+                } else {
+                  // Clear document country when switching back to Brazilian
+                  onChange("documentCountry", "");
+                  onChange("documentCountryIso2", "");
+                  onChange("documentCountryFlag", "");
+                }
               }}
             />
             <Label htmlFor="foreignerNoCpf" className="text-sm font-normal cursor-pointer">
@@ -88,6 +137,67 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
             </Label>
           </div>
         </div>
+
+        {/* Document Country selector — only for foreigners */}
+        {isForeigner && (
+          <div className="space-y-2 relative" ref={docCountryRef}>
+            <Label htmlFor="documentCountry">{t("step1.documentCountry")}</Label>
+            <div className="relative">
+              {data.documentCountry ? (
+                <>
+                  <Input
+                    id="documentCountry"
+                    value={`${data.documentCountryFlag || ""} ${data.documentCountry}`}
+                    readOnly
+                    className="pr-8"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    onClick={clearDocCountry}
+                    title={t("step3.country.clear")}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </>
+              ) : (
+                <Input
+                  id="documentCountry"
+                  placeholder={t("step1.documentCountry.placeholder")}
+                  value={docCountrySearch}
+                  onChange={(e) => {
+                    setDocCountrySearch(e.target.value);
+                    setShowDocCountryList(true);
+                  }}
+                  onFocus={() => setShowDocCountryList(true)}
+                />
+              )}
+            </div>
+            {/* Country dropdown */}
+            {showDocCountryList && !data.documentCountry && (
+              <div className="absolute z-50 w-full bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto mt-1">
+                {filteredDocCountries.length > 0 ? (
+                  filteredDocCountries.map((c) => (
+                    <button
+                      key={c.iso2}
+                      type="button"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2"
+                      onClick={() => selectDocCountry(c.iso2)}
+                    >
+                      <span>{c.flag}</span>
+                      <span>{getCountryName(c, language)}</span>
+                    </button>
+                  ))
+                ) : (
+                  <div className="px-3 py-2 text-sm text-muted-foreground">
+                    {t("step1.documentCountry.notFound")}
+                  </div>
+                )}
+              </div>
+            )}
+            {errors.documentCountry && <p className="text-sm text-destructive">{errors.documentCountry}</p>}
+          </div>
+        )}
 
         <Input
           id="document"
