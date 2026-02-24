@@ -1,3 +1,4 @@
+// Language context provider
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { Language, translations } from "./translations";
 
