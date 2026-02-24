@@ -2,10 +2,16 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { WizardData } from "@/types/wizard";
-import { Check, ChevronLeft } from "lucide-react";
+import { Check, ChevronLeft, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import bronzeImg from "@/assets/franquia-bronze.svg";
 import prataImg from "@/assets/franquia-prata.svg";
@@ -13,13 +19,17 @@ import ouroImg from "@/assets/franquia-ouro.svg";
 import platinaImg from "@/assets/franquia-platina.svg";
 
 type Currency = "BRL" | "USD" | "EUR";
+type Lang = "pt" | "en" | "es";
 
 interface FranchiseOption {
   id: string;
   nameKey: string;
-  prices: Record<Currency, number>;
+  installmentPrice: Record<Currency, number>;
+  installments: number;
   image: string;
-  benefits: { pt: string[]; en: string[]; es: string[] };
+  subtitle: Record<Lang, string>;
+  benefits: Record<Lang, string[]>;
+  highlight: Record<Lang, string>;
   recommended?: boolean;
 }
 
@@ -27,46 +37,177 @@ const franchiseOptions: FranchiseOption[] = [
   {
     id: "bronze",
     nameKey: "franchise.bronze",
-    prices: { BRL: 497, USD: 99, EUR: 89 },
+    installmentPrice: { BRL: 160, USD: 32, EUR: 29 },
+    installments: 12,
     image: bronzeImg,
+    subtitle: {
+      pt: "Comece com segurança",
+      en: "Start with confidence",
+      es: "Comienza con seguridad",
+    },
     benefits: {
-      pt: ["Acesso à plataforma básica", "Suporte por e-mail", "Comissão de 15% nas vendas", "Materiais de divulgação digitais", "Treinamento introdutório online"],
-      en: ["Access to basic platform", "Email support", "15% commission on sales", "Digital marketing materials", "Introductory online training"],
-      es: ["Acceso a la plataforma básica", "Soporte por correo", "Comisión del 15% en ventas", "Materiales de difusión digitales", "Capacitación introductoria online"],
+      pt: [
+        "Acesso completo à plataforma e treinamentos Timol",
+        "Permissão para atuar como consultor desde o início",
+        "Combo Mega incluso (Sylo + Top H+)",
+        "Entrada no sistema de expansão",
+        "Bônus binário inicial (8%)",
+      ],
+      en: [
+        "Full access to Timol platform and training",
+        "Permission to act as consultant from day one",
+        "Mega Combo included (Sylo + Top H+)",
+        "Entry into the expansion system",
+        "Initial binary bonus (8%)",
+      ],
+      es: [
+        "Acceso completo a la plataforma y capacitaciones Timol",
+        "Permiso para actuar como consultor desde el inicio",
+        "Combo Mega incluido (Sylo + Top H+)",
+        "Entrada al sistema de expansión",
+        "Bono binario inicial (8%)",
+      ],
+    },
+    highlight: {
+      pt: "Comece com segurança e valide o modelo na prática.",
+      en: "Start safely and validate the model in practice.",
+      es: "Comienza con seguridad y valida el modelo en la práctica.",
     },
   },
   {
     id: "silver",
     nameKey: "franchise.silver",
-    prices: { BRL: 997, USD: 199, EUR: 179 },
+    installmentPrice: { BRL: 260, USD: 52, EUR: 47 },
+    installments: 12,
     image: prataImg,
+    subtitle: {
+      pt: "Comece a crescer",
+      en: "Start growing",
+      es: "Empieza a crecer",
+    },
     benefits: {
-      pt: ["Tudo do Bronze", "Suporte prioritário via WhatsApp", "Comissão de 20% nas vendas", "Materiais impressos + digitais", "Treinamento avançado + mentoria mensal", "Área exclusiva de produtos"],
-      en: ["Everything in Bronze", "Priority WhatsApp support", "20% commission on sales", "Print + digital materials", "Advanced training + monthly mentoring", "Exclusive product area"],
-      es: ["Todo de Bronce", "Soporte prioritario por WhatsApp", "Comisión del 20% en ventas", "Materiales impresos + digitales", "Capacitación avanzada + mentoría mensual", "Área exclusiva de productos"],
+      pt: [
+        "Tudo do Bronze, com mais força de crescimento",
+        "Combo Mega incluso",
+        "Possibilidade de qualificar como distribuidor e líder",
+        "Descontos maiores em produtos",
+        "Estrutura mais forte para revenda",
+        "Binário dobrado em relação ao Bronze (16%)",
+      ],
+      en: [
+        "Everything in Bronze, with more growth power",
+        "Mega Combo included",
+        "Possibility to qualify as distributor and leader",
+        "Greater product discounts",
+        "Stronger resale structure",
+        "Binary doubled vs Bronze (16%)",
+      ],
+      es: [
+        "Todo del Bronce, con más fuerza de crecimiento",
+        "Combo Mega incluido",
+        "Posibilidad de calificar como distribuidor y líder",
+        "Mayores descuentos en productos",
+        "Estructura más fuerte para reventa",
+        "Binario duplicado respecto al Bronce (16%)",
+      ],
+    },
+    highlight: {
+      pt: "Saia do teste e comece a ganhar escala.",
+      en: "Move past testing and start scaling up.",
+      es: "Sal de la prueba y empieza a ganar escala.",
     },
   },
   {
     id: "gold",
     nameKey: "franchise.gold",
-    prices: { BRL: 1997, USD: 399, EUR: 359 },
+    installmentPrice: { BRL: 380, USD: 76, EUR: 68 },
+    installments: 12,
     image: ouroImg,
     recommended: true,
+    subtitle: {
+      pt: "Construa liderança",
+      en: "Build leadership",
+      es: "Construye liderazgo",
+    },
     benefits: {
-      pt: ["Tudo do Prata", "Comissão de 25% nas vendas", "Gerente de contas dedicado", "Acesso a eventos exclusivos", "Loja virtual personalizada", "Bônus de liderança de equipe"],
-      en: ["Everything in Silver", "25% commission on sales", "Dedicated account manager", "Access to exclusive events", "Custom online store", "Team leadership bonus"],
-      es: ["Todo de Plata", "Comisión del 25% en ventas", "Gerente de cuenta dedicado", "Acceso a eventos exclusivos", "Tienda virtual personalizada", "Bono de liderazgo de equipo"],
+      pt: [
+        "Tudo do Prata",
+        "Combo Mega + Combo Mini inclusos",
+        "Início das qualificações altas (Rubi e Esmeralda)",
+        "Pontuação já gera premiações reais",
+        "Possibilidade de viagens e incentivos",
+        "Estrutura real de liderança",
+        "Binário mais agressivo (24%)",
+      ],
+      en: [
+        "Everything in Silver",
+        "Mega Combo + Mini Combo included",
+        "Start of high qualifications (Ruby & Emerald)",
+        "Points already generate real rewards",
+        "Possibility of trips and incentives",
+        "Real leadership structure",
+        "More aggressive binary (24%)",
+      ],
+      es: [
+        "Todo del Plata",
+        "Combo Mega + Combo Mini incluidos",
+        "Inicio de las calificaciones altas (Rubí y Esmeralda)",
+        "Puntuación que ya genera premiaciones reales",
+        "Posibilidad de viajes e incentivos",
+        "Estructura real de liderazgo",
+        "Binario más agresivo (24%)",
+      ],
+    },
+    highlight: {
+      pt: "O ponto onde o jogo realmente começa.",
+      en: "The point where the game really begins.",
+      es: "El punto donde el juego realmente comienza.",
     },
   },
   {
     id: "platinum",
     nameKey: "franchise.platinum",
-    prices: { BRL: 3997, USD: 799, EUR: 719 },
+    installmentPrice: { BRL: 675, USD: 135, EUR: 121 },
+    installments: 12,
     image: platinaImg,
+    subtitle: {
+      pt: "Alcance o topo",
+      en: "Reach the top",
+      es: "Alcanza la cima",
+    },
     benefits: {
-      pt: ["Tudo do Ouro", "Comissão de 30% nas vendas", "Participação nos resultados", "Acesso antecipado a novos produtos", "Suporte 24/7 exclusivo", "Convite para board de franqueados", "Viagem de incentivo anual"],
-      en: ["Everything in Gold", "30% commission on sales", "Profit sharing", "Early access to new products", "24/7 exclusive support", "Franchisee board invitation", "Annual incentive trip"],
-      es: ["Todo de Oro", "Comisión del 30% en ventas", "Participación en resultados", "Acceso anticipado a nuevos productos", "Soporte 24/7 exclusivo", "Invitación al board de franquiciados", "Viaje de incentivo anual"],
+      pt: [
+        "Tudo do Ouro",
+        "Combo Mega + Mini inclusos",
+        "Único nível que permite chegar a Diamante",
+        "Acesso ao topo do plano (Diamante → Black → Estrelas)",
+        "Limite máximo de premiações e pontuação",
+        "Maior potencial de ganhos recorrentes",
+        "Binário mais alto do plano (32% a 60%)",
+      ],
+      en: [
+        "Everything in Gold",
+        "Mega + Mini Combos included",
+        "Only level that allows reaching Diamond",
+        "Access to the top of the plan (Diamond → Black → Stars)",
+        "Maximum reward and point limits",
+        "Highest recurring earnings potential",
+        "Highest binary in the plan (32% to 60%)",
+      ],
+      es: [
+        "Todo del Oro",
+        "Combo Mega + Mini incluidos",
+        "Único nivel que permite llegar a Diamante",
+        "Acceso a la cima del plan (Diamante → Black → Estrellas)",
+        "Límite máximo de premiaciones y puntuación",
+        "Mayor potencial de ganancias recurrentes",
+        "Binario más alto del plan (32% a 60%)",
+      ],
+    },
+    highlight: {
+      pt: "Jogue no nível máximo do plano.",
+      en: "Play at the plan's highest level.",
+      es: "Juega al nivel máximo del plan.",
     },
   },
 ];
@@ -82,6 +223,18 @@ function getCurrencyFromCountry(countryIso2?: string): Currency {
   return "USD";
 }
 
+const microcopy: Record<Lang, string> = {
+  pt: "Todas as franquias dão acesso ao mesmo negócio. O que muda é a velocidade de crescimento, o nível de qualificação e o teto de ganhos.",
+  en: "All franchises give access to the same business. What changes is the growth speed, qualification level, and earnings ceiling.",
+  es: "Todas las franquicias dan acceso al mismo negocio. Lo que cambia es la velocidad de crecimiento, el nivel de calificación y el techo de ganancias.",
+};
+
+const cashDiscountText: Record<Lang, string> = {
+  pt: "Pagamentos à vista têm 5% de desconto",
+  en: "Cash payments get a 5% discount",
+  es: "Pagos al contado tienen 5% de descuento",
+};
+
 interface Props {
   data: WizardData;
   onNext: (franchise: string, price: number) => void;
@@ -95,32 +248,38 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
   const currency = getCurrencyFromCountry(data.countryIso2);
   const sym = currencySymbol[currency];
   const locale = currencyLocale[currency];
+  const lang = language as Lang;
 
   const formatPrice = (price: number) =>
-    price.toLocaleString(locale, { minimumFractionDigits: 0 });
+    price.toLocaleString(locale, { minimumFractionDigits: 2 });
 
   const handleConfirm = () => {
     if (!selected) return;
     const f = franchiseOptions.find((fr) => fr.id === selected)!;
-    onNext(f.id, f.prices[currency]);
+    const totalPrice = f.installmentPrice[currency] * f.installments;
+    onNext(f.id, totalPrice);
   };
 
-  const firstName = data.fullName?.split(" ")[0] ?? "";
-  const lang = language as "pt" | "en" | "es";
   const odataId = data.userId ?? "—";
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-5xl mx-auto space-y-6">
+      {/* Header */}
       <div className="text-center space-y-3">
         <img src="/favicon.svg" alt="Timol" className="h-10 w-10 mx-auto" />
-        <p className="text-xl sm:text-2xl font-bold text-primary">
+        <p className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight">
           {t("franchise.yourId")} {odataId}
         </p>
         <h2 className="text-lg sm:text-xl font-semibold text-foreground">
           {t("franchise.subtitle")}
         </h2>
+        {/* Microcopy */}
+        <p className="text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          {microcopy[lang]}
+        </p>
       </div>
 
+      {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {franchiseOptions.map((f) => {
           const isSelected = selected === f.id;
@@ -135,16 +294,16 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
               )}
               onClick={() => setSelected(f.id)}
             >
-              {/* Recommended badge — overlapping top border */}
+              {/* Recommended badge */}
               {f.recommended && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                  <Badge className="bg-yellow-500 text-white border-0 text-xs px-3 py-1 shadow-md whitespace-nowrap cursor-default hover:bg-yellow-500">
+                  <Badge className="bg-yellow-500 text-white border-0 text-xs px-3 py-1 shadow-md whitespace-nowrap cursor-default pointer-events-none">
                     {t("franchise.bestChoice")}
                   </Badge>
                 </div>
               )}
 
-              {/* Header: icon left, name+price right */}
+              {/* Header: icon left, name+subtitle+price right */}
               <div className={cn(
                 "flex items-center gap-3 p-4 rounded-t-[calc(0.5rem-2px)]",
                 isSelected ? "bg-yellow-100/50" : "bg-muted/30"
@@ -152,11 +311,12 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                 <img src={f.image} alt={t(f.nameKey)} className="h-14 w-14 object-contain flex-shrink-0" />
                 <div className="min-w-0">
                   <h3 className="text-lg font-bold text-primary">{t(f.nameKey)}</h3>
-                  <div className="flex flex-wrap items-baseline gap-x-1.5">
+                  <p className="text-xs text-muted-foreground italic">{f.subtitle[lang]}</p>
+                  <div className="flex flex-wrap items-baseline gap-x-1.5 mt-1">
+                    <span className="text-[11px] text-muted-foreground">{f.installments}x</span>
                     <span className="text-xl font-bold text-foreground">
-                      {sym} {formatPrice(f.prices[currency])}
+                      {sym} {formatPrice(f.installmentPrice[currency])}
                     </span>
-                    <span className="text-[11px] text-muted-foreground whitespace-nowrap">{t("franchise.once")}</span>
                   </div>
                 </div>
               </div>
@@ -176,6 +336,18 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                 ))}
               </div>
 
+              {/* Highlight tagline */}
+              <div className={cn(
+                "px-4 pb-4 pt-1",
+              )}>
+                <p className={cn(
+                  "text-xs font-semibold italic text-center",
+                  isSelected ? "text-yellow-700" : "text-primary/70"
+                )}>
+                  "{f.highlight[lang]}"
+                </p>
+              </div>
+
               {/* Selected indicator */}
               {isSelected && !f.recommended && (
                 <div className="absolute top-2 right-2 bg-yellow-500 text-white rounded-full p-0.5">
@@ -187,6 +359,12 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
         })}
       </div>
 
+      {/* Cash discount note */}
+      <p className="text-center text-sm text-muted-foreground font-medium">
+        💰 {cashDiscountText[lang]}
+      </p>
+
+      {/* Actions */}
       <div className="flex justify-between gap-3 max-w-md mx-auto">
         <Button variant="outline" onClick={onBack} className="flex-1">
           <ChevronLeft className="h-4 w-4 mr-1" />
