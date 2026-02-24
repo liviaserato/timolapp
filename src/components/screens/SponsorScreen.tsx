@@ -325,7 +325,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
                   setNotFound(false);
                 }}
                 onKeyDown={handleKeyDown}
-                onBlur={() => { if (sponsorId.trim()) handleSearch(); }}
+                onBlur={() => { if (sponsorId.trim() && !showConfirmBox && !foundSponsor) handleSearch(); }}
                 className="pr-10"
                 maxLength={6}
                 inputMode="numeric"
