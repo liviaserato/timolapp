@@ -82,7 +82,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Document check popup
     "docCheck.title": "Documento já cadastrado",
-    "docCheck.disambiguation.message": "Encontramos mais de um cadastro com este documento. Para identificar corretamente, informe o país de naturalidade.",
+    "docCheck.disambiguation.message": "Encontramos mais de um cadastro com este documento. Para identificar corretamente, informe o país emissor.",
     "docCheck.disambiguation.selectCountry": "Selecione o país",
     "docCheck.confirmOwnership.message": "Este documento já consta como cadastrado no sistema. Os dados abaixo pertencem a você?",
     "docCheck.confirmOwnership.name": "Nome",
@@ -142,6 +142,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "step4.username.placeholder": "Escolha um nome de usuário",
     "step4.username.available": "✓ Nome de usuário disponível",
     "step4.username.taken": "Nome de usuário já em uso. Tente outro.",
+    "step4.username.hint": "Apenas letras, números e underscore (_). Máx. 20 caracteres.",
+    "step4.username.invalidChars": "Use apenas letras, números e underscore (_).",
     "step4.password": "Senha",
     "step4.password.placeholder": "Crie uma senha",
     "step4.confirmPassword": "Confirmar senha",
@@ -376,7 +378,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "step1.documentCountry.notFound": "No country found",
 
     "docCheck.title": "Document already registered",
-    "docCheck.disambiguation.message": "We found more than one registration with this document. To identify correctly, please inform your country of nationality.",
+    "docCheck.disambiguation.message": "We found more than one registration with this document. To identify correctly, please inform the issuing country.",
     "docCheck.disambiguation.selectCountry": "Select country",
     "docCheck.confirmOwnership.message": "This document is already registered in the system. Does the information below belong to you?",
     "docCheck.confirmOwnership.name": "Name",
@@ -433,6 +435,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "step4.username.placeholder": "Choose a username",
     "step4.username.available": "✓ Username available",
     "step4.username.taken": "Username already in use. Try another.",
+    "step4.username.hint": "Only letters, numbers and underscore (_). Max 20 characters.",
+    "step4.username.invalidChars": "Only letters, numbers and underscore (_) allowed.",
     "step4.password": "Password",
     "step4.password.placeholder": "Create a password",
     "step4.confirmPassword": "Confirm password",
@@ -659,7 +663,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "step1.documentCountry.notFound": "Ningún país encontrado",
 
     "docCheck.title": "Documento ya registrado",
-    "docCheck.disambiguation.message": "Encontramos más de un registro con este documento. Para identificar correctamente, informe su país de nacionalidad.",
+    "docCheck.disambiguation.message": "Encontramos más de un registro con este documento. Para identificar correctamente, informe el país emisor.",
     "docCheck.disambiguation.selectCountry": "Seleccione el país",
     "docCheck.confirmOwnership.message": "Este documento ya está registrado en el sistema. ¿Los datos a continuación le pertenecen?",
     "docCheck.confirmOwnership.name": "Nombre",
@@ -716,6 +720,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "step4.username.placeholder": "Elija un nombre de usuario",
     "step4.username.available": "✓ Nombre de usuario disponible",
     "step4.username.taken": "Nombre de usuario en uso. Intente otro.",
+    "step4.username.hint": "Solo letras, números y guion bajo (_). Máx. 20 caracteres.",
+    "step4.username.invalidChars": "Use solo letras, números y guion bajo (_).",
     "step4.password": "Contraseña",
     "step4.password.placeholder": "Cree una contraseña",
     "step4.confirmPassword": "Confirmar contraseña",
