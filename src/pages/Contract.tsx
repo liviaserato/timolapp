@@ -11,6 +11,8 @@ const ContractPage = () => {
     userId: params.get("userId") ?? undefined,
     fullName: params.get("fullName") ?? undefined,
     document: params.get("document") ?? undefined,
+    foreignerNoCpf: params.get("foreignerNoCpf") ?? undefined,
+    birthDate: params.get("birthDate") ?? undefined,
     email: params.get("email") ?? undefined,
     street: params.get("street") ?? undefined,
     number: params.get("number") ?? undefined,
