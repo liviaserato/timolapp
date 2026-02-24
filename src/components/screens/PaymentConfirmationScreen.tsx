@@ -10,7 +10,7 @@ interface Props {
 
 export const PaymentConfirmationScreen = ({ data }: Props) => {
   const { t } = useLanguage();
-  const mockId = data.userId ?? String(Math.floor(100000 + Math.random() * 900000));
+  const odataId = data.userId ?? "—";
 
   const isBrazilAddress = (data.countryIso2 ?? "BR") === "BR";
   const isEuro = ["AT","BE","CY","EE","FI","FR","DE","GR","IE","IT","LV","LT","LU","MT","NL","PT","SK","SI","ES"].includes(data.countryIso2 ?? "");
@@ -56,7 +56,7 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
 
           <div className="w-full bg-primary/5 rounded-xl p-4 space-y-2 text-sm text-left">
             <DataRow label={t("paymentDone.status")} value={<span className="font-semibold text-green-600">{t("paymentDone.active")}</span>} />
-            <DataRow label={t("paymentDone.yourId")} value={<span className="font-semibold">{mockId}</span>} />
+            <DataRow label={t("paymentDone.yourId")} value={<span className="font-semibold">{odataId}</span>} />
             <DataRow label={t("paymentDone.franchise")} value={<span className="font-semibold">{franchiseName}</span>} />
             <DataRow label={t("summary.price")} value={<span className="font-semibold">{formatPrice(price)}</span>} />
             {paymentLine1 && (

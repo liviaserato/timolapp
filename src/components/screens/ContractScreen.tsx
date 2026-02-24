@@ -21,7 +21,7 @@ export const ContractScreen = ({ data, onClose }: Props) => {
     const html2pdf = (await import("html2pdf.js")).default;
     const el = docRef.current;
     if (!el) return;
-    const fileName = `Contrato de Franquia ID ${mockId}.pdf`;
+    const fileName = `Contrato de Franquia ID ${odataId}.pdf`;
     html2pdf()
       .set({
         margin: [20, 20, 20, 20],
@@ -47,7 +47,7 @@ export const ContractScreen = ({ data, onClose }: Props) => {
   const dateStr = today.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
   const todayShort = today.toLocaleDateString("pt-BR");
 
-  const mockId = data.userId ?? "123456";
+  const odataId = data.userId ?? "—";
   const fullName = data.fullName ?? "_______________";
   const isForeigner = data.foreignerNoCpf === "true";
   const docLabel = isForeigner ? t("contract.documentPassport") : "CPF";
@@ -163,7 +163,7 @@ export const ContractScreen = ({ data, onClose }: Props) => {
               </div>
               <div className="border-t border-border/30 my-3" />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm">
-                <ContractField label="ID" value={mockId} />
+                <ContractField label="ID" value={odataId} />
                 <ContractField label={t("summary.franchiseChosen")} value={franchiseName} />
                 <ContractField label={t("contract.acquisitionDate")} value={todayShort} />
                 <ContractField label={t("contract.sponsor")} value={sponsorDisplay} />
