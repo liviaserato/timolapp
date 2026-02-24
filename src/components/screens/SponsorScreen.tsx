@@ -334,9 +334,10 @@ export const SponsorScreen = ({ onNext }: Props) => {
       <div className="text-center space-y-3">
         <img src={timolLogoAzul} alt="Timol" className="h-auto w-44 mx-auto" />
         <h1 className="text-2xl sm:text-3xl font-bold text-primary">{t("sponsor.title")}</h1>
-        <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-          {t("sponsor.subtitle")}
-        </p>
+        <div className="text-muted-foreground text-sm sm:text-base leading-relaxed space-y-1">
+          <p>{t("sponsor.subtitle.line1")}</p>
+          <p>{t("sponsor.subtitle.line2")}</p>
+        </div>
         <LanguageSelector />
       </div>
 
@@ -621,23 +622,21 @@ export const SponsorScreen = ({ onNext }: Props) => {
               )}
 
               {fromNoSponsorFlow && (
-                <div className="text-center space-y-2 -mt-2">
+                <div className="flex flex-col sm:flex-row gap-2 -mt-2">
                   <button
                     type="button"
                     onClick={handleSuggestAnother}
                     disabled={searching}
-                    className="text-xs text-muted-foreground underline underline-offset-2 hover:text-primary transition-colors"
+                    className="flex-1 text-xs text-muted-foreground underline underline-offset-2 hover:text-primary transition-colors text-center"
                   >
                     {searching ? <Loader2 className="h-3 w-3 animate-spin inline mr-1" /> : null}
                     {t("sponsor.confirm.suggestAnother")}
                   </button>
-                  <br />
                   <button
                     type="button"
                     onClick={handleContactTimolFromConfirm}
-                    className="text-xs text-muted-foreground underline underline-offset-2 hover:text-primary transition-colors"
+                    className="flex-1 text-xs text-muted-foreground underline underline-offset-2 hover:text-primary transition-colors text-center"
                   >
-                    <MessageCircle className="h-3 w-3 inline mr-1" />
                     {t("sponsor.confirm.contactTimol")}
                   </button>
                 </div>
