@@ -76,8 +76,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "step1.gender.female": "Feminino",
     "step1.gender.other": "Outro",
     "step1.gender.preferNotSay": "Prefiro não dizer",
-    "step1.documentCountry": "País do documento",
-    "step1.documentCountry.placeholder": "Selecione o país do documento",
+    "step1.documentCountry": "País emissor do documento/passaporte",
+    "step1.documentCountry.placeholder": "Selecione o país emissor",
     "step1.documentCountry.notFound": "Nenhum país encontrado",
 
     // Document check popup
@@ -371,8 +371,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "step1.gender.female": "Female",
     "step1.gender.other": "Other",
     "step1.gender.preferNotSay": "Prefer not to say",
-    "step1.documentCountry": "Document country",
-    "step1.documentCountry.placeholder": "Select the document country",
+    "step1.documentCountry": "Document/passport issuing country",
+    "step1.documentCountry.placeholder": "Select the issuing country",
     "step1.documentCountry.notFound": "No country found",
 
     "docCheck.title": "Document already registered",
@@ -654,8 +654,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "step1.gender.female": "Femenino",
     "step1.gender.other": "Otro",
     "step1.gender.preferNotSay": "Prefiero no decir",
-    "step1.documentCountry": "País del documento",
-    "step1.documentCountry.placeholder": "Seleccione el país del documento",
+    "step1.documentCountry": "País emisor del documento/pasaporte",
+    "step1.documentCountry.placeholder": "Seleccione el país emisor",
     "step1.documentCountry.notFound": "Ningún país encontrado",
 
     "docCheck.title": "Documento ya registrado",
