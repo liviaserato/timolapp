@@ -47,6 +47,9 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const [sponsorSelected, setSponsorSelected] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
+  // Separate loading state for the "indicate a franchisee" flow
+  const [indicationLoading, setIndicationLoading] = useState(false);
+
   // Contact form state
   const [contactName, setContactName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
@@ -152,27 +155,19 @@ export const SponsorScreen = ({ onNext }: Props) => {
     });
   };
 
-  const fetchSponsorById = async (id: string) => {
-    setSearching(true);
-    setError("");
-    setNotFound(false);
+  // Dedicated fetch for the "indicate a franchisee" flow — completely isolated from main ID search
+  const fetchSponsorForIndication = async (id: string) => {
+    setIndicationLoading(true);
     try {
+      // TODO: Replace with dedicated indication endpoint when available
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-lookup?id=${id}`,
         { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
       );
-      if (!res.ok) {
-        setError(t("sponsor.error.notFound"));
-        setNotFound(true);
-        return;
-      }
+      if (!res.ok) return;
       const json = await res.json();
       const record = Array.isArray(json) ? json[0] : json;
-      if (!record || !record.nome) {
-        setError(t("sponsor.error.notFound"));
-        setNotFound(true);
-        return;
-      }
+      if (!record || !record.nome) return;
       const name = record.nome || "";
       const cidadeParts = (record.cidade || "").split(" - ");
       const city = cidadeParts[0]?.trim() || "";
@@ -186,24 +181,23 @@ export const SponsorScreen = ({ onNext }: Props) => {
       setSponsorSelected(false);
       setShowConfirmBox(true);
     } catch {
-      setError(t("sponsor.error.notFound"));
-      setNotFound(true);
+      // Silently fail — don't touch main search state
     } finally {
-      setSearching(false);
+      setIndicationLoading(false);
     }
   };
 
   const handleRandomSponsor = async () => {
     setShowNoSponsorBox(false);
     setFromNoSponsorFlow(true);
-    await fetchSponsorById("31");
+    await fetchSponsorForIndication("31");
   };
 
   const handleSuggestAnother = async () => {
     if (!foundSponsor) return;
     setSponsorSelected(false);
     const nextId = foundSponsor.id === "31" ? "27" : "31";
-    await fetchSponsorById(nextId);
+    await fetchSponsorForIndication(nextId);
   };
 
   const clearSearch = () => {
