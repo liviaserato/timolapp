@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { WizardData } from "@/types/wizard";
 import { Search, Users, Phone, X, ChevronRight, ThumbsUp, Loader2, MessageCircle, RefreshCw } from "lucide-react";
 import timolLogoAzul from "@/assets/logo-timol-azul-escuro.svg";
+import whatsappIcon from "@/assets/icon-logo-whatsapp.svg";
 import { countries } from "@/data/countries";
 
 // Language to Google Places language map
@@ -501,7 +502,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
                       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
                     }}
                   >
-                    <MessageCircle className="h-4 w-4" />
+                    <img src={whatsappIcon} alt="WhatsApp" className="h-5 w-5" />
                     {t("sponsor.noSponsorBox.whatsapp")}
                   </Button>
                 </>
@@ -567,14 +568,6 @@ export const SponsorScreen = ({ onNext }: Props) => {
                   >
                     {indicationLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
                     {t("sponsor.confirm.suggestAnother")}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={openWhatsAppFromConfirm}
-                    className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    <MessageCircle className="h-3.5 w-3.5" />
-                    {t("sponsor.noSponsorBox.whatsapp")}
                   </button>
                 </div>
               )}
