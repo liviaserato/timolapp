@@ -129,7 +129,6 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
               key={f.id}
               className={cn(
                 "relative rounded-lg border-2 cursor-pointer transition-all duration-200 flex flex-col",
-                f.recommended ? "mt-4" : "",
                 isSelected
                   ? "border-yellow-500 bg-yellow-50 ring-2 ring-yellow-400 shadow-lg scale-[1.02]"
                   : "border-border bg-card hover:shadow-md hover:scale-[1.01]"
@@ -139,7 +138,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
               {/* Recommended badge — overlapping top border */}
               {f.recommended && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                  <Badge className="bg-yellow-500 text-white border-0 text-xs px-3 py-1 shadow-md whitespace-nowrap">
+                  <Badge className="bg-yellow-500 text-white border-0 text-xs px-3 py-1 shadow-md whitespace-nowrap cursor-default hover:bg-yellow-500">
                     {t("franchise.bestChoice")}
                   </Badge>
                 </div>

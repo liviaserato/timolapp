@@ -46,14 +46,15 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
   const USERNAME_MAX = 20;
   const USERNAME_REGEX = /^[a-zA-Z0-9_]*$/;
 
+  const isUsernameFormatValid = data.username ? USERNAME_REGEX.test(data.username) : true;
+
   const handleUsernameChange = (val: string) => {
-    // Strip spaces always
     const stripped = val.replace(/\s/g, "");
-    // Enforce max length
     const trimmed = stripped.slice(0, USERNAME_MAX);
     onChange("username", trimmed);
     setUsernameStatus("idle");
     if (usernameTimer) clearTimeout(usernameTimer);
+    // Only check availability if format is valid
     if (trimmed.length >= 3 && USERNAME_REGEX.test(trimmed)) {
       setUsernameStatus("checking");
       const timer = setTimeout(async () => {
@@ -61,7 +62,7 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
           const { data: existing, error } = await supabase
             .from("profiles")
             .select("id")
-            .eq("username", val.trim())
+            .eq("username", trimmed)
             .maybeSingle();
           if (error) throw error;
           setUsernameStatus(existing ? "taken" : "available");
@@ -93,18 +94,19 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
             ].join(" ")}
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            {usernameStatus === "checking" && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-            {usernameStatus === "available" && <CheckCircle2 className="h-4 w-4 text-success" />}
-            {usernameStatus === "taken" && <XCircle className="h-4 w-4 text-destructive" />}
+            {isUsernameFormatValid && usernameStatus === "checking" && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+            {isUsernameFormatValid && usernameStatus === "available" && <CheckCircle2 className="h-4 w-4 text-success" />}
+            {isUsernameFormatValid && usernameStatus === "taken" && <XCircle className="h-4 w-4 text-destructive" />}
+            {!isUsernameFormatValid && data.username && <XCircle className="h-4 w-4 text-destructive" />}
           </div>
         </div>
-        {usernameStatus === "available" && (
+        {isUsernameFormatValid && usernameStatus === "available" && !errors.username && (
           <p className="text-xs text-success">{t("step4.username.available")}</p>
         )}
-        {usernameStatus === "taken" && (
+        {isUsernameFormatValid && usernameStatus === "taken" && (
           <p className="text-xs text-destructive">{t("step4.username.taken")}</p>
         )}
-        {data.username && !USERNAME_REGEX.test(data.username) && (
+        {!isUsernameFormatValid && data.username && !errors.username && (
           <p className="text-xs text-destructive">{t("step4.username.invalidChars")}</p>
         )}
         {errors.username && <p className="text-sm text-destructive">{errors.username}</p>}
