@@ -288,9 +288,12 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setContactErrors((p) => ({ ...p, cityState: "" }));
   };
 
-  // Handle contact Timol from confirm screen
+  // Handle contact Timol from confirm screen — close confirm first, then show success
   const handleContactTimolFromConfirm = () => {
-    setShowContactTimolSuccess(true);
+    setShowConfirmBox(false);
+    setTimeout(() => {
+      setShowContactTimolSuccess(true);
+    }, 150);
   };
 
   const howKnewOptions = [
@@ -525,7 +528,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
 
       {/* Contact Timol Success Modal (from confirm screen) */}
       {showContactTimolSuccess && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
           <Card className="w-full max-w-sm shadow-2xl">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-end">
