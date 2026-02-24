@@ -14,11 +14,12 @@ import {
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { WizardData } from "@/types/wizard";
-import { Search, Users, Phone, X, ChevronRight, ThumbsUp, Loader2, MessageCircle } from "lucide-react";
+import { Search, Users, Phone, X, ChevronRight, ThumbsUp, Loader2, MessageCircle, RefreshCw } from "lucide-react";
 import timolLogoAzul from "@/assets/logo-timol-azul-escuro.svg";
 import { countries } from "@/data/countries";
 
 // Language to Google Places language map
+const WHATSAPP_NUMBER = "5534991258000";
 const LANG_MAP: Record<string, string> = { pt: "pt-BR", en: "en", es: "es" };
 
 interface Props {
@@ -64,9 +65,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const locationRef = useRef<HTMLDivElement>(null);
 
-  // Contact Timol from confirm screen
-  const [showContactTimolSuccess, setShowContactTimolSuccess] = useState(false);
-
+  // No longer used: showContactTimolSuccess removed
   // Reset search when language changes
   useEffect(() => {
     setSponsorId("");
@@ -221,7 +220,6 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setContactHowKnew("");
     setContactOther("");
     setContactErrors({});
-    setShowContactTimolSuccess(false);
   };
 
   const handleContactSubmit = () => {
@@ -238,9 +236,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setNoSponsorStep("how-continue");
   };
 
-  const handleContactTimol = () => {
-    setNoSponsorStep("contact-success");
-  };
+  // handleContactTimol removed — replaced by WhatsApp button
 
   const openNoSponsor = () => {
     clearSearch();
@@ -282,14 +278,13 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setContactErrors((p) => ({ ...p, cityState: "" }));
   };
 
-  // Handle contact Timol from confirm screen — close confirm first, then show success
-  const handleContactTimolFromConfirm = () => {
-    setShowConfirmBox(false);
-    setTimeout(() => {
-      setShowContactTimolSuccess(true);
-    }, 150);
+  // Open WhatsApp from confirm screen (Popup 2)
+  const openWhatsAppFromConfirm = () => {
+    const message = encodeURIComponent(
+      `Olá, meu nome é ${contactName || "—"}. Quero escolher um patrocinador e preciso de ajuda.`
+    );
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
   };
-
   const howKnewOptions = [
     { value: "live", label: t("sponsor.noSponsorBox.contactHowKnew.live") },
     { value: "showroom", label: t("sponsor.noSponsorBox.contactHowKnew.showroom") },
@@ -499,44 +494,18 @@ export const SponsorScreen = ({ onNext }: Props) => {
                   <Button
                     variant="outline"
                     className="w-full justify-start gap-2"
-                    onClick={handleContactTimol}
+                    onClick={() => {
+                      const message = encodeURIComponent(
+                        `Olá, meu nome é ${contactName || "—"}. Quero escolher um patrocinador e preciso de ajuda.`
+                      );
+                      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
+                    }}
                   >
-                    <Phone className="h-4 w-4" />
-                    {t("sponsor.noSponsorBox.contact")}
-                    <ChevronRight className="h-4 w-4 ml-auto" />
+                    <MessageCircle className="h-4 w-4" />
+                    {t("sponsor.noSponsorBox.whatsapp")}
                   </Button>
                 </>
               )}
-
-              {noSponsorStep === "contact-success" && (
-                <div className="text-center space-y-3 py-2">
-                  <ThumbsUp className="h-10 w-10 mx-auto text-primary" />
-                  <p className="text-sm text-muted-foreground">{t("sponsor.noSponsorBox.contactSuccess")}</p>
-                  <Button className="w-full" onClick={resetAll}>OK</Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* Contact Timol Success Modal (from confirm screen) */}
-      {showContactTimolSuccess && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
-          <Card className="w-full max-w-sm shadow-2xl">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-end">
-                <button onClick={() => setShowContactTimolSuccess(false)}>
-                  <X className="h-4 w-4 text-muted-foreground" />
-                </button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center space-y-3 py-2">
-                <ThumbsUp className="h-10 w-10 mx-auto text-primary" />
-                <p className="text-sm text-muted-foreground">{t("sponsor.noSponsorBox.contactSuccess")}</p>
-                <Button className="w-full" onClick={() => { setShowContactTimolSuccess(false); resetAll(); }}>OK</Button>
-              </div>
             </CardContent>
           </Card>
         </div>
@@ -589,22 +558,23 @@ export const SponsorScreen = ({ onNext }: Props) => {
               )}
 
               {fromNoSponsorFlow && (
-                <div className="flex flex-col sm:flex-row gap-2 -mt-2">
+                <div className="flex flex-col items-center gap-2 -mt-2">
                   <button
                     type="button"
                     onClick={handleSuggestAnother}
-                    disabled={searching}
-                    className="flex-1 text-xs text-muted-foreground underline underline-offset-2 hover:text-primary transition-colors text-center"
+                    disabled={indicationLoading}
+                    className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
-                    {searching ? <Loader2 className="h-3 w-3 animate-spin inline mr-1" /> : null}
+                    {indicationLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
                     {t("sponsor.confirm.suggestAnother")}
                   </button>
                   <button
                     type="button"
-                    onClick={handleContactTimolFromConfirm}
-                    className="flex-1 text-xs text-muted-foreground underline underline-offset-2 hover:text-primary transition-colors text-center"
+                    onClick={openWhatsAppFromConfirm}
+                    className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
                   >
-                    {t("sponsor.confirm.contactTimol")}
+                    <MessageCircle className="h-3.5 w-3.5" />
+                    {t("sponsor.noSponsorBox.whatsapp")}
                   </button>
                 </div>
               )}
