@@ -138,7 +138,20 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
           </div>
         </div>
 
-        {/* Document Country selector — only for foreigners */}
+        <Input
+          id="document"
+          placeholder={isForeigner ? t("step1.document.foreigner.placeholder") : t("step1.document.placeholder")}
+          value={data.document || ""}
+          onChange={(e) =>
+            onChange(
+              "document",
+              isForeigner ? e.target.value : maskCPF(e.target.value)
+            )
+          }
+          maxLength={isForeigner ? 50 : 14}
+        />
+
+        {/* Document Country selector — only for foreigners, right below document input */}
         {isForeigner && (
           <div className="space-y-2 relative" ref={docCountryRef}>
             <Label htmlFor="documentCountry">{t("step1.documentCountry")}</Label>
@@ -199,23 +212,10 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
           </div>
         )}
 
-        <Input
-          id="document"
-          placeholder={isForeigner ? t("step1.document.foreigner.placeholder") : t("step1.document.placeholder")}
-          value={data.document || ""}
-          onChange={(e) =>
-            onChange(
-              "document",
-              isForeigner ? e.target.value : maskCPF(e.target.value)
-            )
-          }
-          maxLength={isForeigner ? 50 : 14}
-        />
-
         {isForeigner && (
           <div className="rounded-md border bg-amber-50 border-amber-200 px-3 py-2 text-sm text-amber-700 flex items-start gap-2">
             <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
-            <span>{t("step1.foreignerHint")}</span>
+            <span>Sendo estrangeiro(a), a imagem do seu documento poderá ser solicitada posteriormente para conferência.</span>
           </div>
         )}
         {errors.document && <p className="text-sm text-destructive">{errors.document}</p>}
