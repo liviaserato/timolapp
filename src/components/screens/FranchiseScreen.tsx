@@ -107,7 +107,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
 
   const firstName = data.fullName?.split(" ")[0] ?? "";
   const lang = language as "pt" | "en" | "es";
-  const mockId = data.userId ?? "123456";
+  const odataId = data.userId ?? "—";
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
@@ -118,7 +118,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
         </h2>
         <p className="text-muted-foreground">{t("franchise.subtitle")}</p>
         <p className="text-base font-semibold text-primary">
-          {t("franchise.yourId")} {mockId}.
+          {t("franchise.yourId")} {odataId}.
         </p>
       </div>
 

@@ -41,7 +41,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
     onConfirm();
   };
 
-  const mockId = data.userId ?? "123456";
+  const odataId = data.userId ?? "—";
 
   const price = data.franchisePrice ?? 0;
   const isBrazil = (data.countryIso2 ?? "BR") === "BR";
@@ -112,7 +112,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
           </div>
         </CardHeader>
         <CardContent className="space-y-1 text-sm">
-          <Row label="ID" value={mockId} />
+          <Row label="ID" value={odataId} />
           <Row label={t("summary.fullName")} value={data.fullName ?? "—"} />
           <Row label={isForeigner ? t("summary.document") : "CPF"} value={data.document || "—"} />
           <Row label={t("summary.birthDate")} value={data.birthDate ? formatBirthDate(data.birthDate, data.countryIso2) : "—"} />
