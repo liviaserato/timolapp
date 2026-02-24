@@ -157,6 +157,15 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
                 setShowCountryList(true);
               }}
               onFocus={() => setShowCountryList(true)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  // If there's exactly one match, select it
+                  if (filteredCountries.length === 1) {
+                    selectCountry(filteredCountries[0].iso2);
+                  }
+                }
+              }}
             />
           )}
         </div>
@@ -165,6 +174,7 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
           <div className="absolute z-50 w-full bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto mt-1">
             {filteredCountries.map((c) => (
               <button
+                type="button"
                 key={c.iso2}
                 className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2"
                 onClick={() => selectCountry(c.iso2)}

@@ -107,7 +107,6 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
         {data.username && !USERNAME_REGEX.test(data.username) && (
           <p className="text-xs text-destructive">{t("step4.username.invalidChars")}</p>
         )}
-        <p className="text-xs text-muted-foreground">{t("step4.username.hint")}</p>
         {errors.username && <p className="text-sm text-destructive">{errors.username}</p>}
       </div>
 
