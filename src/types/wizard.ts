@@ -12,6 +12,9 @@ export interface WizardData {
   birthDate?: string;
   document?: string;
   foreignerNoCpf?: string; // "true" | "false"
+  documentCountry?: string;
+  documentCountryIso2?: string;
+  documentCountryFlag?: string;
   gender?: string;
 
   // Contact (Step 2)
@@ -50,6 +53,9 @@ export interface WizardData {
   cardLast4?: string;
   cardInstallments?: number;
   cardHolderName?: string;
+
+  // Document check — already registered document was validated
+  documentCheckPassed?: boolean;
 }
 
 export type AppScreen =
