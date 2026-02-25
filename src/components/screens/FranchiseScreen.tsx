@@ -348,9 +348,6 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
 
               {/* Benefits section */}
               <div className="px-4 pt-3 pb-2">
-                <p className="text-xs font-bold text-foreground mb-2 uppercase tracking-wider">
-                  {sectionLabels[lang].benefits}
-                </p>
                 <div className="flex flex-col gap-2">
                   {f.benefits[lang].map((b, i) => {
                     const isBinary = b.startsWith("Bônus") || b.startsWith("Binary") || b.startsWith("Bono");
