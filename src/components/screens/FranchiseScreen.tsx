@@ -45,25 +45,22 @@ const franchiseOptions: FranchiseOption[] = [
     },
     benefits: {
       pt: [
-        "Entrada ideal para quem quer começar com baixo risco",
-        "Bônus binário de 8%",
-        "Acesso completo à plataforma e treinamentos Timol",
-        "Permissão para atuar como consultor desde o início",
-        "Entrada no sistema de expansão",
+        "Entrada ideal com baixo risco",
+        "Bônus Binário de 8%",
+        "Acesso ao escritório digital e plataforma de treinamentos exclusivos Timol",
+        "Permissão para revender os produtos e atuar como <em>consultor</em> logo de início",
       ],
       en: [
-        "Ideal entry for those who want to start with low risk",
-        "Binary bonus of 8%",
-        "Full access to Timol platform and training",
-        "Permission to act as consultant from day one",
-        "Entry into the expansion system",
+        "Ideal entry with low risk",
+        "Binary Bonus of 8%",
+        "Access to digital office and exclusive Timol training platform",
+        "Permission to resell products and act as a <em>consultant</em> from the start",
       ],
       es: [
-        "Entrada ideal para quien quiere comenzar con bajo riesgo",
-        "Bono binario de 8%",
-        "Acceso completo a la plataforma y capacitaciones Timol",
-        "Permiso para actuar como consultor desde el inicio",
-        "Entrada al sistema de expansión",
+        "Entrada ideal con bajo riesgo",
+        "Bono Binario de 8%",
+        "Acceso a la oficina digital y plataforma de capacitaciones exclusivas Timol",
+        "Permiso para revender productos y actuar como <em>consultor</em> desde el inicio",
       ],
     },
     products: {
@@ -92,29 +89,29 @@ const franchiseOptions: FranchiseOption[] = [
     benefits: {
       pt: [
         "Tudo do Bronze, com mais força de crescimento",
-        "Bônus binário de 16%",
-        "Possibilidade de qualificar como distribuidor e líder",
-        "Descontos maiores em produtos",
+        "Bônus Binário de 16%",
+        "Possibilidade de qualificar como <em>distribuidor</em> e <em>líder</em>",
+        "<strong>Descontos maiores em produtos selecionados</strong>",
         "Estrutura mais forte para revenda",
       ],
       en: [
         "Everything in Bronze, with more growth power",
-        "Binary bonus of 16%",
-        "Possibility to qualify as distributor and leader",
-        "Greater product discounts",
+        "Binary Bonus of 16%",
+        "Possibility to qualify as <em>distributor</em> and <em>leader</em>",
+        "<strong>Greater discounts on selected products</strong>",
         "Stronger resale structure",
       ],
       es: [
         "Todo del Bronce, con más fuerza de crecimiento",
-        "Bono binario de 16%",
-        "Posibilidad de calificar como distribuidor y líder",
-        "Mayores descuentos en productos",
+        "Bono Binario de 16%",
+        "Posibilidad de calificar como <em>distribuidor</em> y <em>líder</em>",
+        "<strong>Mayores descuentos en productos seleccionados</strong>",
         "Estructura más fuerte para reventa",
       ],
     },
     products: {
       pt: ["Combo Mega"],
-      en: ["Mega Combo"],
+      en: ["Combo Mega"],
       es: ["Combo Mega"],
     },
     productImages: [comboMegaImg],
@@ -139,27 +136,24 @@ const franchiseOptions: FranchiseOption[] = [
     benefits: {
       pt: [
         "Tudo do Prata",
-        "Bônus binário de 24%",
-        "Início das qualificações altas (Rubi e Esmeralda)",
-        "Pontuação já gera premiações reais",
-        "Possibilidade de viagens e incentivos",
-        "Estrutura real de liderança",
+        "Bônus Binário de 24%",
+        "Início das qualificações altas: <em>Rubi</em> e <em>Esmeralda</em>",
+        "Pontuação que gera premiações incríveis",
+        "Grandes chances de ganhar viagens e outros incentivos",
       ],
       en: [
         "Everything in Silver",
-        "Binary bonus of 24%",
-        "Start of high qualifications (Ruby & Emerald)",
-        "Points already generate real rewards",
-        "Possibility of trips and incentives",
-        "Real leadership structure",
+        "Binary Bonus of 24%",
+        "Start of high qualifications: <em>Ruby</em> & <em>Emerald</em>",
+        "Points that generate incredible rewards",
+        "Great chances of winning trips and other incentives",
       ],
       es: [
         "Todo del Plata",
-        "Bono binario de 24%",
-        "Inicio de las calificaciones altas (Rubí y Esmeralda)",
-        "Puntuación que ya genera premiaciones reales",
-        "Posibilidad de viajes e incentivos",
-        "Estructura real de liderazgo",
+        "Bono Binario de 24%",
+        "Inicio de las calificaciones altas: <em>Rubí</em> y <em>Esmeralda</em>",
+        "Puntuación que genera premiaciones increíbles",
+        "Grandes oportunidades de ganar viajes y otros incentivos",
       ],
     },
     products: {
@@ -181,33 +175,33 @@ const franchiseOptions: FranchiseOption[] = [
     installments: 12,
     image: platinaImg,
     subtitle: {
-      pt: "Alcance o topo",
-      en: "Reach the top",
-      es: "Alcanza la cima",
+      pt: "Construa sua aposentadoria",
+      en: "Build your retirement",
+      es: "Construye tu jubilación",
     },
     benefits: {
       pt: [
         "Tudo do Ouro",
-        "Bônus binário de 32% a 60%",
-        "Único nível que permite chegar a Diamante",
-        "Acesso ao topo do plano (Diamante → Black → Estrelas)",
-        "Limite máximo de premiações e pontuação",
+        "Bônus Binário de 32% a 60%",
+        "Único nível que permite se tornar um Diamante",
+        "Plano de Carreira Diamantes (Ganhe até 5 estrelas → Black)",
+        "Grandes prêmios o esperam",
         "Maior potencial de ganhos recorrentes",
       ],
       en: [
         "Everything in Gold",
-        "Binary bonus of 32% to 60%",
-        "Only level that allows reaching Diamond",
-        "Access to the top of the plan (Diamond → Black → Stars)",
-        "Maximum reward and point limits",
+        "Binary Bonus of 32% to 60%",
+        "Only level that allows becoming a Diamond",
+        "Diamond Career Plan (Earn up to 5 stars → Black)",
+        "Great rewards await you",
         "Highest recurring earnings potential",
       ],
       es: [
         "Todo del Oro",
-        "Bono binario de 32% a 60%",
-        "Único nivel que permite llegar a Diamante",
-        "Acceso a la cima del plan (Diamante → Black → Estrellas)",
-        "Límite máximo de premiaciones y puntuación",
+        "Bono Binario de 32% a 60%",
+        "Único nivel que permite convertirse en Diamante",
+        "Plan de Carrera Diamantes (Gane hasta 5 estrellas → Black)",
+        "Grandes premios lo esperan",
         "Mayor potencial de ganancias recurrentes",
       ],
     },
@@ -328,10 +322,10 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                 </div>
               )}
 
-      {/* Header: icon left, info right */}
-              <div className="flex items-center gap-3 px-4 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]">
-                <img src={f.image} alt={t(f.nameKey)} className="h-12 w-12 object-contain flex-shrink-0" />
-                <div className="flex flex-col min-w-0">
+              {/* Header: icon left, info right-aligned */}
+              <div className="flex items-center justify-between px-4 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]">
+                <img src={f.image} alt={t(f.nameKey)} className="h-16 w-16 object-contain flex-shrink-0" />
+                <div className="flex flex-col items-end min-w-0 text-right">
                   <h3 className="text-2xl font-extrabold text-foreground leading-tight">{t(f.nameKey)}</h3>
                   <div className="flex items-baseline gap-0.5">
                     <span className="text-[11px] text-muted-foreground font-medium">{f.installments}x</span>
@@ -353,37 +347,50 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
 
               {/* Benefits section */}
               <div className="px-4 pt-3 pb-2">
-                <p className="text-xs font-bold text-foreground mb-2 uppercase tracking-widest">
+                <p className="text-xs font-bold text-foreground mb-2 uppercase tracking-wide">
                   {sectionLabels[lang].benefits}
                 </p>
                 <div className="flex flex-col gap-2">
-                  {f.benefits[lang].map((b, i) => (
-                    <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <Check className={cn(
-                        "h-4 w-4 mt-0.5 flex-shrink-0",
-                        isSelected ? "text-yellow-600" : "text-primary/60"
-                      )} />
-                      <span className={b.startsWith("Bônus") || b.startsWith("Binary") || b.startsWith("Bono") ? "font-semibold text-foreground" : ""}>{b}</span>
-                    </div>
-                  ))}
+                  {f.benefits[lang].map((b, i) => {
+                    const isBinary = b.startsWith("Bônus") || b.startsWith("Binary") || b.startsWith("Bono");
+                    const isStrong = b.startsWith("<strong>");
+                    const hasHtml = b.includes("<em>") || b.includes("<strong>");
+                    const cleanText = b.replace(/<\/?em>/g, "").replace(/<\/?strong>/g, "");
+                    return (
+                      <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <Check className={cn(
+                          "h-4 w-4 mt-0.5 flex-shrink-0",
+                          isSelected ? "text-yellow-600" : "text-primary/60"
+                        )} />
+                        {hasHtml ? (
+                          <span
+                            className={cn(isBinary && "font-semibold text-foreground", isStrong && "font-semibold text-primary")}
+                            dangerouslySetInnerHTML={{ __html: b }}
+                          />
+                        ) : (
+                          <span className={isBinary ? "font-semibold text-foreground" : ""}>{cleanText}</span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Products section */}
-              <div className="px-4 pt-3 pb-3">
-                <p className="text-xs font-bold text-foreground mb-2 uppercase tracking-widest">
+              <div className="px-4 pt-2 pb-2">
+                <p className="text-xs font-bold text-foreground mb-2 uppercase tracking-wide">
                   {sectionLabels[lang].products}
                 </p>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-0">
                   {f.productImages.map((img, i) => (
                     <div key={i}>
                       {i > 0 && (
-                        <div className="flex justify-center py-1">
-                          <span className="text-lg font-bold text-muted-foreground">+</span>
+                        <div className="flex justify-center">
+                          <span className="text-base font-bold text-muted-foreground leading-none">+</span>
                         </div>
                       )}
-                      <div className="flex items-center gap-3 bg-muted/40 rounded-md px-3 py-2">
-                        <img src={img} alt={f.products[lang][i]} className="h-14 w-14 object-contain rounded" />
+                      <div className="flex items-center gap-3 px-1 py-1">
+                        <img src={img} alt={f.products[lang][i]} className="h-16 w-16 object-contain" />
                         <span className="text-sm font-medium text-foreground">{f.products[lang][i]}</span>
                       </div>
                     </div>
