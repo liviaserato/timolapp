@@ -242,7 +242,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Payment Confirmation
     "paymentDone.title": "Pagamento Confirmado!",
-    "paymentDone.welcome": "Bem-vindo à Timol! Estamos felizes em ter você com a gente nessa missão.",
+    "paymentDone.welcome": "Bem-vindo à Timol! Sua franquia já está ativa e pronta para uso.",
     "paymentDone.subtitle": "Sua franquia já está ativa",
     "paymentDone.yourId": "Seu ID Timol",
     "paymentDone.franchise": "Franquia",
@@ -251,11 +251,11 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.paymentLabel": "Pagamento",
     "paymentDone.cardEnd": "Cartão final",
     "paymentDone.inFull": "à vista",
-    "paymentDone.accessNow": "Sua franquia já está ativa e pronta para uso. Você já pode acessar seu escritório digital.",
+    "paymentDone.accessNow": "Estamos felizes em ter você com a gente nessa missão.",
     "paymentDone.sponsorContact": "",
     "paymentDone.instructions": "",
-    "paymentDone.emailNote": "Confira também seu e-mail com as instruções de primeiro acesso.",
-    "paymentDone.portalButton": "Acessar meu Portal Timol",
+    "paymentDone.emailNote": "Confira seu e-mail com as instruções de primeiro acesso.",
+    "paymentDone.portalButton": "Acessar meu Escritório Digital",
 
     // Payment Pending
     "paymentPending.title": "Pagamento Pendente",
@@ -540,7 +540,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "payment.error.cardExpired": "This card appears to be expired. Please check the expiry date.",
 
     "paymentDone.title": "Payment Confirmed!",
-    "paymentDone.welcome": "Welcome to Timol! We're happy to have you with us on this mission.",
+    "paymentDone.welcome": "Welcome to Timol! Your franchise is already active and ready to use.",
     "paymentDone.subtitle": "Your franchise is now active",
     "paymentDone.yourId": "Your Timol ID",
     "paymentDone.franchise": "Franchise",
@@ -549,11 +549,11 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.paymentLabel": "Payment",
     "paymentDone.cardEnd": "Card ending",
     "paymentDone.inFull": "in full",
-    "paymentDone.accessNow": "Your franchise is already active and ready to use. You can now access your digital office.",
+    "paymentDone.accessNow": "We're happy to have you with us on this mission.",
     "paymentDone.sponsorContact": "",
     "paymentDone.instructions": "",
-    "paymentDone.emailNote": "Also check your email for first access instructions.",
-    "paymentDone.portalButton": "Access my Timol Portal",
+    "paymentDone.emailNote": "Check your email for first access instructions.",
+    "paymentDone.portalButton": "Access my Digital Office",
 
     // Payment Pending
     "paymentPending.title": "Payment Pending",
@@ -834,7 +834,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "payment.error.cardExpired": "Esta tarjeta parece estar vencida. Verifique la fecha de vencimiento.",
 
     "paymentDone.title": "¡Pago Confirmado!",
-    "paymentDone.welcome": "¡Bienvenido a Timol! Estamos felices de tenerte con nosotros en esta misión.",
+    "paymentDone.welcome": "¡Bienvenido a Timol! Tu franquicia ya está activa y lista para usar.",
     "paymentDone.subtitle": "Su franquicia ya está activa",
     "paymentDone.yourId": "Su ID Timol",
     "paymentDone.franchise": "Franquicia",
@@ -843,11 +843,11 @@ export const translations: Record<Language, Record<string, string>> = {
     "paymentDone.paymentLabel": "Pago",
     "paymentDone.cardEnd": "Tarjeta final",
     "paymentDone.inFull": "al contado",
-    "paymentDone.accessNow": "Tu franquicia ya está activa y lista para usar. Ya puedes acceder a tu oficina digital.",
+    "paymentDone.accessNow": "Estamos felices de tenerte con nosotros en esta misión.",
     "paymentDone.sponsorContact": "",
     "paymentDone.instructions": "",
-    "paymentDone.emailNote": "Revisa también tu correo con las instrucciones de primer acceso.",
-    "paymentDone.portalButton": "Acceder a mi Portal Timol",
+    "paymentDone.emailNote": "Revisa tu correo con las instrucciones de primer acceso.",
+    "paymentDone.portalButton": "Acceder a mi Oficina Digital",
 
     // Payment Pending
     "paymentPending.title": "Pago Pendiente",
