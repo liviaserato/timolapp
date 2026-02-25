@@ -13,6 +13,7 @@ import ouroImg from "@/assets/franquia-ouro.svg";
 import platinaImg from "@/assets/franquia-platina.svg";
 import comboMegaImg from "@/assets/produto-combo-mega.png";
 import comboMiniImg from "@/assets/produto-combo-mini.png";
+import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
 
 type Currency = "BRL" | "USD" | "EUR";
 type Lang = "pt" | "en" | "es";
@@ -91,21 +92,21 @@ const franchiseOptions: FranchiseOption[] = [
         "Tudo do Bronze, com mais força de crescimento",
         "Bônus Binário de 16%",
         "Possibilidade de qualificar como <em>distribuidor</em> e <em>líder</em>",
-        "<strong>Descontos maiores em produtos selecionados</strong>",
+        "Descontos maiores em produtos selecionados",
         "Estrutura mais forte para revenda",
       ],
       en: [
         "Everything in Bronze, with more growth power",
         "Binary Bonus of 16%",
         "Possibility to qualify as <em>distributor</em> and <em>leader</em>",
-        "<strong>Greater discounts on selected products</strong>",
+        "Greater discounts on selected products",
         "Stronger resale structure",
       ],
       es: [
         "Todo del Bronce, con más fuerza de crecimiento",
         "Bono Binario de 16%",
         "Posibilidad de calificar como <em>distribuidor</em> y <em>líder</em>",
-        "<strong>Mayores descuentos en productos seleccionados</strong>",
+        "Mayores descuentos en productos seleccionados",
         "Estructura más fuerte para reventa",
       ],
     },
@@ -183,24 +184,24 @@ const franchiseOptions: FranchiseOption[] = [
       pt: [
         "Tudo do Ouro",
         "Bônus Binário de 32% a 60%",
-        "Único nível que permite se tornar um Diamante",
-        "Plano de Carreira Diamantes (Ganhe até 5 estrelas → Black)",
+        "Único nível que permite se tornar um <em>Diamante</em>",
+        "Plano de Carreira <em>Diamantes</em> (Ganhe até 5 estrelas → Black)",
         "Grandes prêmios o esperam",
         "Maior potencial de ganhos recorrentes",
       ],
       en: [
         "Everything in Gold",
         "Binary Bonus of 32% to 60%",
-        "Only level that allows becoming a Diamond",
-        "Diamond Career Plan (Earn up to 5 stars → Black)",
+        "Only level that allows becoming a <em>Diamond</em>",
+        "<em>Diamond</em> Career Plan (Earn up to 5 stars → Black)",
         "Great rewards await you",
         "Highest recurring earnings potential",
       ],
       es: [
         "Todo del Oro",
         "Bono Binario de 32% a 60%",
-        "Único nivel que permite convertirse en Diamante",
-        "Plan de Carrera Diamantes (Gane hasta 5 estrellas → Black)",
+        "Único nivel que permite convertirse en <em>Diamante</em>",
+        "Plan de Carrera <em>Diamantes</em> (Gane hasta 5 estrellas → Black)",
         "Grandes premios lo esperan",
         "Mayor potencial de ganancias recurrentes",
       ],
@@ -230,12 +231,6 @@ function getCurrencyFromCountry(countryIso2?: string): Currency {
   return "USD";
 }
 
-const microcopy: Record<Lang, string> = {
-  pt: "Todas as franquias dão acesso ao mesmo negócio. O que muda é a velocidade de crescimento, o nível de qualificação e o teto de ganhos.",
-  en: "All franchises give access to the same business. What changes is the growth speed, qualification level, and earnings ceiling.",
-  es: "Todas las franquicias dan acceso al mismo negocio. Lo que cambia es la velocidad de crecimiento, el nivel de calificación y el techo de ganancias.",
-};
-
 const sectionLabels: Record<Lang, { benefits: string; products: string }> = {
   pt: { benefits: "Benefícios", products: "Produtos inclusos" },
   en: { benefits: "Benefits", products: "Included products" },
@@ -254,13 +249,19 @@ interface Props {
   onBack: () => void;
 }
 
-/** Split a formatted price into integer and decimal parts */
 function splitPrice(price: number, locale: string): { integer: string; decimal: string } {
   const formatted = price.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const sep = locale === "en-US" ? "." : ",";
   const idx = formatted.lastIndexOf(sep);
   if (idx === -1) return { integer: formatted, decimal: "00" };
   return { integer: formatted.slice(0, idx), decimal: formatted.slice(idx + 1) };
+}
+
+/** Style <em> tags as blue font-medium instead of italic */
+function styleEmTags(html: string): string {
+  return html
+    .replace(/<em>/g, '<span class="text-primary font-medium not-italic">')
+    .replace(/<\/em>/g, '</span>');
 }
 
 export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
@@ -285,7 +286,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
     <div className="w-full max-w-5xl mx-auto space-y-6">
       {/* Header */}
       <div className="text-center space-y-3">
-        <img src="/favicon.svg" alt="Timol" className="h-10 w-10 mx-auto" />
+        <img src={timolLogoDark} alt="Timol" className="h-10 mx-auto" />
         <p className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight">
           {t("franchise.yourId")} {odataId}
         </p>
@@ -323,7 +324,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
               )}
 
               {/* Header: icon left, info right-aligned */}
-              <div className="flex items-center justify-between px-4 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]">
+              <div className="flex items-center justify-between px-4 pr-5 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]">
                 <img src={f.image} alt={t(f.nameKey)} className="h-16 w-16 object-contain flex-shrink-0" />
                 <div className="flex flex-col items-end min-w-0 text-right">
                   <h3 className="text-2xl font-extrabold text-foreground leading-tight">{t(f.nameKey)}</h3>
@@ -347,14 +348,13 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
 
               {/* Benefits section */}
               <div className="px-4 pt-3 pb-2">
-                <p className="text-xs font-bold text-foreground mb-2 uppercase tracking-wide">
+                <p className="text-xs font-bold text-foreground mb-2 uppercase tracking-wider">
                   {sectionLabels[lang].benefits}
                 </p>
                 <div className="flex flex-col gap-2">
                   {f.benefits[lang].map((b, i) => {
                     const isBinary = b.startsWith("Bônus") || b.startsWith("Binary") || b.startsWith("Bono");
-                    const isStrong = b.startsWith("<strong>");
-                    const hasHtml = b.includes("<em>") || b.includes("<strong>");
+                    const hasHtml = b.includes("<em>");
                     const cleanText = b.replace(/<\/?em>/g, "").replace(/<\/?strong>/g, "");
                     return (
                       <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -364,11 +364,13 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                         )} />
                         {hasHtml ? (
                           <span
-                            className={cn(isBinary && "font-semibold text-foreground", isStrong && "font-semibold text-primary")}
-                            dangerouslySetInnerHTML={{ __html: b }}
+                            className={cn(isBinary && "font-semibold text-foreground")}
+                            dangerouslySetInnerHTML={{ __html: styleEmTags(b) }}
                           />
                         ) : (
-                          <span className={isBinary ? "font-semibold text-foreground" : ""}>{cleanText}</span>
+                          <span className={cn(
+                            isBinary && "font-semibold text-foreground",
+                          )}>{cleanText}</span>
                         )}
                       </div>
                     );
@@ -376,20 +378,25 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                 </div>
               </div>
 
+              {/* Divider before products — aligns section across cards */}
+              <div className="mt-auto">
+                <Separator className={cn("mx-4 w-auto", isSelected ? "bg-yellow-300/40" : "bg-border/40")} />
+              </div>
+
               {/* Products section */}
-              <div className="px-4 pt-2 pb-2">
-                <p className="text-xs font-bold text-foreground mb-2 uppercase tracking-wide">
+              <div className="px-4 pt-3 pb-2">
+                <p className="text-xs font-bold text-foreground mb-2 uppercase tracking-wider">
                   {sectionLabels[lang].products}
                 </p>
                 <div className="flex flex-col gap-0">
                   {f.productImages.map((img, i) => (
                     <div key={i}>
                       {i > 0 && (
-                        <div className="flex justify-center">
-                          <span className="text-base font-bold text-muted-foreground leading-none">+</span>
+                        <div className="flex items-center gap-2 pl-1 py-0">
+                          <span className="text-base font-bold text-muted-foreground leading-none ml-5">+</span>
                         </div>
                       )}
-                      <div className="flex items-center gap-3 px-1 py-1">
+                      <div className="flex items-center gap-3 px-1 py-0.5">
                         <img src={img} alt={f.products[lang][i]} className="h-16 w-16 object-contain" />
                         <span className="text-sm font-medium text-foreground">{f.products[lang][i]}</span>
                       </div>
