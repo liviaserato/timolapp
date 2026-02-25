@@ -33,9 +33,7 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
     if (n === 1) {
       paymentLine2 = t("paymentDone.inFull");
     } else {
-      const installValue = n > 5
-        ? (price * Math.pow(1.03, n)) / n
-        : price / n;
+      const installValue = price / n;
       paymentLine2 = `${n}× ${formatPrice(installValue)}`;
     }
   }
