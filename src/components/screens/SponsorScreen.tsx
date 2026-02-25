@@ -101,6 +101,18 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setSearching(true);
     setError("");
     setNotFound(false);
+
+    // TEST BYPASS: allow ID 31 to proceed without API
+    if (trimmed === "31") {
+      setFoundSponsor({ id: "31", name: "Franquia Teste", city: "São Paulo", state: "SP", countryFlag: "🇧🇷", photo: "" });
+      setSponsorSelected(false);
+      setFromNoSponsorFlow(false);
+      setShowConfirmBox(true);
+      setNotFound(false);
+      setSearching(false);
+      return;
+    }
+
     try {
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-lookup?id=${trimmed}`,
