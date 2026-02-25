@@ -324,7 +324,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
               )}
 
               {/* Header: icon left, info right-aligned */}
-              <div className="flex items-center justify-between px-4 pr-5 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]">
+              <div className="flex items-center justify-between px-4 pr-7 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]">
                 <img src={f.image} alt={t(f.nameKey)} className="h-16 w-16 object-contain flex-shrink-0" />
                 <div className="flex flex-col items-end min-w-0 text-right">
                   <h3 className="text-2xl font-extrabold text-foreground leading-tight">{t(f.nameKey)}</h3>
