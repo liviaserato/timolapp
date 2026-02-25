@@ -22,7 +22,7 @@ serve(async (req) => {
   }
 
   try {
-    const apiUrl = `https://www.timolweb.com.br/gateway/cliente/patrocinio/${encodeURIComponent(sponsorId)}`;
+    const apiUrl = `https://www.timolweb.com.br/api/franchises/id-check/${encodeURIComponent(sponsorId)}`;
     const res = await fetch(apiUrl, {
       headers: {
         "Accept": "application/json",
