@@ -67,9 +67,9 @@ const franchiseOptions: FranchiseOption[] = [
       ],
     },
     products: {
-      pt: ["Combo Mega (Sylo + Top H+)"],
-      en: ["Mega Combo (Sylo + Top H+)"],
-      es: ["Combo Mega (Sylo + Top H+)"],
+      pt: ["Combo Mega"],
+      en: ["Combo Mega"],
+      es: ["Combo Mega"],
     },
     productImages: [comboMegaImg],
     highlight: {
@@ -319,39 +319,36 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
               )}
               onClick={() => setSelected(f.id)}
             >
-              {/* Recommended badge */}
-              {f.recommended && (
+              {/* Badge — only visible when selected */}
+              {isSelected && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                   <Badge className="bg-yellow-500 text-white border-0 text-xs px-3 py-1 shadow-md whitespace-nowrap cursor-default pointer-events-none hover:bg-yellow-500">
-                    {t("franchise.bestChoice")}
+                    {f.subtitle[lang]}
                   </Badge>
                 </div>
               )}
 
-              {/* Header: icon + name */}
-              <div className={cn(
-                "flex items-center gap-3 px-4 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]",
-              )}>
-                <img src={f.image} alt={t(f.nameKey)} className="h-12 w-12 object-contain flex-shrink-0" />
-                <h3 className="text-lg font-bold text-foreground">{t(f.nameKey)}</h3>
-              </div>
-
-              {/* Price block */}
-              <div className="px-4 pb-2">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-xs text-muted-foreground font-medium">{f.installments}x</span>
-                  <span className="text-xs text-muted-foreground font-medium">{sym}</span>
-                  <span className="text-3xl font-extrabold text-foreground leading-none tracking-tight">
-                    {integer}
-                  </span>
-                  <span className="text-sm font-bold text-foreground -translate-y-2">
-                    ,{decimal}
-                  </span>
+              {/* Header: icon + title left, price right */}
+              <div className="flex items-start justify-between px-4 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]">
+                <div className="flex items-center gap-3">
+                  <img src={f.image} alt={t(f.nameKey)} className="h-14 w-14 object-contain flex-shrink-0" />
+                  <h3 className="text-xl font-extrabold text-foreground">{t(f.nameKey)}</h3>
                 </div>
-                {/* Cash price */}
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  {cashLabel[lang]}: {sym} {cashFormatted}
-                </p>
+                <div className="text-right flex-shrink-0">
+                  <div className="flex items-baseline gap-0.5 justify-end">
+                    <span className="text-[11px] text-muted-foreground font-medium">{f.installments}x</span>
+                    <span className="text-[11px] text-muted-foreground font-medium">{sym}</span>
+                    <span className="text-4xl font-extrabold text-foreground leading-none tracking-tight">
+                      {integer}
+                    </span>
+                    <span className="text-base font-bold text-foreground -translate-y-2.5">
+                      ,{decimal}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {cashLabel[lang]}: {sym} {cashFormatted}
+                  </p>
+                </div>
               </div>
 
               {/* Subtitle phrase */}
@@ -363,14 +360,14 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
 
               {/* Benefits section */}
               <div className="px-4 pt-3 pb-2">
-                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                <p className="text-sm font-bold text-foreground mb-2">
                   {sectionLabels[lang].benefits}
                 </p>
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-2">
                   {f.benefits[lang].map((b, i) => (
-                    <div key={i} className="flex items-start gap-1.5 text-xs text-muted-foreground">
+                    <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <Check className={cn(
-                        "h-3.5 w-3.5 mt-0.5 flex-shrink-0",
+                        "h-4 w-4 mt-0.5 flex-shrink-0",
                         isSelected ? "text-yellow-600" : "text-primary/60"
                       )} />
                       <span>{b}</span>
@@ -380,18 +377,29 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
               </div>
 
               {/* Products section */}
-              <div className="px-4 pt-2 pb-3">
-                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+              <div className="px-4 pt-3 pb-3">
+                <p className="text-sm font-bold text-foreground mb-2">
                   {sectionLabels[lang].products}
                 </p>
-                <div className="flex items-center gap-2 flex-wrap">
-                  {f.productImages.map((img, i) => (
-                    <div key={i} className="flex items-center gap-1.5 bg-muted/40 rounded-md px-2 py-1">
-                      <img src={img} alt={f.products[lang][i]} className="h-8 w-8 object-contain rounded" />
-                      <span className="text-[11px] font-medium text-foreground">{f.products[lang][i]}</span>
-                    </div>
-                  ))}
-                </div>
+                {f.productImages.length === 1 ? (
+                  <div className="flex items-center gap-2 bg-muted/40 rounded-md px-3 py-2">
+                    <img src={f.productImages[0]} alt={f.products[lang][0]} className="h-10 w-10 object-contain rounded" />
+                    <span className="text-sm font-medium text-foreground">{f.products[lang][0]}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-2">
+                    {f.productImages.map((img, i) => (
+                      <div key={i} className="flex flex-col items-center gap-1 bg-muted/40 rounded-md px-3 py-2 flex-1">
+                        <img src={img} alt={f.products[lang][i]} className="h-10 w-10 object-contain rounded" />
+                        <span className="text-[11px] font-medium text-foreground text-center">{f.products[lang][i]}</span>
+                      </div>
+                    )).reduce<React.ReactNode[]>((acc, el, i) => {
+                      if (i > 0) acc.push(<span key={`plus-${i}`} className="text-lg font-bold text-muted-foreground">+</span>);
+                      acc.push(el);
+                      return acc;
+                    }, [])}
+                  </div>
+                )}
               </div>
 
               {/* Highlight / impact phrase */}
@@ -402,7 +410,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                   isSelected ? "bg-yellow-100/60" : "bg-muted/20"
                 )}>
                   <p className={cn(
-                    "text-xs font-semibold italic text-center",
+                    "text-sm font-semibold italic text-center",
                     isSelected ? "text-yellow-700" : "text-primary/70"
                   )}>
                     "{f.highlight[lang]}"
@@ -411,7 +419,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
               </div>
 
               {/* Selected indicator */}
-              {isSelected && !f.recommended && (
+              {isSelected && (
                 <div className="absolute top-2 right-2 bg-yellow-500 text-white rounded-full p-0.5">
                   <Check className="h-3.5 w-3.5" />
                 </div>
