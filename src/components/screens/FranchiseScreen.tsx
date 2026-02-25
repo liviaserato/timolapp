@@ -328,39 +328,32 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                 </div>
               )}
 
-              {/* Header: icon + title left, price right */}
-              <div className="flex items-start justify-between px-4 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]">
-                <div className="flex items-center gap-3">
-                  <img src={f.image} alt={t(f.nameKey)} className="h-14 w-14 object-contain flex-shrink-0" />
-                  <h3 className="text-xl font-extrabold text-foreground">{t(f.nameKey)}</h3>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <div className="flex items-baseline gap-0.5 justify-end">
+      {/* Header: icon left, info right */}
+              <div className="flex items-center gap-3 px-4 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]">
+                <img src={f.image} alt={t(f.nameKey)} className="h-12 w-12 object-contain flex-shrink-0" />
+                <div className="flex flex-col min-w-0">
+                  <h3 className="text-2xl font-extrabold text-foreground leading-tight">{t(f.nameKey)}</h3>
+                  <div className="flex items-baseline gap-0.5">
                     <span className="text-[11px] text-muted-foreground font-medium">{f.installments}x</span>
                     <span className="text-[11px] text-muted-foreground font-medium">{sym}</span>
-                    <span className="text-4xl font-extrabold text-foreground leading-none tracking-tight">
+                    <span className="text-3xl font-extrabold text-foreground leading-none tracking-tight">
                       {integer}
                     </span>
-                    <span className="text-base font-bold text-foreground -translate-y-2.5">
+                    <span className="text-sm font-bold text-foreground -translate-y-2">
                       ,{decimal}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-xs text-muted-foreground">
                     {cashLabel[lang]}: {sym} {cashFormatted}
                   </p>
                 </div>
-              </div>
-
-              {/* Subtitle phrase */}
-              <div className="px-4 pb-3">
-                <p className="text-sm font-semibold text-primary italic">{f.subtitle[lang]}</p>
               </div>
 
               <Separator className={isSelected ? "bg-yellow-300/60" : ""} />
 
               {/* Benefits section */}
               <div className="px-4 pt-3 pb-2">
-                <p className="text-sm font-bold text-foreground mb-2">
+                <p className="text-xs font-bold text-foreground mb-2 uppercase tracking-widest">
                   {sectionLabels[lang].benefits}
                 </p>
                 <div className="flex flex-col gap-2">
@@ -370,7 +363,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                         "h-4 w-4 mt-0.5 flex-shrink-0",
                         isSelected ? "text-yellow-600" : "text-primary/60"
                       )} />
-                      <span>{b}</span>
+                      <span className={b.startsWith("Bônus") || b.startsWith("Binary") || b.startsWith("Bono") ? "font-semibold text-foreground" : ""}>{b}</span>
                     </div>
                   ))}
                 </div>
@@ -378,28 +371,24 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
 
               {/* Products section */}
               <div className="px-4 pt-3 pb-3">
-                <p className="text-sm font-bold text-foreground mb-2">
+                <p className="text-xs font-bold text-foreground mb-2 uppercase tracking-widest">
                   {sectionLabels[lang].products}
                 </p>
-                {f.productImages.length === 1 ? (
-                  <div className="flex items-center gap-2 bg-muted/40 rounded-md px-3 py-2">
-                    <img src={f.productImages[0]} alt={f.products[lang][0]} className="h-10 w-10 object-contain rounded" />
-                    <span className="text-sm font-medium text-foreground">{f.products[lang][0]}</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center gap-2">
-                    {f.productImages.map((img, i) => (
-                      <div key={i} className="flex flex-col items-center gap-1 bg-muted/40 rounded-md px-3 py-2 flex-1">
-                        <img src={img} alt={f.products[lang][i]} className="h-10 w-10 object-contain rounded" />
-                        <span className="text-[11px] font-medium text-foreground text-center">{f.products[lang][i]}</span>
+                <div className="flex flex-col gap-2">
+                  {f.productImages.map((img, i) => (
+                    <div key={i}>
+                      {i > 0 && (
+                        <div className="flex justify-center py-1">
+                          <span className="text-lg font-bold text-muted-foreground">+</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-3 bg-muted/40 rounded-md px-3 py-2">
+                        <img src={img} alt={f.products[lang][i]} className="h-14 w-14 object-contain rounded" />
+                        <span className="text-sm font-medium text-foreground">{f.products[lang][i]}</span>
                       </div>
-                    )).reduce<React.ReactNode[]>((acc, el, i) => {
-                      if (i > 0) acc.push(<span key={`plus-${i}`} className="text-lg font-bold text-muted-foreground">+</span>);
-                      acc.push(el);
-                      return acc;
-                    }, [])}
-                  </div>
-                )}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Highlight / impact phrase */}
@@ -428,11 +417,6 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
           );
         })}
       </div>
-
-      {/* Microcopy moved below cards */}
-      <p className="text-center text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-        {microcopy[lang]}
-      </p>
 
       {/* Actions */}
       <div className="flex justify-between gap-3 max-w-md mx-auto">
