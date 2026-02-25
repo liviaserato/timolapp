@@ -33,8 +33,7 @@ export const PaymentPendingScreen = ({ data, onConfirmed, onChangePayment }: Pro
     const cardEnd = data.cardLast4 ? `${t("paymentPending.card")} •••• ${data.cardLast4}` : t("paymentPending.card");
     const n = data.cardInstallments ?? 1;
     if (n === 1) return { line1: cardEnd, line2: t("paymentDone.inFull") };
-    const hasInterest = n > 5;
-    const installValue = hasInterest ? (price * Math.pow(1.03, n)) / n : price / n;
+    const installValue = price / n;
     return { line1: cardEnd, line2: `${n}× ${formatPrice(installValue)}` };
   };
   const paymentLines = buildPaymentLines();

@@ -30,7 +30,8 @@ interface Props {
 type PaymentMethod = "pix" | "credit";
 
 const INTEREST_RATE = 0.03;
-const FREE_INSTALLMENTS = 5;
+const FREE_INSTALLMENTS = 12;
+const PIX_DISCOUNT = 0.05;
 
 function getInstallmentOptions(price: number) {
   const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -84,8 +85,10 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
   const [pixCopied, setPixCopied] = useState(false);
 
   const price = data.franchisePrice ?? 0;
+  const isDiscountEligible = method === "pix" || (method === "credit" && installments === "1");
+  const discountedPrice = isDiscountEligible ? price * (1 - PIX_DISCOUNT) : price;
   const installmentOptions = getInstallmentOptions(price);
-  const selectedInstallment = installmentOptions.find((o) => o.n === parseInt(installments)) ?? installmentOptions[0];
+  const discountedInstallmentOptions = getInstallmentOptions(discountedPrice);
 
   const isEuro = ["AT","BE","CY","EE","FI","FR","DE","GR","IE","IT","LV","LT","LU","MT","NL","PT","SK","SI","ES"].includes(data.countryIso2 ?? "");
   const sym = isBrazilAddress ? "R$" : isEuro ? "€" : "US$";
@@ -163,7 +166,10 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
           </p>
         )}
         <p className="text-muted-foreground text-sm">
-          {t("payment.total")}: <span className="font-bold text-primary text-lg">{formatPrice(price)}</span>
+          {t("payment.total")}: <span className="font-bold text-primary text-lg">{formatPrice(discountedPrice)}</span>
+          {isDiscountEligible && price !== discountedPrice && (
+            <span className="ml-2 text-xs line-through text-muted-foreground">{formatPrice(price)}</span>
+          )}
         </p>
       </div>
 
@@ -308,17 +314,18 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
                   {installmentOptions.map(({ n, value, hasInterest }) => (
                     <SelectItem key={n} value={String(n)}>
                       {n === 1
-                        ? `${t("payment.installments.once")} — ${formatPrice(price)}`
+                        ? `${t("payment.installments.once")} — ${formatPrice(discountedPrice)} (5% off)`
                         : `${n}× ${formatPrice(value)} (${hasInterest ? t("payment.installments.fees") : t("payment.installments.nofees")})`}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            {selectedInstallment.n > 1 && (
+            {/* Total with interest hidden for now — kept for future use */}
+            {/* selectedInstallment.n > 1 && (
                 <p className="text-xs text-muted-foreground text-right mt-2">
                   Total: {formatPrice(selectedInstallment.value * selectedInstallment.n)}
                 </p>
-              )}
+              ) */}
             </div>
           </CardContent>
         </Card>
