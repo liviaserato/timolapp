@@ -7,10 +7,11 @@ import { StepPersonal } from "./StepPersonal";
 import { StepContact } from "./StepContact";
 import { StepAddress } from "./StepAddress";
 import { StepLogin } from "./StepLogin";
-import { DocumentCheckPopup, DocumentRecord } from "./DocumentCheckPopup";
+import { DocumentCheckPopup } from "./DocumentCheckPopup";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle } from "lucide-react";
 import { WizardData } from "@/types/wizard";
+import { useDocumentCheck, DocumentCheckResult } from "@/hooks/useDocumentCheck";
 
 const TOTAL_STEPS = 4;
 
@@ -51,10 +52,23 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
 
-  // Document check state
+  // Document check via hook (debounced, reactive)
+  const isForeigner = data.foreignerNoCpf === "true";
+  const {
+    checking: docChecking,
+    result: docCheckResult,
+    error: docCheckError,
+    reset: resetDocCheck,
+  } = useDocumentCheck({
+    document: data.document,
+    isForeigner,
+    issuerCountryIso2: data.documentCountryIso2 || "BR",
+    enabled: step === 1,
+  });
+
+  // Popup state
   const [showDocCheck, setShowDocCheck] = useState(false);
-  const [docCheckRecords, setDocCheckRecords] = useState<DocumentRecord[]>([]);
-  const [documentCheckPassed, setDocumentCheckPassed] = useState(initialData.documentCheckPassed ?? false);
+  const [docCheckPassed, setDocCheckPassed] = useState(initialData.documentCheckPassed ?? false);
 
   const onChange = (field: string, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
@@ -63,16 +77,15 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
       delete next[field];
       return next;
     });
-    // Reset document check when document changes
-    if (field === "document" || field === "foreignerNoCpf") {
-      setDocumentCheckPassed(false);
+    // Reset document check when relevant fields change
+    if (field === "document" || field === "foreignerNoCpf" || field === "documentCountryIso2") {
+      setDocCheckPassed(false);
     }
   };
 
   const validateStep = (): boolean => {
     const newErrors: Record<string, string> = {};
     const req = t("validation.required");
-    const isForeigner = data.foreignerNoCpf === "true";
 
     if (step === 1) {
       if (!data.fullName?.trim()) newErrors.fullName = req;
@@ -125,51 +138,28 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
     return Object.keys(newErrors).length === 0;
   };
 
-  const checkDocumentRegistration = async (): Promise<boolean> => {
-    // If already passed document check for this document, skip
-    if (documentCheckPassed) return true;
-
-    try {
-      // TODO: Replace with actual API call when endpoint is provided
-      // For now, this is a placeholder that will call the document-lookup edge function
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/document-lookup?document=${encodeURIComponent(data.document.trim())}&foreigner=${data.foreignerNoCpf === "true"}&countryIso2=${data.documentCountryIso2 || "BR"}`,
-        { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
-      );
-
-      if (!res.ok) {
-        // API error — let user proceed (don't block on network issues)
-        return true;
-      }
-
-      const json = await res.json();
-      const records: DocumentRecord[] = json.records || [];
-
-      if (records.length === 0) {
-        // No existing registration — proceed normally
-        setDocumentCheckPassed(true);
-        return true;
-      }
-
-      // Found existing records — show popup
-      setDocCheckRecords(records);
-      setShowDocCheck(true);
-      return false; // Block navigation until popup is resolved
-    } catch {
-      // Network error — let user proceed
-      return true;
-    }
-  };
-
   const handleNext = async () => {
     if (!validateStep()) return;
 
     // On step 1, check document before advancing
-    if (step === 1) {
-      setLoading(true);
-      const canProceed = await checkDocumentRegistration();
-      setLoading(false);
-      if (!canProceed) return;
+    if (step === 1 && !docCheckPassed) {
+      // If still checking, wait
+      if (docChecking) return;
+
+      // If API returned exists=true, show popup
+      if (docCheckResult?.exists) {
+        setShowDocCheck(true);
+        return;
+      }
+
+      // If there was a 400 error, block
+      if (docCheckError && docCheckError !== "network") {
+        setErrors((prev) => ({ ...prev, document: t("docCheck.error.invalid") }));
+        return;
+      }
+
+      // exists=false or network error → allow proceed
+      setDocCheckPassed(true);
     }
 
     setStep((s) => Math.min(s + 1, TOTAL_STEPS));
@@ -239,7 +229,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         city: data.city,
         state: data.state,
         username: data.username,
-        documentCheckPassed,
+        documentCheckPassed: docCheckPassed,
         userId: initialData.userId ?? (userId ? String(Math.floor(100000 + Math.random() * 900000)) : undefined),
       });
     } catch (err: unknown) {
@@ -293,6 +283,14 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
               {step === 3 && <StepAddress data={data} onChange={onChange} errors={errors} />}
               {step === 4 && <StepLogin data={data} onChange={onChange} errors={errors} />}
 
+              {/* Document check network warning */}
+              {step === 1 && docCheckError === "network" && (
+                <div className="rounded-md border bg-amber-50 border-amber-200 px-3 py-2 text-sm text-amber-700 flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>{t("docCheck.error.network")}</span>
+                </div>
+              )}
+
               {apiError && <p className="text-sm text-destructive text-center">{apiError}</p>}
 
               <div className="flex justify-between gap-2">
@@ -305,8 +303,8 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
                 )}
 
                 {step < TOTAL_STEPS ? (
-                  <Button type="submit" disabled={loading}>
-                    {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                  <Button type="submit" disabled={loading || (step === 1 && docChecking)}>
+                    {(loading || (step === 1 && docChecking)) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                     {t("btn.next")}
                   </Button>
                 ) : (
@@ -322,16 +320,15 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
       </Card>
 
       {/* Document check popup */}
-      {showDocCheck && (
+      {showDocCheck && docCheckResult && (
         <DocumentCheckPopup
-          records={docCheckRecords}
+          result={docCheckResult}
           document={data.document}
-          isForeigner={data.foreignerNoCpf === "true"}
           currentSponsorId={initialData.sponsorId}
           userName={data.fullName}
           onContinue={() => {
             setShowDocCheck(false);
-            setDocumentCheckPassed(true);
+            setDocCheckPassed(true);
             setStep((s) => Math.min(s + 1, TOTAL_STEPS));
           }}
           onClose={() => setShowDocCheck(false)}

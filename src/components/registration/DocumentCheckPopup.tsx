@@ -2,23 +2,13 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { X, AlertTriangle, CheckCircle2, XCircle, MessageCircle, Loader2 } from "lucide-react";
-import { countries, getCountryName } from "@/data/countries";
+import { X, AlertTriangle, CheckCircle2, XCircle, MessageCircle } from "lucide-react";
 import { openWhatsAppLink } from "@/lib/whatsapp";
-
-export interface DocumentRecord {
-  id: string;
-  name: string;
-  country?: string;
-  countryIso2?: string;
-  sponsorId?: string;
-}
+import { DocumentCheckResult, resolvePhone } from "@/hooks/useDocumentCheck";
 
 interface Props {
-  records: DocumentRecord[];
+  result: DocumentCheckResult;
   document: string;
-  isForeigner: boolean;
   currentSponsorId?: string;
   userName: string;
   onContinue: () => void;
@@ -26,55 +16,38 @@ interface Props {
 }
 
 type PopupStep =
-  | "confirm-ownership"     // Is this yours?
-  | "select-country"        // Disambiguation for foreigners
-  | "sponsor-check"         // Validate sponsor link
-  | "sponsor-ok"            // Sponsor matches, can continue
-  | "sponsor-blocked"       // Sponsor doesn't match
-  | "not-mine";             // User doesn't recognize data
+  | "confirm-ownership"
+  | "sponsor-check"
+  | "sponsor-ok"
+  | "sponsor-blocked"
+  | "not-mine";
 
 export const DocumentCheckPopup = ({
-  records,
+  result,
   document,
-  isForeigner,
   currentSponsorId,
   userName,
   onContinue,
   onClose,
 }: Props) => {
-  const { t, language } = useLanguage();
-  const [step, setStep] = useState<PopupStep>(
-    isForeigner && records.length > 1 ? "select-country" : "confirm-ownership"
-  );
-  const [selectedRecord, setSelectedRecord] = useState<DocumentRecord | null>(
-    records.length === 1 ? records[0] : null
-  );
-  const [selectedCountry, setSelectedCountry] = useState("");
+  const { t } = useLanguage();
+  const [step, setStep] = useState<PopupStep>("confirm-ownership");
+
+  const person = result.person;
+  const franchises = result.franchises;
+  const phone = resolvePhone(person?.phones);
 
   const handleConfirmYes = () => {
-    if (!selectedRecord) return;
-    // Check sponsor link
     if (!currentSponsorId) {
       setStep("sponsor-check");
       return;
     }
-    const sponsorIds = records.map((r) => r.id);
-    if (sponsorIds.includes(currentSponsorId)) {
+    // Check if sponsor matches any franchise ID
+    const franchiseIds = (franchises?.items || []).map((f) => String(f.id));
+    if (franchiseIds.includes(currentSponsorId)) {
       setStep("sponsor-ok");
     } else {
       setStep("sponsor-blocked");
-    }
-  };
-
-  const handleCountrySelect = (countryIso2: string) => {
-    setSelectedCountry(countryIso2);
-    const match = records.find((r) => r.countryIso2 === countryIso2);
-    if (match) {
-      setSelectedRecord(match);
-      setStep("confirm-ownership");
-    } else {
-      // No record for that country — treat as new registration
-      onContinue();
     }
   };
 
@@ -84,6 +57,10 @@ export const DocumentCheckPopup = ({
       .replace("{document}", document);
     openWhatsAppLink(message);
   };
+
+  const addr = person?.address;
+  const addressLine = [addr?.street, addr?.number].filter(Boolean).join(", ");
+  const addressLine2 = [addr?.district, addr?.city, addr?.state].filter(Boolean).join(", ");
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
@@ -100,68 +77,57 @@ export const DocumentCheckPopup = ({
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Step: Disambiguation for foreigners with multiple records */}
-          {step === "select-country" && (
-            <>
-              <p className="text-sm text-muted-foreground">
-                {t("docCheck.disambiguation.message")}
-              </p>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">{t("docCheck.disambiguation.selectCountry")}</Label>
-                <div className="space-y-1">
-                  {records.map((record) => {
-                    const country = countries.find((c) => c.iso2 === record.countryIso2);
-                    const countryLabel = country
-                      ? `${country.flag} ${getCountryName(country, language)}`
-                      : record.country || record.countryIso2 || "—";
-                    return (
-                      <button
-                        key={record.id}
-                        type="button"
-                        className="w-full text-left px-3 py-2.5 text-sm rounded-md border hover:bg-muted transition-colors flex items-center justify-between"
-                        onClick={() => handleCountrySelect(record.countryIso2 || "")}
-                      >
-                        <span>{countryLabel}</span>
-                        <span className="text-xs text-muted-foreground">ID {record.id}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setStep("not-mine")}
-                className="text-sm text-muted-foreground underline underline-offset-2 hover:text-foreground"
-              >
-                {t("docCheck.notMine")}
-              </button>
-            </>
-          )}
-
           {/* Step: Confirm ownership */}
-          {step === "confirm-ownership" && selectedRecord && (
+          {step === "confirm-ownership" && person && (
             <>
               <p className="text-sm text-muted-foreground">
                 {t("docCheck.confirmOwnership.message")}
               </p>
-              <div className="rounded-md border bg-muted/50 p-3 space-y-1">
-                <p className="text-sm"><span className="font-medium">ID:</span> {selectedRecord.id}</p>
-                <p className="text-sm"><span className="font-medium">{t("docCheck.confirmOwnership.name")}:</span> {selectedRecord.name}</p>
+              <div className="rounded-md border bg-muted/50 p-3 space-y-1.5 text-sm">
+                {person.fullName && (
+                  <p><span className="font-medium">{t("docCheck.confirmOwnership.name")}:</span> {person.fullName}</p>
+                )}
+                {person.birthDate && (
+                  <p><span className="font-medium">{t("docCheck.person.birthDate")}:</span> {person.birthDate}</p>
+                )}
+                {person.email && (
+                  <p><span className="font-medium">{t("docCheck.person.email")}:</span> {person.email}</p>
+                )}
+                {phone && (
+                  <p><span className="font-medium">{t("docCheck.person.phone")}:</span> {phone}</p>
+                )}
+                {addressLine && (
+                  <p><span className="font-medium">{t("docCheck.person.address")}:</span> {addressLine}</p>
+                )}
+                {addr?.complement && (
+                  <p className="pl-4 text-muted-foreground">{addr.complement}</p>
+                )}
+                {addressLine2 && (
+                  <p className="pl-4 text-muted-foreground">{addressLine2}</p>
+                )}
+                {addr?.zipCode && (
+                  <p className="pl-4 text-muted-foreground">{t("docCheck.person.zipCode")}: {addr.zipCode}</p>
+                )}
+                {franchises && franchises.count > 0 && (
+                  <div className="pt-1.5 border-t mt-1.5">
+                    <p className="font-medium">{t("docCheck.person.franchises")} ({franchises.count}):</p>
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      {franchises.items.map((f, i) => (
+                        <span key={i} className="inline-flex items-center gap-1 rounded-md border bg-background px-2 py-0.5 text-xs">
+                          <span className="font-medium">ID {f.id}</span>
+                          {f.franchiseType && <span className="text-muted-foreground">• {f.franchiseType}</span>}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex gap-2">
-                <Button
-                  variant="default"
-                  className="flex-1"
-                  onClick={handleConfirmYes}
-                >
+                <Button variant="default" className="flex-1" onClick={handleConfirmYes}>
                   <CheckCircle2 className="h-4 w-4 mr-1.5" />
                   {t("docCheck.confirmOwnership.yes")}
                 </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => setStep("not-mine")}
-                >
+                <Button variant="outline" className="flex-1" onClick={() => setStep("not-mine")}>
                   <XCircle className="h-4 w-4 mr-1.5" />
                   {t("docCheck.confirmOwnership.no")}
                 </Button>
@@ -169,7 +135,7 @@ export const DocumentCheckPopup = ({
             </>
           )}
 
-          {/* Step: Sponsor validation info */}
+          {/* Step: Sponsor validation info (no sponsorId provided) */}
           {step === "sponsor-check" && (
             <>
               <p className="text-sm text-muted-foreground">
@@ -178,16 +144,21 @@ export const DocumentCheckPopup = ({
               <div className="rounded-md border bg-amber-50 border-amber-200 px-3 py-2 text-sm text-amber-700">
                 {t("docCheck.sponsorCheck.requirement")}
               </div>
-              <p className="text-sm text-muted-foreground">
-                {t("docCheck.sponsorCheck.linkedIds")}
-              </p>
-              <div className="space-y-1">
-                {records.map((r) => (
-                  <div key={r.id} className="rounded-md border bg-muted/50 px-3 py-1.5 text-sm">
-                    <span className="font-medium">ID {r.id}</span> — {r.name}
+              {franchises && franchises.count > 0 && (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    {t("docCheck.sponsorCheck.linkedIds")}
+                  </p>
+                  <div className="space-y-1">
+                    {franchises.items.map((f, i) => (
+                      <div key={i} className="rounded-md border bg-muted/50 px-3 py-1.5 text-sm">
+                        <span className="font-medium">ID {f.id}</span>
+                        {f.franchiseType && <span className="text-muted-foreground"> — {f.franchiseType}</span>}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </>
+              )}
               <Button variant="outline" className="w-full" onClick={onClose}>
                 {t("docCheck.sponsorCheck.goBack")}
               </Button>
@@ -219,13 +190,16 @@ export const DocumentCheckPopup = ({
               <p className="text-sm text-muted-foreground">
                 {t("docCheck.sponsorBlocked.explanation")}
               </p>
-              <div className="space-y-1">
-                {records.map((r) => (
-                  <div key={r.id} className="rounded-md border bg-muted/50 px-3 py-1.5 text-sm">
-                    <span className="font-medium">ID {r.id}</span> — {r.name}
-                  </div>
-                ))}
-              </div>
+              {franchises && franchises.count > 0 && (
+                <div className="space-y-1">
+                  {franchises.items.map((f, i) => (
+                    <div key={i} className="rounded-md border bg-muted/50 px-3 py-1.5 text-sm">
+                      <span className="font-medium">ID {f.id}</span>
+                      {f.franchiseType && <span className="text-muted-foreground"> — {f.franchiseType}</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="flex gap-2">
                 <Button variant="outline" className="flex-1" onClick={onClose}>
                   {t("docCheck.sponsorBlocked.goBack")}

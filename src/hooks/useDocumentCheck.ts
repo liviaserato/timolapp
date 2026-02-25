@@ -1,0 +1,159 @@
+import { useState, useEffect, useRef, useCallback } from "react";
+
+export interface DocumentCheckPhone {
+  ddi?: string;
+  number?: string;
+}
+
+export interface DocumentCheckPerson {
+  fullName?: string;
+  birthDate?: string;
+  email?: string;
+  document?: string;
+  issuerCountryIso2?: string;
+  phones?: {
+    preferred?: DocumentCheckPhone;
+    mobile?: DocumentCheckPhone;
+    home?: DocumentCheckPhone;
+    work?: DocumentCheckPhone;
+  };
+  address?: {
+    zipCode?: string;
+    street?: string;
+    number?: string;
+    complement?: string;
+    district?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+  };
+}
+
+export interface DocumentCheckFranchiseItem {
+  id?: string;
+  franchiseType?: string;
+}
+
+export interface DocumentCheckResult {
+  exists: boolean;
+  person: DocumentCheckPerson | null;
+  franchises: {
+    count: number;
+    items: DocumentCheckFranchiseItem[];
+  };
+}
+
+interface UseDocumentCheckOpts {
+  document: string;
+  isForeigner: boolean;
+  issuerCountryIso2: string;
+  enabled?: boolean;
+}
+
+export function resolvePhone(phones?: DocumentCheckPerson["phones"]): string | null {
+  if (!phones) return null;
+  const pick = phones.preferred ?? phones.mobile ?? phones.home ?? phones.work ?? null;
+  if (!pick || !pick.number) return null;
+  return pick.ddi ? `${pick.ddi} ${pick.number}` : pick.number;
+}
+
+export function useDocumentCheck({ document, isForeigner, issuerCountryIso2, enabled = true }: UseDocumentCheckOpts) {
+  const [checking, setChecking] = useState(false);
+  const [result, setResult] = useState<DocumentCheckResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+
+  const cleanDoc = isForeigner ? document.trim() : document.replace(/\D/g, "");
+  const country = isForeigner ? issuerCountryIso2 : "BR";
+
+  // Min length check
+  const meetsMinLength = isForeigner ? cleanDoc.length > 0 : cleanDoc.length === 11;
+
+  const reset = useCallback(() => {
+    setResult(null);
+    setError(null);
+    setChecking(false);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (abortRef.current) abortRef.current.abort();
+  }, []);
+
+  useEffect(() => {
+    // Reset on any dependency change
+    setResult(null);
+    setError(null);
+
+    if (!enabled || !meetsMinLength || !country) {
+      setChecking(false);
+      return;
+    }
+
+    // For foreigners, require country selection
+    if (isForeigner && !issuerCountryIso2) {
+      return;
+    }
+
+    // Debounce 600ms
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (abortRef.current) abortRef.current.abort();
+
+    timerRef.current = setTimeout(async () => {
+      setChecking(true);
+      setError(null);
+
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/document-check`,
+          {
+            method: "POST",
+            headers: {
+              "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              document: cleanDoc,
+              issuerCountryIso2: country,
+            }),
+            signal: controller.signal,
+          }
+        );
+
+        if (controller.signal.aborted) return;
+
+        if (res.status === 400) {
+          const data = await res.json();
+          setError(data.detail || data.error || "invalid_request");
+          setChecking(false);
+          return;
+        }
+
+        if (!res.ok) {
+          // Network/server error → show warning but don't block
+          setError("network");
+          setChecking(false);
+          return;
+        }
+
+        const data: DocumentCheckResult = await res.json();
+        setResult(data);
+      } catch (err: unknown) {
+        if ((err as Error)?.name === "AbortError") return;
+        setError("network");
+      } finally {
+        if (!controller.signal.aborted) {
+          setChecking(false);
+        }
+      }
+    }, 600);
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (abortRef.current) abortRef.current.abort();
+    };
+  }, [cleanDoc, country, enabled, meetsMinLength, isForeigner, issuerCountryIso2]);
+
+  return { checking, result, error, reset };
+}
