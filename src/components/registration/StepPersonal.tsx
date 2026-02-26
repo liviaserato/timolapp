@@ -96,9 +96,8 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
               checked={isForeigner}
               onCheckedChange={(v) => {
                 onChange("foreignerNoCpf", v ? "true" : "false");
-                if (v) {
-                  onChange("document", "");
-                } else {
+                if (!v) {
+                  // Switching back to Brazilian: clear foreign country fields
                   onChange("documentCountry", "");
                   onChange("documentCountryIso2", "");
                   onChange("documentCountryFlag", "");
