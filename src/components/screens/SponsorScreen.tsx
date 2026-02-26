@@ -51,6 +51,8 @@ export const SponsorScreen = ({ onNext }: Props) => {
 
   // Separate loading state for the "indicate a franchisee" flow
   const [indicationLoading, setIndicationLoading] = useState(false);
+  // No sponsor found popup
+  const [showNoSponsorFound, setShowNoSponsorFound] = useState(false);
 
   // Contact form state
   const [contactName, setContactName] = useState("");
@@ -190,16 +192,60 @@ export const SponsorScreen = ({ onNext }: Props) => {
   };
 
   const handleRandomSponsor = async () => {
-    setShowNoSponsorBox(false);
-    setFromNoSponsorFlow(true);
-    await fetchSponsorForIndication("31");
+    setIndicationLoading(true);
+    try {
+      // Extract city from the location string (e.g. "Belo Horizonte, MG - Brasil" → "Belo Horizonte")
+      const city = contactCityState.split(",")[0]?.trim() || contactCityState.trim();
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(city)}`,
+        { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
+      );
+      const data = await res.json();
+      const sponsors = data?.sponsors || data?.ids || [];
+      if (!sponsors.length) {
+        // No sponsor found in this city
+        setIndicationLoading(false);
+        setShowNoSponsorBox(false);
+        setShowNoSponsorFound(true);
+        return;
+      }
+      // Pick a random sponsor ID from the list
+      const randomId = String(sponsors[Math.floor(Math.random() * sponsors.length)]);
+      setShowNoSponsorBox(false);
+      setFromNoSponsorFlow(true);
+      await fetchSponsorForIndication(randomId);
+    } catch {
+      setShowNoSponsorBox(false);
+      setShowNoSponsorFound(true);
+    } finally {
+      setIndicationLoading(false);
+    }
   };
 
   const handleSuggestAnother = async () => {
     if (!foundSponsor) return;
     setSponsorSelected(false);
-    const nextId = foundSponsor.id === "31" ? "27" : "31";
-    await fetchSponsorForIndication(nextId);
+    setIndicationLoading(true);
+    try {
+      const city = contactCityState.split(",")[0]?.trim() || contactCityState.trim();
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(city)}`,
+        { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
+      );
+      const data = await res.json();
+      const sponsors = (data?.sponsors || data?.ids || []).filter((id: any) => String(id) !== foundSponsor.id);
+      if (!sponsors.length) {
+        // Only one sponsor available, re-fetch same
+        await fetchSponsorForIndication(foundSponsor.id);
+      } else {
+        const randomId = String(sponsors[Math.floor(Math.random() * sponsors.length)]);
+        await fetchSponsorForIndication(randomId);
+      }
+    } catch {
+      // keep current sponsor on error
+    } finally {
+      setIndicationLoading(false);
+    }
   };
 
   const clearSearch = () => {
@@ -281,9 +327,18 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setContactErrors((p) => ({ ...p, cityState: "" }));
   };
 
-  // Open WhatsApp from confirm screen (Popup 2)
+  // Open WhatsApp from confirm screen (Popup 2) — translated
   const openWhatsAppFromConfirm = () => {
-    openWhatsAppLink(`Olá, meu nome é ${contactName || "—"}. Quero escolher um patrocinador e preciso de ajuda.`);
+    const msg = t("sponsor.whatsapp.chooseSponsor").replace("{name}", contactName || "—");
+    openWhatsAppLink(msg);
+  };
+
+  // Open WhatsApp from no-sponsor-found popup — translated
+  const openWhatsAppNoSponsorFound = () => {
+    const msg = t("sponsor.whatsapp.noSponsorFound")
+      .replace("{name}", contactName || "—")
+      .replace("{location}", contactCityState || "—");
+    openWhatsAppLink(msg);
   };
   const howKnewOptions = [
     { value: "live", label: t("sponsor.noSponsorBox.contactHowKnew.live") },
@@ -487,16 +542,14 @@ export const SponsorScreen = ({ onNext }: Props) => {
 
               {noSponsorStep === "how-continue" && (
                 <>
-                  <Button variant="outline" className="w-full justify-start gap-2" onClick={handleRandomSponsor}>
-                    <Users className="h-4 w-4" />
+                  <Button variant="outline" className="w-full justify-start gap-2" onClick={handleRandomSponsor} disabled={indicationLoading}>
+                    {indicationLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
                     {t("sponsor.noSponsorBox.random")}
                   </Button>
                   <Button
                     variant="outline"
                     className="w-full justify-start gap-2"
-                    onClick={() => {
-                      openWhatsAppLink(`Olá, meu nome é ${contactName || "—"}. Quero escolher um patrocinador e preciso de ajuda.`);
-                    }}
+                    onClick={openWhatsAppFromConfirm}
                   >
                     <img src={whatsappIcon} alt="WhatsApp" className="h-5 w-5" />
                     {t("sponsor.noSponsorBox.whatsapp")}
@@ -576,6 +629,36 @@ export const SponsorScreen = ({ onNext }: Props) => {
                   {t("sponsor.confirm.confirm")}
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* No Sponsor Found Popup */}
+      {showNoSponsorFound && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <Card className="w-full max-w-sm shadow-2xl">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">{t("sponsor.noSponsorFound.title")}</CardTitle>
+                <button onClick={() => setShowNoSponsorFound(false)}>
+                  <X className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">{t("sponsor.noSponsorFound.message")}</p>
+              <Button
+                variant="outline"
+                className="w-full justify-center gap-2"
+                onClick={openWhatsAppNoSponsorFound}
+              >
+                <img src={whatsappIcon} alt="WhatsApp" className="h-5 w-5" />
+                {t("sponsor.noSponsorFound.whatsapp")}
+              </Button>
+              <Button variant="ghost" className="w-full" onClick={() => setShowNoSponsorFound(false)}>
+                {t("sponsor.noSponsorFound.close")}
+              </Button>
             </CardContent>
           </Card>
         </div>
