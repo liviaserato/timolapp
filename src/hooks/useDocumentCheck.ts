@@ -57,6 +57,23 @@ export function resolvePhone(phones?: DocumentCheckPerson["phones"]): string | n
   return pick.ddi ? `${pick.ddi} ${pick.number}` : pick.number;
 }
 
+// CPF validation (same logic as RegistrationWizard)
+function isValidCPF(cpf: string): boolean {
+  const clean = cpf.replace(/\D/g, "");
+  if (clean.length !== 11) return false;
+  if (/^(\d)\1+$/.test(clean)) return false;
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += parseInt(clean[i]) * (10 - i);
+  let r = (sum * 10) % 11;
+  if (r === 10 || r === 11) r = 0;
+  if (r !== parseInt(clean[9])) return false;
+  sum = 0;
+  for (let i = 0; i < 10; i++) sum += parseInt(clean[i]) * (11 - i);
+  r = (sum * 10) % 11;
+  if (r === 10 || r === 11) r = 0;
+  return r === parseInt(clean[10]);
+}
+
 export function useDocumentCheck({ document, isForeigner, issuerCountryIso2, enabled = true }: UseDocumentCheckOpts) {
   const [checking, setChecking] = useState(false);
   const [result, setResult] = useState<DocumentCheckResult | null>(null);
@@ -71,8 +88,12 @@ export function useDocumentCheck({ document, isForeigner, issuerCountryIso2, ena
     : rawClean;
   const country = isForeigner ? issuerCountryIso2 : "BR";
 
-  // Min length check
-  const meetsMinLength = isForeigner ? rawClean.length > 0 : rawClean.length === 11;
+  // Readiness checks:
+  // - Brazilian: CPF must be 11 digits AND pass validation
+  // - Foreigner: document must be filled AND country must be selected
+  const isReady = isForeigner
+    ? rawClean.length > 0 && !!issuerCountryIso2
+    : rawClean.length === 11 && isValidCPF(rawClean);
 
   const reset = useCallback(() => {
     setResult(null);
@@ -87,13 +108,8 @@ export function useDocumentCheck({ document, isForeigner, issuerCountryIso2, ena
     setResult(null);
     setError(null);
 
-    if (!enabled || !meetsMinLength || !country) {
+    if (!enabled || !isReady) {
       setChecking(false);
-      return;
-    }
-
-    // For foreigners, require country selection
-    if (isForeigner && !issuerCountryIso2) {
       return;
     }
 
@@ -166,7 +182,7 @@ export function useDocumentCheck({ document, isForeigner, issuerCountryIso2, ena
       if (timerRef.current) clearTimeout(timerRef.current);
       if (abortRef.current) abortRef.current.abort();
     };
-  }, [cleanDoc, country, enabled, meetsMinLength, isForeigner, issuerCountryIso2]);
+  }, [cleanDoc, country, enabled, isReady, isForeigner, issuerCountryIso2]);
 
   return { checking, result, error, reset };
 }
