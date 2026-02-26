@@ -169,17 +169,17 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
       <div className="text-center space-y-1">
         <img src="/favicon.svg" alt="Timol" className="h-10 w-10 mx-auto" />
         <h2 className="text-2xl font-bold text-primary">{t("payment.title")}</h2>
-        {franchiseName && (
-          <p className="text-sm font-medium">
-            {t("payment.franchise.label")} <span className="text-primary font-semibold">{franchiseName}</span>
-          </p>
-        )}
-        <p className="text-muted-foreground text-sm">
-          {t("payment.total")}: <span className="font-bold text-primary text-lg">{formatPrice(discountedPrice)}</span>
+        <p className="text-3xl font-extrabold text-foreground tracking-tight">
+          {formatPrice(discountedPrice)}
           {isDiscountEligible && price !== discountedPrice && (
-            <span className="ml-2 text-xs line-through text-muted-foreground">{formatPrice(price)}</span>
+            <span className="ml-2 text-sm line-through text-muted-foreground font-normal">{formatPrice(price)}</span>
           )}
         </p>
+        {franchiseName && (
+          <p className="text-sm font-medium text-foreground">
+            {t("payment.franchise.label")} {franchiseName}
+          </p>
+        )}
       </div>
 
       {/* Method Selection — only show if PIX is available */}
