@@ -9,7 +9,7 @@ import { StepAddress } from "./StepAddress";
 import { StepLogin } from "./StepLogin";
 import { DocumentCheckPopup } from "./DocumentCheckPopup";
 import { supabase } from "@/integrations/supabase/client";
-import { XCircle } from "lucide-react";
+import { XCircle, Loader2 } from "lucide-react";
 import { TimolLoader } from "@/components/ui/timol-loader";
 import { WizardData } from "@/types/wizard";
 import { useDocumentCheck } from "@/hooks/useDocumentCheck";
@@ -232,7 +232,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
       });
     } catch (err: unknown) {
       const e = err as Error;
-      setApiError(e?.message || t("error.generic"));
+      setApiError(e?.message || t("submit.error"));
     } finally {
       setLoading(false);
     }
@@ -294,12 +294,11 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
 
                 {step < TOTAL_STEPS ? (
                   <Button type="submit" disabled={loading || (step === 1 && (docChecking || docBlocked || docNotValidated))}>
-                    {(loading || (step === 1 && docChecking)) && <TimolLoader size={16} className="mr-2" />}
+                    {(step === 1 && docChecking) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                     {t("btn.next")}
                   </Button>
                 ) : (
                   <Button type="submit" disabled={loading || usernameStatus === "taken" || usernameStatus === "checking" || usernameStatus === "idle"}>
-                    {loading && <TimolLoader size={16} className="mr-2" />}
                     {t("btn.submit")}
                   </Button>
                 )}
@@ -314,6 +313,19 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         <DocumentCheckPopup
           onClose={() => setShowDocCheck(false)}
         />
+      )}
+
+      {/* Full-screen branded loader on submit */}
+      {loading && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
+          <TimolLoader size={64} />
+          <p className="mt-6 text-lg font-semibold text-foreground text-center px-6">
+            {t("submit.loading.title")}
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground text-center px-6">
+            {t("submit.loading.hint")}
+          </p>
+        </div>
       )}
     </>
   );

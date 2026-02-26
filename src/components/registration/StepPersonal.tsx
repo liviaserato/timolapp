@@ -4,8 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Info, X, XCircle, CheckCircle } from "lucide-react";
-import { TimolLoader } from "@/components/ui/timol-loader";
+import { Info, X, XCircle, CheckCircle, Loader2 } from "lucide-react";
 import { countries, getCountryName } from "@/data/countries";
 
 interface Props {
@@ -170,8 +169,8 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
         )}
         {docChecking && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <TimolLoader size={16} />
-            <span>{t("docCheck.checking") || "Verificando documento..."}</span>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>{t("docCheck.checking")}</span>
           </div>
         )}
         {docCheckError && (
