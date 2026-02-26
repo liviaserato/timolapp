@@ -93,6 +93,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "docCheck.exists.close": "Entendi",
     "docCheck.error.invalid": "Documento inválido. Verifique e tente novamente.",
     "docCheck.error.network": "Não foi possível validar o documento. Verifique sua conexão e tente novamente.",
+    "docCheck.checking": "Verificando documento...",
 
     // Step 2 - Contact
     "step2.title": "Contato",
@@ -382,6 +383,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "docCheck.exists.close": "Understood",
     "docCheck.error.invalid": "Invalid document. Please check and try again.",
     "docCheck.error.network": "Unable to validate the document. Check your connection and try again.",
+    "docCheck.checking": "Verifying document...",
 
     "step2.title": "Contact",
     "step2.email": "Email",
@@ -660,6 +662,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "docCheck.exists.close": "Entendido",
     "docCheck.error.invalid": "Documento inválido. Verifique e intente nuevamente.",
     "docCheck.error.network": "No fue posible validar el documento. Verifique su conexión e intente nuevamente.",
+    "docCheck.checking": "Verificando documento...",
 
     "step2.title": "Contacto",
     "step2.email": "Correo electrónico",
