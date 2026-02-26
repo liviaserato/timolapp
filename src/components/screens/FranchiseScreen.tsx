@@ -348,19 +348,33 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                       </div>
                     </div>
                     <div className="flex flex-col items-end min-w-0 text-right">
-                      <div className="flex items-baseline gap-0.5">
-                        <span className="text-[11px] text-muted-foreground font-medium">{f.installments}x</span>
-                        <span className="text-[11px] text-muted-foreground font-medium">{sym}</span>
-                        <span className="text-3xl font-extrabold text-foreground leading-none tracking-tight">
-                          {integer}
-                        </span>
-                        <span className="text-sm font-bold text-foreground -translate-y-2">
-                          ,{decimal}
-                        </span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {cashLabel[lang]}: {sym} {cashFormatted}
-                      </p>
+                      {currency === "BRL" ? (
+                        <>
+                          <div className="flex items-baseline gap-0.5">
+                            <span className="text-[11px] text-muted-foreground font-medium">{f.installments}x</span>
+                            <span className="text-[11px] text-muted-foreground font-medium">{sym}</span>
+                            <span className="text-3xl font-extrabold text-foreground leading-none tracking-tight">
+                              {integer}
+                            </span>
+                            <span className="text-sm font-bold text-foreground -translate-y-2">
+                              ,{decimal}
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {cashLabel[lang]}: {sym} {cashFormatted}
+                          </p>
+                        </>
+                      ) : (
+                        <div className="flex items-baseline gap-0.5">
+                          <span className="text-[11px] text-muted-foreground font-medium">{sym}</span>
+                          <span className="text-3xl font-extrabold text-foreground leading-none tracking-tight">
+                            {splitPrice(f.installmentPrice[currency] * f.installments, locale).integer}
+                          </span>
+                          <span className="text-sm font-bold text-foreground -translate-y-2">
+                            ,{splitPrice(f.installmentPrice[currency] * f.installments, locale).decimal}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
