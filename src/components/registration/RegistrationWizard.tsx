@@ -50,6 +50,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
   const [apiError, setApiError] = useState("");
 
   // Document check via hook (debounced, reactive)
@@ -277,7 +278,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
               {step === 1 && <StepPersonal data={data} onChange={onChange} errors={errors} docCheckError={docCheckError} docBlocked={docBlocked} showDocCheck={showDocCheck} docChecking={docChecking} docCheckResult={docCheckResult} resetDocCheck={resetDocCheck} />}
               {step === 2 && <StepContact data={data} onChange={onChange} errors={errors} />}
               {step === 3 && <StepAddress data={data} onChange={onChange} errors={errors} />}
-              {step === 4 && <StepLogin data={data} onChange={onChange} errors={errors} />}
+              {step === 4 && <StepLogin data={data} onChange={onChange} errors={errors} onUsernameStatusChange={setUsernameStatus} />}
 
               {apiError && <p className="text-sm text-destructive text-center">{apiError}</p>}
 
@@ -296,7 +297,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
                     {t("btn.next")}
                   </Button>
                 ) : (
-                  <Button type="submit" disabled={loading}>
+                  <Button type="submit" disabled={loading || usernameStatus === "taken" || usernameStatus === "checking" || usernameStatus === "idle"}>
                     {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                     {t("btn.submit")}
                   </Button>
