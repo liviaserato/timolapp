@@ -47,6 +47,7 @@ function isValidCPF(clean: string): boolean {
 export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked, showDocCheck, docChecking, docCheckResult, resetDocCheck }: Props) => {
   const { t, language } = useLanguage();
   const isForeigner = data.foreignerNoCpf === "true";
+  const [foreignerHintDismissed, setForeignerHintDismissed] = useState(false);
 
   // Inline CPF validation: show error when 11 digits entered but invalid
   const cpfDigits = data.document?.replace(/\D/g, "") || "";
@@ -245,10 +246,18 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
           </div>
         )}
 
-        {isForeigner && (
-          <div className="rounded-md border bg-amber-50 border-amber-200 px-3 py-2 text-sm text-amber-700 flex items-start gap-2">
+        {isForeigner && !foreignerHintDismissed && (
+          <div className="relative rounded-md border bg-amber-50 border-amber-200 px-3 py-2 pr-8 text-sm text-amber-700 flex items-start gap-2">
             <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
-            <span>Sendo estrangeiro(a), a imagem do seu documento poderá ser solicitada posteriormente para conferência.</span>
+            <span>{t("step1.foreignerHint")}</span>
+            <button
+              type="button"
+              onClick={() => setForeignerHintDismissed(true)}
+              className="absolute right-2 top-2 text-amber-400 hover:text-amber-600 transition-colors"
+              aria-label="Close"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
           </div>
         )}
       </div>
