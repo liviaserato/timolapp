@@ -80,37 +80,7 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
 
   return (
     <div className="space-y-4">
-      {/* Full Name */}
-      <div className="space-y-2">
-        <Label htmlFor="fullName">{t("step1.fullName")}</Label>
-        <Input
-          id="fullName"
-          placeholder={t("step1.fullName.placeholder")}
-          value={data.fullName || ""}
-          onChange={(e) => onChange("fullName", e.target.value)}
-        />
-        {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
-      </div>
-
-      {/* Birth Date — max = 18 years ago */}
-      <div className="space-y-2">
-        <Label htmlFor="birthDate">{t("step1.birthDate")}</Label>
-        <Input
-          id="birthDate"
-          type="date"
-          max={maxDate}
-          value={data.birthDate || ""}
-          onChange={(e) => onChange("birthDate", e.target.value)}
-        />
-        {errors.birthDate && (
-          <p className="text-sm text-destructive flex items-start gap-1.5">
-            <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
-            {errors.birthDate}
-          </p>
-        )}
-      </div>
-
-      {/* Document / CPF */}
+      {/* Document / CPF — first for early validation */}
       <div className="space-y-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <Label htmlFor="document">
@@ -125,7 +95,6 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
                 if (v) {
                   onChange("document", "");
                 } else {
-                  // Clear document country when switching back to Brazilian
                   onChange("documentCountry", "");
                   onChange("documentCountryIso2", "");
                   onChange("documentCountryFlag", "");
@@ -151,7 +120,7 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
           maxLength={isForeigner ? 50 : 14}
         />
 
-        {/* Document Country selector — only for foreigners, right below document input */}
+        {/* Document Country selector — only for foreigners */}
         {isForeigner && (
           <div className="space-y-2 relative" ref={docCountryRef}>
             <Label htmlFor="documentCountry">{t("step1.documentCountry")}</Label>
@@ -186,7 +155,6 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
                 />
               )}
             </div>
-            {/* Country dropdown */}
             {showDocCountryList && !data.documentCountry && (
               <div className="absolute z-50 w-full bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto mt-1">
                 {filteredDocCountries.length > 0 ? (
@@ -223,6 +191,36 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
           <p className="text-sm text-destructive flex items-start gap-1.5">
             <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
             {errors.documentRegistered}
+          </p>
+        )}
+      </div>
+
+      {/* Full Name */}
+      <div className="space-y-2">
+        <Label htmlFor="fullName">{t("step1.fullName")}</Label>
+        <Input
+          id="fullName"
+          placeholder={t("step1.fullName.placeholder")}
+          value={data.fullName || ""}
+          onChange={(e) => onChange("fullName", e.target.value)}
+        />
+        {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
+      </div>
+
+      {/* Birth Date */}
+      <div className="space-y-2">
+        <Label htmlFor="birthDate">{t("step1.birthDate")}</Label>
+        <Input
+          id="birthDate"
+          type="date"
+          max={maxDate}
+          value={data.birthDate || ""}
+          onChange={(e) => onChange("birthDate", e.target.value)}
+        />
+        {errors.birthDate && (
+          <p className="text-sm text-destructive flex items-start gap-1.5">
+            <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+            {errors.birthDate}
           </p>
         )}
       </div>
