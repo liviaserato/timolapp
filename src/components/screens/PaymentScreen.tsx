@@ -12,7 +12,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { WizardData } from "@/types/wizard";
-import { ChevronLeft, CreditCard, QrCode, Loader2, Eye, EyeOff, Copy, Check } from "lucide-react";
+import { ChevronLeft, CreditCard, QrCode, Loader2, Eye, EyeOff, Copy, Check, Building2 } from "lucide-react";
+import { openWhatsAppLink } from "@/lib/whatsapp";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import visaIcon from "@/assets/credit-card-visa.svg";
 import masterIcon from "@/assets/credit-card-master.svg";
@@ -20,6 +28,7 @@ import amexIcon from "@/assets/credit-card-amex.svg";
 import eloIcon from "@/assets/credit-card-elo.svg";
 import dinersIcon from "@/assets/credit-card-diners.svg";
 import discoverIcon from "@/assets/credit-card-discover.svg";
+import whatsappIcon from "@/assets/icon-logo-whatsapp.svg";
 
 interface Props {
   data: WizardData;
@@ -85,10 +94,10 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
   const [pixCopied, setPixCopied] = useState(false);
 
   const price = data.franchisePrice ?? 0;
-  const isDiscountEligible = method === "pix" || (method === "credit" && installments === "1");
+  const isDiscountEligible = method === "pix";
   const discountedPrice = isDiscountEligible ? price * (1 - PIX_DISCOUNT) : price;
   const installmentOptions = getInstallmentOptions(price);
-  const discountedInstallmentOptions = getInstallmentOptions(discountedPrice);
+  const [showInPersonPopup, setShowInPersonPopup] = useState(false);
 
   const isEuro = ["AT","BE","CY","EE","FI","FR","DE","GR","IE","IT","LV","LT","LU","MT","NL","PT","SK","SI","ES"].includes(data.countryIso2 ?? "");
   const sym = isBrazilAddress ? "R$" : isEuro ? "€" : "US$";
@@ -227,9 +236,42 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
               </button>
             </div>
             <p className="text-xs text-green-600 font-medium">{t("payment.pix.expiry")}</p>
+            <button
+              type="button"
+              onClick={() => setShowInPersonPopup(true)}
+              className="mt-2 flex items-center gap-1.5 mx-auto text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
+            >
+              <Building2 className="h-3.5 w-3.5" />
+              {t("payment.pix.inPerson")}
+            </button>
           </CardContent>
         </Card>
       )}
+
+      {/* In-person payment dialog */}
+      <Dialog open={showInPersonPopup} onOpenChange={setShowInPersonPopup}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-base">{t("payment.inPerson.title")}</DialogTitle>
+            <DialogDescription className="text-sm">
+              {t("payment.inPerson.description")}
+            </DialogDescription>
+          </DialogHeader>
+          <Button
+            onClick={() => {
+              const name = data.fullName || "";
+              const id = data.userId || "";
+              const msg = `Olá, meu nome é ${name}, estou adquirindo a franquia ${id} e gostaria de pagar presencialmente no banco, como fazer?`;
+              openWhatsAppLink(msg);
+              setShowInPersonPopup(false);
+            }}
+            className="w-full gap-2"
+          >
+            <img src={whatsappIcon} alt="WhatsApp" className="h-4 w-4" />
+            {t("payment.inPerson.whatsapp")}
+          </Button>
+        </DialogContent>
+      </Dialog>
 
       {/* Credit Card */}
       {method === "credit" && (
@@ -314,8 +356,8 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
                   {installmentOptions.map(({ n, value, hasInterest }) => (
                     <SelectItem key={n} value={String(n)}>
                       {n === 1
-                        ? `${t("payment.installments.once")} — ${formatPrice(discountedPrice)} (5% off)`
-                        : `${n}× ${formatPrice(value)} (${hasInterest ? t("payment.installments.fees") : t("payment.installments.nofees")})`}
+                        ? `${t("payment.installments.once")} — ${formatPrice(price)}`
+                        : `${n}× ${formatPrice(value)} (${t("payment.installments.nofees")})`}
                     </SelectItem>
                   ))}
                 </SelectContent>
