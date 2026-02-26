@@ -63,7 +63,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
   } = useDocumentCheck({
     document: data.document,
     isForeigner,
-    issuerCountryIso2: data.documentCountryIso2 || "BR",
+    issuerCountryIso2: isForeigner ? data.documentCountryIso2 : "BR",
     enabled: step === 1,
   });
 
