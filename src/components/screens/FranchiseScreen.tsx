@@ -300,7 +300,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 justify-items-center">
         {franchiseOptions.map((f) => {
           const isSelected = selected === f.id;
           const { integer, decimal } = splitPrice(f.installmentPrice[currency], locale);
@@ -311,7 +311,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
             <div
               key={f.id}
               className={cn(
-                "relative rounded-lg border-2 cursor-pointer transition-all duration-200 flex flex-col",
+                "relative rounded-lg border-2 cursor-pointer transition-all duration-200 flex flex-col w-full max-w-[500px]",
                 isSelected
                   ? "border-yellow-500 bg-yellow-50 ring-2 ring-yellow-400 shadow-lg scale-[1.02]"
                   : "border-border bg-card hover:shadow-md hover:scale-[1.01]"
@@ -333,18 +333,24 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                 return (
                   <div className={cn(
                     "flex items-center justify-between px-4 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]",
-                    isSelected ? "bg-primary/10" : "bg-primary/5"
+                    isSelected ? "bg-yellow-400" : "bg-primary/5"
                   )}>
-                    <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0">
                       <Icon className={cn(
-                        "h-5 w-5 flex-shrink-0",
-                        isSelected ? "text-primary" : "text-primary/60"
+                        "h-7 w-7 flex-shrink-0",
+                        isSelected ? "text-yellow-800" : "text-primary/60"
                       )} />
                       <div className="flex flex-col">
-                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider leading-tight">
+                        <span className={cn(
+                          "text-xs font-medium uppercase tracking-wider leading-tight",
+                          isSelected ? "text-yellow-800" : "text-primary/60"
+                        )}>
                           {franchiseLabel[lang]}
                         </span>
-                        <h3 className="text-xl font-extrabold text-foreground leading-tight">{t(f.nameKey)}</h3>
+                        <h3 className={cn(
+                          "text-xl font-extrabold leading-tight uppercase",
+                          isSelected ? "text-yellow-900" : "text-foreground"
+                        )}>{t(f.nameKey)}</h3>
                       </div>
                     </div>
                     <div className="flex flex-col items-end min-w-0 text-right">
@@ -380,7 +386,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                 );
               })()}
 
-              <Separator className={isSelected ? "bg-yellow-300/60" : ""} />
+              <Separator className={isSelected ? "bg-yellow-500" : ""} />
 
               {/* Benefits section */}
               <div className="px-4 pt-3 pb-2">
@@ -413,7 +419,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
 
               {/* Divider before products — aligns section across cards */}
               <div className="mt-auto">
-                <Separator className={cn("mx-4 w-auto", isSelected ? "bg-yellow-300/40" : "bg-border/40")} />
+                <Separator className={cn("mx-4 w-auto", isSelected ? "bg-yellow-400/60" : "bg-border/40")} />
               </div>
 
               {/* Products section */}
@@ -421,7 +427,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                 <p className="text-xs font-bold text-foreground mb-2 uppercase tracking-wider">
                   {sectionLabels[lang].products}
                 </p>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-6">
                   {f.productImages.map((img, i) => {
                     const name = f.products[lang][i] || "";
                     const parts = name.split(" ");
@@ -442,10 +448,10 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
 
               {/* Highlight / impact phrase */}
               <div className="mt-auto">
-                <Separator className={isSelected ? "bg-yellow-300/60" : ""} />
+                <Separator className={isSelected ? "bg-yellow-500" : ""} />
                 <div className={cn(
                   "px-4 py-3 rounded-b-[calc(0.5rem-2px)]",
-                  isSelected ? "bg-yellow-100/60" : "bg-muted/20"
+                  isSelected ? "bg-yellow-400" : "bg-muted/20"
                 )}>
                   <p className={cn(
                     "text-sm font-semibold italic text-center",
