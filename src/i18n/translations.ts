@@ -228,6 +228,8 @@ export const translations: Record<Language, Record<string, string>> = {
     // Payment Confirmation
     "paymentDone.title": "Pagamento Confirmado!",
     "paymentDone.welcome": "Bem-vindo à Timol! Sua franquia já está ativa e pronta para uso.",
+    "paymentDone.welcomeLine1": "Bem-vindo à Timol!",
+    "paymentDone.welcomeLine2": "Sua franquia já está ativa e pronta para uso.",
     "paymentDone.subtitle": "Sua franquia já está ativa",
     "paymentDone.yourId": "Seu ID Timol",
     "paymentDone.franchise": "Franquia",
@@ -514,6 +516,8 @@ export const translations: Record<Language, Record<string, string>> = {
 
     "paymentDone.title": "Payment Confirmed!",
     "paymentDone.welcome": "Welcome to Timol! Your franchise is already active and ready to use.",
+    "paymentDone.welcomeLine1": "Welcome to Timol!",
+    "paymentDone.welcomeLine2": "Your franchise is already active and ready to use.",
     "paymentDone.subtitle": "Your franchise is now active",
     "paymentDone.yourId": "Your Timol ID",
     "paymentDone.franchise": "Franchise",
@@ -796,6 +800,8 @@ export const translations: Record<Language, Record<string, string>> = {
 
     "paymentDone.title": "¡Pago Confirmado!",
     "paymentDone.welcome": "¡Bienvenido a Timol! Tu franquicia ya está activa y lista para usar.",
+    "paymentDone.welcomeLine1": "¡Bienvenido a Timol!",
+    "paymentDone.welcomeLine2": "Tu franquicia ya está activa y lista para usar.",
     "paymentDone.subtitle": "Su franquicia ya está activa",
     "paymentDone.yourId": "Su ID Timol",
     "paymentDone.franchise": "Franquicia",

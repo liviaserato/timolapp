@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { WizardData } from "@/types/wizard";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
 
 interface Props {
   data: WizardData;
@@ -31,7 +32,7 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
     const n = data.cardInstallments ?? 1;
     paymentLine1 = `${t("paymentPending.card")} •••• ${data.cardLast4}`;
     if (n === 1) {
-      paymentLine2 = t("paymentDone.inFull");
+      paymentLine2 = isBrazilAddress ? t("paymentDone.inFull") : "";
     } else {
       const installValue = price / n;
       paymentLine2 = `${n}× ${formatPrice(installValue)}`;
@@ -42,14 +43,13 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
     <div className="w-full max-w-md mx-auto">
       <Card className="shadow-xl text-center">
         <CardContent className="flex flex-col items-center gap-5 py-10 px-6">
-          {/* Logo left of title */}
-          <div className="flex items-center gap-3">
-            <img src="/favicon.svg" alt="Timol" className="h-10 w-10 flex-shrink-0" />
-            <h2 className="text-2xl font-bold text-primary">{t("paymentDone.title")}</h2>
-          </div>
+          <img src={timolLogoDark} alt="Timol" className="h-12 mx-auto" />
+          <h2 className="text-2xl font-bold text-primary">{t("paymentDone.title")}</h2>
 
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
-            {t("paymentDone.welcome")}
+            {t("paymentDone.welcomeLine1")}
+            <br />
+            {t("paymentDone.welcomeLine2")}
           </p>
 
           <div className="w-full bg-primary/5 rounded-xl p-4 space-y-2 text-sm text-left">
