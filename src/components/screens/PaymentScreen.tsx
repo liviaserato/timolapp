@@ -345,7 +345,8 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
               </div>
             </div>
 
-            {/* Installments Dropdown */}
+            {/* Installments Dropdown — only for Brazilian residents */}
+            {isBrazilAddress && !isForeigner && (
             <div className="space-y-1">
               <Label>{t("payment.installments")}</Label>
               <Select value={installments} onValueChange={setInstallments}>
@@ -362,13 +363,8 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
                   ))}
                 </SelectContent>
               </Select>
-            {/* Total with interest hidden for now — kept for future use */}
-            {/* selectedInstallment.n > 1 && (
-                <p className="text-xs text-muted-foreground text-right mt-2">
-                  Total: {formatPrice(selectedInstallment.value * selectedInstallment.n)}
-                </p>
-              ) */}
             </div>
+            )}
           </CardContent>
         </Card>
       )}
