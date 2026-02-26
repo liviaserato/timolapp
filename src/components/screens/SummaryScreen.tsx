@@ -168,7 +168,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
           </div>
         </CardHeader>
         <CardContent className="space-y-1 text-sm">
-          <Row label={t("summary.sponsor")} value={`${data.sponsorName ?? "—"} (${data.sponsorId ?? "—"})`} />
+          <Row label={t("summary.sponsor")} value={`${data.sponsorName ?? "—"} (ID ${data.sponsorId ?? "—"})`} />
           <Row
             label={t("summary.franchiseChosen")}
             value={
