@@ -64,11 +64,15 @@ export function useDocumentCheck({ document, isForeigner, issuerCountryIso2, ena
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
-  const cleanDoc = isForeigner ? document.trim() : document.replace(/\D/g, "");
+  const rawClean = isForeigner ? document.trim() : document.replace(/\D/g, "");
+  // API expects CPF with mask (xxx.xxx.xxx-xx)
+  const cleanDoc = !isForeigner && rawClean.length === 11
+    ? `${rawClean.slice(0,3)}.${rawClean.slice(3,6)}.${rawClean.slice(6,9)}-${rawClean.slice(9)}`
+    : rawClean;
   const country = isForeigner ? issuerCountryIso2 : "BR";
 
   // Min length check
-  const meetsMinLength = isForeigner ? cleanDoc.length > 0 : cleanDoc.length === 11;
+  const meetsMinLength = isForeigner ? rawClean.length > 0 : rawClean.length === 11;
 
   const reset = useCallback(() => {
     setResult(null);
