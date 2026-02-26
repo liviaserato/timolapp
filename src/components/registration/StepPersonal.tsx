@@ -109,7 +109,7 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
     <div className="space-y-4">
       {/* Document / CPF — first for early validation */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:flex-wrap">
           <Label htmlFor="document">
             {isForeigner ? t("step1.document.foreigner") : t("step1.document")}
           </Label>
