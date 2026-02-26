@@ -16,6 +16,7 @@ interface Props {
   showDocCheck?: boolean;
   docChecking?: boolean;
   docCheckResult?: { exists: boolean } | null;
+  resetDocCheck?: () => void;
 }
 
 // CPF mask: 000.000.000-00
@@ -43,7 +44,7 @@ function isValidCPF(clean: string): boolean {
   return r === parseInt(clean[10]);
 }
 
-export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked, showDocCheck, docChecking, docCheckResult }: Props) => {
+export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked, showDocCheck, docChecking, docCheckResult, resetDocCheck }: Props) => {
   const { t, language } = useLanguage();
   const isForeigner = data.foreignerNoCpf === "true";
 
@@ -118,6 +119,8 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
               checked={isForeigner}
               onCheckedChange={(v) => {
                 onChange("foreignerNoCpf", v ? "true" : "false");
+                // Reset API validation state (but keep document value)
+                resetDocCheck?.();
                 if (!v) {
                   // Switching back to Brazilian: clear foreign country fields
                   onChange("documentCountry", "");
