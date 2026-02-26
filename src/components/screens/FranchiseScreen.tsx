@@ -2,15 +2,11 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { WizardData } from "@/types/wizard";
-import { Check, ChevronLeft } from "lucide-react";
+import { Check, ChevronLeft, Shield, TrendingUp, Crown, Gem } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
-import bronzeImg from "@/assets/franquia-bronze.svg";
-import prataImg from "@/assets/franquia-prata.svg";
-import ouroImg from "@/assets/franquia-ouro.svg";
-import platinaImg from "@/assets/franquia-platina.svg";
 import comboMegaImg from "@/assets/produto-combo-mega.png";
 import comboMiniImg from "@/assets/produto-combo-mini.png";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
@@ -18,12 +14,24 @@ import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
 type Currency = "BRL" | "USD" | "EUR";
 type Lang = "pt" | "en" | "es";
 
+const franchiseIcons: Record<string, typeof Shield> = {
+  bronze: Shield,
+  silver: TrendingUp,
+  gold: Crown,
+  platinum: Gem,
+};
+
+const franchiseLabel: Record<Lang, string> = {
+  pt: "Franquia",
+  en: "Franchise",
+  es: "Franquicia",
+};
+
 interface FranchiseOption {
   id: string;
   nameKey: string;
   installmentPrice: Record<Currency, number>;
   installments: number;
-  image: string;
   subtitle: Record<Lang, string>;
   benefits: Record<Lang, string[]>;
   products: Record<Lang, string[]>;
@@ -38,7 +46,6 @@ const franchiseOptions: FranchiseOption[] = [
     nameKey: "franchise.bronze",
     installmentPrice: { BRL: 160, USD: 32, EUR: 29 },
     installments: 12,
-    image: bronzeImg,
     subtitle: {
       pt: "Comece com segurança",
       en: "Start with confidence",
@@ -81,7 +88,6 @@ const franchiseOptions: FranchiseOption[] = [
     nameKey: "franchise.silver",
     installmentPrice: { BRL: 260, USD: 52, EUR: 47 },
     installments: 12,
-    image: prataImg,
     subtitle: {
       pt: "Comece a crescer",
       en: "Start growing",
@@ -127,7 +133,6 @@ const franchiseOptions: FranchiseOption[] = [
     nameKey: "franchise.gold",
     installmentPrice: { BRL: 380, USD: 76, EUR: 68 },
     installments: 12,
-    image: ouroImg,
     recommended: true,
     subtitle: {
       pt: "Construa liderança",
@@ -174,7 +179,6 @@ const franchiseOptions: FranchiseOption[] = [
     nameKey: "franchise.platinum",
     installmentPrice: { BRL: 675, USD: 135, EUR: 121 },
     installments: 12,
-    image: platinaImg,
     subtitle: {
       pt: "Construa sua aposentadoria",
       en: "Build your retirement",
@@ -185,7 +189,7 @@ const franchiseOptions: FranchiseOption[] = [
         "Tudo do Ouro",
         "Bônus Binário de 32% a 60%",
         "Único nível que permite chegar a <em>Diamante</em>",
-        "Plano de carreira Diamante completo: 1⭐→2⭐→3⭐→4⭐→5⭐→Blue→Black",
+        "Plano de Carreira <em>Diamante</em>",
         "Premiações maiores e mais exclusivas",
         "Maior potencial de ganhos recorrentes",
       ],
@@ -193,7 +197,7 @@ const franchiseOptions: FranchiseOption[] = [
         "Everything in Gold",
         "Binary Bonus of 32% to 60%",
         "Only level that allows reaching <em>Diamond</em>",
-        "Full Diamond career plan: 1⭐→2⭐→3⭐→4⭐→5⭐→Blue→Black",
+        "Full <em>Diamond</em> Career Plan",
         "Bigger and more exclusive rewards",
         "Highest recurring earnings potential",
       ],
@@ -201,7 +205,7 @@ const franchiseOptions: FranchiseOption[] = [
         "Todo del Oro",
         "Bono Binario de 32% a 60%",
         "Único nivel que permite llegar a <em>Diamante</em>",
-        "Plan de carrera Diamante completo: 1⭐→2⭐→3⭐→4⭐→5⭐→Blue→Black",
+        "Plan de Carrera <em>Diamante</em>",
         "Premiaciones mayores y más exclusivas",
         "Mayor potencial de ganancias recurrentes",
       ],
@@ -323,26 +327,44 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                 </div>
               )}
 
-              {/* Header: icon left, info right-aligned */}
-              <div className="flex items-center justify-between px-4 pr-7 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]">
-                <img src={f.image} alt={t(f.nameKey)} className="h-16 w-16 object-contain flex-shrink-0" />
-                <div className="flex flex-col items-end min-w-0 text-right">
-                  <h3 className="text-2xl font-extrabold text-foreground leading-tight">{t(f.nameKey)}</h3>
-                  <div className="flex items-baseline gap-0.5">
-                    <span className="text-[11px] text-muted-foreground font-medium">{f.installments}x</span>
-                    <span className="text-[11px] text-muted-foreground font-medium">{sym}</span>
-                    <span className="text-3xl font-extrabold text-foreground leading-none tracking-tight">
-                      {integer}
-                    </span>
-                    <span className="text-sm font-bold text-foreground -translate-y-2">
-                      ,{decimal}
-                    </span>
+              {/* Header: textual with light blue bg */}
+              {(() => {
+                const Icon = franchiseIcons[f.id] || Shield;
+                return (
+                  <div className={cn(
+                    "flex items-center justify-between px-4 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]",
+                    isSelected ? "bg-primary/10" : "bg-primary/5"
+                  )}>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <Icon className={cn(
+                        "h-5 w-5 flex-shrink-0",
+                        isSelected ? "text-primary" : "text-primary/60"
+                      )} />
+                      <div className="flex flex-col">
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider leading-tight">
+                          {franchiseLabel[lang]}
+                        </span>
+                        <h3 className="text-xl font-extrabold text-foreground leading-tight">{t(f.nameKey)}</h3>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end min-w-0 text-right">
+                      <div className="flex items-baseline gap-0.5">
+                        <span className="text-[11px] text-muted-foreground font-medium">{f.installments}x</span>
+                        <span className="text-[11px] text-muted-foreground font-medium">{sym}</span>
+                        <span className="text-3xl font-extrabold text-foreground leading-none tracking-tight">
+                          {integer}
+                        </span>
+                        <span className="text-sm font-bold text-foreground -translate-y-2">
+                          ,{decimal}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {cashLabel[lang]}: {sym} {cashFormatted}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {cashLabel[lang]}: {sym} {cashFormatted}
-                  </p>
-                </div>
-              </div>
+                );
+              })()}
 
               <Separator className={isSelected ? "bg-yellow-300/60" : ""} />
 
@@ -385,20 +407,22 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                 <p className="text-xs font-bold text-foreground mb-2 uppercase tracking-wider">
                   {sectionLabels[lang].products}
                 </p>
-                <div className="flex flex-col gap-0">
-                  {f.productImages.map((img, i) => (
-                    <div key={i}>
-                      {i > 0 && (
-                        <div className="flex items-center gap-2 pl-1 py-0">
-                          <span className="text-base font-bold text-muted-foreground leading-none ml-5">+</span>
+                <div className="flex items-center gap-3">
+                  {f.productImages.map((img, i) => {
+                    const name = f.products[lang][i] || "";
+                    const parts = name.split(" ");
+                    const line1 = parts[0] || "";
+                    const line2 = parts.slice(1).join(" ") || "";
+                    return (
+                      <div key={i} className="flex items-center gap-2">
+                        <img src={img} alt={name} className="h-12 w-12 object-contain flex-shrink-0" />
+                        <div className="flex flex-col leading-tight">
+                          <span className="text-xs font-medium text-muted-foreground">{line1}</span>
+                          <span className="text-sm font-semibold text-foreground">{line2}</span>
                         </div>
-                      )}
-                      <div className="flex items-center gap-3 px-1 py-0.5">
-                        <img src={img} alt={f.products[lang][i]} className="h-16 w-16 object-contain" />
-                        <span className="text-sm font-medium text-foreground">{f.products[lang][i]}</span>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
