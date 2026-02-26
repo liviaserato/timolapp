@@ -9,7 +9,8 @@ import { StepAddress } from "./StepAddress";
 import { StepLogin } from "./StepLogin";
 import { DocumentCheckPopup } from "./DocumentCheckPopup";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, XCircle } from "lucide-react";
+import { XCircle } from "lucide-react";
+import { TimolLoader } from "@/components/ui/timol-loader";
 import { WizardData } from "@/types/wizard";
 import { useDocumentCheck } from "@/hooks/useDocumentCheck";
 
@@ -293,12 +294,12 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
 
                 {step < TOTAL_STEPS ? (
                   <Button type="submit" disabled={loading || (step === 1 && (docChecking || docBlocked || docNotValidated))}>
-                    {(loading || (step === 1 && docChecking)) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                    {(loading || (step === 1 && docChecking)) && <TimolLoader size={16} className="mr-2" />}
                     {t("btn.next")}
                   </Button>
                 ) : (
                   <Button type="submit" disabled={loading || usernameStatus === "taken" || usernameStatus === "checking" || usernameStatus === "idle"}>
-                    {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                    {loading && <TimolLoader size={16} className="mr-2" />}
                     {t("btn.submit")}
                   </Button>
                 )}

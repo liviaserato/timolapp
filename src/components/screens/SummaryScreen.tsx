@@ -6,7 +6,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { WizardData } from "@/types/wizard";
-import { ChevronLeft, User, MapPin, Shield, Gem, Crown, Star, Ticket, Loader2, X } from "lucide-react";
+import { ChevronLeft, User, MapPin, Shield, Gem, Crown, Star, Ticket, X } from "lucide-react";
+import { TimolLoader } from "@/components/ui/timol-loader";
 import {
   Dialog,
   DialogContent,
@@ -230,7 +231,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
               )}
             </div>
             <Button variant="outline" size="sm" onClick={handleCouponCheck} disabled={couponStatus === "checking"}>
-              {couponStatus === "checking" ? <Loader2 className="h-4 w-4 animate-spin" /> : t("summary.coupon.apply")}
+              {couponStatus === "checking" ? <TimolLoader size={16} /> : t("summary.coupon.apply")}
             </Button>
           </div>
           {couponStatus === "valid" && (

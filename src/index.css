@@ -108,3 +108,28 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Timol branded loader */
+@keyframes timol-fill {
+  0% { clip-path: inset(100% 0 0 0); }
+  80% { clip-path: inset(15% 0 0 0); }
+  100% { clip-path: inset(0% 0 0 0); }
+}
+@keyframes timol-fill-loop {
+  0%   { clip-path: inset(100% 0 0 0); }
+  45%  { clip-path: inset(15% 0 0 0); }
+  55%  { clip-path: inset(15% 0 0 0); }
+  100% { clip-path: inset(100% 0 0 0); }
+}
+@keyframes timol-wave {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+
+.timol-loader-fill {
+  animation: timol-fill-loop 1.8s ease-in-out infinite;
+}
+.timol-loader-wave {
+  animation: timol-wave 0.9s ease-in-out infinite;
+}

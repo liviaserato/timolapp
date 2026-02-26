@@ -4,7 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useMemo, useState } from "react";
 
-import { CheckCircle2, XCircle, Loader2, Eye, EyeOff } from "lucide-react";
+import { CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
+import { TimolLoader } from "@/components/ui/timol-loader";
 
 interface Props {
   data: Record<string, string>;
@@ -107,7 +108,7 @@ export const StepLogin = ({ data, onChange, errors, onUsernameStatusChange }: Pr
             ].join(" ")}
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            {isUsernameFormatValid && usernameStatus === "checking" && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+            {isUsernameFormatValid && usernameStatus === "checking" && <TimolLoader size={16} />}
             {isUsernameFormatValid && usernameStatus === "available" && <CheckCircle2 className="h-4 w-4 text-success" />}
             {isUsernameFormatValid && usernameStatus === "taken" && <XCircle className="h-4 w-4 text-destructive" />}
             {!isUsernameFormatValid && data.username && <XCircle className="h-4 w-4 text-destructive" />}
