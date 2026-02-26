@@ -26,9 +26,30 @@ function maskCPF(value: string) {
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 }
 
+// CPF digit validation
+function isValidCPF(clean: string): boolean {
+  if (clean.length !== 11) return false;
+  if (/^(\d)\1+$/.test(clean)) return false;
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += parseInt(clean[i]) * (10 - i);
+  let r = (sum * 10) % 11;
+  if (r === 10 || r === 11) r = 0;
+  if (r !== parseInt(clean[9])) return false;
+  sum = 0;
+  for (let i = 0; i < 10; i++) sum += parseInt(clean[i]) * (11 - i);
+  r = (sum * 10) % 11;
+  if (r === 10 || r === 11) r = 0;
+  return r === parseInt(clean[10]);
+}
+
 export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked, showDocCheck, docChecking }: Props) => {
   const { t, language } = useLanguage();
   const isForeigner = data.foreignerNoCpf === "true";
+
+  // Inline CPF validation: show error when 11 digits entered but invalid
+  const cpfDigits = data.document?.replace(/\D/g, "") || "";
+  const cpfComplete = !isForeigner && cpfDigits.length === 11;
+  const cpfInvalid = cpfComplete && !isValidCPF(cpfDigits);
 
   // Document country selector state
   const [docCountrySearch, setDocCountrySearch] = useState("");
@@ -123,6 +144,12 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
           maxLength={isForeigner ? 50 : 14}
         />
         {errors.document && <p className="text-sm text-destructive">{errors.document}</p>}
+        {!errors.document && cpfInvalid && (
+          <p className="text-sm text-destructive flex items-start gap-1.5">
+            <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+            {t("validation.cpfInvalid")}
+          </p>
+        )}
         {errors.documentRegistered && (
           <p className="text-sm text-destructive flex items-start gap-1.5">
             <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
