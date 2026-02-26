@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Info, X, XCircle, Loader2 } from "lucide-react";
+import { Info, X, XCircle, Loader2, CheckCircle } from "lucide-react";
 import { countries, getCountryName } from "@/data/countries";
 
 interface Props {
@@ -15,6 +15,7 @@ interface Props {
   docBlocked?: boolean;
   showDocCheck?: boolean;
   docChecking?: boolean;
+  docCheckResult?: { exists: boolean } | null;
 }
 
 // CPF mask: 000.000.000-00
@@ -42,7 +43,7 @@ function isValidCPF(clean: string): boolean {
   return r === parseInt(clean[10]);
 }
 
-export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked, showDocCheck, docChecking }: Props) => {
+export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked, showDocCheck, docChecking, docCheckResult }: Props) => {
   const { t, language } = useLanguage();
   const isForeigner = data.foreignerNoCpf === "true";
 
@@ -131,18 +132,24 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
           </div>
         </div>
 
-        <Input
-          id="document"
-          placeholder={isForeigner ? t("step1.document.foreigner.placeholder") : t("step1.document.placeholder")}
-          value={data.document || ""}
-          onChange={(e) =>
-            onChange(
-              "document",
-              isForeigner ? e.target.value : maskCPF(e.target.value)
-            )
-          }
-          maxLength={isForeigner ? 50 : 14}
-        />
+        <div className="relative">
+          <Input
+            id="document"
+            placeholder={isForeigner ? t("step1.document.foreigner.placeholder") : t("step1.document.placeholder")}
+            value={data.document || ""}
+            onChange={(e) =>
+              onChange(
+                "document",
+                isForeigner ? e.target.value : maskCPF(e.target.value)
+              )
+            }
+            maxLength={isForeigner ? 50 : 14}
+            className={docCheckResult && !docCheckResult.exists && !cpfInvalid ? "pr-10" : ""}
+          />
+          {docCheckResult && !docCheckResult.exists && !cpfInvalid && (
+            <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-600" />
+          )}
+        </div>
         {errors.document && <p className="text-sm text-destructive">{errors.document}</p>}
         {!errors.document && cpfInvalid && (
           <p className="text-sm text-destructive flex items-start gap-1.5">
