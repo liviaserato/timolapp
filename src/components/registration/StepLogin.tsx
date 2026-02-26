@@ -10,6 +10,7 @@ interface Props {
   data: Record<string, string>;
   onChange: (field: string, value: string) => void;
   errors: Record<string, string>;
+  onUsernameStatusChange?: (status: "idle" | "checking" | "available" | "taken") => void;
 }
 
 function getPasswordStrength(password: string): { score: number; label: string } {
@@ -31,7 +32,7 @@ const strengthColors: Record<string, string> = {
   strong: "bg-green-500",
 };
 
-export const StepLogin = ({ data, onChange, errors }: Props) => {
+export const StepLogin = ({ data, onChange, errors, onUsernameStatusChange }: Props) => {
   const { t } = useLanguage();
   const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
   const [usernameTimer, setUsernameTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
@@ -53,10 +54,12 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
     const trimmed = stripped.slice(0, USERNAME_MAX);
     onChange("username", trimmed);
     setUsernameStatus("idle");
+    onUsernameStatusChange?.("idle");
     if (usernameTimer) clearTimeout(usernameTimer);
     // Only check availability if format is valid
     if (trimmed.length >= 3 && USERNAME_REGEX.test(trimmed)) {
       setUsernameStatus("checking");
+      onUsernameStatusChange?.("checking");
       const timer = setTimeout(async () => {
         try {
           const res = await fetch(
@@ -70,10 +73,14 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
           );
           if (!res.ok) throw new Error("upstream");
           const result = await res.json();
-          // API: exists=true → available, exists=false → taken
-          setUsernameStatus(result.exists ? "available" : "taken");
+          // API: exists=true → username already taken, exists=false → available
+          const exists = result.exists === true || result.exists === "true";
+          const status = exists ? "taken" : "available";
+          setUsernameStatus(status);
+          onUsernameStatusChange?.(status);
         } catch {
           setUsernameStatus("idle");
+          onUsernameStatusChange?.("idle");
         }
       }, 600);
       setUsernameTimer(timer);
