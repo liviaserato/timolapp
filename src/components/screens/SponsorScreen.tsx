@@ -329,7 +329,9 @@ export const SponsorScreen = ({ onNext }: Props) => {
 
   // Open WhatsApp from confirm screen (Popup 2) — translated
   const openWhatsAppFromConfirm = () => {
-    const msg = t("sponsor.whatsapp.chooseSponsor").replace("{name}", contactName || "—");
+    const msg = t("sponsor.whatsapp.chooseSponsor")
+      .replace("{name}", contactName || "—")
+      .replace("{location}", contactCityState || "—");
     openWhatsAppLink(msg);
   };
 
