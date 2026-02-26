@@ -3,7 +3,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { WizardData } from "@/types/wizard";
-import { RefreshCw, CreditCard, Loader2 } from "lucide-react";
+import { RefreshCw, CreditCard } from "lucide-react";
+import { TimolLoader } from "@/components/ui/timol-loader";
 
 interface Props {
   data: WizardData;
@@ -95,7 +96,7 @@ export const PaymentPendingScreen = ({ data, onConfirmed, onChangePayment }: Pro
           <div className="flex flex-col gap-3">
             <Button onClick={handleRefresh} disabled={checking} className="w-full gap-2">
               {checking ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <TimolLoader size={16} />
               ) : (
                 <RefreshCw className="h-4 w-4" />
               )}

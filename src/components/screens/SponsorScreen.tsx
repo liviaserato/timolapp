@@ -14,7 +14,8 @@ import {
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { WizardData } from "@/types/wizard";
-import { Search, Users, Phone, X, ChevronRight, ThumbsUp, Loader2, MessageCircle, RefreshCw } from "lucide-react";
+import { Search, Users, Phone, X, ChevronRight, ThumbsUp, MessageCircle, RefreshCw } from "lucide-react";
+import { TimolLoader } from "@/components/ui/timol-loader";
 import timolLogoAzul from "@/assets/logo-timol-azul-escuro.svg";
 import whatsappIcon from "@/assets/icon-logo-whatsapp.svg";
 import { countries } from "@/data/countries";
@@ -404,7 +405,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
                   aria-label="Search"
                 >
-                  {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                  {searching ? <TimolLoader size={16} /> : <Search className="h-4 w-4" />}
                 </button>
               )}
             </div>
@@ -545,7 +546,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
               {noSponsorStep === "how-continue" && (
                 <>
                   <Button variant="outline" className="w-full justify-start gap-2" onClick={handleRandomSponsor} disabled={indicationLoading}>
-                    {indicationLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
+                    {indicationLoading ? <TimolLoader size={16} /> : <Users className="h-4 w-4" />}
                     {t("sponsor.noSponsorBox.random")}
                   </Button>
                   <Button
@@ -617,7 +618,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
                     disabled={indicationLoading}
                     className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
-                    {indicationLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                    {indicationLoading ? <TimolLoader size={16} /> : <RefreshCw className="h-4 w-4" />}
                     {t("sponsor.confirm.suggestAnother")}
                   </button>
                 </div>
