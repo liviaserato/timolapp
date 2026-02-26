@@ -3,8 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { countries, getCountryByDialCode, getCountryName } from "@/data/countries";
-import { X } from "lucide-react";
-import { TimolLoader } from "@/components/ui/timol-loader";
+import { X, Loader2 } from "lucide-react";
 
 interface Props {
   data: Record<string, string>;
@@ -201,7 +200,7 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
             maxLength={9}
           />
           {loadingCep && (
-            <TimolLoader size={16} className="absolute right-3 top-1/2 -translate-y-1/2" />
+            <Loader2 className="h-4 w-4 animate-spin absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           )}
         </div>
         {cepError && <p className="text-sm text-destructive">{cepError}</p>}

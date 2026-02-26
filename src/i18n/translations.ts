@@ -292,6 +292,9 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Errors
     "error.generic": "Ocorreu um erro. Tente novamente.",
+    "submit.loading.title": "Gerando seu ID...",
+    "submit.loading.hint": "Não feche nem atualize esta página.",
+    "submit.error": "Houve um problema ao finalizar o cadastro. Tente novamente.",
   },
 
   en: {
@@ -571,6 +574,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "contract.back": "Back to registration",
 
     "error.generic": "An error occurred. Please try again.",
+    "submit.loading.title": "Generating your ID...",
+    "submit.loading.hint": "Please don't close or refresh this page.",
+    "submit.error": "There was a problem completing your registration. Please try again.",
   },
 
   es: {
@@ -850,5 +856,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "contract.back": "Volver al registro",
 
     "error.generic": "Ocurrió un error. Intente nuevamente.",
+    "submit.loading.title": "Generando su ID...",
+    "submit.loading.hint": "No cierre ni actualice esta página.",
+    "submit.error": "Hubo un problema al finalizar el registro. Intente nuevamente.",
   },
 };

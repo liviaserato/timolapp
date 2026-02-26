@@ -12,8 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { WizardData } from "@/types/wizard";
-import { ChevronLeft, CreditCard, QrCode, Eye, EyeOff, Copy, Check, Building2 } from "lucide-react";
-import { TimolLoader } from "@/components/ui/timol-loader";
+import { ChevronLeft, CreditCard, QrCode, Eye, EyeOff, Copy, Check, Building2, Loader2 } from "lucide-react";
 import { openWhatsAppLink } from "@/lib/whatsapp";
 import {
   Dialog,
@@ -380,7 +379,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
           {t("btn.back")}
         </Button>
         <Button onClick={handleConfirm} disabled={loading} className="flex-1">
-          {loading && <TimolLoader size={16} className="mr-2" />}
+          {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
           {t("payment.confirm")}
         </Button>
       </div>
