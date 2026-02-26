@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+
 import { CheckCircle2, XCircle, Loader2, Eye, EyeOff } from "lucide-react";
 
 interface Props {
@@ -59,13 +59,19 @@ export const StepLogin = ({ data, onChange, errors }: Props) => {
       setUsernameStatus("checking");
       const timer = setTimeout(async () => {
         try {
-          const { data: existing, error } = await supabase
-            .from("profiles")
-            .select("id")
-            .eq("username", trimmed)
-            .maybeSingle();
-          if (error) throw error;
-          setUsernameStatus(existing ? "taken" : "available");
+          const res = await fetch(
+            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/username-check?username=${encodeURIComponent(trimmed)}`,
+            {
+              headers: {
+                "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          if (!res.ok) throw new Error("upstream");
+          const result = await res.json();
+          // API: exists=true → available, exists=false → taken
+          setUsernameStatus(result.exists ? "available" : "taken");
         } catch {
           setUsernameStatus("idle");
         }
