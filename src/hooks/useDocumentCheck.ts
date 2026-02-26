@@ -137,8 +137,17 @@ export function useDocumentCheck({ document, isForeigner, issuerCountryIso2, ena
           return;
         }
 
-        const data: DocumentCheckResult = await res.json();
-        setResult(data);
+        const raw = await res.json();
+        // API returns person as array and exists as string — normalize
+        const normalized: DocumentCheckResult = {
+          exists: raw.exists === "true" || raw.exists === true,
+          person: Array.isArray(raw.person) ? raw.person[0] ?? null : raw.person ?? null,
+          franchises: {
+            count: raw.franchises?.count ?? 0,
+            items: raw.franchises?.itens ?? raw.franchises?.items ?? [],
+          },
+        };
+        setResult(normalized);
       } catch (err: unknown) {
         if ((err as Error)?.name === "AbortError") return;
         setError("network");

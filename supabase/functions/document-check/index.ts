@@ -12,15 +12,18 @@ serve(async (req) => {
   }
 
   try {
-    if (req.method !== "POST") {
-      return new Response(
-        JSON.stringify({ error: "Method not allowed" }),
-        { status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    let document: string | null = null;
+    let issuerCountryIso2: string | null = null;
 
-    const body = await req.json();
-    const { document, issuerCountryIso2 } = body;
+    if (req.method === "POST") {
+      const body = await req.json();
+      document = body.document;
+      issuerCountryIso2 = body.issuerCountryIso2;
+    } else {
+      const url = new URL(req.url);
+      document = url.searchParams.get("document");
+      issuerCountryIso2 = url.searchParams.get("issuerCountryIso2");
+    }
 
     if (!document || typeof document !== "string" || !document.trim()) {
       return new Response(
@@ -36,9 +39,8 @@ serve(async (req) => {
       );
     }
 
-    const apiUrl = "https://www.timolweb.com.br/api/people/document-check";
+    const apiUrl = `https://www.timolweb.com.br/api/people/document-check?document=${encodeURIComponent(document.trim())}&issuerCountryIso2=${encodeURIComponent(issuerCountryIso2.trim())}`;
     const apiRes = await fetch(apiUrl, {
-      method: "POST",
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
@@ -46,10 +48,6 @@ serve(async (req) => {
         "Origin": "https://timolsystem.com.br",
         "Referer": "https://timolsystem.com.br/",
       },
-      body: JSON.stringify({
-        document: document.trim(),
-        issuerCountryIso2: issuerCountryIso2.trim(),
-      }),
     });
 
     if (apiRes.status === 400) {
