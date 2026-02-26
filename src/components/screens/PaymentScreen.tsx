@@ -259,9 +259,9 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
           </DialogHeader>
           <Button
             onClick={() => {
-              const name = data.fullName || "";
+            const name = data.fullName || "";
               const id = data.userId || "";
-              const msg = `Olá, meu nome é ${name}, estou adquirindo a franquia ${id} e gostaria de pagar presencialmente no banco, como fazer?`;
+              const msg = `Olá, meu nome é ${name}, estou adquirindo uma franquia ${franchiseName}, ID ${id}, no valor de ${formatPrice(discountedPrice)} (com o desconto). Gostaria de pagar presencialmente no banco, como fazer?`;
               openWhatsAppLink(msg);
               setShowInPersonPopup(false);
             }}
