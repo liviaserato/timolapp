@@ -71,9 +71,13 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
 
   // Document is blocked if exists=true
   const docBlocked = docCheckResult?.exists === true;
-  // Document is not yet validated if still checking, has error, or no result yet
-  const docNotValidated = step === 1 && !isForeigner
-    ? (docChecking || !!docCheckError || (!docCheckResult && data.document.replace(/\D/g, "").length === 11))
+  // Document is not yet validated if still checking, has error, or API hasn't responded yet
+  const rawDocClean = isForeigner ? data.document.trim() : data.document.replace(/\D/g, "");
+  const docShouldBeValidated = isForeigner
+    ? rawDocClean.length > 0 && !!data.documentCountryIso2
+    : rawDocClean.length === 11;
+  const docNotValidated = step === 1
+    ? (docChecking || !!docCheckError || (docShouldBeValidated && !docCheckResult))
     : false;
 
   const onChange = (field: string, value: string) => {
