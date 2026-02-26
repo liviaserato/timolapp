@@ -58,6 +58,12 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.error.empty": "Informe o ID do patrocinador",
     "sponsor.error.numericOnly": "O ID deve conter apenas números.",
     "sponsor.error.notFound": "Patrocinador não encontrado. Verifique o ID e tente novamente.",
+    "sponsor.noSponsorFound.title": "Nenhum patrocinador encontrado",
+    "sponsor.noSponsorFound.message": "Não encontramos nenhum patrocinador disponível na cidade selecionada. Escolha uma cidade próxima ou peça ajuda à Timol pelo WhatsApp.",
+    "sponsor.noSponsorFound.whatsapp": "Pedir ajuda pelo WhatsApp",
+    "sponsor.noSponsorFound.close": "Fechar",
+    "sponsor.whatsapp.chooseSponsor": "Olá, meu nome é {name}. Quero escolher um patrocinador e preciso de ajuda.",
+    "sponsor.whatsapp.noSponsorFound": "Olá, meu nome é {name}. Moro em {location} e não encontrei nenhum patrocinador na minha região. Poderia me ajudar a encontrar um?",
 
     // Step 1 - Personal
     "step1.title": "Dados Pessoais",
@@ -343,6 +349,12 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.error.empty": "Please enter the sponsor's ID",
     "sponsor.error.numericOnly": "The ID must contain only numbers.",
     "sponsor.error.notFound": "Sponsor not found. Check the ID and try again.",
+    "sponsor.noSponsorFound.title": "No sponsor found",
+    "sponsor.noSponsorFound.message": "We couldn't find any available sponsor in the selected city. Try a nearby city or ask Timol for help via WhatsApp.",
+    "sponsor.noSponsorFound.whatsapp": "Ask for help on WhatsApp",
+    "sponsor.noSponsorFound.close": "Close",
+    "sponsor.whatsapp.chooseSponsor": "Hi, my name is {name}. I'd like to choose a sponsor and need help.",
+    "sponsor.whatsapp.noSponsorFound": "Hi, my name is {name}. I live in {location} and couldn't find a sponsor in my area. Could you help me find one?",
 
     "step1.title": "Personal Information",
     "step1.fullName": "Full name",
@@ -615,6 +627,12 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.error.empty": "Ingresa el ID del patrocinador",
     "sponsor.error.numericOnly": "El ID debe contener solo números.",
     "sponsor.error.notFound": "Patrocinador no encontrado. Verifica el ID e intenta nuevamente.",
+    "sponsor.noSponsorFound.title": "Ningún patrocinador encontrado",
+    "sponsor.noSponsorFound.message": "No encontramos ningún patrocinador disponible en la ciudad seleccionada. Elige una ciudad cercana o pide ayuda a Timol por WhatsApp.",
+    "sponsor.noSponsorFound.whatsapp": "Pedir ayuda por WhatsApp",
+    "sponsor.noSponsorFound.close": "Cerrar",
+    "sponsor.whatsapp.chooseSponsor": "Hola, mi nombre es {name}. Quiero elegir un patrocinador y necesito ayuda.",
+    "sponsor.whatsapp.noSponsorFound": "Hola, mi nombre es {name}. Vivo en {location} y no encontré ningún patrocinador en mi región. ¿Podrían ayudarme a encontrar uno?",
 
     "step1.title": "Datos Personales",
     "step1.fullName": "Nombre completo",
