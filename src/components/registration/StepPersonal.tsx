@@ -4,13 +4,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Info, X } from "lucide-react";
+import { Info, X, XCircle, Loader2 } from "lucide-react";
 import { countries, getCountryName } from "@/data/countries";
 
 interface Props {
   data: Record<string, string>;
   onChange: (field: string, value: string) => void;
   errors: Record<string, string>;
+  docCheckError?: string;
+  docBlocked?: boolean;
+  showDocCheck?: boolean;
+  docChecking?: boolean;
 }
 
 // CPF mask: 000.000.000-00
@@ -22,7 +26,7 @@ function maskCPF(value: string) {
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 }
 
-export const StepPersonal = ({ data, onChange, errors }: Props) => {
+export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked, showDocCheck, docChecking }: Props) => {
   const { t, language } = useLanguage();
   const isForeigner = data.foreignerNoCpf === "true";
 
@@ -125,6 +129,24 @@ export const StepPersonal = ({ data, onChange, errors }: Props) => {
             <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
             {errors.documentRegistered}
           </p>
+        )}
+        {docChecking && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>{t("docCheck.checking") || "Verificando documento..."}</span>
+          </div>
+        )}
+        {docCheckError && (
+          <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive flex items-start gap-2">
+            <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+            <span>{docCheckError === "network" ? t("docCheck.error.network") : t("docCheck.error.invalid")}</span>
+          </div>
+        )}
+        {docBlocked && !showDocCheck && (
+          <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive flex items-start gap-2">
+            <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+            <span>{t("docCheck.exists.line1")}</span>
+          </div>
         )}
 
         {/* Document Country selector — only for foreigners */}
