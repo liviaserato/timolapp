@@ -114,18 +114,18 @@ export const SponsorScreen = ({ onNext }: Props) => {
         return;
       }
       const json = await res.json();
-      const record = Array.isArray(json) ? json[0] : json;
-      if (!record || !record.nome) {
+      if (json.exists !== "true" || !json.person?.length) {
         setError(t("sponsor.error.notFound"));
         setNotFound(true);
         return;
       }
-      const name = record.nome || "";
-      const cidadeParts = (record.cidade || "").split(" - ");
-      const city = cidadeParts[0]?.trim() || "";
-      const state = cidadeParts[1]?.trim() || record.estado || "";
-      const photo = record.foto || record.photo || "";
-      const countryIso = record.pais_cod_iso || "";
+      const person = json.person[0];
+      const name = person.fullName || "";
+      const addr = person.address || {};
+      const city = addr.city || "";
+      const state = addr.state || "";
+      const photo = "";
+      const countryIso = person.issuerCountryIso2 || addr.countryIso2 || "";
       const countryDataResult = countries.find(c => c.iso2 === countryIso);
       const countryFlag = countryDataResult?.flag || "";
 
@@ -168,14 +168,14 @@ export const SponsorScreen = ({ onNext }: Props) => {
       );
       if (!res.ok) return;
       const json = await res.json();
-      const record = Array.isArray(json) ? json[0] : json;
-      if (!record || !record.nome) return;
-      const name = record.nome || "";
-      const cidadeParts = (record.cidade || "").split(" - ");
-      const city = cidadeParts[0]?.trim() || "";
-      const state = cidadeParts[1]?.trim() || record.estado || "";
-      const photo = record.foto || record.photo || "";
-      const countryIso = record.pais_cod_iso || "";
+      if (json.exists !== "true" || !json.person?.length) return;
+      const person = json.person[0];
+      const name = person.fullName || "";
+      const addr = person.address || {};
+      const city = addr.city || "";
+      const state = addr.state || "";
+      const photo = "";
+      const countryIso = person.issuerCountryIso2 || addr.countryIso2 || "";
       const countryDataResult = countries.find(c => c.iso2 === countryIso);
       const countryFlag = countryDataResult?.flag || "";
 
