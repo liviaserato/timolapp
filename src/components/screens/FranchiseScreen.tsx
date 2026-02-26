@@ -311,9 +311,9 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
             <div
               key={f.id}
               className={cn(
-                "relative rounded-lg border-2 cursor-pointer transition-all duration-200 flex flex-col w-full max-w-[500px]",
+                "relative rounded-lg border-2 cursor-pointer transition-all duration-200 flex flex-col w-full",
                 isSelected
-                  ? "border-yellow-500 bg-yellow-50 ring-2 ring-yellow-400 shadow-lg scale-[1.02]"
+                   ? "border-yellow-500 bg-[#FEFAD2] ring-2 ring-yellow-400 shadow-lg scale-[1.02]"
                   : "border-border bg-card hover:shadow-md hover:scale-[1.01]"
               )}
               onClick={() => setSelected(f.id)}
@@ -333,7 +333,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                 return (
                   <div className={cn(
                     "flex items-center justify-between px-4 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]",
-                    isSelected ? "bg-yellow-400" : "bg-primary/5"
+                    isSelected ? "bg-[#FEFAD2]" : "bg-primary/5"
                   )}>
                     <div className="flex items-center gap-3 min-w-0">
                       <Icon className={cn(
@@ -451,7 +451,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                 <Separator className={isSelected ? "bg-yellow-500" : ""} />
                 <div className={cn(
                   "px-4 py-3 rounded-b-[calc(0.5rem-2px)]",
-                  isSelected ? "bg-yellow-400" : "bg-muted/20"
+                  isSelected ? "bg-[#FEFAD2]" : "bg-muted/20"
                 )}>
                   <p className={cn(
                     "text-sm font-semibold italic text-center",
