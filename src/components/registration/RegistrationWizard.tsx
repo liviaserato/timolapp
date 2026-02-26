@@ -9,9 +9,9 @@ import { StepAddress } from "./StepAddress";
 import { StepLogin } from "./StepLogin";
 import { DocumentCheckPopup } from "./DocumentCheckPopup";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, AlertTriangle } from "lucide-react";
+import { Loader2, XCircle } from "lucide-react";
 import { WizardData } from "@/types/wizard";
-import { useDocumentCheck, DocumentCheckResult } from "@/hooks/useDocumentCheck";
+import { useDocumentCheck } from "@/hooks/useDocumentCheck";
 
 const TOTAL_STEPS = 4;
 
@@ -68,7 +68,13 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
 
   // Popup state
   const [showDocCheck, setShowDocCheck] = useState(false);
-  const [docCheckPassed, setDocCheckPassed] = useState(initialData.documentCheckPassed ?? false);
+
+  // Document is blocked if exists=true
+  const docBlocked = docCheckResult?.exists === true;
+  // Document is not yet validated if still checking, has error, or no result yet
+  const docNotValidated = step === 1 && !isForeigner
+    ? (docChecking || !!docCheckError || (!docCheckResult && data.document.replace(/\D/g, "").length === 11))
+    : false;
 
   const onChange = (field: string, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
@@ -77,10 +83,6 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
       delete next[field];
       return next;
     });
-    // Reset document check when relevant fields change
-    if (field === "document" || field === "foreignerNoCpf" || field === "documentCountryIso2") {
-      setDocCheckPassed(false);
-    }
   };
 
   const validateStep = (): boolean => {
@@ -141,25 +143,15 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
   const handleNext = async () => {
     if (!validateStep()) return;
 
-    // On step 1, check document before advancing
-    if (step === 1 && !docCheckPassed) {
-      // If still checking, wait
-      if (docChecking) return;
+    // On step 1, if doc exists → show popup, block
+    if (step === 1 && docBlocked) {
+      setShowDocCheck(true);
+      return;
+    }
 
-      // If API returned exists=true, show popup
-      if (docCheckResult?.exists) {
-        setShowDocCheck(true);
-        return;
-      }
-
-      // If there was a 400 error, block
-      if (docCheckError && docCheckError !== "network") {
-        setErrors((prev) => ({ ...prev, document: t("docCheck.error.invalid") }));
-        return;
-      }
-
-      // exists=false or network error → allow proceed
-      setDocCheckPassed(true);
+    // If doc not yet validated (checking/error/no result), block
+    if (step === 1 && docNotValidated) {
+      return;
     }
 
     setStep((s) => Math.min(s + 1, TOTAL_STEPS));
@@ -229,7 +221,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         city: data.city,
         state: data.state,
         username: data.username,
-        documentCheckPassed: docCheckPassed,
+        documentCheckPassed: !docBlocked,
         userId: initialData.userId ?? (userId ? String(Math.floor(100000 + Math.random() * 900000)) : undefined),
       });
     } catch (err: unknown) {
@@ -283,11 +275,18 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
               {step === 3 && <StepAddress data={data} onChange={onChange} errors={errors} />}
               {step === 4 && <StepLogin data={data} onChange={onChange} errors={errors} />}
 
-              {/* Document check network warning */}
-              {step === 1 && docCheckError === "network" && (
-                <div className="rounded-md border bg-amber-50 border-amber-200 px-3 py-2 text-sm text-amber-700 flex items-start gap-2">
-                  <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <span>{t("docCheck.error.network")}</span>
+              {/* Document check warnings */}
+              {step === 1 && docCheckError && (
+                <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive flex items-start gap-2">
+                  <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>{docCheckError === "network" ? t("docCheck.error.network") : t("docCheck.error.invalid")}</span>
+                </div>
+              )}
+
+              {step === 1 && docBlocked && !showDocCheck && (
+                <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive flex items-start gap-2">
+                  <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>{t("docCheck.exists.line1")}</span>
                 </div>
               )}
 
@@ -303,7 +302,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
                 )}
 
                 {step < TOTAL_STEPS ? (
-                  <Button type="submit" disabled={loading || (step === 1 && docChecking)}>
+                  <Button type="submit" disabled={loading || (step === 1 && (docChecking || docBlocked || docNotValidated))}>
                     {(loading || (step === 1 && docChecking)) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                     {t("btn.next")}
                   </Button>
@@ -320,17 +319,8 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
       </Card>
 
       {/* Document check popup */}
-      {showDocCheck && docCheckResult && (
+      {showDocCheck && (
         <DocumentCheckPopup
-          result={docCheckResult}
-          document={data.document}
-          currentSponsorId={initialData.sponsorId}
-          userName={data.fullName}
-          onContinue={() => {
-            setShowDocCheck(false);
-            setDocCheckPassed(true);
-            setStep((s) => Math.min(s + 1, TOTAL_STEPS));
-          }}
           onClose={() => setShowDocCheck(false)}
         />
       )}

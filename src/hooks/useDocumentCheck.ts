@@ -135,7 +135,7 @@ export function useDocumentCheck({ document, isForeigner, issuerCountryIso2, ena
         }
 
         if (!res.ok) {
-          // Network/server error → show warning but don't block
+          // Network/server error → blocks advancement
           setError("network");
           setChecking(false);
           return;
