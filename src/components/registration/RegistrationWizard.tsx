@@ -270,25 +270,10 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
             }}
           >
             <div className="space-y-6">
-              {step === 1 && <StepPersonal data={data} onChange={onChange} errors={errors} />}
+              {step === 1 && <StepPersonal data={data} onChange={onChange} errors={errors} docCheckError={docCheckError} docBlocked={docBlocked} showDocCheck={showDocCheck} docChecking={docChecking} />}
               {step === 2 && <StepContact data={data} onChange={onChange} errors={errors} />}
               {step === 3 && <StepAddress data={data} onChange={onChange} errors={errors} />}
               {step === 4 && <StepLogin data={data} onChange={onChange} errors={errors} />}
-
-              {/* Document check warnings */}
-              {step === 1 && docCheckError && (
-                <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive flex items-start gap-2">
-                  <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <span>{docCheckError === "network" ? t("docCheck.error.network") : t("docCheck.error.invalid")}</span>
-                </div>
-              )}
-
-              {step === 1 && docBlocked && !showDocCheck && (
-                <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive flex items-start gap-2">
-                  <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <span>{t("docCheck.exists.line1")}</span>
-                </div>
-              )}
 
               {apiError && <p className="text-sm text-destructive text-center">{apiError}</p>}
 
