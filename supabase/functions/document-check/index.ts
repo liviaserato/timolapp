@@ -39,16 +39,36 @@ serve(async (req) => {
       );
     }
 
-    const apiUrl = `https://www.timolweb.com.br/api/people/document-check?document=${encodeURIComponent(document.trim())}&issuerCountryIso2=${encodeURIComponent(issuerCountryIso2.trim())}`;
-    const apiRes = await fetch(apiUrl, {
+    const docTrimmed = document.trim();
+    const countryTrimmed = issuerCountryIso2.trim();
+
+    // Try GET first (browser-compatible approach)
+    const apiUrl = `https://www.timolweb.com.br/api/people/document-check?document=${encodeURIComponent(docTrimmed)}&issuerCountryIso2=${encodeURIComponent(countryTrimmed)}`;
+    console.log("document-check: trying GET", apiUrl);
+
+    let apiRes = await fetch(apiUrl, {
       headers: {
         "Accept": "application/json",
-        "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0 (compatible; TimolApp/1.0)",
-        "Origin": "https://timolsystem.com.br",
-        "Referer": "https://timolsystem.com.br/",
       },
     });
+
+    // If GET returns 404 or 405, try POST with JSON body
+    if (apiRes.status === 404 || apiRes.status === 405) {
+      console.log("document-check: GET failed with", apiRes.status, ", trying POST");
+      const postUrl = "https://www.timolweb.com.br/api/people/document-check";
+      apiRes = await fetch(postUrl, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          document: docTrimmed,
+          issuerCountryIso2: countryTrimmed,
+        }),
+      });
+      console.log("document-check: POST result status", apiRes.status);
+    }
 
     if (apiRes.status === 400) {
       const errorData = await apiRes.text();
@@ -68,7 +88,7 @@ serve(async (req) => {
     }
 
     const data = await apiRes.json();
-    console.log("Timol document-check response:", JSON.stringify(data));
+    console.log("Timol document-check OK:", JSON.stringify(data).substring(0, 200));
 
     return new Response(
       JSON.stringify(data),
