@@ -497,11 +497,7 @@ function MessageDialog({
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
-        <div className="rounded-md border bg-muted/50 p-3 text-sm whitespace-pre-wrap font-mono leading-relaxed">
-          {message}
-        </div>
-
-        <div className="flex flex-wrap gap-2 justify-end mt-2">
+        <div className="flex flex-wrap gap-2 justify-end">
           <Button variant="outline" size="sm" onClick={() => onCopy(message)}>
             {copied ? <Check className="h-4 w-4 mr-1" /> : <Copy className="h-4 w-4 mr-1" />}
             {copied ? "Copiado!" : "Copiar"}
@@ -516,6 +512,13 @@ function MessageDialog({
               Enviar no WhatsApp
             </Button>
           )}
+        </div>
+
+        <div className="rounded-md border bg-muted/50 p-3 text-sm whitespace-pre-wrap font-mono leading-relaxed">
+          {message}
+        </div>
+
+        <div className="flex justify-end mt-2">
           <Button size="sm" onClick={onConfirm} disabled={confirmed}>
             <Check className="h-4 w-4 mr-1" />
             Confirmar envio e fechar
