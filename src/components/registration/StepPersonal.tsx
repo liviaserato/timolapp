@@ -98,7 +98,7 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
     { value: "male", label: t("step1.gender.male") },
     { value: "female", label: t("step1.gender.female") },
     { value: "other", label: t("step1.gender.other") },
-    { value: "preferNotSay", label: t("step1.gender.preferNotSay") },
+    
   ];
 
   const today = new Date();
