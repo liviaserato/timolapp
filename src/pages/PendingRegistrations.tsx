@@ -277,7 +277,7 @@ export default function PendingRegistrations() {
                         </div>
 
                         {/* Right column */}
-                        <div className="space-y-2.5">
+                        <div className="space-y-2.5 sm:border-0 border-t border-border/40 pt-4 sm:pt-0">
                           <InfoItem icon={Users} label="Patrocinador">
                             {reg.sponsor_source && (reg.sponsor_id || reg.sponsor_name) && <SponsorTypeBadge type={reg.sponsor_source === "suggestion" ? "suggestion" : "search"} />}
                             <span className="truncate" title={
