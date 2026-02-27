@@ -6,6 +6,7 @@ export interface WizardData {
   sponsorCity?: string;
   sponsorState?: string;
   sponsorCountryFlag?: string;
+  sponsorSource?: "search" | "suggestion";
 
   // Personal (Step 1)
   fullName?: string;

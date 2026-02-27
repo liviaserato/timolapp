@@ -102,6 +102,7 @@ export type Database = {
           recovery_email_sent_at: string | null
           sponsor_id: string | null
           sponsor_name: string | null
+          sponsor_source: string | null
           state: string | null
           status: string
           updated_at: string
@@ -128,6 +129,7 @@ export type Database = {
           recovery_email_sent_at?: string | null
           sponsor_id?: string | null
           sponsor_name?: string | null
+          sponsor_source?: string | null
           state?: string | null
           status?: string
           updated_at?: string
@@ -154,6 +156,7 @@ export type Database = {
           recovery_email_sent_at?: string | null
           sponsor_id?: string | null
           sponsor_name?: string | null
+          sponsor_source?: string | null
           state?: string | null
           status?: string
           updated_at?: string

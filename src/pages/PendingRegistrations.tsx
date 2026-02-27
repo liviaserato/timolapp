@@ -38,6 +38,7 @@ interface PendingRegistration {
   recovery_email_sent_at: string | null;
   whatsapp_recovery_sent: boolean;
   whatsapp_recovery_sent_at: string | null;
+  sponsor_source: string | null;
 }
 
 function capitalize(str: string | null): string {
@@ -46,6 +47,12 @@ function capitalize(str: string | null): string {
     .split(" ")
     .map((w) => (w.length > 0 ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : w))
     .join(" ");
+}
+
+function firstName(str: string | null): string {
+  if (!str) return "";
+  const first = str.trim().split(" ")[0] || "";
+  return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
 }
 
 export default function PendingRegistrations() {
@@ -125,10 +132,19 @@ export default function PendingRegistrations() {
   };
 
   const buildSponsorMessage = (reg: PendingRegistration) => {
-    const sponsorName = capitalize(reg.sponsor_name || "");
-    const userName = capitalize(reg.full_name || "");
+    const sponsorFirst = firstName(reg.sponsor_name);
+    const userFirst = firstName(reg.full_name);
+    const userFull = capitalize(reg.full_name || "");
     const date = formatDateOnly(reg.created_at);
-    return `Olá, ${sponsorName}! Tudo bem? 😊\nO ${userName} iniciou o cadastro de uma franquia no dia ${date}, mas ainda não concluiu.\n\nComo ele está na sua rede, sua abordagem pode fazer toda a diferença agora.\nQuando puder, vale dar um toque rápido pra entender se ficou alguma dúvida e ajudá-lo a avançar na decisão 🤝`;
+    const phone = reg.phone || "";
+    const location = [reg.city, reg.state, (() => { const c = getCountryData(reg.country); return c ? getCountryName(c, "pt") : null; })()].filter(Boolean).join(", ");
+
+    if (reg.sponsor_source === "suggestion") {
+      return `Olá, ${sponsorFirst}! Tudo bem? 😊\nSeu ID foi sugerido de forma aleatória em um cadastro de franquia. O ${userFirst} iniciou o processo no dia ${date}, mas ainda não concluiu.\n\nMesmo que você não o conheça, esse é um bom momento para uma abordagem. Ele pode acabar fazendo parte da sua rede.\n\nQuando puder, se apresente, entenda se ficou alguma dúvida e veja se consegue ajudá-lo a avançar 🤝\n\nNome: ${userFull}\nContato: ${phone}\nLocalização: ${location}\n\nObs.: Caso não consiga fazer o acompanhamento, me avise por favor para que eu possa indicar outro patrocinador.`;
+    }
+
+    // Default: "search"
+    return `Olá, ${sponsorFirst}! Tudo bem? 😊\nO ${userFirst} iniciou o cadastro de uma franquia no dia ${date}, mas ainda não concluiu.\n\nComo ele está na sua rede, sua abordagem pode fazer toda a diferença agora.\nQuando puder, vale dar um toque rápido pra entender se ficou alguma dúvida e ajudá-lo a avançar na decisão 🤝\n\nNome: ${userFull}\nContato: ${phone}`;
   };
 
   const handleCopyMessage = (msg: string) => {
@@ -241,7 +257,7 @@ export default function PendingRegistrations() {
                                 ? `${reg.sponsor_id} – ${capitalize(reg.sponsor_name)}`
                                 : capitalize(reg.sponsor_name) || reg.sponsor_id || ""}
                             </span>
-                            <SponsorTypeBadge type="search" />
+                            <SponsorTypeBadge type={reg.sponsor_source === "suggestion" ? "suggestion" : "search"} />
                           </InfoItem>
                           <InfoItem icon={Award} label="Franquia">
                             {reg.franchise_name || ""}

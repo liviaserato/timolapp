@@ -1,0 +1,1 @@
+ALTER TABLE public.registration_status ADD COLUMN sponsor_source text DEFAULT NULL;
