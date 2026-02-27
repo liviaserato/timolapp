@@ -139,7 +139,7 @@ export default function PendingRegistrations() {
         ) : registrations.length === 0 ? (
           <p className="text-center text-muted-foreground py-8">Nenhum cadastro pendente encontrado.</p>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div className="flex flex-col gap-5">
             {registrations.map((reg) => {
               const countryData = getCountryData(reg.country);
               const brazilian = isBrazilian(reg.country);
