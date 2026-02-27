@@ -1,33 +1,60 @@
 
 
-## Problema
+## Pagina de Cadastros Pendentes
 
-O INSERT na tabela `registration_status` retorna erro 401 porque:
-1. O signup do usuario requer confirmacao de email
-2. Sem email confirmado, o usuario nao tem sessao autenticada
-3. A RLS policy exige `auth.uid() = user_id`, que falha pois `auth.uid()` e null
+### 1. Migracao de banco de dados
 
-## Solucao
+Adicionar colunas estruturais a tabela `registration_status`:
 
-Mover o INSERT de `registration_status` do frontend para uma **backend function** que usa service role key (bypassa RLS).
+```text
+city            (text, nullable)
+state           (text, nullable)
+country         (text, nullable)
+status          (text, NOT NULL, default 'pending')
+user_display_id (text, nullable)
+```
 
-### Etapas
+### 2. Edge function `get-pending-registrations`
 
-1. **Criar edge function `track-registration`** que recebe os dados e insere/atualiza `registration_status` usando service role key
-   - Recebe: user_id, full_name, email, document, sponsor_name, sponsor_id
-   - Tambem aceita updates parciais (franchise_selected, payment_completed)
+Criar funcao que usa service role key para consultar `registration_status WHERE status = 'pending'`, retornando todos os campos necessarios para a listagem. Sem verificacao de JWT (endpoint interno/admin).
 
-2. **Atualizar `RegistrationWizard.tsx`** para chamar `supabase.functions.invoke("track-registration")` em vez de `supabase.from("registration_status").insert()`
+### 3. Pagina `/pendentes`
 
-3. **Atualizar `Index.tsx`** para usar a mesma edge function nos updates de status (franchise_selected, payment_completed)
+Criar `src/pages/PendingRegistrations.tsx` com tabela exibindo:
+- Nome, CPF, Cidade, Estado, Pais, ID, Patrocinador, E-mail, Telefone, Data Cadastro, Status
+- Indicadores check (verde) / X (vermelho) para "E-mail enviado" e "WhatsApp enviado"
+- Layout simples com componentes Table e Card existentes
 
-4. **Registrar a funcao no `supabase/config.toml`** com `verify_jwt = false`
+### 4. Roteamento
 
-### Detalhes Tecnicos
+Adicionar rota `/pendentes` no `App.tsx`.
 
-A edge function tera dois modos:
-- **insert**: cria o registro inicial (chamado no submit do wizard)
-- **update**: atualiza campos como `franchise_selected` e `payment_completed` (chamado nas telas seguintes)
+### 5. Atualizar `track-registration`
 
-Isso resolve o problema de RLS sem precisar alterar as policies existentes, mantendo a seguranca da tabela.
+Aceitar campos `city`, `state`, `country`, `user_display_id` no modo insert para que novos cadastros preencham essas colunas.
+
+Registrar `get-pending-registrations` no `supabase/config.toml`.
+
+### Secao tecnica
+
+**Arquivos a criar:**
+- `supabase/functions/get-pending-registrations/index.ts`
+- `src/pages/PendingRegistrations.tsx`
+
+**Arquivos a editar:**
+- `src/App.tsx` (nova rota)
+- `supabase/functions/track-registration/index.ts` (novos campos no insert)
+- `supabase/config.toml` (registrar nova funcao)
+
+**Migracao SQL:**
+```sql
+ALTER TABLE public.registration_status
+  ADD COLUMN IF NOT EXISTS city text,
+  ADD COLUMN IF NOT EXISTS state text,
+  ADD COLUMN IF NOT EXISTS country text,
+  ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'pending',
+  ADD COLUMN IF NOT EXISTS user_display_id text;
+```
+
+**Nota:** O registro existente da Samara recebera automaticamente `status = 'pending'` (valor default) e aparecera na listagem. Campos city, state, country e user_display_id ficarao vazios ate serem preenchidos por cadastros futuros.
 
