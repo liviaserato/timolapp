@@ -532,7 +532,7 @@ function MessageDialog({
           )}
         </div>
 
-        <div className="rounded-md border bg-muted/50 p-3 text-sm whitespace-pre-wrap font-mono leading-relaxed">
+        <div className="rounded-md border bg-muted/50 p-3 text-sm whitespace-pre-wrap font-mono leading-relaxed overflow-y-auto" style={{ maxHeight: "calc(15 * 1.65em)" }}>
           {message}
         </div>
 
