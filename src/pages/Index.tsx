@@ -67,10 +67,13 @@ const Index = () => {
     const authUserId = wizardData.authUserId;
     if (!authUserId) return;
     try {
-      await supabase
-        .from("registration_status")
-        .update(fields)
-        .eq("user_id", authUserId);
+      await supabase.functions.invoke("track-registration", {
+        body: {
+          mode: "update",
+          user_id: authUserId,
+          fields,
+        },
+      });
     } catch (e) {
       console.error("Failed to update registration status:", e);
     }

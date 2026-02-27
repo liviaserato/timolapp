@@ -203,14 +203,17 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
             preferred_language: language,
           }).eq("user_id", userId);
 
-          // Track registration status for recovery emails
-          await supabase.from("registration_status").insert({
-            user_id: userId,
-            full_name: data.fullName?.trim(),
-            email: data.email.trim(),
-            document: data.document?.trim(),
-            sponsor_name: initialData.sponsorName || null,
-            sponsor_id: initialData.sponsorId || null,
+          // Track registration status for recovery emails (via edge function to bypass RLS)
+          await supabase.functions.invoke("track-registration", {
+            body: {
+              mode: "insert",
+              user_id: userId,
+              full_name: data.fullName?.trim(),
+              email: data.email.trim(),
+              document: data.document?.trim(),
+              sponsor_name: initialData.sponsorName || null,
+              sponsor_id: initialData.sponsorId || null,
+            },
           });
         }
       }
