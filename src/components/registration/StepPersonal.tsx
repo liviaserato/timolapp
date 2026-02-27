@@ -231,7 +231,7 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
                       className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2"
                       onClick={() => selectDocCountry(c.iso2)}
                     >
-                      <span>{c.flag}</span>
+                      <span title={getCountryName(c, language)}>{c.flag}</span>
                       <span>{getCountryName(c, language)}</span>
                     </button>
                   ))

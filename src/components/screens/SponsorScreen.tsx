@@ -17,7 +17,7 @@ import { WizardData } from "@/types/wizard";
 import { Search, Users, Phone, X, ChevronRight, ThumbsUp, MessageCircle, RefreshCw, Loader2 } from "lucide-react";
 import timolLogoAzul from "@/assets/logo-timol-azul-escuro.svg";
 import whatsappIcon from "@/assets/icon-logo-whatsapp.svg";
-import { countries } from "@/data/countries";
+import { countries, getCountryName } from "@/data/countries";
 import { openWhatsAppLink } from "@/lib/whatsapp";
 
 // Language to Google Places language map
@@ -39,7 +39,7 @@ interface SponsorApiResult {
 export const SponsorScreen = ({ onNext }: Props) => {
   const { t, language } = useLanguage();
   const [sponsorId, setSponsorId] = useState("");
-  const [foundSponsor, setFoundSponsor] = useState<{ id: string; name: string; city: string; state: string; countryFlag: string; photo: string } | null>(null);
+  const [foundSponsor, setFoundSponsor] = useState<{ id: string; name: string; city: string; state: string; countryFlag: string; countryName: string; photo: string } | null>(null);
   const [showNoSponsorBox, setShowNoSponsorBox] = useState(false);
   const [noSponsorStep, setNoSponsorStep] = useState<NoSponsorStep>("contact-form");
   const [showConfirmBox, setShowConfirmBox] = useState(false);
@@ -131,7 +131,8 @@ export const SponsorScreen = ({ onNext }: Props) => {
       const countryDataResult = countries.find(c => c.iso2 === countryIso);
       const countryFlag = countryDataResult?.flag || "";
 
-      setFoundSponsor({ id: trimmed, name, city, state, countryFlag, photo });
+      const countryName = countryDataResult ? getCountryName(countryDataResult, language) : "";
+      setFoundSponsor({ id: trimmed, name, city, state, countryFlag, countryName, photo });
       setSponsorSelected(false);
       setFromNoSponsorFlow(false);
       setShowConfirmBox(true);
@@ -181,7 +182,8 @@ export const SponsorScreen = ({ onNext }: Props) => {
       const countryDataResult = countries.find(c => c.iso2 === countryIso);
       const countryFlag = countryDataResult?.flag || "";
 
-      setFoundSponsor({ id, name, city, state, countryFlag, photo });
+      const countryName = countryDataResult ? getCountryName(countryDataResult, language) : "";
+      setFoundSponsor({ id, name, city, state, countryFlag, countryName, photo });
       setSponsorSelected(false);
       setShowConfirmBox(true);
     } catch {
@@ -598,7 +600,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
                    <p className="text-xs text-muted-foreground">ID: {foundSponsor.id}</p>
                    <p className="text-xs text-muted-foreground">
                      {foundSponsor.city}{foundSponsor.state ? `, ${foundSponsor.state}` : ""}
-                     {foundSponsor.countryFlag ? ` ${foundSponsor.countryFlag}` : ""}
+                     {foundSponsor.countryFlag ? <span title={foundSponsor.countryName}> {foundSponsor.countryFlag}</span> : ""}
                    </p>
                  </div>
               </div>
