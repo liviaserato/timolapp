@@ -42,6 +42,7 @@ interface PendingRegistration {
   sponsor_notified: boolean;
   sponsor_notified_at: string | null;
   gender: string | null;
+  preferred_language: string | null;
 }
 
 function capitalize(str: string | null): string {
@@ -123,12 +124,23 @@ export default function PendingRegistrations() {
     setNotes((prev) => ({ ...prev, [id]: savedNotes[id] || "" }));
   };
 
-  const buildWhatsAppMessage = (name: string) =>
-    `Oi, ${capitalize(name)}! Tudo bem? 😊\nVi que você começou seu cadastro na Timol e quis passar aqui pra te dar um suporte rápido.\n\nSe ainda estiver avaliando ou ficou com alguma dúvida, posso te explicar de forma simples e sem compromisso.\nAssim você decide com segurança se quer continuar ou não 👍\n\nSe fizer sentido pra você, me chama aqui que eu te ajudo.`;
+  const buildWhatsAppMessage = (reg: PendingRegistration) => {
+    const name = capitalize(reg.full_name || "");
+    const lang = reg.preferred_language || "pt";
 
-  const formatDateOnly = (dateStr: string | null) => {
+    if (lang === "en") {
+      return `Hi, ${name}! How are you? 😊\nI noticed you started your registration at Timol and wanted to check in to offer some quick support.\n\nIf you're still evaluating or have any questions, I can explain things simply and with no commitment.\nThat way you can decide with confidence whether to continue or not 👍\n\nIf it makes sense to you, reach out and I'll help you.`;
+    }
+    if (lang === "es") {
+      return `¡Hola, ${name}! ¿Todo bien? 😊\nVi que empezaste tu registro en Timol y quise pasar por aquí para darte un soporte rápido.\n\nSi todavía estás evaluando o te quedó alguna duda, puedo explicarte de forma simple y sin compromiso.\nAsí decides con seguridad si quieres continuar o no 👍\n\nSi tiene sentido para ti, escríbeme aquí que te ayudo.`;
+    }
+    return `Oi, ${name}! Tudo bem? 😊\nVi que você começou seu cadastro na Timol e quis passar aqui pra te dar um suporte rápido.\n\nSe ainda estiver avaliando ou ficou com alguma dúvida, posso te explicar de forma simples e sem compromisso.\nAssim você decide com segurança se quer continuar ou não 👍\n\nSe fizer sentido pra você, me chama aqui que eu te ajudo.`;
+  };
+
+  const formatDateOnly = (dateStr: string | null, lang?: string) => {
     if (!dateStr) return "";
-    return new Date(dateStr).toLocaleDateString("pt-BR", {
+    const locale = lang === "en" ? "en-US" : lang === "es" ? "es-ES" : "pt-BR";
+    return new Date(dateStr).toLocaleDateString(locale, {
       day: "2-digit", month: "2-digit", year: "numeric",
     });
   };
@@ -137,11 +149,39 @@ export default function PendingRegistrations() {
     const sponsorFirst = firstName(reg.sponsor_name);
     const userFirst = firstName(reg.full_name);
     const userFull = capitalize(reg.full_name || "");
-    const date = formatDateOnly(reg.created_at);
+    const lang = reg.preferred_language || "pt";
+    const date = formatDateOnly(reg.created_at, lang);
     const phone = reg.phone || "";
-    const location = [reg.city, reg.state, (() => { const c = getCountryData(reg.country); return c ? getCountryName(c, "pt") : null; })()].filter(Boolean).join(", ");
+    const location = [reg.city, reg.state, (() => { const c = getCountryData(reg.country); return c ? getCountryName(c, lang) : null; })()].filter(Boolean).join(", ");
 
     const fem = reg.gender === "female";
+
+    if (lang === "en") {
+      const pronoun = fem ? "her" : "him";
+      const heShe = fem ? "She" : "He";
+      const heSheMin = fem ? "she" : "he";
+      const helpPronoun = fem ? "help her" : "help him";
+
+      if (reg.sponsor_source === "suggestion") {
+        return `Hi, ${sponsorFirst}! How are you? 😊\nYour ID was randomly suggested during a franchise registration. ${userFirst} started the process on ${date}, but hasn't completed it yet.\n\nEven if you don't know ${pronoun}, this is a good time to reach out. ${heShe} could end up being part of your network.\n\nWhen you can, introduce yourself, see if there are any questions, and try to ${helpPronoun} move forward 🤝\n\nName: ${userFull}\nContact: ${phone}\nLocation: ${location}\n\nNote: If you're unable to follow up, please let me know so I can assign another sponsor.`;
+      }
+      return `Hi, ${sponsorFirst}! How are you? 😊\n${userFirst} started a franchise registration on ${date}, but hasn't completed it yet.\n\nSince ${heSheMin} is in your network, your approach can make all the difference right now.\nWhen you can, it's worth a quick check to see if there are any questions and ${helpPronoun} move forward with the decision 🤝\n\nName: ${userFull}\nContact: ${phone}`;
+    }
+
+    if (lang === "es") {
+      const articuloEs = fem ? "La" : "El"; // Not used at sentence start before name in Spanish the same way, but keeping pattern
+      const pronEs = fem ? "la" : "lo";
+      const ellaEl = fem ? "Ella" : "Él";
+      const ellaElMin = fem ? "ella" : "él";
+      const ayudar = fem ? "ayudarla" : "ayudarlo";
+
+      if (reg.sponsor_source === "suggestion") {
+        return `¡Hola, ${sponsorFirst}! ¿Todo bien? 😊\nTu ID fue sugerido de forma aleatoria en un registro de franquicia. ${userFirst} inició el proceso el día ${date}, pero aún no lo completó.\n\nAunque no ${pronEs} conozcas, este es un buen momento para un acercamiento. ${ellaEl} puede terminar formando parte de tu red.\n\nCuando puedas, preséntate, entiende si quedó alguna duda y ve si puedes ${ayudar} a avanzar 🤝\n\nNombre: ${userFull}\nContacto: ${phone}\nUbicación: ${location}\n\nObs.: Si no puedes hacer el seguimiento, avísame por favor para que pueda indicar otro patrocinador.`;
+      }
+      return `¡Hola, ${sponsorFirst}! ¿Todo bien? 😊\n${userFirst} inició el registro de una franquicia el día ${date}, pero aún no lo completó.\n\nComo ${ellaElMin} está en tu red, tu acercamiento puede marcar toda la diferencia ahora.\nCuando puedas, vale la pena un contacto rápido para entender si quedó alguna duda y ${ayudar} a avanzar en la decisión 🤝\n\nNombre: ${userFull}\nContacto: ${phone}`;
+    }
+
+    // PT (default)
     const artigo = fem ? "A" : "O";
     const pronome = fem ? "a" : "o";
     const elx = fem ? "Ela" : "Ele";
@@ -152,7 +192,6 @@ export default function PendingRegistrations() {
       return `Olá, ${sponsorFirst}! Tudo bem? 😊\nSeu ID foi sugerido de forma aleatória em um cadastro de franquia. ${artigo} ${userFirst} iniciou o processo no dia ${date}, mas ainda não concluiu.\n\nMesmo que você não ${pronome} conheça, esse é um bom momento para uma abordagem. ${elx} pode acabar fazendo parte da sua rede.\n\nQuando puder, se apresente, entenda se ficou alguma dúvida e veja se consegue ${ajuda} a avançar 🤝\n\nNome: ${userFull}\nContato: ${phone}\nLocalização: ${location}\n\nObs.: Caso não consiga fazer o acompanhamento, me avise por favor para que eu possa indicar outro patrocinador.`;
     }
 
-    // Default: "search"
     return `Olá, ${sponsorFirst}! Tudo bem? 😊\n${artigo} ${userFirst} iniciou o cadastro de uma franquia no dia ${date}, mas ainda não concluiu.\n\nComo ${elxMin} está na sua rede, sua abordagem pode fazer toda a diferença agora.\nQuando puder, vale dar um toque rápido pra entender se ficou alguma dúvida e ${ajuda} a avançar na decisão 🤝\n\nNome: ${userFull}\nContato: ${phone}`;
   };
 
@@ -391,7 +430,7 @@ export default function PendingRegistrations() {
         open={whatsappDialog.open}
         title="Enviar Mensagem"
         description="Mensagem modelo abaixo — copie e envie pelo WhatsApp ou ajuste como preferir."
-        message={whatsappDialog.reg ? buildWhatsAppMessage(whatsappDialog.reg.full_name || "") : ""}
+        message={whatsappDialog.reg ? buildWhatsAppMessage(whatsappDialog.reg) : ""}
         phone={whatsappDialog.reg?.phone || null}
         copied={copied}
         confirmed={whatsappDialog.reg?.whatsapp_recovery_sent || false}
