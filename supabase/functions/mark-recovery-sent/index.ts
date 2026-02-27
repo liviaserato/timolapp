@@ -12,29 +12,42 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const { registration_id, type } = await req.json();
+
+    if (!registration_id || !["whatsapp", "sponsor"].includes(type)) {
+      return new Response(
+        JSON.stringify({ error: "Missing registration_id or invalid type." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { data, error } = await supabaseAdmin
+    const now = new Date().toISOString();
+
+    const updateData =
+      type === "whatsapp"
+        ? { whatsapp_recovery_sent: true, whatsapp_recovery_sent_at: now }
+        : { sponsor_notified: true, sponsor_notified_at: now };
+
+    const { error } = await supabaseAdmin
       .from("registration_status")
-      .select(
-        "id, user_id, full_name, document, city, state, country, user_display_id, sponsor_id, sponsor_name, email, phone, created_at, status, franchise_selected, franchise_name, payment_completed, recovery_email_sent, recovery_email_sent_at, whatsapp_recovery_sent, whatsapp_recovery_sent_at, sponsor_source, sponsor_notified, sponsor_notified_at"
-      )
-      .eq("status", "pending")
-      .order("created_at", { ascending: false });
+      .update(updateData)
+      .eq("id", registration_id);
 
     if (error) {
-      console.error("Query error:", error);
+      console.error("Update error:", error);
       return new Response(
-        JSON.stringify({ error: "Failed to fetch pending registrations." }),
+        JSON.stringify({ error: "Failed to update." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     return new Response(
-      JSON.stringify({ data }),
+      JSON.stringify({ success: true, sent_at: now }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {

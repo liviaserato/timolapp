@@ -32,3 +32,9 @@ verify_jwt = false
 
 [functions.track-registration]
 verify_jwt = false
+
+[functions.mark-recovery-sent]
+verify_jwt = false
+
+[functions.get-pending-registrations]
+verify_jwt = false
