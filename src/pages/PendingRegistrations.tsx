@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Loader2, FileText, Mail, Phone, Users, Award, CreditCard, ArrowRight } from "lucide-react";
+import { Loader2, FileText, Mail, Phone, Users, Award, CreditCard, Calendar, MessageCircle, StickyNote } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { countries, getCountryName } from "@/data/countries";
+import { Separator } from "@/components/ui/separator";
 
 interface PendingRegistration {
   id: string;
@@ -75,14 +77,13 @@ export default function PendingRegistrations() {
 
   const getPaymentLabel = (reg: PendingRegistration) => {
     if (reg.payment_completed) return "Confirmado";
-    // If franchise was selected, user likely attempted payment
     if (reg.franchise_selected) return "Pagamento não confirmado";
     return "—";
   };
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <h1 className="text-xl md:text-2xl font-semibold mb-6">Cadastros Pendentes</h1>
 
         {loading ? (
@@ -96,33 +97,38 @@ export default function PendingRegistrations() {
             Nenhum cadastro pendente encontrado.
           </p>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-5">
             {registrations.map((reg) => {
               const countryData = getCountryData(reg.country);
               const brazilian = isBrazilian(reg.country);
+              const countryName = countryData ? getCountryName(countryData, "pt") : null;
 
               return (
                 <Card key={reg.id} className="overflow-hidden flex flex-col">
                   {/* Header */}
                   <CardHeader className="pb-3 bg-muted/40">
-                    <div className="flex items-baseline gap-2 flex-wrap">
-                      <span className="text-sm font-medium text-primary">
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                      <Badge variant="default" className="text-xs font-semibold px-2.5 py-0.5 shrink-0">
                         {reg.user_display_id || "—"}
+                      </Badge>
+                      <span
+                        className="text-lg font-bold truncate"
+                        title={reg.full_name || undefined}
+                      >
+                        {reg.full_name || "—"}
                       </span>
-                      <span className="text-xs text-muted-foreground">|</span>
-                      <span className="text-base font-bold">{reg.full_name || "—"}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {[reg.city, reg.state].filter(Boolean).join(", ") || "—"}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {[reg.city, reg.state, countryName].filter(Boolean).join(", ") || "—"}
                       {countryData && (
-                        <span title={getCountryName(countryData, "pt")} className="ml-1">
+                        <span title={countryName || undefined} className="ml-1">
                           {countryData.flag}
                         </span>
                       )}
                     </p>
                   </CardHeader>
 
-                  {/* Body: 2 columns */}
+                  {/* Body */}
                   <CardContent className="pt-4 pb-3 flex-1">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                       {/* Left column */}
@@ -131,15 +137,19 @@ export default function PendingRegistrations() {
                           icon={FileText}
                           label={brazilian ? "CPF" : "Documento"}
                         >
-                          <span>{reg.document || "—"}</span>
+                          <span className="truncate" title={reg.document || undefined}>
+                            {reg.document || "—"}
+                          </span>
                           {!brazilian && countryData && (
-                            <span title={getCountryName(countryData, "pt")} className="ml-1">
+                            <span title={countryName || undefined} className="ml-1 shrink-0">
                               {countryData.flag}
                             </span>
                           )}
                         </InfoItem>
                         <InfoItem icon={Mail} label="E-mail">
-                          {reg.email}
+                          <span className="truncate" title={reg.email}>
+                            {reg.email}
+                          </span>
                         </InfoItem>
                         <InfoItem icon={Phone} label="Telefone">
                           {reg.phone || "—"}
@@ -149,9 +159,15 @@ export default function PendingRegistrations() {
                       {/* Right column */}
                       <div className="space-y-2.5">
                         <InfoItem icon={Users} label="Patrocinador">
-                          {reg.sponsor_id && reg.sponsor_name
-                            ? `${reg.sponsor_id} – ${reg.sponsor_name}`
-                            : reg.sponsor_name || reg.sponsor_id || "—"}
+                          <span className="truncate" title={
+                            reg.sponsor_id && reg.sponsor_name
+                              ? `${reg.sponsor_id} – ${reg.sponsor_name}`
+                              : reg.sponsor_name || reg.sponsor_id || undefined
+                          }>
+                            {reg.sponsor_id && reg.sponsor_name
+                              ? `${reg.sponsor_id} – ${reg.sponsor_name}`
+                              : reg.sponsor_name || reg.sponsor_id || "—"}
+                          </span>
                         </InfoItem>
                         <InfoItem icon={Award} label="Franquia">
                           {reg.franchise_name || "—"}
@@ -164,6 +180,10 @@ export default function PendingRegistrations() {
 
                     {/* Notes */}
                     <div className="mt-4">
+                      <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-1.5">
+                        <StickyNote className="h-3.5 w-3.5" aria-hidden="true" />
+                        Observações
+                      </label>
                       <Textarea
                         placeholder="Anote a resposta do cliente, quais dúvidas ele tem e tente identificar por que ainda não concluiu o cadastro."
                         className="text-xs min-h-[60px] resize-y"
@@ -176,13 +196,26 @@ export default function PendingRegistrations() {
                   </CardContent>
 
                   {/* Footer timeline */}
-                  <CardFooter className="bg-muted/40 px-4 py-3 flex-col items-start gap-0">
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground w-full">
-                      <TimelineItem label="Data Cadastro" value={formatDateTime(reg.created_at)} />
-                      <ArrowRight className="h-3 w-3 shrink-0 text-muted-foreground/60 hidden sm:block" aria-hidden="true" />
-                      <TimelineItem label="Email enviado" value={formatDateTime(reg.recovery_email_sent_at)} />
-                      <ArrowRight className="h-3 w-3 shrink-0 text-muted-foreground/60 hidden sm:block" aria-hidden="true" />
-                      <TimelineItem label="WhatsApp enviado" value={formatDateTime(reg.whatsapp_recovery_sent_at)} />
+                  <Separator />
+                  <CardFooter className="bg-muted/60 px-4 py-4 flex-col items-start gap-0">
+                    <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-start gap-x-2 gap-y-1 w-full">
+                      <TimelineBlock
+                        icon={Calendar}
+                        label="Data do cadastro"
+                        value={formatDateTime(reg.created_at)}
+                      />
+                      <span className="text-muted-foreground/50 self-center text-sm font-bold hidden sm:block" aria-hidden="true">→</span>
+                      <TimelineBlock
+                        icon={Mail}
+                        label="Email enviado"
+                        value={formatDateTime(reg.recovery_email_sent_at)}
+                      />
+                      <span className="text-muted-foreground/50 self-center text-sm font-bold hidden sm:block" aria-hidden="true">→</span>
+                      <TimelineBlock
+                        icon={MessageCircle}
+                        label="WhatsApp enviado"
+                        value={formatDateTime(reg.whatsapp_recovery_sent_at)}
+                      />
                     </div>
                   </CardFooter>
                 </Card>
@@ -197,21 +230,24 @@ export default function PendingRegistrations() {
 
 function InfoItem({ icon: Icon, label, children }: { icon: React.ElementType; label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-2">
+    <div className="flex items-start gap-2 min-w-0">
       <Icon className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" aria-hidden="true" />
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="text-[11px] text-muted-foreground leading-none mb-0.5">{label}</p>
-        <p className="text-sm font-medium break-all">{children}</p>
+        <p className="text-sm font-medium flex items-center gap-0.5 min-w-0">{children}</p>
       </div>
     </div>
   );
 }
 
-function TimelineItem({ label, value }: { label: string; value: string }) {
+function TimelineBlock({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
-    <span className="inline-flex items-baseline gap-1">
-      <span className="font-medium">{label}</span>
-      <span>{value}</span>
-    </span>
+    <div className="flex flex-col gap-0.5">
+      <div className="flex items-center gap-1.5">
+        <Icon className="h-3.5 w-3.5 text-foreground shrink-0" aria-hidden="true" />
+        <span className="text-xs font-semibold text-foreground">{label}</span>
+      </div>
+      <span className="text-xs text-muted-foreground pl-5">{value}</span>
+    </div>
   );
 }
