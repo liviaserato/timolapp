@@ -116,6 +116,20 @@ export default function PendingRegistrations() {
     return Math.ceil(5 - diffDays);
   };
 
+  const isWhatsappBlocked = (reg: PendingRegistration) => {
+    const created = new Date(reg.created_at);
+    const now = new Date();
+    const diffDays = (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
+    return diffDays < 2;
+  };
+
+  const getWhatsappBlockedDaysLeft = (reg: PendingRegistration) => {
+    const created = new Date(reg.created_at);
+    const now = new Date();
+    const diffDays = (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
+    return Math.ceil(2 - diffDays);
+  };
+
   const getPaymentLabel = (reg: PendingRegistration) => {
     if (reg.payment_completed) return "Confirmado";
     if (reg.franchise_selected) return "Pagamento não aprovado";
@@ -423,6 +437,8 @@ export default function PendingRegistrations() {
                         buttonLabel="Enviar"
                         buttonLabelDesktop="Enviar mensagem"
                         onAction={() => setWhatsappDialog({ open: true, reg })}
+                        disabled={isWhatsappBlocked(reg)}
+                        disabledTooltip={isWhatsappBlocked(reg) ? `Aguarde ${getWhatsappBlockedDaysLeft(reg)} dia(s) após o cadastro` : undefined}
                       />
                       <TimelineStepAction
                         icon={Bell}
