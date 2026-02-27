@@ -100,6 +100,22 @@ export default function PendingRegistrations() {
 
   const isBrazilian = (countryIso: string | null) => !countryIso || countryIso.toUpperCase() === "BR";
 
+  const isSponsorBlocked = (reg: PendingRegistration) => {
+    if (!reg.whatsapp_recovery_sent || !reg.whatsapp_recovery_sent_at) return false;
+    const sentDate = new Date(reg.whatsapp_recovery_sent_at);
+    const now = new Date();
+    const diffDays = (now.getTime() - sentDate.getTime()) / (1000 * 60 * 60 * 24);
+    return diffDays < 5;
+  };
+
+  const getSponsorBlockedDaysLeft = (reg: PendingRegistration) => {
+    if (!reg.whatsapp_recovery_sent_at) return 0;
+    const sentDate = new Date(reg.whatsapp_recovery_sent_at);
+    const now = new Date();
+    const diffDays = (now.getTime() - sentDate.getTime()) / (1000 * 60 * 60 * 24);
+    return Math.ceil(5 - diffDays);
+  };
+
   const getPaymentLabel = (reg: PendingRegistration) => {
     if (reg.payment_completed) return "Confirmado";
     if (reg.franchise_selected) return "Pagamento não aprovado";
@@ -415,6 +431,8 @@ export default function PendingRegistrations() {
                         done={reg.sponsor_notified}
                         buttonLabel="Notificar"
                         onAction={() => setSponsorDialog({ open: true, reg })}
+                        disabled={isSponsorBlocked(reg)}
+                        disabledTooltip={isSponsorBlocked(reg) ? `Aguarde ${getSponsorBlockedDaysLeft(reg)} dia(s) após o WhatsApp` : undefined}
                       />
                     </div>
                   </CardFooter>
@@ -502,8 +520,8 @@ function TimelineStep({
 }
 
 function TimelineStepAction({
-  icon: Icon, label, value, done, buttonLabel, buttonLabelDesktop, onAction,
-}: { icon: React.ElementType; label: string; value: string; done: boolean; buttonLabel: string; buttonLabelDesktop?: string; onAction: () => void }) {
+  icon: Icon, label, value, done, buttonLabel, buttonLabelDesktop, onAction, disabled, disabledTooltip,
+}: { icon: React.ElementType; label: string; value: string; done: boolean; buttonLabel: string; buttonLabelDesktop?: string; onAction: () => void; disabled?: boolean; disabledTooltip?: string }) {
   return (
     <div className="flex flex-col items-center gap-1 py-2.5 px-1 sm:flex-row sm:gap-2">
       <Icon className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
@@ -511,6 +529,10 @@ function TimelineStepAction({
         <span className="hidden sm:block text-sm font-semibold text-foreground leading-tight">{label}</span>
         {done ? (
           <span className="text-[11px] text-muted-foreground">{value}</span>
+        ) : disabled ? (
+          <span className="text-[11px] text-muted-foreground/60 italic cursor-default" title={disabledTooltip}>
+            {disabledTooltip || "Indisponível"}
+          </span>
         ) : (
           <Button
             variant="link"
