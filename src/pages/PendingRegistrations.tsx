@@ -89,7 +89,7 @@ export default function PendingRegistrations() {
   };
 
   const getDisplayId = (raw: string | null) => {
-    if (!raw) return "—";
+    if (!raw) return "ID";
     const nums = raw.replace(/\D/g, "");
     return `ID ${parseInt(nums, 10) || nums}`;
   };
@@ -163,22 +163,26 @@ export default function PendingRegistrations() {
                         <span className="text-lg font-bold truncate" title={reg.full_name || undefined}>
                           {reg.full_name || "—"}
                         </span>
-                        <Badge variant="outline" className="text-[10px] px-2 py-0 border-amber-400 text-amber-600 shrink-0">
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Badge variant="outline" className="text-[10px] px-2 py-0 border-amber-400 text-amber-600">
                           Pendente
                         </Badge>
+                        {isCollapsed ? (
+                          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                        ) : (
+                          <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                        )}
                       </div>
-                      {isCollapsed ? (
-                        <ChevronDown className="h-5 w-5 text-muted-foreground shrink-0" />
-                      ) : (
-                        <ChevronUp className="h-5 w-5 text-muted-foreground shrink-0" />
-                      )}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {[reg.city, reg.state, countryName].filter(Boolean).join(", ") || "—"}
-                      {countryData && (
-                        <span title={countryName || undefined} className="ml-1">{countryData.flag}</span>
-                      )}
-                    </p>
+                    {[reg.city, reg.state, countryName].filter(Boolean).length > 0 && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {[reg.city, reg.state, countryName].filter(Boolean).join(", ")}
+                        {countryData && (
+                          <span title={countryName || undefined} className="ml-1">{countryData.flag}</span>
+                        )}
+                      </p>
+                    )}
                   </CardHeader>
 
                   {/* Body — collapsible */}
