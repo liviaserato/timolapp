@@ -438,7 +438,7 @@ export default function PendingRegistrations() {
                         buttonLabelDesktop="Enviar mensagem"
                         onAction={() => setWhatsappDialog({ open: true, reg })}
                         disabled={isWhatsappBlocked(reg)}
-                        disabledTooltip={isWhatsappBlocked(reg) ? `Aguarde ${getWhatsappBlockedDaysLeft(reg)} dia(s) após o cadastro` : undefined}
+                        disabledTooltip={isWhatsappBlocked(reg) ? `Aguarde ${getWhatsappBlockedDaysLeft(reg)} dia(s)` : undefined}
                       />
                       <TimelineStepAction
                         icon={Bell}
@@ -448,7 +448,7 @@ export default function PendingRegistrations() {
                         buttonLabel="Notificar"
                         onAction={() => setSponsorDialog({ open: true, reg })}
                         disabled={isSponsorBlocked(reg)}
-                        disabledTooltip={isSponsorBlocked(reg) ? `Aguarde ${getSponsorBlockedDaysLeft(reg)} dia(s) após o WhatsApp` : undefined}
+                        disabledTooltip={isSponsorBlocked(reg) ? `Aguarde ${getSponsorBlockedDaysLeft(reg)} dia(s)` : undefined}
                       />
                     </div>
                   </CardFooter>
