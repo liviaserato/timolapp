@@ -139,7 +139,7 @@ export default function PendingRegistrations() {
         ) : registrations.length === 0 ? (
           <p className="text-center text-muted-foreground py-8">Nenhum cadastro pendente encontrado.</p>
         ) : (
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-5 items-center">
             {registrations.map((reg) => {
               const countryData = getCountryData(reg.country);
               const brazilian = isBrazilian(reg.country);
@@ -148,7 +148,7 @@ export default function PendingRegistrations() {
               const noteChanged = (notes[reg.id] || "") !== (savedNotes[reg.id] || "");
 
               return (
-                <Card key={reg.id} className="overflow-hidden flex flex-col">
+                <Card key={reg.id} className="overflow-hidden flex flex-col w-full max-w-[600px]">
                   {/* Header */}
                   <CardHeader
                     className="pb-3 cursor-pointer select-none"
