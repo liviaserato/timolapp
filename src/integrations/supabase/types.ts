@@ -91,6 +91,7 @@ export type Database = {
           created_at: string
           document: string | null
           email: string
+          franchise_name: string | null
           franchise_selected: boolean
           full_name: string | null
           id: string
@@ -116,6 +117,7 @@ export type Database = {
           created_at?: string
           document?: string | null
           email: string
+          franchise_name?: string | null
           franchise_selected?: boolean
           full_name?: string | null
           id?: string
@@ -141,6 +143,7 @@ export type Database = {
           created_at?: string
           document?: string | null
           email?: string
+          franchise_name?: string | null
           franchise_selected?: boolean
           full_name?: string | null
           id?: string
