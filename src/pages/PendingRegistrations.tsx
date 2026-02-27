@@ -128,7 +128,7 @@ export default function PendingRegistrations() {
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-xl md:text-2xl font-semibold mb-6">Cadastros Pendentes</h1>
+        <h1 className="text-xl md:text-2xl font-semibold mb-6 text-center">Cadastros Pendentes</h1>
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
