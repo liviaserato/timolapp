@@ -70,7 +70,7 @@ export default function PendingRegistrations() {
     value ? (
       <Check className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
     ) : (
-      <X className="h-5 w-5 text-destructive" />
+      <span className="text-muted-foreground">—</span>
     );
 
   return (
@@ -107,7 +107,7 @@ export default function PendingRegistrations() {
                     <TableHead>E-mail</TableHead>
                     <TableHead>Telefone</TableHead>
                     <TableHead>Data Cadastro</TableHead>
-                    <TableHead>Franquia</TableHead>
+                    <TableHead>Franquia selecionada</TableHead>
                     <TableHead>Pagamento</TableHead>
                     <TableHead className="text-center">E-mail Enviado</TableHead>
                     <TableHead className="text-center">WhatsApp Enviado</TableHead>
