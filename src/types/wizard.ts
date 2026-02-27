@@ -56,6 +56,9 @@ export interface WizardData {
 
   // Document check — already registered document was validated
   documentCheckPassed?: boolean;
+
+  // Auth UUID (for updating registration_status)
+  authUserId?: string;
 }
 
 export type AppScreen =

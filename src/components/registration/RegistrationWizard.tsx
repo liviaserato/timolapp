@@ -202,6 +202,16 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
             username: data.username?.trim(),
             preferred_language: language,
           }).eq("user_id", userId);
+
+          // Track registration status for recovery emails
+          await supabase.from("registration_status").insert({
+            user_id: userId,
+            full_name: data.fullName?.trim(),
+            email: data.email.trim(),
+            document: data.document?.trim(),
+            sponsor_name: initialData.sponsorName || null,
+            sponsor_id: initialData.sponsorId || null,
+          });
         }
       }
 
@@ -228,6 +238,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         state: data.state,
         username: data.username,
         documentCheckPassed: !docBlocked,
+        authUserId: alreadyRegistered ? initialData.authUserId : userId,
         userId: initialData.userId ?? (userId ? String(Math.floor(100000 + Math.random() * 900000)) : undefined),
       });
     } catch (err: unknown) {
