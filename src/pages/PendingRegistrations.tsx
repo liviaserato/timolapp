@@ -382,7 +382,7 @@ export default function PendingRegistrations() {
       <MessageDialog
         open={whatsappDialog.open}
         title="Enviar Mensagem"
-        description="Copie a mensagem abaixo ou envie diretamente pelo WhatsApp."
+        description="Mensagem modelo abaixo — copie e envie pelo WhatsApp ou ajuste como preferir."
         message={whatsappDialog.reg ? buildWhatsAppMessage(whatsappDialog.reg.full_name || "") : ""}
         phone={whatsappDialog.reg?.phone || null}
         copied={copied}
@@ -397,7 +397,7 @@ export default function PendingRegistrations() {
       <MessageDialog
         open={sponsorDialog.open}
         title="Notificar Patrocinador"
-        description="Copie a mensagem abaixo ou envie diretamente pelo WhatsApp para o patrocinador."
+        description="Mensagem modelo abaixo — copie e envie pelo WhatsApp ou ajuste como preferir."
         message={sponsorDialog.reg ? buildSponsorMessage(sponsorDialog.reg) : ""}
         phone={sponsorDialog.reg?.phone || null}
         copied={copied}
