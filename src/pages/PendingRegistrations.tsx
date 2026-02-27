@@ -107,7 +107,7 @@ export default function PendingRegistrations() {
   };
 
   const buildWhatsAppMessage = (name: string) =>
-    `Oi, ${name}! Tudo bem? 😊\nVi que você começou seu cadastro na Timol e quis passar aqui pra te dar um suporte rápido.`;
+    `Oi, ${name}! Tudo bem? 😊\nVi que você começou seu cadastro na Timol e quis passar aqui pra te dar um suporte rápido.\n\nSe ainda estiver avaliando ou ficou com alguma dúvida, posso te explicar de forma simples e sem compromisso.\nAssim você decide com segurança se quer continuar ou não 👍\n\nSe fizer sentido pra você, me chama aqui que eu te ajudo.`;
 
   const handleCopyMessage = (msg: string) => {
     navigator.clipboard.writeText(msg);
