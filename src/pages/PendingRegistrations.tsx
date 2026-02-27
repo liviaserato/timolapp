@@ -193,16 +193,26 @@ export default function PendingRegistrations() {
                     style={{ backgroundColor: "hsl(210 60% 96%)" }}
                     onClick={() => toggleCollapse(reg.id)}
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2.5 min-w-0 flex-wrap">
-                        <Badge className="bg-primary text-primary-foreground text-xs font-bold px-2.5 py-0.5 shrink-0">
-                          {getDisplayId(reg.user_display_id)}
-                        </Badge>
-                        <span className="text-lg font-bold truncate" title={reg.full_name || undefined}>
-                          {capitalize(reg.full_name)}
-                        </span>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                          <Badge className="bg-primary text-primary-foreground text-xs font-bold px-2.5 py-0.5 shrink-0">
+                            {getDisplayId(reg.user_display_id)}
+                          </Badge>
+                          <span className="text-lg font-bold truncate" title={reg.full_name || undefined}>
+                            {capitalize(reg.full_name)}
+                          </span>
+                        </div>
+                        {reg.city && (
+                          <p className="text-xs text-muted-foreground mt-1 ml-0">
+                            {[reg.city, reg.state, countryName].filter(Boolean).join(", ")}
+                            {countryData && (
+                              <span title={countryName || undefined} className="ml-1">{countryData.flag}</span>
+                            )}
+                          </p>
+                        )}
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-2 shrink-0 mt-1">
                         <Badge variant="outline" className="text-[10px] px-2 py-0 border-amber-400 text-amber-600">
                           Pendente
                         </Badge>
@@ -213,14 +223,6 @@ export default function PendingRegistrations() {
                         )}
                       </div>
                     </div>
-                    {reg.city && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {[reg.city, reg.state, countryName].filter(Boolean).join(", ")}
-                        {countryData && (
-                          <span title={countryName || undefined} className="ml-1">{countryData.flag}</span>
-                        )}
-                      </p>
-                    )}
                   </CardHeader>
 
                   {/* Body — collapsible */}
