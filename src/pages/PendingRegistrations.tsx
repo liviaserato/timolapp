@@ -439,10 +439,10 @@ function TimelineStep({
   icon: Icon, label, value,
 }: { icon: React.ElementType; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2 py-2.5 px-1 rounded-md">
+    <div className="flex flex-col items-center gap-1 py-2.5 px-1 sm:flex-row sm:gap-2">
       <Icon className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
-      <div className="flex flex-col justify-center min-w-0">
-        <span className="text-xs sm:text-sm font-semibold text-foreground leading-tight">{label}</span>
+      <div className="flex flex-col items-center sm:items-start min-w-0">
+        <span className="hidden sm:block text-sm font-semibold text-foreground leading-tight">{label}</span>
         <span className="text-[11px] text-muted-foreground">{value}</span>
       </div>
     </div>
@@ -453,17 +453,17 @@ function TimelineStepAction({
   icon: Icon, label, value, done, buttonLabel, onAction,
 }: { icon: React.ElementType; label: string; value: string; done: boolean; buttonLabel: string; onAction: () => void }) {
   return (
-    <div className="flex items-center gap-2 py-2.5 px-1 rounded-md">
+    <div className="flex flex-col items-center gap-1 py-2.5 px-1 sm:flex-row sm:gap-2">
       <Icon className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
-      <div className="flex flex-col justify-center min-w-0">
-        <span className="text-xs sm:text-sm font-semibold text-foreground leading-tight">{label}</span>
+      <div className="flex flex-col items-center sm:items-start min-w-0">
+        <span className="hidden sm:block text-sm font-semibold text-foreground leading-tight">{label}</span>
         {done ? (
           <span className="text-[11px] text-muted-foreground">{value}</span>
         ) : (
           <Button
             variant="link"
             size="sm"
-            className="text-[11px] h-auto p-0 text-primary font-medium justify-start"
+            className="text-[11px] h-auto p-0 text-primary font-medium"
             onClick={(e) => { e.stopPropagation(); onAction(); }}
           >
             {buttonLabel}
