@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import Index from "./pages/Index";
 import Contract from "./pages/Contract";
 import Continue from "./pages/Continue";
+import PendingRegistrations from "./pages/PendingRegistrations";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/contrato" element={<Contract />} />
             <Route path="/continue/:token" element={<Continue />} />
+            <Route path="/pendentes" element={<PendingRegistrations />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

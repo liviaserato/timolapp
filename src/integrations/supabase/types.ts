@@ -85,7 +85,9 @@ export type Database = {
       }
       registration_status: {
         Row: {
+          city: string | null
           continue_token: string
+          country: string | null
           created_at: string
           document: string | null
           email: string
@@ -99,13 +101,18 @@ export type Database = {
           recovery_email_sent_at: string | null
           sponsor_id: string | null
           sponsor_name: string | null
+          state: string | null
+          status: string
           updated_at: string
+          user_display_id: string | null
           user_id: string
           whatsapp_recovery_sent: boolean
           whatsapp_recovery_sent_at: string | null
         }
         Insert: {
+          city?: string | null
           continue_token?: string
+          country?: string | null
           created_at?: string
           document?: string | null
           email: string
@@ -119,13 +126,18 @@ export type Database = {
           recovery_email_sent_at?: string | null
           sponsor_id?: string | null
           sponsor_name?: string | null
+          state?: string | null
+          status?: string
           updated_at?: string
+          user_display_id?: string | null
           user_id: string
           whatsapp_recovery_sent?: boolean
           whatsapp_recovery_sent_at?: string | null
         }
         Update: {
+          city?: string | null
           continue_token?: string
+          country?: string | null
           created_at?: string
           document?: string | null
           email?: string
@@ -139,7 +151,10 @@ export type Database = {
           recovery_email_sent_at?: string | null
           sponsor_id?: string | null
           sponsor_name?: string | null
+          state?: string | null
+          status?: string
           updated_at?: string
+          user_display_id?: string | null
           user_id?: string
           whatsapp_recovery_sent?: boolean
           whatsapp_recovery_sent_at?: string | null
