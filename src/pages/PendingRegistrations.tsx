@@ -279,6 +279,7 @@ export default function PendingRegistrations() {
                         {/* Right column */}
                         <div className="space-y-2.5">
                           <InfoItem icon={Users} label="Patrocinador">
+                            {reg.sponsor_source && (reg.sponsor_id || reg.sponsor_name) && <SponsorTypeBadge type={reg.sponsor_source === "suggestion" ? "suggestion" : "search"} />}
                             <span className="truncate" title={
                               reg.sponsor_id && reg.sponsor_name
                                 ? `${reg.sponsor_id} – ${capitalize(reg.sponsor_name)}`
@@ -288,7 +289,6 @@ export default function PendingRegistrations() {
                                 ? `${reg.sponsor_id} – ${capitalize(reg.sponsor_name)}`
                                 : capitalize(reg.sponsor_name) || reg.sponsor_id || ""}
                             </span>
-                            {reg.sponsor_source && <SponsorTypeBadge type={reg.sponsor_source === "suggestion" ? "suggestion" : "search"} />}
                           </InfoItem>
                           <InfoItem icon={Award} label="Franquia">
                             {reg.franchise_name || ""}
@@ -300,7 +300,8 @@ export default function PendingRegistrations() {
                       </div>
 
                       {/* Notes */}
-                      <div className="mt-6">
+                      <Separator className="mt-5 mb-0 opacity-40" />
+                      <div className="mt-4">
                         <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-1.5">
                           <StickyNote className="h-3.5 w-3.5" aria-hidden="true" />
                           Observações
@@ -356,7 +357,8 @@ export default function PendingRegistrations() {
                         label="WhatsApp"
                         value={formatDateTime(reg.whatsapp_recovery_sent_at)}
                         done={reg.whatsapp_recovery_sent}
-                        buttonLabel="Enviar mensagem"
+                        buttonLabel="Enviar"
+                        buttonLabelDesktop="Enviar mensagem"
                         onAction={() => setWhatsappDialog({ open: true, reg })}
                       />
                       <TimelineStepAction
@@ -450,8 +452,8 @@ function TimelineStep({
 }
 
 function TimelineStepAction({
-  icon: Icon, label, value, done, buttonLabel, onAction,
-}: { icon: React.ElementType; label: string; value: string; done: boolean; buttonLabel: string; onAction: () => void }) {
+  icon: Icon, label, value, done, buttonLabel, buttonLabelDesktop, onAction,
+}: { icon: React.ElementType; label: string; value: string; done: boolean; buttonLabel: string; buttonLabelDesktop?: string; onAction: () => void }) {
   return (
     <div className="flex flex-col items-center gap-1 py-2.5 px-1 sm:flex-row sm:gap-2">
       <Icon className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
@@ -466,7 +468,8 @@ function TimelineStepAction({
             className="text-[11px] h-auto p-0 text-primary font-medium"
             onClick={(e) => { e.stopPropagation(); onAction(); }}
           >
-            {buttonLabel}
+            <span className="sm:hidden">{buttonLabel}</span>
+            <span className="hidden sm:inline">{buttonLabelDesktop || buttonLabel}</span>
           </Button>
         )}
       </div>
