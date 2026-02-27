@@ -384,6 +384,7 @@ export default function PendingRegistrations() {
         message={whatsappDialog.reg ? buildWhatsAppMessage(whatsappDialog.reg.full_name || "") : ""}
         phone={whatsappDialog.reg?.phone || null}
         copied={copied}
+        confirmed={whatsappDialog.reg?.whatsapp_recovery_sent || false}
         onCopy={handleCopyMessage}
         onSend={handleSendWhatsApp}
         onConfirm={() => whatsappDialog.reg && handleConfirmSent(whatsappDialog.reg.id, "whatsapp")}
@@ -398,6 +399,7 @@ export default function PendingRegistrations() {
         message={sponsorDialog.reg ? buildSponsorMessage(sponsorDialog.reg) : ""}
         phone={sponsorDialog.reg?.phone || null}
         copied={copied}
+        confirmed={sponsorDialog.reg?.sponsor_notified || false}
         onCopy={handleCopyMessage}
         onSend={handleSendWhatsApp}
         onConfirm={() => sponsorDialog.reg && handleConfirmSent(sponsorDialog.reg.id, "sponsor")}
@@ -473,7 +475,7 @@ function TimelineStepAction({
 }
 
 function MessageDialog({
-  open, title, description, message, phone, copied, onCopy, onSend, onConfirm, onClose,
+  open, title, description, message, phone, copied, confirmed, onCopy, onSend, onConfirm, onClose,
 }: {
   open: boolean;
   title: string;
@@ -481,6 +483,7 @@ function MessageDialog({
   message: string;
   phone: string | null;
   copied: boolean;
+  confirmed: boolean;
   onCopy: (msg: string) => void;
   onSend: (phone: string, msg: string) => void;
   onConfirm: () => void;
@@ -513,9 +516,9 @@ function MessageDialog({
               Enviar no WhatsApp
             </Button>
           )}
-          <Button size="sm" onClick={onConfirm}>
+          <Button size="sm" onClick={onConfirm} disabled={confirmed}>
             <Check className="h-4 w-4 mr-1" />
-            Confirmar envio
+            Confirmar envio e fechar
           </Button>
         </div>
       </DialogContent>
