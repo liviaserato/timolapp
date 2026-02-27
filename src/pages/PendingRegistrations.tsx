@@ -239,25 +239,25 @@ export default function PendingRegistrations() {
                           value={notes[reg.id] || ""}
                           onChange={(e) => setNotes((prev) => ({ ...prev, [reg.id]: e.target.value }))}
                         />
-                        <div className="flex gap-2 mt-2 justify-end">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-xs h-7"
-                            disabled={!noteChanged}
-                            onClick={() => handleCancelNote(reg.id)}
-                          >
-                            Cancelar
-                          </Button>
-                          <Button
-                            size="sm"
-                            className="text-xs h-7"
-                            disabled={!noteChanged}
-                            onClick={() => handleSaveNote(reg.id)}
-                          >
-                            Salvar
-                          </Button>
-                        </div>
+                        {noteChanged && (
+                          <div className="flex gap-2 mt-2 justify-end">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-xs h-7"
+                              onClick={() => handleCancelNote(reg.id)}
+                            >
+                              Cancelar
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="text-xs h-7"
+                              onClick={() => handleSaveNote(reg.id)}
+                            >
+                              Salvar
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   )}
