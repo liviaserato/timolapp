@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import {
   Loader2, FileText, Mail, Phone, Users, Award, CreditCard,
   Calendar, MessageCircle, StickyNote, ChevronDown, ChevronUp,
-  Search, Sparkles, Check, Copy, CheckCircle2, Bell, XCircle,
+  SearchCheck, Sparkles, Check, Copy, CheckCircle2, Bell, XCircle,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -398,7 +398,7 @@ function InfoItem({ icon: Icon, label, children }: { icon: React.ElementType; la
 function SponsorTypeBadge({ type }: { type: "search" | "suggestion" }) {
   return type === "search" ? (
     <span title="Busca" className="ml-1 shrink-0">
-      <Search className="h-3 w-3 text-muted-foreground/70" />
+      <SearchCheck className="h-3 w-3 text-muted-foreground/70" />
     </span>
   ) : (
     <span title="Sugestão" className="ml-1 shrink-0">
