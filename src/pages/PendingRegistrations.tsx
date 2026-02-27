@@ -85,7 +85,7 @@ export default function PendingRegistrations() {
   const getPaymentLabel = (reg: PendingRegistration) => {
     if (reg.payment_completed) return "Confirmado";
     if (reg.franchise_selected) return "Pagamento não aprovado";
-    return "—";
+    return "";
   };
 
   const getDisplayId = (raw: string | null) => {
@@ -151,7 +151,7 @@ export default function PendingRegistrations() {
                 <Card key={reg.id} className="overflow-hidden flex flex-col w-full max-w-[600px]">
                   {/* Header */}
                   <CardHeader
-                    className="pb-3 cursor-pointer select-none"
+                    className="pb-3 cursor-pointer select-none flex flex-col justify-center"
                     style={{ backgroundColor: "hsl(210 60% 96%)" }}
                     onClick={() => toggleCollapse(reg.id)}
                   >
@@ -161,7 +161,7 @@ export default function PendingRegistrations() {
                           {getDisplayId(reg.user_display_id)}
                         </Badge>
                         <span className="text-lg font-bold truncate" title={reg.full_name || undefined}>
-                          {reg.full_name || "—"}
+                          {reg.full_name || ""}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
@@ -175,7 +175,7 @@ export default function PendingRegistrations() {
                         )}
                       </div>
                     </div>
-                    {[reg.city, reg.state, countryName].filter(Boolean).length > 0 && (
+                    {reg.city && (
                       <p className="text-xs text-muted-foreground mt-1">
                         {[reg.city, reg.state, countryName].filter(Boolean).join(", ")}
                         {countryData && (
@@ -193,7 +193,7 @@ export default function PendingRegistrations() {
                         <div className="space-y-2.5">
                           <InfoItem icon={FileText} label={brazilian ? "CPF" : "Documento"}>
                             <span className="truncate" title={reg.document || undefined}>
-                              {reg.document || "—"}
+                              {reg.document || ""}
                             </span>
                             {!brazilian && countryData && (
                               <span title={countryName || undefined} className="ml-1 shrink-0">{countryData.flag}</span>
@@ -203,7 +203,7 @@ export default function PendingRegistrations() {
                             <span className="truncate" title={reg.email}>{reg.email}</span>
                           </InfoItem>
                           <InfoItem icon={Phone} label="Telefone">
-                            {reg.phone || "—"}
+                            {reg.phone || ""}
                           </InfoItem>
                         </div>
 
@@ -217,13 +217,13 @@ export default function PendingRegistrations() {
                             }>
                               {reg.sponsor_id && reg.sponsor_name
                                 ? `${reg.sponsor_id} – ${reg.sponsor_name}`
-                                : reg.sponsor_name || reg.sponsor_id || "—"}
+                                : reg.sponsor_name || reg.sponsor_id || ""}
                             </span>
                             {/* Tipo de indicação — placeholder visual */}
                             <SponsorTypeBadge type="search" />
                           </InfoItem>
                           <InfoItem icon={Award} label="Franquia">
-                            {reg.franchise_name || "—"}
+                            {reg.franchise_name || ""}
                           </InfoItem>
                           <InfoItem icon={CreditCard} label="Pagamento">
                             {getPaymentLabel(reg)}
@@ -269,34 +269,32 @@ export default function PendingRegistrations() {
                   {/* Footer timeline */}
                   <Separator />
                   <CardFooter
-                    className="px-4 py-4 flex-col items-start gap-0"
+                    className="px-2 sm:px-4 py-3 flex-col items-stretch gap-0"
                     style={{ backgroundColor: "hsl(210 60% 96%)" }}
                   >
-                    <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] items-start gap-x-3 gap-y-1 w-full">
+                    <div className="grid grid-cols-4 gap-1 sm:gap-2 w-full">
                       <TimelineStep
                         icon={Calendar}
-                        label="Cadastro criado"
+                        label="Cadastro"
                         value={formatDateTime(reg.created_at)}
                         done={!!reg.created_at}
                       />
-                      <Arrow />
                       <TimelineStep
                         icon={Mail}
-                        label="Email enviado"
+                        label="Email"
                         value={formatDateTime(reg.recovery_email_sent_at)}
                         done={reg.recovery_email_sent}
                       />
-                      <Arrow />
                       <TimelineStepWhatsApp
+                        label="WhatsApp"
                         value={formatDateTime(reg.whatsapp_recovery_sent_at)}
                         done={reg.whatsapp_recovery_sent}
                         onSend={() => setWhatsappDialog({ open: true, reg })}
                       />
-                      <Arrow />
                       <TimelineStep
                         icon={Bell}
-                        label="Patrocinador notificado"
-                        value="—"
+                        label="Patrocinador"
+                        value=""
                         done={false}
                       />
                     </div>
@@ -352,52 +350,42 @@ function TimelineStep({
   icon: Icon, label, value, done,
 }: { icon: React.ElementType; label: string; value: string; done: boolean }) {
   return (
-    <div className="flex flex-col gap-0.5">
-      <div className="flex items-center gap-1.5">
-        {done ? (
-          <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" aria-hidden="true" />
-        ) : (
-          <Icon className="h-4 w-4 text-foreground shrink-0" aria-hidden="true" />
-        )}
-        <span className="text-xs font-semibold text-foreground leading-tight">{label}</span>
+    <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-md">
+      <div className="flex items-center gap-1">
+        <Icon className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
+        <span className="text-[11px] font-semibold text-foreground leading-tight hidden sm:inline">{label}</span>
       </div>
-      <span className="text-[11px] text-muted-foreground pl-[22px]">{value}</span>
+      <div className="flex items-center gap-1">
+        {done && <CheckCircle2 className="h-3 w-3 text-green-600 shrink-0" aria-hidden="true" />}
+        <span className="text-[10px] text-muted-foreground">{value || "—"}</span>
+      </div>
     </div>
   );
 }
 
-function TimelineStepWhatsApp({ value, done, onSend }: { value: string; done: boolean; onSend: () => void }) {
+function TimelineStepWhatsApp({ label, value, done, onSend }: { label: string; value: string; done: boolean; onSend: () => void }) {
   return (
-    <div className="flex flex-col gap-0.5">
-      <div className="flex items-center gap-1.5">
-        {done ? (
-          <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" aria-hidden="true" />
-        ) : (
-          <MessageCircle className="h-4 w-4 text-foreground shrink-0" aria-hidden="true" />
-        )}
-        <span className="text-xs font-semibold text-foreground leading-tight">WhatsApp enviado</span>
+    <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-md">
+      <div className="flex items-center gap-1">
+        <MessageCircle className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
+        <span className="text-[11px] font-semibold text-foreground leading-tight hidden sm:inline">{label}</span>
       </div>
       {done ? (
-        <span className="text-[11px] text-muted-foreground pl-[22px]">{value}</span>
+        <div className="flex items-center gap-1">
+          <CheckCircle2 className="h-3 w-3 text-green-600 shrink-0" aria-hidden="true" />
+          <span className="text-[10px] text-muted-foreground">{value}</span>
+        </div>
       ) : (
         <Button
           variant="link"
           size="sm"
-          className="text-[11px] h-auto p-0 pl-[22px] text-primary justify-start"
+          className="text-[10px] h-auto p-0 text-primary"
           onClick={(e) => { e.stopPropagation(); onSend(); }}
         >
-          Enviar uma mensagem
+          Enviar
         </Button>
       )}
     </div>
-  );
-}
-
-function Arrow() {
-  return (
-    <span className="self-center text-primary/40 text-lg font-bold hidden sm:block select-none" aria-hidden="true">
-      →
-    </span>
   );
 }
 
