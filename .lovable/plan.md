@@ -1,34 +1,33 @@
 
 
-## Ajuste do cabecalho da tela inicial
+## Problema
 
-### O que muda
+O INSERT na tabela `registration_status` retorna erro 401 porque:
+1. O signup do usuario requer confirmacao de email
+2. Sem email confirmado, o usuario nao tem sessao autenticada
+3. A RLS policy exige `auth.uid() = user_id`, que falha pois `auth.uid()` e null
 
-1. **Remover o favicon (icone pequeno) ao lado do titulo** -- a imagem `timol-logo.svg` de 12x12 que aparece ao lado do texto sera removida do cabecalho.
+## Solucao
 
-2. **Alterar o titulo para "Cadastro de Franquia"** -- atualizar a chave `sponsor.title` nos 3 idiomas (pt, en, es).
+Mover o INSERT de `registration_status` do frontend para uma **backend function** que usa service role key (bypassa RLS).
 
-3. **Inserir a nova logo da Timol centralizada abaixo do titulo** -- copiar o arquivo `logo-timol-azul-claro.svg` enviado para `src/assets/` e renderizar como imagem centralizada entre o titulo e o texto descritivo.
+### Etapas
 
-4. **Alterar o texto descritivo abaixo da logo** -- atualizar a chave `sponsor.subtitle` para: "Para fazer parte da Timol, voce precisa de um convite. Quem te convidou sera seu patrocinador." (nos 3 idiomas com traducoes equivalentes).
+1. **Criar edge function `track-registration`** que recebe os dados e insere/atualiza `registration_status` usando service role key
+   - Recebe: user_id, full_name, email, document, sponsor_name, sponsor_id
+   - Tambem aceita updates parciais (franchise_selected, payment_completed)
 
----
+2. **Atualizar `RegistrationWizard.tsx`** para chamar `supabase.functions.invoke("track-registration")` em vez de `supabase.from("registration_status").insert()`
 
-### Detalhes tecnicos
+3. **Atualizar `Index.tsx`** para usar a mesma edge function nos updates de status (franchise_selected, payment_completed)
 
-**Arquivo: `src/components/screens/SponsorScreen.tsx`** (linhas 222-232)
+4. **Registrar a funcao no `supabase/config.toml`** com `verify_jwt = false`
 
-- Remover o `<img src={timolLogo}>` e o container `flex` que agrupa icone + titulo.
-- Estrutura do cabecalho passara a ser:
-  1. `<h1>` com o titulo "Cadastro de Franquia", centralizado
-  2. `<img>` com a nova logo `logo-timol-azul-claro.svg`, centralizada, largura adequada (~180px)
-  3. `<p>` com o texto descritivo
-  4. `<LanguageSelector />`
+### Detalhes Tecnicos
 
-**Arquivo: `src/i18n/translations.ts`**
+A edge function tera dois modos:
+- **insert**: cria o registro inicial (chamado no submit do wizard)
+- **update**: atualiza campos como `franchise_selected` e `payment_completed` (chamado nas telas seguintes)
 
-- `sponsor.title`: "Cadastro de Franquia" (pt), "Franchise Registration" (en), "Registro de Franquicia" (es)
-- `sponsor.subtitle`: "Para fazer parte da Timol, voce precisa de um convite. Quem te convidou sera seu patrocinador." (pt), com traducoes equivalentes em en/es
-
-**Novo asset:** Copiar `user-uploads://logo-timol-azul-claro.svg` para `src/assets/logo-timol-azul-claro.svg` e importar no componente.
+Isso resolve o problema de RLS sem precisar alterar as policies existentes, mantendo a seguranca da tabela.
 
