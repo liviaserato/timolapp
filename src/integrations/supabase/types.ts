@@ -93,12 +93,16 @@ export type Database = {
           full_name: string | null
           id: string
           payment_completed: boolean
+          phone: string | null
+          preferred_language: string
           recovery_email_sent: boolean
           recovery_email_sent_at: string | null
           sponsor_id: string | null
           sponsor_name: string | null
           updated_at: string
           user_id: string
+          whatsapp_recovery_sent: boolean
+          whatsapp_recovery_sent_at: string | null
         }
         Insert: {
           continue_token?: string
@@ -109,12 +113,16 @@ export type Database = {
           full_name?: string | null
           id?: string
           payment_completed?: boolean
+          phone?: string | null
+          preferred_language?: string
           recovery_email_sent?: boolean
           recovery_email_sent_at?: string | null
           sponsor_id?: string | null
           sponsor_name?: string | null
           updated_at?: string
           user_id: string
+          whatsapp_recovery_sent?: boolean
+          whatsapp_recovery_sent_at?: string | null
         }
         Update: {
           continue_token?: string
@@ -125,12 +133,16 @@ export type Database = {
           full_name?: string | null
           id?: string
           payment_completed?: boolean
+          phone?: string | null
+          preferred_language?: string
           recovery_email_sent?: boolean
           recovery_email_sent_at?: string | null
           sponsor_id?: string | null
           sponsor_name?: string | null
           updated_at?: string
           user_id?: string
+          whatsapp_recovery_sent?: boolean
+          whatsapp_recovery_sent_at?: string | null
         }
         Relationships: []
       }

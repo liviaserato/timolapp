@@ -23,3 +23,12 @@ verify_jwt = false
 
 [functions.continue-registration]
 verify_jwt = false
+
+[functions.send-whatsapp-recovery]
+verify_jwt = false
+
+[functions.check-whatsapp-recovery]
+verify_jwt = false
+
+[functions.track-registration]
+verify_jwt = false

@@ -213,6 +213,8 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
               document: data.document?.trim(),
               sponsor_name: initialData.sponsorName || null,
               sponsor_id: initialData.sponsorId || null,
+              phone: data.phone?.trim() || null,
+              preferred_language: language,
             },
           });
         }
