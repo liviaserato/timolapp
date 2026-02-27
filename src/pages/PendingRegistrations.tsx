@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import {
   Loader2, FileText, Mail, Phone, Users, Award, CreditCard,
   Calendar, MessageCircle, StickyNote, ChevronDown, ChevronUp,
-  Search, Sparkles, Check, Copy, CheckCircle2, Bell,
+  Search, Sparkles, Check, Copy, CheckCircle2, Bell, XCircle,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,6 @@ import { Separator } from "@/components/ui/separator";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
-import { openWhatsAppLink } from "@/lib/whatsapp";
 import { toast } from "sonner";
 
 interface PendingRegistration {
@@ -41,6 +40,14 @@ interface PendingRegistration {
   whatsapp_recovery_sent_at: string | null;
 }
 
+function capitalize(str: string | null): string {
+  if (!str) return "";
+  return str
+    .split(" ")
+    .map((w) => (w.length > 0 ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : w))
+    .join(" ");
+}
+
 export default function PendingRegistrations() {
   const [registrations, setRegistrations] = useState<PendingRegistration[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,6 +56,7 @@ export default function PendingRegistrations() {
   const [savedNotes, setSavedNotes] = useState<Record<string, string>>({});
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [whatsappDialog, setWhatsappDialog] = useState<{ open: boolean; reg: PendingRegistration | null }>({ open: false, reg: null });
+  const [sponsorDialog, setSponsorDialog] = useState<{ open: boolean; reg: PendingRegistration | null }>({ open: false, reg: null });
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -68,7 +76,7 @@ export default function PendingRegistrations() {
   }, []);
 
   const formatDateTime = (dateStr: string | null) => {
-    if (!dateStr) return "—";
+    if (!dateStr) return "";
     return new Date(dateStr).toLocaleDateString("pt-BR", {
       day: "2-digit", month: "2-digit", year: "2-digit",
       hour: "2-digit", minute: "2-digit",
@@ -107,7 +115,21 @@ export default function PendingRegistrations() {
   };
 
   const buildWhatsAppMessage = (name: string) =>
-    `Oi, ${name}! Tudo bem? 😊\nVi que você começou seu cadastro na Timol e quis passar aqui pra te dar um suporte rápido.\n\nSe ainda estiver avaliando ou ficou com alguma dúvida, posso te explicar de forma simples e sem compromisso.\nAssim você decide com segurança se quer continuar ou não 👍\n\nSe fizer sentido pra você, me chama aqui que eu te ajudo.`;
+    `Oi, ${capitalize(name)}! Tudo bem? 😊\nVi que você começou seu cadastro na Timol e quis passar aqui pra te dar um suporte rápido.\n\nSe ainda estiver avaliando ou ficou com alguma dúvida, posso te explicar de forma simples e sem compromisso.\nAssim você decide com segurança se quer continuar ou não 👍\n\nSe fizer sentido pra você, me chama aqui que eu te ajudo.`;
+
+  const formatDateOnly = (dateStr: string | null) => {
+    if (!dateStr) return "";
+    return new Date(dateStr).toLocaleDateString("pt-BR", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+    });
+  };
+
+  const buildSponsorMessage = (reg: PendingRegistration) => {
+    const sponsorName = capitalize(reg.sponsor_name || "");
+    const userName = capitalize(reg.full_name || "");
+    const date = formatDateOnly(reg.created_at);
+    return `Olá, ${sponsorName}! Tudo bem? 😊\nO ${userName} iniciou o cadastro de uma franquia no dia ${date}, mas ainda não concluiu.\n\nComo ele está na sua rede, sua abordagem pode fazer toda a diferença agora.\nQuando puder, vale dar um toque rápido pra entender se ficou alguma dúvida e ajudá-lo a avançar na decisão 🤝`;
+  };
 
   const handleCopyMessage = (msg: string) => {
     navigator.clipboard.writeText(msg);
@@ -161,7 +183,7 @@ export default function PendingRegistrations() {
                           {getDisplayId(reg.user_display_id)}
                         </Badge>
                         <span className="text-lg font-bold truncate" title={reg.full_name || undefined}>
-                          {reg.full_name || ""}
+                          {capitalize(reg.full_name)}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
@@ -212,14 +234,13 @@ export default function PendingRegistrations() {
                           <InfoItem icon={Users} label="Patrocinador">
                             <span className="truncate" title={
                               reg.sponsor_id && reg.sponsor_name
-                                ? `${reg.sponsor_id} – ${reg.sponsor_name}`
-                                : reg.sponsor_name || reg.sponsor_id || undefined
+                                ? `${reg.sponsor_id} – ${capitalize(reg.sponsor_name)}`
+                                : capitalize(reg.sponsor_name) || reg.sponsor_id || undefined
                             }>
                               {reg.sponsor_id && reg.sponsor_name
-                                ? `${reg.sponsor_id} – ${reg.sponsor_name}`
-                                : reg.sponsor_name || reg.sponsor_id || ""}
+                                ? `${reg.sponsor_id} – ${capitalize(reg.sponsor_name)}`
+                                : capitalize(reg.sponsor_name) || reg.sponsor_id || ""}
                             </span>
-                            {/* Tipo de indicação — placeholder visual */}
                             <SponsorTypeBadge type="search" />
                           </InfoItem>
                           <InfoItem icon={Award} label="Franquia">
@@ -269,10 +290,10 @@ export default function PendingRegistrations() {
                   {/* Footer timeline */}
                   <Separator />
                   <CardFooter
-                    className="px-2 sm:px-4 py-3 flex-col items-stretch gap-0"
+                    className="px-2 sm:px-5 py-4 flex-col items-stretch gap-0"
                     style={{ backgroundColor: "hsl(210 60% 96%)" }}
                   >
-                    <div className="grid grid-cols-4 gap-1 sm:gap-2 w-full">
+                    <div className="grid grid-cols-4 gap-1.5 sm:gap-3 w-full">
                       <TimelineStep
                         icon={Calendar}
                         label="Cadastro"
@@ -285,17 +306,21 @@ export default function PendingRegistrations() {
                         value={formatDateTime(reg.recovery_email_sent_at)}
                         done={reg.recovery_email_sent}
                       />
-                      <TimelineStepWhatsApp
+                      <TimelineStepAction
+                        icon={MessageCircle}
                         label="WhatsApp"
                         value={formatDateTime(reg.whatsapp_recovery_sent_at)}
                         done={reg.whatsapp_recovery_sent}
-                        onSend={() => setWhatsappDialog({ open: true, reg })}
+                        buttonLabel="Enviar mensagem"
+                        onAction={() => setWhatsappDialog({ open: true, reg })}
                       />
-                      <TimelineStep
+                      <TimelineStepAction
                         icon={Bell}
                         label="Patrocinador"
                         value=""
                         done={false}
+                        buttonLabel="Notificar"
+                        onAction={() => setSponsorDialog({ open: true, reg })}
                       />
                     </div>
                   </CardFooter>
@@ -307,14 +332,29 @@ export default function PendingRegistrations() {
       </div>
 
       {/* WhatsApp Dialog */}
-      <WhatsAppDialog
+      <MessageDialog
         open={whatsappDialog.open}
-        reg={whatsappDialog.reg}
+        title="Enviar mensagem via WhatsApp"
+        description="Copie a mensagem abaixo ou envie diretamente pelo WhatsApp."
+        message={whatsappDialog.reg ? buildWhatsAppMessage(whatsappDialog.reg.full_name || "") : ""}
+        phone={whatsappDialog.reg?.phone || null}
         copied={copied}
         onCopy={handleCopyMessage}
         onSend={handleSendWhatsApp}
         onClose={() => setWhatsappDialog({ open: false, reg: null })}
-        buildMessage={buildWhatsAppMessage}
+      />
+
+      {/* Sponsor Dialog */}
+      <MessageDialog
+        open={sponsorDialog.open}
+        title="Notificar patrocinador via WhatsApp"
+        description="Copie a mensagem abaixo ou envie diretamente pelo WhatsApp para o patrocinador."
+        message={sponsorDialog.reg ? buildSponsorMessage(sponsorDialog.reg) : ""}
+        phone={sponsorDialog.reg?.phone || null}
+        copied={copied}
+        onCopy={handleCopyMessage}
+        onSend={handleSendWhatsApp}
+        onClose={() => setSponsorDialog({ open: false, reg: null })}
       />
     </div>
   );
@@ -350,83 +390,86 @@ function TimelineStep({
   icon: Icon, label, value, done,
 }: { icon: React.ElementType; label: string; value: string; done: boolean }) {
   return (
-    <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-md">
-      <div className="flex items-center gap-1">
-        <Icon className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
-        <span className="text-[11px] font-semibold text-foreground leading-tight hidden sm:inline">{label}</span>
+    <div className="flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-md">
+      <div className="flex items-center gap-1.5">
+        <Icon className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
+        <span className="text-xs font-semibold text-foreground leading-tight hidden sm:inline">{label}</span>
       </div>
       <div className="flex items-center gap-1">
-        {done && <CheckCircle2 className="h-3 w-3 text-green-600 shrink-0" aria-hidden="true" />}
-        <span className="text-[10px] text-muted-foreground">{value || "—"}</span>
+        {done ? (
+          <CheckCircle2 className="h-3.5 w-3.5 text-green-600 shrink-0" aria-hidden="true" />
+        ) : (
+          <XCircle className="h-3.5 w-3.5 text-destructive/60 shrink-0" aria-hidden="true" />
+        )}
+        <span className="text-[11px] text-muted-foreground">{value || ""}</span>
       </div>
     </div>
   );
 }
 
-function TimelineStepWhatsApp({ label, value, done, onSend }: { label: string; value: string; done: boolean; onSend: () => void }) {
+function TimelineStepAction({
+  icon: Icon, label, value, done, buttonLabel, onAction,
+}: { icon: React.ElementType; label: string; value: string; done: boolean; buttonLabel: string; onAction: () => void }) {
   return (
-    <div className="flex flex-col items-center gap-1 py-2 px-1 rounded-md">
-      <div className="flex items-center gap-1">
-        <MessageCircle className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
-        <span className="text-[11px] font-semibold text-foreground leading-tight hidden sm:inline">{label}</span>
+    <div className="flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-md">
+      <div className="flex items-center gap-1.5">
+        <Icon className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
+        <span className="text-xs font-semibold text-foreground leading-tight hidden sm:inline">{label}</span>
       </div>
       {done ? (
         <div className="flex items-center gap-1">
-          <CheckCircle2 className="h-3 w-3 text-green-600 shrink-0" aria-hidden="true" />
-          <span className="text-[10px] text-muted-foreground">{value}</span>
+          <CheckCircle2 className="h-3.5 w-3.5 text-green-600 shrink-0" aria-hidden="true" />
+          <span className="text-[11px] text-muted-foreground">{value}</span>
         </div>
       ) : (
         <Button
           variant="link"
           size="sm"
-          className="text-[10px] h-auto p-0 text-primary"
-          onClick={(e) => { e.stopPropagation(); onSend(); }}
+          className="text-[11px] h-auto p-0 text-primary font-medium"
+          onClick={(e) => { e.stopPropagation(); onAction(); }}
         >
-          Enviar
+          {buttonLabel}
         </Button>
       )}
     </div>
   );
 }
 
-function WhatsAppDialog({
-  open, reg, copied, onCopy, onSend, onClose, buildMessage,
+function MessageDialog({
+  open, title, description, message, phone, copied, onCopy, onSend, onClose,
 }: {
   open: boolean;
-  reg: PendingRegistration | null;
+  title: string;
+  description: string;
+  message: string;
+  phone: string | null;
   copied: boolean;
   onCopy: (msg: string) => void;
   onSend: (phone: string, msg: string) => void;
   onClose: () => void;
-  buildMessage: (name: string) => string;
 }) {
-  if (!reg) return null;
-  const msg = buildMessage(reg.full_name || "");
-
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Enviar mensagem via WhatsApp</DialogTitle>
-          <DialogDescription>
-            Copie a mensagem abaixo ou envie diretamente pelo WhatsApp.
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
         <div className="rounded-md border bg-muted/50 p-3 text-sm whitespace-pre-wrap font-mono leading-relaxed">
-          {msg}
+          {message}
         </div>
 
         <div className="flex gap-2 justify-end mt-2">
-          <Button variant="outline" size="sm" onClick={() => onCopy(msg)}>
+          <Button variant="outline" size="sm" onClick={() => onCopy(message)}>
             {copied ? <Check className="h-4 w-4 mr-1" /> : <Copy className="h-4 w-4 mr-1" />}
             {copied ? "Copiado!" : "Copiar"}
           </Button>
-          {reg.phone && (
+          {phone && (
             <Button
               size="sm"
               className="bg-green-600 hover:bg-green-700 text-white"
-              onClick={() => onSend(reg.phone!, msg)}
+              onClick={() => onSend(phone, message)}
             >
               <MessageCircle className="h-4 w-4 mr-1" />
               Enviar no WhatsApp
