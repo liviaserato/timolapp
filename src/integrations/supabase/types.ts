@@ -94,6 +94,7 @@ export type Database = {
           franchise_name: string | null
           franchise_selected: boolean
           full_name: string | null
+          gender: string | null
           id: string
           payment_completed: boolean
           phone: string | null
@@ -123,6 +124,7 @@ export type Database = {
           franchise_name?: string | null
           franchise_selected?: boolean
           full_name?: string | null
+          gender?: string | null
           id?: string
           payment_completed?: boolean
           phone?: string | null
@@ -152,6 +154,7 @@ export type Database = {
           franchise_name?: string | null
           franchise_selected?: boolean
           full_name?: string | null
+          gender?: string | null
           id?: string
           payment_completed?: boolean
           phone?: string | null

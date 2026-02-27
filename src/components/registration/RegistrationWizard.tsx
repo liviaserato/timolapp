@@ -216,6 +216,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
               phone: data.phone?.trim() || null,
               preferred_language: language,
               sponsor_source: initialData.sponsorSource || null,
+              gender: data.gender || null,
             },
           });
         }
