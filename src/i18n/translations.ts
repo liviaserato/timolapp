@@ -302,6 +302,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "submit.loading.title": "Gerando seu ID...",
     "submit.loading.hint": "Não feche nem atualize esta página.",
     "submit.error": "Houve um problema ao finalizar o cadastro. Tente novamente.",
+    "welcomeBack.title": "Que bom ter você de volta!",
+    "welcomeBack.description": "Seu cadastro já está quase concluído. O próximo passo é escolher sua franquia para ativar seu acesso.",
+    "welcomeBack.button": "Escolher minha franquia",
   },
 
   en: {
@@ -591,6 +594,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "submit.loading.title": "Generating your ID...",
     "submit.loading.hint": "Please don't close or refresh this page.",
     "submit.error": "There was a problem completing your registration. Please try again.",
+    "welcomeBack.title": "Welcome back!",
+    "welcomeBack.description": "Your registration is almost complete. The next step is to choose your franchise to activate your access.",
+    "welcomeBack.button": "Choose my franchise",
   },
 
   es: {
@@ -880,5 +886,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "submit.loading.title": "Generando su ID...",
     "submit.loading.hint": "No cierre ni actualice esta página.",
     "submit.error": "Hubo un problema al finalizar el registro. Intente nuevamente.",
+    "welcomeBack.title": "¡Qué bueno tenerte de vuelta!",
+    "welcomeBack.description": "Tu registro ya está casi completo. El próximo paso es elegir tu franquicia para activar tu acceso.",
+    "welcomeBack.button": "Elegir mi franquicia",
   },
 };

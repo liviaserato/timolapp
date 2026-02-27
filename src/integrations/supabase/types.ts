@@ -83,6 +83,57 @@ export type Database = {
         }
         Relationships: []
       }
+      registration_status: {
+        Row: {
+          continue_token: string
+          created_at: string
+          document: string | null
+          email: string
+          franchise_selected: boolean
+          full_name: string | null
+          id: string
+          payment_completed: boolean
+          recovery_email_sent: boolean
+          recovery_email_sent_at: string | null
+          sponsor_id: string | null
+          sponsor_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          continue_token?: string
+          created_at?: string
+          document?: string | null
+          email: string
+          franchise_selected?: boolean
+          full_name?: string | null
+          id?: string
+          payment_completed?: boolean
+          recovery_email_sent?: boolean
+          recovery_email_sent_at?: string | null
+          sponsor_id?: string | null
+          sponsor_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          continue_token?: string
+          created_at?: string
+          document?: string | null
+          email?: string
+          franchise_selected?: boolean
+          full_name?: string | null
+          id?: string
+          payment_completed?: boolean
+          recovery_email_sent?: boolean
+          recovery_email_sent_at?: string | null
+          sponsor_id?: string | null
+          sponsor_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
