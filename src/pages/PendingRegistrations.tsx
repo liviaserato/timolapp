@@ -39,6 +39,8 @@ interface PendingRegistration {
   whatsapp_recovery_sent: boolean;
   whatsapp_recovery_sent_at: string | null;
   sponsor_source: string | null;
+  sponsor_notified: boolean;
+  sponsor_notified_at: string | null;
 }
 
 function capitalize(str: string | null): string {
@@ -160,6 +162,31 @@ export default function PendingRegistrations() {
       ? `https://wa.me/${cleaned}?text=${encoded}`
       : `https://web.whatsapp.com/send?phone=${cleaned}&text=${encoded}`;
     window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleConfirmSent = async (regId: string, type: "whatsapp" | "sponsor") => {
+    try {
+      const { data, error } = await supabase.functions.invoke("mark-recovery-sent", {
+        body: { registration_id: regId, type },
+      });
+      if (error) throw error;
+      const sentAt = data?.sent_at || new Date().toISOString();
+      setRegistrations((prev) =>
+        prev.map((r) =>
+          r.id === regId
+            ? type === "whatsapp"
+              ? { ...r, whatsapp_recovery_sent: true, whatsapp_recovery_sent_at: sentAt }
+              : { ...r, sponsor_notified: true, sponsor_notified_at: sentAt }
+            : r
+        )
+      );
+      toast.success("Envio confirmado!");
+      if (type === "whatsapp") setWhatsappDialog({ open: false, reg: null });
+      else setSponsorDialog({ open: false, reg: null });
+    } catch (err) {
+      console.error("Error confirming sent:", err);
+      toast.error("Erro ao confirmar envio.");
+    }
   };
 
   return (
@@ -335,8 +362,8 @@ export default function PendingRegistrations() {
                       <TimelineStepAction
                         icon={Bell}
                         label="Patrocinador"
-                        value=""
-                        done={false}
+                        value={formatDateTime(reg.sponsor_notified_at)}
+                        done={reg.sponsor_notified}
                         buttonLabel="Notificar"
                         onAction={() => setSponsorDialog({ open: true, reg })}
                       />
@@ -359,6 +386,7 @@ export default function PendingRegistrations() {
         copied={copied}
         onCopy={handleCopyMessage}
         onSend={handleSendWhatsApp}
+        onConfirm={() => whatsappDialog.reg && handleConfirmSent(whatsappDialog.reg.id, "whatsapp")}
         onClose={() => setWhatsappDialog({ open: false, reg: null })}
       />
 
@@ -372,6 +400,7 @@ export default function PendingRegistrations() {
         copied={copied}
         onCopy={handleCopyMessage}
         onSend={handleSendWhatsApp}
+        onConfirm={() => sponsorDialog.reg && handleConfirmSent(sponsorDialog.reg.id, "sponsor")}
         onClose={() => setSponsorDialog({ open: false, reg: null })}
       />
     </div>
@@ -444,7 +473,7 @@ function TimelineStepAction({
 }
 
 function MessageDialog({
-  open, title, description, message, phone, copied, onCopy, onSend, onClose,
+  open, title, description, message, phone, copied, onCopy, onSend, onConfirm, onClose,
 }: {
   open: boolean;
   title: string;
@@ -454,6 +483,7 @@ function MessageDialog({
   copied: boolean;
   onCopy: (msg: string) => void;
   onSend: (phone: string, msg: string) => void;
+  onConfirm: () => void;
   onClose: () => void;
 }) {
   return (
@@ -468,7 +498,7 @@ function MessageDialog({
           {message}
         </div>
 
-        <div className="flex gap-2 justify-end mt-2">
+        <div className="flex flex-wrap gap-2 justify-end mt-2">
           <Button variant="outline" size="sm" onClick={() => onCopy(message)}>
             {copied ? <Check className="h-4 w-4 mr-1" /> : <Copy className="h-4 w-4 mr-1" />}
             {copied ? "Copiado!" : "Copiar"}
@@ -483,6 +513,10 @@ function MessageDialog({
               Enviar no WhatsApp
             </Button>
           )}
+          <Button size="sm" onClick={onConfirm}>
+            <Check className="h-4 w-4 mr-1" />
+            Confirmar envio
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
