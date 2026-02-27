@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import {
   Loader2, FileText, Mail, Phone, Users, Award, CreditCard,
   Calendar, MessageCircle, StickyNote, ChevronDown, ChevronUp,
-  SearchCheck, Sparkles, Check, Copy, Bell,
+  SearchCheck, Sparkles, Check, Copy, Bell, AlertTriangle, X,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -45,6 +45,15 @@ interface PendingRegistration {
   preferred_language: string | null;
 }
 
+type AlertLevel = "green" | "yellow" | "red" | null;
+type AlertType = "whatsapp" | "sponsor";
+
+interface FollowUpAlert {
+  type: AlertType;
+  level: AlertLevel;
+  message: string;
+}
+
 function capitalize(str: string | null): string {
   if (!str) return "";
   return str
@@ -59,6 +68,97 @@ function firstName(str: string | null): string {
   return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
 }
 
+function getDaysSinceCreation(createdAt: string): number {
+  const created = new Date(createdAt);
+  const now = new Date();
+  return (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
+}
+
+function getWhatsappAlert(reg: PendingRegistration): FollowUpAlert | null {
+  if (reg.whatsapp_recovery_sent) return null;
+  const days = getDaysSinceCreation(reg.created_at);
+
+  if (days >= 4) {
+    return {
+      type: "whatsapp",
+      level: "red",
+      message: "⚠️ ATENÇÃO: O WhatsApp ao cliente deveria ter sido enviado há dias. Essa omissão será reportada ao superior. Estamos perdendo a chance de recuperar um possível franqueado. Aja agora.",
+    };
+  }
+  if (days >= 3) {
+    return {
+      type: "whatsapp",
+      level: "yellow",
+      message: "⏳ O WhatsApp ao cliente já deveria ter sido enviado ontem. O atraso demonstra falta de atenção com o lead. Envie a mensagem o quanto antes para não perder essa oportunidade.",
+    };
+  }
+  if (days >= 2) {
+    return {
+      type: "whatsapp",
+      level: "green",
+      message: "📲 Hoje é dia de enviar a mensagem por WhatsApp. É importante dar atenção ao cliente no momento certo. Não deixe para depois.",
+    };
+  }
+  return null;
+}
+
+function getSponsorAlert(reg: PendingRegistration): FollowUpAlert | null {
+  if (!reg.whatsapp_recovery_sent) return null;
+  if (reg.sponsor_notified) return null;
+  const days = getDaysSinceCreation(reg.created_at);
+
+  if (days >= 10) {
+    return {
+      type: "sponsor",
+      level: "red",
+      message: "⚠️ ATENÇÃO: A notificação ao patrocinador está gravemente atrasada. Essa omissão será reportada ao superior. Cada dia sem contato reduz as chances de conversão. Aja imediatamente.",
+    };
+  }
+  if (days >= 8) {
+    return {
+      type: "sponsor",
+      level: "yellow",
+      message: "⏳ A notificação ao patrocinador já deveria ter sido enviada. O atraso compromete o acompanhamento do lead. Envie a mensagem o quanto antes.",
+    };
+  }
+  if (days >= 7) {
+    return {
+      type: "sponsor",
+      level: "green",
+      message: "🔔 Hoje é um bom dia para notificar o patrocinador sobre este cadastro pendente. Um lembrete gentil pode ajudar a converter o lead.",
+    };
+  }
+  return null;
+}
+
+function getAlertStyles(level: AlertLevel) {
+  switch (level) {
+    case "green":
+      return {
+        bg: "bg-emerald-50 border-emerald-200",
+        text: "text-emerald-800",
+        iconColor: "text-emerald-600",
+        dotColor: "text-emerald-500",
+      };
+    case "yellow":
+      return {
+        bg: "bg-amber-50 border-amber-200",
+        text: "text-amber-800",
+        iconColor: "text-amber-600",
+        dotColor: "text-amber-500",
+      };
+    case "red":
+      return {
+        bg: "bg-red-50 border-red-200",
+        text: "text-red-800",
+        iconColor: "text-red-600",
+        dotColor: "text-red-500",
+      };
+    default:
+      return { bg: "", text: "", iconColor: "", dotColor: "" };
+  }
+}
+
 export default function PendingRegistrations() {
   const [registrations, setRegistrations] = useState<PendingRegistration[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,6 +169,7 @@ export default function PendingRegistrations() {
   const [whatsappDialog, setWhatsappDialog] = useState<{ open: boolean; reg: PendingRegistration | null }>({ open: false, reg: null });
   const [sponsorDialog, setSponsorDialog] = useState<{ open: boolean; reg: PendingRegistration | null }>({ open: false, reg: null });
   const [copied, setCopied] = useState(false);
+  const [dismissedAlerts, setDismissedAlerts] = useState<Record<string, Set<AlertType>>>({});
 
   useEffect(() => {
     async function fetchPending() {
@@ -101,9 +202,7 @@ export default function PendingRegistrations() {
   const isBrazilian = (countryIso: string | null) => !countryIso || countryIso.toUpperCase() === "BR";
 
   const isSponsorBlocked = (reg: PendingRegistration) => {
-    // Critério 1: WhatsApp precisa ter sido enviado primeiro
     if (!reg.whatsapp_recovery_sent || !reg.whatsapp_recovery_sent_at) return true;
-    // Critério 2: 5 dias de cooldown após o envio do WhatsApp
     const sentDate = new Date(reg.whatsapp_recovery_sent_at);
     const now = new Date();
     const diffDays = (now.getTime() - sentDate.getTime()) / (1000 * 60 * 60 * 24);
@@ -156,6 +255,43 @@ export default function PendingRegistrations() {
     setNotes((prev) => ({ ...prev, [id]: savedNotes[id] || "" }));
   };
 
+  const getActiveAlerts = (reg: PendingRegistration): FollowUpAlert[] => {
+    const alerts: FollowUpAlert[] = [];
+    const waAlert = getWhatsappAlert(reg);
+    if (waAlert) alerts.push(waAlert);
+    const spAlert = getSponsorAlert(reg);
+    if (spAlert) alerts.push(spAlert);
+    return alerts;
+  };
+
+  const isDismissed = (regId: string, alertType: AlertType) => {
+    return dismissedAlerts[regId]?.has(alertType) || false;
+  };
+
+  const dismissAlert = (regId: string, alertType: AlertType) => {
+    setDismissedAlerts((prev) => {
+      const current = prev[regId] || new Set();
+      const next = new Set(current);
+      next.add(alertType);
+      return { ...prev, [regId]: next };
+    });
+  };
+
+  const restoreAlert = (regId: string, alertType: AlertType) => {
+    setDismissedAlerts((prev) => {
+      const current = prev[regId];
+      if (!current) return prev;
+      const next = new Set(current);
+      next.delete(alertType);
+      return { ...prev, [regId]: next };
+    });
+  };
+
+  const hasDismissedAlerts = (reg: PendingRegistration): FollowUpAlert[] => {
+    const alerts = getActiveAlerts(reg);
+    return alerts.filter((a) => isDismissed(reg.id, a.type));
+  };
+
   const buildWhatsAppMessage = (reg: PendingRegistration) => {
     const name = capitalize(reg.full_name || "");
     const lang = reg.preferred_language || "pt";
@@ -201,7 +337,6 @@ export default function PendingRegistrations() {
     }
 
     if (lang === "es") {
-      const articuloEs = fem ? "La" : "El"; // Not used at sentence start before name in Spanish the same way, but keeping pattern
       const pronEs = fem ? "la" : "lo";
       const ellaEl = fem ? "Ella" : "Él";
       const ellaElMin = fem ? "ella" : "él";
@@ -259,6 +394,14 @@ export default function PendingRegistrations() {
             : r
         )
       );
+      // Clear dismissed state for this alert type since it's now resolved
+      setDismissedAlerts((prev) => {
+        const current = prev[regId];
+        if (!current) return prev;
+        const next = new Set(current);
+        next.delete(type);
+        return { ...prev, [regId]: next };
+      });
       toast.success("Envio confirmado!");
       if (type === "whatsapp") setWhatsappDialog({ open: false, reg: null });
       else setSponsorDialog({ open: false, reg: null });
@@ -289,6 +432,10 @@ export default function PendingRegistrations() {
               const countryName = countryData ? getCountryName(countryData, "pt") : null;
               const isCollapsed = collapsed[reg.id] || false;
               const noteChanged = (notes[reg.id] || "") !== (savedNotes[reg.id] || "");
+
+              const activeAlerts = getActiveAlerts(reg);
+              const visibleAlerts = activeAlerts.filter((a) => !isDismissed(reg.id, a.type));
+              const dismissedAlertsList = hasDismissedAlerts(reg);
 
               return (
                 <Card key={reg.id} className="overflow-hidden flex flex-col w-full max-w-[600px]">
@@ -321,6 +468,23 @@ export default function PendingRegistrations() {
                         </p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 mt-1">
+                        {/* Dismissed alert indicator icons */}
+                        {dismissedAlertsList.map((alert) => {
+                          const styles = getAlertStyles(alert.level);
+                          return (
+                            <button
+                              key={alert.type}
+                              className={`p-0.5 rounded-full hover:bg-muted/60 transition-colors ${styles.dotColor}`}
+                              title={alert.type === "whatsapp" ? "Alerta WhatsApp (clique para reabrir)" : "Alerta Patrocinador (clique para reabrir)"}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                restoreAlert(reg.id, alert.type);
+                              }}
+                            >
+                              <AlertTriangle className="h-4 w-4" />
+                            </button>
+                          );
+                        })}
                         <Badge variant="outline" className="text-[10px] px-2 py-0 border-amber-400 text-amber-600">
                           Pendente
                         </Badge>
@@ -412,6 +576,33 @@ export default function PendingRegistrations() {
                         )}
                       </div>
                     </CardContent>
+                  )}
+
+                  {/* Follow-up Alerts */}
+                  {visibleAlerts.length > 0 && (
+                    <div className="px-3 sm:px-5 pb-1">
+                      {visibleAlerts.map((alert) => {
+                        const styles = getAlertStyles(alert.level);
+                        return (
+                          <div
+                            key={alert.type}
+                            className={`relative rounded-md border p-3 mb-2 text-xs leading-relaxed ${styles.bg} ${styles.text}`}
+                          >
+                            <div className="flex items-start gap-2">
+                              <AlertTriangle className={`h-4 w-4 shrink-0 mt-0.5 ${styles.iconColor}`} />
+                              <p className="flex-1 pr-5">{alert.message}</p>
+                              <button
+                                className={`absolute top-2 right-2 p-0.5 rounded hover:bg-black/5 transition-colors ${styles.iconColor}`}
+                                onClick={() => dismissAlert(reg.id, alert.type)}
+                                title="Fechar alerta"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
 
                   {/* Footer timeline */}
