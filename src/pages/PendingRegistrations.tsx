@@ -414,12 +414,15 @@ export default function PendingRegistrations() {
 /* ── Sub-components ─────────────────────────────────────────── */
 
 function InfoItem({ icon: Icon, label, children }: { icon: React.ElementType; label: string; children: React.ReactNode }) {
+  const isEmpty = !children || (typeof children === "string" && children.trim() === "");
   return (
-    <div className="flex items-start gap-2 min-w-0">
+    <div className="flex items-start gap-2 min-w-0 min-h-[36px] py-0.5">
       <Icon className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" aria-hidden="true" />
       <div className="min-w-0 flex-1">
         <p className="text-[11px] text-muted-foreground leading-none mb-0.5">{label}</p>
-        <p className="text-sm font-medium flex items-center gap-0.5 min-w-0">{children}</p>
+        <p className="text-sm font-medium flex items-center gap-0.5 min-w-0 min-h-[20px]">
+          {isEmpty ? "\u00A0" : children}
+        </p>
       </div>
     </div>
   );
