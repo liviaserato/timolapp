@@ -215,6 +215,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
               sponsor_id: initialData.sponsorId || null,
               phone: data.phone?.trim() || null,
               preferred_language: language,
+              sponsor_source: initialData.sponsorSource || null,
             },
           });
         }

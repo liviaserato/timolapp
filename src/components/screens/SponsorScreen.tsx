@@ -157,6 +157,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
       sponsorCity: foundSponsor.city,
       sponsorState: foundSponsor.state,
       sponsorCountryFlag: foundSponsor.countryFlag,
+      sponsorSource: fromNoSponsorFlow ? "suggestion" : "search",
     });
   };
 
