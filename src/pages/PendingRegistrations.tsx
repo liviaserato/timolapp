@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import {
   Loader2, FileText, Mail, Phone, Users, Award, CreditCard,
   Calendar, MessageCircle, StickyNote, ChevronDown, ChevronUp,
-  SearchCheck, Sparkles, Check, Copy, CheckCircle2, Bell, XCircle,
+  SearchCheck, Sparkles, Check, Copy, Bell,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -86,7 +86,6 @@ export default function PendingRegistrations() {
     if (!dateStr) return "";
     return new Date(dateStr).toLocaleDateString("pt-BR", {
       day: "2-digit", month: "2-digit", year: "2-digit",
-      hour: "2-digit", minute: "2-digit",
     });
   };
 
@@ -318,14 +317,12 @@ export default function PendingRegistrations() {
                       <TimelineStep
                         icon={Calendar}
                         label="Cadastro"
-                        value={formatDateTime(reg.created_at)}
-                        done={!!reg.created_at}
+                        value={formatDateTime(reg.created_at) || "—"}
                       />
                       <TimelineStep
                         icon={Mail}
                         label="Email"
-                        value={formatDateTime(reg.recovery_email_sent_at)}
-                        done={reg.recovery_email_sent}
+                        value={formatDateTime(reg.recovery_email_sent_at) || "—"}
                       />
                       <TimelineStepAction
                         icon={MessageCircle}
@@ -408,21 +405,14 @@ function SponsorTypeBadge({ type }: { type: "search" | "suggestion" }) {
 }
 
 function TimelineStep({
-  icon: Icon, label, value, done,
-}: { icon: React.ElementType; label: string; value: string; done: boolean }) {
+  icon: Icon, label, value,
+}: { icon: React.ElementType; label: string; value: string }) {
   return (
-    <div className="flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-md">
-      <div className="flex items-center gap-1.5">
-        <Icon className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
-        <span className="text-xs font-semibold text-foreground leading-tight hidden sm:inline">{label}</span>
-      </div>
-      <div className="flex items-center gap-1">
-        {done ? (
-          <CheckCircle2 className="h-3.5 w-3.5 text-green-600 shrink-0" aria-hidden="true" />
-        ) : (
-          <XCircle className="h-3.5 w-3.5 text-destructive/60 shrink-0" aria-hidden="true" />
-        )}
-        <span className="text-[11px] text-muted-foreground">{value || ""}</span>
+    <div className="flex items-center gap-2 py-2.5 px-1 rounded-md">
+      <Icon className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
+      <div className="flex flex-col justify-center min-w-0">
+        <span className="text-xs sm:text-sm font-semibold text-foreground leading-tight">{label}</span>
+        <span className="text-[11px] text-muted-foreground">{value}</span>
       </div>
     </div>
   );
@@ -432,26 +422,23 @@ function TimelineStepAction({
   icon: Icon, label, value, done, buttonLabel, onAction,
 }: { icon: React.ElementType; label: string; value: string; done: boolean; buttonLabel: string; onAction: () => void }) {
   return (
-    <div className="flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-md">
-      <div className="flex items-center gap-1.5">
-        <Icon className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
-        <span className="text-xs font-semibold text-foreground leading-tight hidden sm:inline">{label}</span>
-      </div>
-      {done ? (
-        <div className="flex items-center gap-1">
-          <CheckCircle2 className="h-3.5 w-3.5 text-green-600 shrink-0" aria-hidden="true" />
+    <div className="flex items-center gap-2 py-2.5 px-1 rounded-md">
+      <Icon className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
+      <div className="flex flex-col justify-center min-w-0">
+        <span className="text-xs sm:text-sm font-semibold text-foreground leading-tight">{label}</span>
+        {done ? (
           <span className="text-[11px] text-muted-foreground">{value}</span>
-        </div>
-      ) : (
-        <Button
-          variant="link"
-          size="sm"
-          className="text-[11px] h-auto p-0 text-primary font-medium"
-          onClick={(e) => { e.stopPropagation(); onAction(); }}
-        >
-          {buttonLabel}
-        </Button>
-      )}
+        ) : (
+          <Button
+            variant="link"
+            size="sm"
+            className="text-[11px] h-auto p-0 text-primary font-medium justify-start"
+            onClick={(e) => { e.stopPropagation(); onAction(); }}
+          >
+            {buttonLabel}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
