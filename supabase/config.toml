@@ -14,3 +14,12 @@ verify_jwt = false
 
 [functions.username-check]
 verify_jwt = false
+
+[functions.send-recovery-email]
+verify_jwt = false
+
+[functions.check-incomplete-registrations]
+verify_jwt = false
+
+[functions.continue-registration]
+verify_jwt = false
