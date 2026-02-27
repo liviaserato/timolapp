@@ -492,8 +492,20 @@ function MessageDialog({
   onConfirm: () => void;
   onClose: () => void;
 }) {
+  const [actionTaken, setActionTaken] = useState(false);
+
+  const handleCopy = (msg: string) => {
+    onCopy(msg);
+    setActionTaken(true);
+  };
+
+  const handleSend = (ph: string, msg: string) => {
+    onSend(ph, msg);
+    setActionTaken(true);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) { setActionTaken(false); onClose(); } }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
@@ -501,7 +513,7 @@ function MessageDialog({
         </DialogHeader>
 
         <div className="flex flex-wrap gap-2 justify-end">
-          <Button variant="outline" size="sm" onClick={() => onCopy(message)}>
+          <Button variant="outline" size="sm" onClick={() => handleCopy(message)}>
             {copied ? <Check className="h-4 w-4 mr-1" /> : <Copy className="h-4 w-4 mr-1" />}
             {copied ? "Copiado!" : "Copiar"}
           </Button>
@@ -509,7 +521,7 @@ function MessageDialog({
             <Button
               size="sm"
               className="bg-green-600 hover:bg-green-700 text-white"
-              onClick={() => onSend(phone, message)}
+              onClick={() => handleSend(phone, message)}
             >
               <MessageCircle className="h-4 w-4 mr-1" />
               Enviar no WhatsApp
@@ -522,7 +534,7 @@ function MessageDialog({
         </div>
 
         <div className="flex justify-end mt-2">
-          <Button size="sm" onClick={onConfirm} disabled={confirmed}>
+          <Button size="sm" onClick={onConfirm} disabled={confirmed || !actionTaken}>
             <Check className="h-4 w-4 mr-1" />
             Confirmar envio e fechar
           </Button>
