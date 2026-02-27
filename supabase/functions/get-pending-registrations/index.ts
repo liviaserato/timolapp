@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
     const { data, error } = await supabaseAdmin
       .from("registration_status")
       .select(
-        "id, user_id, full_name, document, city, state, country, user_display_id, sponsor_id, sponsor_name, email, phone, created_at, status, franchise_selected, franchise_name, payment_completed, recovery_email_sent, whatsapp_recovery_sent"
+        "id, user_id, full_name, document, city, state, country, user_display_id, sponsor_id, sponsor_name, email, phone, created_at, status, franchise_selected, franchise_name, payment_completed, recovery_email_sent, recovery_email_sent_at, whatsapp_recovery_sent, whatsapp_recovery_sent_at"
       )
       .eq("status", "pending")
       .order("created_at", { ascending: false });
