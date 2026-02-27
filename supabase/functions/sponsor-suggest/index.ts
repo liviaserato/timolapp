@@ -40,8 +40,15 @@ serve(async (req) => {
     }
 
     const data = await res.json();
+    
+    // API returns { exists, person: [...] } — extract personIds as sponsor IDs
+    const persons = data?.person || [];
+    const sponsors = Array.isArray(persons)
+      ? persons.map((p: any) => p.personId).filter(Boolean)
+      : [];
+
     return new Response(
-      JSON.stringify(data),
+      JSON.stringify({ sponsors }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
