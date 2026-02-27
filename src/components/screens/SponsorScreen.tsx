@@ -197,10 +197,8 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const handleRandomSponsor = async () => {
     setIndicationLoading(true);
     try {
-      // Extract city from the location string (e.g. "Belo Horizonte, MG - Brasil" → "Belo Horizonte")
-      const city = contactCityState.split(",")[0]?.trim() || contactCityState.trim();
       const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(city)}`,
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(contactCityState.trim())}`,
         { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
       );
       const data = await res.json();
@@ -230,9 +228,8 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setSponsorSelected(false);
     setIndicationLoading(true);
     try {
-      const city = contactCityState.split(",")[0]?.trim() || contactCityState.trim();
       const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(city)}`,
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(contactCityState.trim())}`,
         { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
       );
       const data = await res.json();

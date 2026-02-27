@@ -21,7 +21,7 @@ serve(async (req) => {
   }
 
   try {
-    const apiUrl = `https://www.timolweb.com.br/api/franchises/sponsor-suggest?city=${encodeURIComponent(city.trim())}`;
+    const apiUrl = `https://www.timolweb.com.br/api/franchises/sponsor-suggest?localization=${encodeURIComponent(city.trim())}`;
     const res = await fetch(apiUrl, {
       headers: {
         "Accept": "application/json",
