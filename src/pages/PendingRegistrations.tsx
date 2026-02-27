@@ -28,6 +28,7 @@ interface PendingRegistration {
   created_at: string;
   status: string;
   franchise_selected: boolean;
+  franchise_name: string | null;
   payment_completed: boolean;
   recovery_email_sent: boolean;
   whatsapp_recovery_sent: boolean;
@@ -70,7 +71,7 @@ export default function PendingRegistrations() {
     value ? (
       <Check className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
     ) : (
-      <span className="text-muted-foreground">—</span>
+      <X className="h-5 w-5 text-destructive" />
     );
 
   return (
@@ -140,12 +141,8 @@ export default function PendingRegistrations() {
                       <TableCell className="whitespace-nowrap">
                         {formatDate(reg.created_at)}
                       </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={reg.franchise_selected ? "default" : "secondary"}
-                        >
-                          {reg.franchise_selected ? "Sim" : "Não"}
-                        </Badge>
+                      <TableCell className="whitespace-nowrap">
+                        {reg.franchise_name || "—"}
                       </TableCell>
                       <TableCell>
                         <Badge
