@@ -101,7 +101,9 @@ export default function PendingRegistrations() {
   const isBrazilian = (countryIso: string | null) => !countryIso || countryIso.toUpperCase() === "BR";
 
   const isSponsorBlocked = (reg: PendingRegistration) => {
-    if (!reg.whatsapp_recovery_sent || !reg.whatsapp_recovery_sent_at) return false;
+    // Critério 1: WhatsApp precisa ter sido enviado primeiro
+    if (!reg.whatsapp_recovery_sent || !reg.whatsapp_recovery_sent_at) return true;
+    // Critério 2: 5 dias de cooldown após o envio do WhatsApp
     const sentDate = new Date(reg.whatsapp_recovery_sent_at);
     const now = new Date();
     const diffDays = (now.getTime() - sentDate.getTime()) / (1000 * 60 * 60 * 24);
@@ -448,7 +450,7 @@ export default function PendingRegistrations() {
                         buttonLabel="Notificar"
                         onAction={() => setSponsorDialog({ open: true, reg })}
                         disabled={isSponsorBlocked(reg)}
-                        disabledTooltip={isSponsorBlocked(reg) ? `Aguarde ${getSponsorBlockedDaysLeft(reg)} dia(s)` : undefined}
+                        disabledTooltip={isSponsorBlocked(reg) ? (!reg.whatsapp_recovery_sent ? "Envie o WhatsApp primeiro" : `Aguarde ${getSponsorBlockedDaysLeft(reg)} dia(s)`) : undefined}
                       />
                     </div>
                   </CardFooter>
