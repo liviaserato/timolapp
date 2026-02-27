@@ -203,14 +203,17 @@ export default function PendingRegistrations() {
                             {capitalize(reg.full_name)}
                           </span>
                         </div>
-                        {reg.city && (
-                          <p className="text-xs text-muted-foreground mt-1 ml-0">
-                            {[reg.city, reg.state, countryName].filter(Boolean).join(", ")}
-                            {countryData && (
-                              <span title={countryName || undefined} className="ml-1">{countryData.flag}</span>
-                            )}
-                          </p>
-                        )}
+                        <p className="text-xs text-muted-foreground mt-1 ml-0 min-h-[1rem]">
+                          {reg.city
+                            ? <>
+                                {[reg.city, reg.state, countryName].filter(Boolean).join(", ")}
+                                {countryData && (
+                                  <span title={countryName || undefined} className="ml-1">{countryData.flag}</span>
+                                )}
+                              </>
+                            : "\u00A0"
+                          }
+                        </p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 mt-1">
                         <Badge variant="outline" className="text-[10px] px-2 py-0 border-amber-400 text-amber-600">
@@ -259,7 +262,7 @@ export default function PendingRegistrations() {
                                 ? `${reg.sponsor_id} – ${capitalize(reg.sponsor_name)}`
                                 : capitalize(reg.sponsor_name) || reg.sponsor_id || ""}
                             </span>
-                            <SponsorTypeBadge type={reg.sponsor_source === "suggestion" ? "suggestion" : "search"} />
+                            {reg.sponsor_source && <SponsorTypeBadge type={reg.sponsor_source === "suggestion" ? "suggestion" : "search"} />}
                           </InfoItem>
                           <InfoItem icon={Award} label="Franquia">
                             {reg.franchise_name || ""}
@@ -394,12 +397,12 @@ function InfoItem({ icon: Icon, label, children }: { icon: React.ElementType; la
 
 function SponsorTypeBadge({ type }: { type: "search" | "suggestion" }) {
   return type === "search" ? (
-    <span title="Busca" className="ml-1.5 shrink-0">
-      <Search className="h-3.5 w-3.5 text-muted-foreground" />
+    <span title="Busca" className="ml-1 shrink-0">
+      <Search className="h-3 w-3 text-muted-foreground/70" />
     </span>
   ) : (
-    <span title="Sugestão" className="ml-1.5 shrink-0">
-      <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+    <span title="Sugestão" className="ml-1 shrink-0">
+      <Sparkles className="h-3 w-3 text-amber-400" />
     </span>
   );
 }
