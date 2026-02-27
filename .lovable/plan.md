@@ -1,60 +1,35 @@
 
 
-## Pagina de Cadastros Pendentes
+## Tooltip com nome do pais nas bandeiras
 
-### 1. Migracao de banco de dados
+### Objetivo
+Adicionar tooltip com o nome do pais (no idioma selecionado) em todos os lugares onde a bandeira (emoji) de um pais aparece na interface.
 
-Adicionar colunas estruturais a tabela `registration_status`:
+### Locais identificados
 
-```text
-city            (text, nullable)
-state           (text, nullable)
-country         (text, nullable)
-status          (text, NOT NULL, default 'pending')
-user_display_id (text, nullable)
-```
+1. **SponsorScreen** (linha ~601) -- Bandeira do pais do patrocinador exibida ao lado da cidade/estado no card de confirmacao
+2. **StepPersonal** (linha ~234) -- Bandeiras na lista dropdown de selecao de pais do documento (estrangeiro)
+3. **StepPersonal** (linha ~198) -- Bandeira exibida no campo readonly apos selecao do pais do documento
 
-### 2. Edge function `get-pending-registrations`
+### Abordagem
 
-Criar funcao que usa service role key para consultar `registration_status WHERE status = 'pending'`, retornando todos os campos necessarios para a listagem. Sem verificacao de JWT (endpoint interno/admin).
+Usar o atributo nativo `title` do HTML para exibir o nome do pais ao passar o mouse. Essa abordagem e simples, acessivel (leitores de tela reconhecem `title`) e nao requer componentes extras como Tooltip do Radix.
 
-### 3. Pagina `/pendentes`
+### Alteracoes por arquivo
 
-Criar `src/pages/PendingRegistrations.tsx` com tabela exibindo:
-- Nome, CPF, Cidade, Estado, Pais, ID, Patrocinador, E-mail, Telefone, Data Cadastro, Status
-- Indicadores check (verde) / X (vermelho) para "E-mail enviado" e "WhatsApp enviado"
-- Layout simples com componentes Table e Card existentes
+**1. `src/components/screens/SponsorScreen.tsx`**
+- Na linha 601, onde renderiza `foundSponsor.countryFlag`, envolver o emoji em um `<span title={countryName}>` 
+- Sera necessario armazenar o nome do pais (alem do flag) no estado `foundSponsor` -- adicionar campo `countryName` ao objeto
+- Preencher `countryName` usando `getCountryName(countryDataResult, language)` nos dois pontos onde `foundSponsor` e criado (linhas ~134 e ~184)
 
-### 4. Roteamento
+**2. `src/components/registration/StepPersonal.tsx`**
+- Na lista dropdown (linha ~234), adicionar `title={getCountryName(c, language)}` ao `<span>` que renderiza `c.flag`
+- No campo readonly (linha ~198), o nome do pais ja aparece ao lado da bandeira no texto, entao nao precisa de tooltip adicional
 
-Adicionar rota `/pendentes` no `App.tsx`.
+### Tecnico
 
-### 5. Atualizar `track-registration`
-
-Aceitar campos `city`, `state`, `country`, `user_display_id` no modo insert para que novos cadastros preencham essas colunas.
-
-Registrar `get-pending-registrations` no `supabase/config.toml`.
-
-### Secao tecnica
-
-**Arquivos a criar:**
-- `supabase/functions/get-pending-registrations/index.ts`
-- `src/pages/PendingRegistrations.tsx`
-
-**Arquivos a editar:**
-- `src/App.tsx` (nova rota)
-- `supabase/functions/track-registration/index.ts` (novos campos no insert)
-- `supabase/config.toml` (registrar nova funcao)
-
-**Migracao SQL:**
-```sql
-ALTER TABLE public.registration_status
-  ADD COLUMN IF NOT EXISTS city text,
-  ADD COLUMN IF NOT EXISTS state text,
-  ADD COLUMN IF NOT EXISTS country text,
-  ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'pending',
-  ADD COLUMN IF NOT EXISTS user_display_id text;
-```
-
-**Nota:** O registro existente da Samara recebera automaticamente `status = 'pending'` (valor default) e aparecera na listagem. Campos city, state, country e user_display_id ficarao vazios ate serem preenchidos por cadastros futuros.
+- Importar `getCountryName` onde ainda nao estiver importado
+- Adicionar campo `countryName: string` na interface do estado `foundSponsor` em SponsorScreen
+- Nenhuma dependencia nova necessaria
+- Nas proximas telas que forem criadas, seguir o mesmo padrao: sempre que exibir `c.flag` ou emoji de bandeira, incluir `title` com o nome traduzido
 
