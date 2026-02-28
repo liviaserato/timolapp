@@ -631,7 +631,8 @@ export default function PendingRegistrations() {
                         buttonLabelDesktop="Enviar mensagem"
                         onAction={() => setWhatsappDialog({ open: true, reg })}
                         disabled={isWhatsappBlocked(reg)}
-                        disabledTooltip={isWhatsappBlocked(reg) ? `Aguarde ${getWhatsappBlockedDaysLeft(reg)} dia(s)` : undefined}
+                        disabledText={isWhatsappBlocked(reg) ? (() => { const d = getWhatsappBlockedDaysLeft(reg); return d === 1 ? "1 dia" : `${d} dias`; })() : undefined}
+                        disabledAriaLabel={isWhatsappBlocked(reg) ? (() => { const d = getWhatsappBlockedDaysLeft(reg); return `Envie a mensagem de WhatsApp em ${d === 1 ? "1 dia" : `${d} dias`}.`; })() : undefined}
                       />
                       <TimelineStepAction
                         icon={Bell}
@@ -641,7 +642,8 @@ export default function PendingRegistrations() {
                         buttonLabel="Notificar"
                         onAction={() => setSponsorDialog({ open: true, reg })}
                         disabled={isSponsorBlocked(reg)}
-                        disabledTooltip={isSponsorBlocked(reg) ? (!reg.whatsapp_recovery_sent ? "Envie o WhatsApp primeiro" : `Aguarde ${getSponsorBlockedDaysLeft(reg)} dia(s)`) : undefined}
+                        disabledText={isSponsorBlocked(reg) ? (!reg.whatsapp_recovery_sent ? "Após o WhatsApp" : (() => { const d = getSponsorBlockedDaysLeft(reg); return d === 1 ? "1 dia" : `${d} dias`; })()) : undefined}
+                        disabledAriaLabel={isSponsorBlocked(reg) ? (!reg.whatsapp_recovery_sent ? "Notifique o patrocinador após enviar o WhatsApp ao cliente." : (() => { const d = getSponsorBlockedDaysLeft(reg); return `Notifique o patrocinador em ${d === 1 ? "1 dia" : `${d} dias`}.`; })()) : undefined}
                       />
                     </div>
                   </CardFooter>
@@ -729,8 +731,8 @@ function TimelineStep({
 }
 
 function TimelineStepAction({
-  icon: Icon, label, value, done, buttonLabel, buttonLabelDesktop, onAction, disabled, disabledTooltip,
-}: { icon: React.ElementType; label: string; value: string; done: boolean; buttonLabel: string; buttonLabelDesktop?: string; onAction: () => void; disabled?: boolean; disabledTooltip?: string }) {
+  icon: Icon, label, value, done, buttonLabel, buttonLabelDesktop, onAction, disabled, disabledText, disabledAriaLabel,
+}: { icon: React.ElementType; label: string; value: string; done: boolean; buttonLabel: string; buttonLabelDesktop?: string; onAction: () => void; disabled?: boolean; disabledText?: string; disabledAriaLabel?: string }) {
   return (
     <div className="flex flex-col items-center gap-1 py-2.5 px-1 sm:flex-row sm:gap-2">
       <Icon className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
@@ -739,8 +741,8 @@ function TimelineStepAction({
         {done ? (
           <span className="text-[11px] text-muted-foreground">{value}</span>
         ) : disabled ? (
-          <span className="text-[11px] text-muted-foreground/60 italic cursor-default" title={disabledTooltip}>
-            {disabledTooltip || "Indisponível"}
+          <span className="text-[11px] text-muted-foreground/60 italic cursor-default" title={disabledAriaLabel || disabledText} aria-label={disabledAriaLabel}>
+            {disabledText || "Indisponível"}
           </span>
         ) : (
           <Button
