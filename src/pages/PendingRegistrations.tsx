@@ -447,7 +447,7 @@ export default function PendingRegistrations() {
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2.5 flex-wrap">
+                        <div className="flex items-start gap-2.5 flex-wrap">
                           <Badge className="bg-primary text-primary-foreground text-xs font-bold px-2.5 py-0.5 shrink-0">
                             {getDisplayId(reg.user_display_id)}
                           </Badge>
