@@ -81,7 +81,7 @@ Deno.serve(async (req) => {
       }
 
       // Only allow specific fields to be updated
-      const allowedFields = ["franchise_selected", "payment_completed"];
+      const allowedFields = ["franchise_selected", "payment_completed", "status"];
       const sanitized: Record<string, unknown> = {};
       for (const key of allowedFields) {
         if (key in fields) {

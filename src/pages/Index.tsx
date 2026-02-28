@@ -131,7 +131,7 @@ const Index = () => {
             data={wizardData}
             onConfirm={(paymentInfo: Partial<WizardData>) => {
               updateData(paymentInfo);
-              updateRegistrationStatus({ payment_completed: true });
+              updateRegistrationStatus({ payment_completed: true, status: "completed" });
               const method = paymentInfo.paymentMethod ?? "credit";
               if (method === "pix" && wizardData.foreignerNoCpf !== "true") {
                 setScreen("paymentPending");
