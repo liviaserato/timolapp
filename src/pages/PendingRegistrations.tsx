@@ -741,7 +741,7 @@ function TimelineStepAction({
         {done ? (
           <span className="text-[11px] text-muted-foreground">{value}</span>
         ) : disabled ? (
-          <span className="text-[11px] text-muted-foreground/60 italic cursor-default" title={disabledAriaLabel || disabledText} aria-label={disabledAriaLabel}>
+          <span className="text-[11px] text-muted-foreground/60 italic cursor-default text-center sm:text-left" title={disabledAriaLabel || disabledText} aria-label={disabledAriaLabel}>
             {disabledText || "Indisponível"}
           </span>
         ) : (
