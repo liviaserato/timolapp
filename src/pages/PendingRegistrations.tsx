@@ -451,21 +451,23 @@ export default function PendingRegistrations() {
                           <Badge className="bg-primary text-primary-foreground text-xs font-bold px-2.5 py-0.5 shrink-0">
                             {getDisplayId(reg.user_display_id)}
                           </Badge>
-                          <span className="text-lg font-bold truncate" title={reg.full_name || undefined}>
-                            {capitalize(reg.full_name)}
-                          </span>
+                          <div className="min-w-0">
+                            <span className="text-lg font-bold truncate block" title={reg.full_name || undefined}>
+                              {capitalize(reg.full_name)}
+                            </span>
+                            <p className="text-xs text-muted-foreground min-h-[1rem]">
+                              {reg.city
+                                ? <>
+                                    {[reg.city, reg.state, countryName].filter(Boolean).join(", ")}
+                                    {countryData && (
+                                      <span title={countryName || undefined} className="ml-1">{countryData.flag}</span>
+                                    )}
+                                  </>
+                                : "\u00A0"
+                              }
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1 ml-0 min-h-[1rem]">
-                          {reg.city
-                            ? <>
-                                {[reg.city, reg.state, countryName].filter(Boolean).join(", ")}
-                                {countryData && (
-                                  <span title={countryName || undefined} className="ml-1">{countryData.flag}</span>
-                                )}
-                              </>
-                            : "\u00A0"
-                          }
-                        </p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 mt-1">
                         {/* Dismissed alert indicator icons */}
