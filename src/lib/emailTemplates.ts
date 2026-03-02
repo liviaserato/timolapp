@@ -175,6 +175,9 @@ function emailShell(lang: Lang, title: string, body: string, siteUrl: string): s
       .cta-btn { font-size: 14px !important; padding: 14px 24px !important; width: 100% !important; max-width: 100% !important; box-sizing: border-box !important; }
       .access-table td:first-child { width: 70px !important; }
       .whatsapp-text br.mobile-hide { display: none; }
+      .data-summary td:first-child { width: 80px !important; padding-right: 6px !important; }
+      .data-summary td { font-size: 13px !important; }
+      .whatsapp-text br.mobile-hide { display: none; }
     }
   </style>
 </head>
@@ -196,7 +199,7 @@ function emailShell(lang: Lang, title: string, body: string, siteUrl: string): s
 /* ─── Data row helper with vertical-align:top ─── */
 function dataRow(label: string, value: string): string {
   return `<tr>
-  <td style="padding:4px 0;font-size:14px;color:#64748b;width:120px;vertical-align:top;">${label}</td>
+  <td style="padding:4px 0;padding-right:10px;font-size:14px;color:#64748b;width:120px;vertical-align:top;">${label}</td>
   <td style="padding:4px 0;font-size:14px;color:#1e293b;font-weight:600;vertical-align:top;">${value}</td>
 </tr>`;
 }
@@ -290,7 +293,7 @@ export function buildPendingEmailHtml(data: PendingEmailData): string {
 
     <!-- Data Summary Card -->
     <div style="background:#f1f5f9;border-radius:12px;padding:20px;margin:16px 0 24px;">
-      <table style="width:100%;border-collapse:collapse;">
+      <table class="data-summary" style="width:100%;border-collapse:collapse;">
         ${dataRow(t(lang, "labelId"), data.userId)}
         ${dataRow(t(lang, "labelName"), data.fullName)}
         ${dataRow(t(lang, "labelDoc"), data.document)}
@@ -372,7 +375,7 @@ export function buildCompletedEmailHtml(data: CompletedEmailData): string {
     <!-- Data Summary Card -->
     <div style="background:#f1f5f9;border-radius:12px;padding:20px;margin:16px 0 24px;">
       <p style="margin:0 0 12px;font-size:15px;color:#1e293b;font-weight:600;">${t(lang, "completedSummaryTitle")}</p>
-      <table style="width:100%;border-collapse:collapse;">
+      <table class="data-summary" style="width:100%;border-collapse:collapse;">
         ${dataRow(t(lang, "labelId"), data.userId)}
         ${dataRow(t(lang, "labelName"), data.fullName)}
         ${dataRow(t(lang, "labelDoc"), data.document)}
@@ -399,7 +402,7 @@ export function buildCompletedEmailHtml(data: CompletedEmailData): string {
         ${dataRow(t(lang, "labelLogin"), data.username)}
         ${dataRow(t(lang, "labelPassword"), t(lang, "passwordHint"))}
       </table>
-      <div style="text-align:center;margin-top:16px;">
+      <div style="text-align:left;margin-top:16px;">
         <a href="https://timolsystem.com" class="cta-btn" style="display:inline-block;background-color:#0f2b4a;color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:8px;font-weight:700;font-size:15px;letter-spacing:0.5px;">
           ${t(lang, "accessCta")}
         </a>
