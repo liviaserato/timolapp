@@ -243,10 +243,18 @@ function closingBlock(lang: Lang, closingText: string): string {
   <p style="margin:0 0 16px;font-size:15px;color:#334155;">
     ${closingText}
   </p>
-  <p style="margin:0;font-size:15px;color:#334155;">
+  <p style="margin:0 0 0;font-size:15px;color:#334155;">
     ${t(lang, "closingSign")}<br/>
     <strong>${t(lang, "team")}</strong>
   </p>
+
+  <!-- Institutional footer -->
+  <div style="margin-top:28px;padding-top:20px;border-top:1px solid #f1f5f9;">
+    <p style="margin:0 0 4px;font-size:12px;color:#94a3b8;font-weight:600;">Timol Produtos Magnéticos</p>
+    <p style="margin:0;font-size:12px;color:#94a3b8;">
+      📍 <a href="https://maps.app.goo.gl/fUbcB57rcLuZG69f9" target="_blank" style="color:#94a3b8;text-decoration:none;">Uberlândia – MG, Brasil</a>
+    </p>
+  </div>
 </div>`;
 }
 
