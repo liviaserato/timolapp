@@ -168,7 +168,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
         <DialogHeader className="items-center space-y-2">
           <img src={timolLogoDark} alt="Timol" className="h-8 mx-auto" />
           <DialogTitle className="text-lg font-bold text-primary">
-            {t("forgotPw.title")}
+            {step === "success" ? t("forgotPw.successTitle") : t("forgotPw.title")}
           </DialogTitle>
           {step === "identifier" && (
             <DialogDescription className="text-xs text-center">
@@ -252,6 +252,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
             <>
               <div className="flex flex-col items-center gap-3">
                 <InputOTP
+                  autoFocus
                   maxLength={6}
                   value={pin}
                   onChange={(val) => {
@@ -390,7 +391,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
           {step === "success" && (
             <div className="flex flex-col items-center gap-4 py-4">
               <CheckCircle2 className="h-12 w-12 text-success" />
-              <p className="text-sm text-center font-medium">{t("forgotPw.success")}</p>
+              <p className="text-sm text-center font-medium">{t("forgotPw.successDesc")}</p>
               <Button className="w-full gap-2" onClick={handleClose}>
                 <ArrowLeft className="h-4 w-4" />
                 {t("forgotPw.backToLogin")}
