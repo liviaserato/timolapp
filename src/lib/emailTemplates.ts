@@ -115,9 +115,9 @@ const t = (lang: Lang, key: string): string => {
       es: "PIX (pago confirmado)",
     },
     firstAccessTitle: {
-      pt: "🚀 Primeiro Acesso ao TimolSystem",
-      en: "🚀 First Access to TimolSystem",
-      es: "🚀 Primer Acceso a TimolSystem",
+      pt: "🚀 Primeiro Acesso ao Escritório Digital",
+      en: "🚀 First Access to Digital Office",
+      es: "🚀 Primer Acceso a la Oficina Digital",
     },
     firstAccessDesc: {
       pt: "Para acessar o sistema, utilize os dados abaixo:",
@@ -132,9 +132,9 @@ const t = (lang: Lang, key: string): string => {
       es: "La que definiste en el registro",
     },
     accessCta: {
-      pt: "ACESSAR TIMOLSYSTEM →",
-      en: "ACCESS TIMOLSYSTEM →",
-      es: "ACCEDER A TIMOLSYSTEM →",
+      pt: "ACESSAR ESCRITÓRIO DIGITAL →",
+      en: "ACCESS DIGITAL OFFICE →",
+      es: "ACCEDER A OFICINA DIGITAL →",
     },
     securityTitle: {
       pt: "🔒 Alerta de Segurança",
@@ -173,6 +173,7 @@ function emailShell(lang: Lang, title: string, body: string): string {
     @media only screen and (max-width: 480px) {
       .closing-text br.mobile-hide { display: none; }
       .cta-btn { font-size: 14px !important; padding: 14px 32px !important; }
+      .access-table td:first-child { width: 70px !important; }
     }
   </style>
 </head>
@@ -387,7 +388,7 @@ export function buildCompletedEmailHtml(data: CompletedEmailData): string {
       <p style="margin:0 0 8px;font-size:14px;color:#334155;">
         ${t(lang, "firstAccessDesc")}
       </p>
-      <table style="width:100%;border-collapse:collapse;margin:12px 0;">
+      <table class="access-table" style="width:100%;border-collapse:collapse;margin:12px 0;">
         ${dataRow(t(lang, "labelLogin"), data.username)}
         ${dataRow(t(lang, "labelPassword"), t(lang, "passwordHint"))}
       </table>
