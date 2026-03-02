@@ -64,7 +64,7 @@ const t = (lang: Lang, key: string): string => {
       es: "▶ Ver video",
     },
     whatsappHelp: {
-      pt: "Se tiver qualquer dúvida, estamos por aqui<br class=\"mobile-hide\"/> para te ajudar. Fale diretamente com nossa equipe pelo WhatsApp:",
+      pt: "Se tiver qualquer dúvida, estamos por aqui para te ajudar.<br class=\"mobile-hide\"/> Fale diretamente com nossa equipe pelo WhatsApp:",
       en: "If you have any questions, we're here to help.<br class=\"mobile-hide\"/> Talk directly to our team on WhatsApp:",
       es: "Si tienes alguna duda, estamos aquí para ayudarte.<br class=\"mobile-hide\"/> Habla directamente con nuestro equipo por WhatsApp:",
     },
