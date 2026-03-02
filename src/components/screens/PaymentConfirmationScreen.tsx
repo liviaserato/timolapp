@@ -74,7 +74,7 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
 
           <Button
             className="w-full gap-2"
-            onClick={() => window.open("https://timolsystem.com.br", "_blank")}
+            onClick={() => window.location.href = "/login"}
           >
             <ExternalLink className="h-4 w-4" />
             {t("paymentDone.portalButton")}
