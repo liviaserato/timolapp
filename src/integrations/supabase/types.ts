@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      password_reset_pins: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          pin: string
+          reset_token: string | null
+          used: boolean
+          user_id: string
+          user_identifier: string
+          verified: boolean
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at: string
+          id?: string
+          pin: string
+          reset_token?: string | null
+          used?: boolean
+          user_id: string
+          user_identifier: string
+          verified?: boolean
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          pin?: string
+          reset_token?: string | null
+          used?: boolean
+          user_id?: string
+          user_identifier?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           birth_date: string | null

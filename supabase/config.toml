@@ -38,3 +38,15 @@ verify_jwt = false
 
 [functions.get-pending-registrations]
 verify_jwt = false
+
+[functions.forgot-password]
+verify_jwt = false
+
+[functions.verify-reset-pin]
+verify_jwt = false
+
+[functions.reset-password]
+verify_jwt = false
+
+[functions.forgot-username]
+verify_jwt = false
