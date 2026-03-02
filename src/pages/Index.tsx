@@ -13,6 +13,7 @@ import { AppScreen, WizardData } from "@/types/wizard";
 import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
+  useEffect(() => { document.title = "Cadastro Nova Franquia"; return () => { document.title = "Timol System"; }; }, []);
   const [screen, setScreen] = useState<AppScreen>("sponsor");
   const [wizardData, setWizardData] = useState<WizardData>({});
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
