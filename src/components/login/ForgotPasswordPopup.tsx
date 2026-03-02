@@ -258,8 +258,8 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
                     setPin(val);
                     setError("");
                   }}
-                  onComplete={() => {
-                    // Auto-submit not triggered, user presses Enter or button
+                  onComplete={(val) => {
+                    if (val.length === 6) handleVerifyPin();
                   }}
                 >
                   <InputOTPGroup>
