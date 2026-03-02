@@ -215,9 +215,10 @@ function docValue(document: string, isForeigner?: boolean, countryCode?: string,
   if (!isForeigner) return document;
   const flag = countryFlag(countryCode);
   const ariaLabel = countryName ? ` aria-label="${countryName}"` : "";
-  return flag
-    ? `${document} <span${ariaLabel} style="font-size:16px;vertical-align:middle;">${flag}</span>`
-    : document;
+  if (flag) {
+    return `<span style="vertical-align:baseline;">${document}</span> <span${ariaLabel} style="font-size:14px;vertical-align:baseline;line-height:1;">${flag}</span>`;
+  }
+  return document;
 }
 
 /* ─── Data row helper with vertical-align:top ─── */
