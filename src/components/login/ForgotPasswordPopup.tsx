@@ -12,17 +12,26 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Loader2,
   AlertCircle,
   Eye,
   EyeOff,
   CheckCircle2,
   ArrowLeft,
+  HelpCircle,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
 
 type Step = "identifier" | "pin" | "new-password" | "success";
+
+const MOCK_USER = "liviaserato";
+const MOCK_PIN = "123465";
 
 interface Props {
   open: boolean;
@@ -36,25 +45,25 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
   const [step, setStep] = useState<Step>("identifier");
   const [identifier, setIdentifier] = useState("");
   const [pin, setPin] = useState("");
-  const [resetToken, setResetToken] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [resendHint, setResendHint] = useState(false);
 
   const resetAll = () => {
     setStep("identifier");
     setIdentifier("");
     setPin("");
-    setResetToken("");
     setNewPassword("");
     setConfirmPassword("");
     setShowNew(false);
     setShowConfirm(false);
     setError("");
     setLoading(false);
+    setResendHint(false);
   };
 
   const handleClose = () => {
@@ -62,7 +71,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
     onClose();
   };
 
-  // Step 1: Send PIN
+  // Step 1: Send PIN (mock)
   const handleSendPin = async () => {
     if (!identifier.trim()) {
       setError(t("forgotPw.error.identifierRequired"));
@@ -70,24 +79,14 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
     }
     setLoading(true);
     setError("");
-    try {
-      const { data, error: fnError } = await supabase.functions.invoke("forgot-password", {
-        body: { identifier: identifier.trim() },
-      });
-      if (fnError) throw fnError;
-      if (data?.success) {
-        setStep("pin");
-      } else {
-        setError(t("forgotPw.error.generic"));
-      }
-    } catch {
-      setError(t("forgotPw.error.generic"));
-    } finally {
+    // Mock: always succeed
+    setTimeout(() => {
       setLoading(false);
-    }
+      setStep("pin");
+    }, 800);
   };
 
-  // Step 2: Verify PIN
+  // Step 2: Verify PIN (mock)
   const handleVerifyPin = async () => {
     if (pin.length !== 6) {
       setError(t("forgotPw.error.pinLength"));
@@ -95,25 +94,17 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
     }
     setLoading(true);
     setError("");
-    try {
-      const { data, error: fnError } = await supabase.functions.invoke("verify-reset-pin", {
-        body: { identifier: identifier.trim(), pin },
-      });
-      if (fnError) throw fnError;
-      if (data?.success && data.reset_token) {
-        setResetToken(data.reset_token);
+    setTimeout(() => {
+      setLoading(false);
+      if (identifier.trim().toLowerCase() === MOCK_USER && pin === MOCK_PIN) {
         setStep("new-password");
       } else {
         setError(t("forgotPw.error.invalidPin"));
       }
-    } catch {
-      setError(t("forgotPw.error.invalidPin"));
-    } finally {
-      setLoading(false);
-    }
+    }, 800);
   };
 
-  // Step 3: Set new password
+  // Step 3: Set new password (mock)
   const handleResetPassword = async () => {
     if (newPassword.length < 6) {
       setError(t("forgotPw.error.passwordMin"));
@@ -125,37 +116,50 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
     }
     setLoading(true);
     setError("");
-    try {
-      const { data, error: fnError } = await supabase.functions.invoke("reset-password", {
-        body: { reset_token: resetToken, new_password: newPassword },
-      });
-      if (fnError) throw fnError;
-      if (data?.success) {
-        setStep("success");
-      } else {
-        setError(t("forgotPw.error.resetFailed"));
-      }
-    } catch {
-      setError(t("forgotPw.error.resetFailed"));
-    } finally {
+    setTimeout(() => {
       setLoading(false);
-    }
+      setStep("success");
+    }, 800);
+  };
+
+  const handleResendPin = () => {
+    setPin("");
+    setError("");
+    setResendHint(true);
+    setTimeout(() => setResendHint(false), 10000);
+    // Mock: pretend to resend
   };
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent className="max-w-sm">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-sm mx-auto rounded-xl">
         <DialogHeader className="items-center space-y-2">
           <img src={timolLogoDark} alt="Timol" className="h-8 mx-auto" />
-          <DialogTitle className="text-base">{t("forgotPw.title")}</DialogTitle>
+          <DialogTitle className="text-lg font-bold text-primary">
+            {t("forgotPw.title")}
+          </DialogTitle>
           {step === "identifier" && (
             <DialogDescription className="text-xs text-center">
-              {t("forgotPw.description")}
+              {t("forgotPw.descLine1")}
+              <br />
+              {t("forgotPw.descLine2")}
             </DialogDescription>
           )}
           {step === "pin" && (
             <DialogDescription className="text-xs text-center">
-              {t("forgotPw.pinSent")}
+              {t("forgotPw.pinSentConditional")}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button type="button" className="inline-flex ml-1 align-middle text-muted-foreground hover:text-primary transition-colors">
+                      <HelpCircle className="h-3.5 w-3.5" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="max-w-[260px] text-xs leading-relaxed">
+                    {t("forgotPw.pinHelpTooltip")}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </DialogDescription>
           )}
           {step === "new-password" && (
@@ -243,6 +247,13 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
                 </div>
               )}
 
+              {resendHint && (
+                <div className="flex items-center gap-2 text-xs text-success">
+                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                  <span>{t("forgotPw.resendSuccess")}</span>
+                </div>
+              )}
+
               <Button className="w-full gap-2" onClick={handleVerifyPin} disabled={loading || pin.length !== 6}>
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t("forgotPw.verifyPin")}
@@ -251,11 +262,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
               <button
                 type="button"
                 className="flex items-center justify-center gap-1 w-full text-xs text-muted-foreground hover:text-primary transition-colors"
-                onClick={() => {
-                  setPin("");
-                  setError("");
-                  handleSendPin();
-                }}
+                onClick={handleResendPin}
               >
                 {t("forgotPw.resendPin")}
               </button>
