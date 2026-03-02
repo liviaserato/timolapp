@@ -171,6 +171,8 @@ export default function PendingRegistrations() {
   const [copied, setCopied] = useState(false);
   const [dismissedAlerts, setDismissedAlerts] = useState<Record<string, Set<AlertType>>>({});
 
+  useEffect(() => { document.title = "Cadastro Nova Franquia"; return () => { document.title = "Timol System"; }; }, []);
+
   useEffect(() => {
     async function fetchPending() {
       try {
