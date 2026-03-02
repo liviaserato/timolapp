@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
   Dialog,
@@ -31,7 +31,7 @@ import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
 type Step = "identifier" | "pin" | "new-password" | "success";
 
 const MOCK_USER = "liviaserato";
-const MOCK_PIN = "123465";
+const MOCK_PIN = "123456";
 
 interface Props {
   open: boolean;
@@ -51,9 +51,31 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // PIN sent state
+  const [pinSent, setPinSent] = useState(false);
+  const [showExpiryHint, setShowExpiryHint] = useState(false);
   const [resendHint, setResendHint] = useState(false);
 
-  const resetAll = () => {
+  // Resend cooldown (60s)
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Cooldown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
+
+  const resetAll = useCallback(() => {
     setStep("identifier");
     setIdentifier("");
     setPin("");
@@ -63,8 +85,11 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
     setShowConfirm(false);
     setError("");
     setLoading(false);
+    setPinSent(false);
+    setShowExpiryHint(false);
     setResendHint(false);
-  };
+    setResendCooldown(0);
+  }, []);
 
   const handleClose = () => {
     resetAll();
@@ -79,9 +104,12 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
     }
     setLoading(true);
     setError("");
-    // Mock: always succeed
+    setShowExpiryHint(false);
     setTimeout(() => {
       setLoading(false);
+      setPinSent(true);
+      setShowExpiryHint(true);
+      setResendCooldown(60);
       setStep("pin");
     }, 800);
   };
@@ -90,6 +118,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
   const handleVerifyPin = async () => {
     if (pin.length !== 6) {
       setError(t("forgotPw.error.pinLength"));
+      setShowExpiryHint(false);
       return;
     }
     setLoading(true);
@@ -100,6 +129,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
         setStep("new-password");
       } else {
         setError(t("forgotPw.error.invalidPin"));
+        setShowExpiryHint(false);
       }
     }, 800);
   };
@@ -123,11 +153,13 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
   };
 
   const handleResendPin = () => {
+    if (resendCooldown > 0) return;
     setPin("");
     setError("");
+    setShowExpiryHint(true);
     setResendHint(true);
+    setResendCooldown(60);
     setTimeout(() => setResendHint(false), 10000);
-    // Mock: pretend to resend
   };
 
   return (
@@ -147,7 +179,9 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
           )}
           {step === "pin" && (
             <DialogDescription className="text-xs text-center">
-              {t("forgotPw.pinSentConditional")}
+              {t("forgotPw.pinSentLine1")}
+              <br />
+              {t("forgotPw.pinSentLine2")}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -192,10 +226,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
               </div>
 
               {error && (
-                <div className="flex items-center gap-2 text-xs text-destructive">
-                  <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                  <span>{error}</span>
-                </div>
+                <p className="text-xs text-destructive text-center">{error}</p>
               )}
 
               <Button className="w-full gap-2" onClick={handleSendPin} disabled={loading}>
@@ -227,6 +258,9 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
                     setPin(val);
                     setError("");
                   }}
+                  onComplete={() => {
+                    // Auto-submit not triggered, user presses Enter or button
+                  }}
                 >
                   <InputOTPGroup>
                     <InputOTPSlot index={0} />
@@ -237,35 +271,55 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
                     <InputOTPSlot index={5} />
                   </InputOTPGroup>
                 </InputOTP>
-                <p className="text-xs text-muted-foreground">{t("forgotPw.pinExpiry")}</p>
               </div>
 
-              {error && (
-                <div className="flex items-center gap-2 text-xs text-destructive">
-                  <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              {resendHint && (
-                <div className="flex items-center gap-2 text-xs text-success">
-                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-                  <span>{t("forgotPw.resendSuccess")}</span>
-                </div>
-              )}
-
-              <Button className="w-full gap-2" onClick={handleVerifyPin} disabled={loading || pin.length !== 6}>
+              {/* Verify PIN button */}
+              <Button
+                className="w-full gap-2"
+                onClick={handleVerifyPin}
+                disabled={loading || pin.length !== 6}
+                onKeyDown={(e) => e.key === "Enter" && pin.length === 6 && handleVerifyPin()}
+              >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t("forgotPw.verifyPin")}
               </Button>
 
-              <button
-                type="button"
-                className="flex items-center justify-center gap-1 w-full text-xs text-muted-foreground hover:text-primary transition-colors"
-                onClick={handleResendPin}
-              >
-                {t("forgotPw.resendPin")}
-              </button>
+              {/* Expiry hint - shown after send/resend, hidden on error */}
+              {showExpiryHint && !error && (
+                <p className="text-xs text-muted-foreground text-center">
+                  {t("forgotPw.pinExpiry")}
+                </p>
+              )}
+
+              {/* Error hint - centered */}
+              {error && (
+                <p className="text-xs text-destructive text-center">{error}</p>
+              )}
+
+              {/* Resend PIN button - only after first send */}
+              {pinSent && (
+                <button
+                  type="button"
+                  className={`flex items-center justify-center gap-1 w-full text-xs transition-colors ${
+                    resendCooldown > 0
+                      ? "text-muted-foreground/50 cursor-not-allowed"
+                      : "text-muted-foreground hover:text-primary"
+                  }`}
+                  onClick={handleResendPin}
+                  disabled={resendCooldown > 0}
+                  aria-label={t("forgotPw.resendPinAria")}
+                >
+                  {t("forgotPw.resendPin")}
+                  {resendCooldown > 0 && ` (${resendCooldown}s)`}
+                </button>
+              )}
+
+              {/* Resend success hint - centered, below resend button */}
+              {resendHint && (
+                <p className="text-xs text-success text-center">
+                  {t("forgotPw.resendSuccess")}
+                </p>
+              )}
             </>
           )}
 
@@ -322,10 +376,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
               </div>
 
               {error && (
-                <div className="flex items-center gap-2 text-xs text-destructive">
-                  <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                  <span>{error}</span>
-                </div>
+                <p className="text-xs text-destructive text-center">{error}</p>
               )}
 
               <Button className="w-full gap-2" onClick={handleResetPassword} disabled={loading}>
