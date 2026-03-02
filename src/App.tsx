@@ -22,8 +22,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Login />} />
+            <Route path="/cadastro" element={<Index />} />
             <Route path="/contrato" element={<Contract />} />
             <Route path="/continue/:token" element={<Continue />} />
             <Route path="/pendentes" element={<PendingRegistrations />} />

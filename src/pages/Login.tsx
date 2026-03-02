@@ -179,7 +179,7 @@ const Login = () => {
             <Button
               variant="outline"
               className="w-full gap-2 text-sm"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/cadastro")}
             >
               <UserPlus className="h-4 w-4" />
               {t("login.newFranchisee")}
