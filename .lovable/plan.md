@@ -1,56 +1,46 @@
 
 
-## Automacao de Cancelamento D+30 e Conclusao por Pagamento
+# Visualizacao dos E-mails de Recuperacao e Boas-Vindas
 
-### Objetivo
-- Cadastros pendentes ha mais de 30 dias devem ter o status alterado automaticamente para "cancelled"
-- Cadastros com pagamento concluido devem ter o status alterado para "completed"
-- Cadastros cancelados nao aparecem mais na tela /pendentes
+## Objetivo
+Criar uma pagina de preview (`/emails`) com duas abas para visualizar os dois modelos de e-mail com dados ficticios, sem integrar envio real.
 
-### Alteracoes
+## O que sera feito
 
-#### 1. Edge Function: `auto-update-registration-status`
-Criar uma nova Edge Function que sera executada periodicamente (via cron) e fara duas operacoes:
+### 1. Criar pagina `src/pages/EmailPreviews.tsx`
+- Pagina com duas abas (Tabs): **Cadastro Pendente** e **Cadastro Concluido**
+- Cada aba renderiza o HTML do respectivo e-mail dentro de um iframe (via `srcdoc`), simulando exatamente como o destinatario veria no cliente de e-mail
+- Container com `max-width: 700px` centralizado, com borda sutil ao redor do iframe para simular uma "caixa de e-mail"
+- Dados ficticios pre-preenchidos:
+  - Nome: Maria Silva
+  - ID: 1587
+  - CPF: 123.456.789-00
+  - Patrocinador: João Santos (ID 842)
+  - E-mail: maria@exemplo.com
+  - Franquia: Ouro
+  - Pagamento: Cartao final 4521, 3x R$ 333,00
 
-**a) Cancelar cadastros com mais de 30 dias:**
-```sql
-UPDATE registration_status
-SET status = 'cancelled', updated_at = now()
-WHERE status = 'pending'
-AND created_at < now() - interval '30 days'
-```
+### 2. E-mail 1 - Cadastro Pendente (ja existe)
+- Reutilizar o HTML que ja esta em `supabase/functions/send-recovery-email/index.ts` (funcao `buildEmailHtml`)
+- Recriar a mesma funcao no frontend apenas para preview, preenchendo com os dados ficticios
+- Conteudo: saudacao, resumo de dados, botao "CONTINUAR CADASTRO", secao de video, botao WhatsApp, fechamento
 
-**b) Concluir cadastros com pagamento confirmado:**
-```sql
-UPDATE registration_status
-SET status = 'completed', updated_at = now()
-WHERE status = 'pending'
-AND payment_completed = true
-```
+### 3. E-mail 2 - Cadastro Concluido (novo)
+- Criar o HTML do e-mail de boas-vindas seguindo o mesmo estilo visual (inline CSS, max-width 600px, mesma paleta de cores)
+- Conteudo:
+  - Logo Timol
+  - Saudacao: "Parabens, [Nome]! Sua franquia [Nome Franquia] foi ativada com sucesso!"
+  - Resumo: ID, CPF, Franquia escolhida, Patrocinador
+  - Resumo do pagamento (metodo, ultimos 4 digitos, parcelas)
+  - Secao "Primeiro Acesso" com instrucoes para acessar o TimolSystem
+  - Alerta de seguranca sobre sigilo da senha
+  - Botao WhatsApp para suporte
+  - Fechamento com assinatura Equipe Timol
 
-#### 2. Cron Job
-Agendar a Edge Function para rodar a cada hora (ou a cada 15 minutos, aproveitando o mesmo intervalo do cron existente).
+### 4. Registrar rota em `src/App.tsx`
+- Adicionar rota `/emails` apontando para a nova pagina
 
-#### 3. Atualizar `track-registration` (update mode)
-Adicionar `status` na lista de campos permitidos para update, para que quando o pagamento for confirmado no frontend, o status tambem seja atualizado imediatamente para "completed" (sem esperar o cron).
-
-No `Index.tsx`, ao confirmar pagamento, enviar tambem `status: "completed"` junto com `payment_completed: true`.
-
-#### 4. Registrar a Edge Function no `config.toml`
-Adicionar a configuracao `verify_jwt = false` para a nova funcao.
-
-### Resumo dos Arquivos
-
-| Arquivo | Acao |
-|---|---|
-| `supabase/functions/auto-update-registration-status/index.ts` | Criar - logica de cancelamento D+30 e conclusao por pagamento |
-| `supabase/config.toml` | Adicionar entrada para nova funcao (automatico) |
-| `supabase/functions/track-registration/index.ts` | Adicionar "status" aos allowedFields |
-| `src/pages/Index.tsx` | Enviar `status: "completed"` ao confirmar pagamento |
-| Cron Job (SQL) | Agendar execucao periodica da nova funcao |
-
-### Comportamento Esperado
-- A tela /pendentes ja filtra por `status = 'pending'`, entao cadastros com status "cancelled" ou "completed" desaparecem automaticamente
-- Pagamentos confirmados mudam o status imediatamente (via frontend) e tambem sao cobertos pelo cron como fallback
-- Cadastros abandonados por 30+ dias sao cancelados automaticamente pelo cron
-
+## Detalhes tecnicos
+- Os HTMLs dos e-mails serao funcoes TypeScript puras que retornam strings, mantidas dentro do proprio arquivo da pagina (ou em um arquivo auxiliar `src/lib/emailTemplates.ts` para organizacao)
+- O iframe usara `srcdoc` para renderizar o HTML, isolando os estilos inline do e-mail do restante da aplicacao
+- Nenhuma alteracao no backend ou banco de dados
