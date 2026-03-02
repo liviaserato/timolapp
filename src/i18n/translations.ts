@@ -324,6 +324,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Forgot password popup
     "forgotPw.title": "Recuperar Senha",
+    "forgotPw.changePasswordTitle": "Alteração de Senha",
     "forgotPw.description": "Informe seu usuário ou e-mail para receber um PIN de verificação.",
     "forgotPw.descLine1": "Informe seu usuário ou e-mail para",
     "forgotPw.descLine2": "receber um PIN de verificação.",
@@ -706,6 +707,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Forgot password popup
     "forgotPw.title": "Recover Password",
+    "forgotPw.changePasswordTitle": "Change Password",
     "forgotPw.description": "Enter your username or email to receive a verification PIN.",
     "forgotPw.descLine1": "Enter your username or email to",
     "forgotPw.descLine2": "receive a verification PIN.",
@@ -1088,6 +1090,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Forgot password popup
     "forgotPw.title": "Recuperar Contraseña",
+    "forgotPw.changePasswordTitle": "Cambio de Contraseña",
     "forgotPw.description": "Ingrese su usuario o correo para recibir un PIN de verificación.",
     "forgotPw.descLine1": "Ingrese su usuario o correo para",
     "forgotPw.descLine2": "recibir un PIN de verificación.",
