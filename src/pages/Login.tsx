@@ -41,6 +41,18 @@ const Login = () => {
   const handleLogin = async () => {
     if (!validate()) return;
     setLoading(true);
+
+    // Persist "remember me" preference for session management
+    if (rememberMe) {
+      localStorage.setItem("timol_remember_me", "true");
+      // Session will persist for 30 days (handled by auth config)
+    } else {
+      localStorage.removeItem("timol_remember_me");
+      // Session should expire when browser closes
+      sessionStorage.setItem("timol_session_temp", "true");
+    }
+
+    // TODO: Replace with real Supabase auth call
     setTimeout(() => {
       setLoading(false);
       setErrors({ general: t("login.error.invalid") });
