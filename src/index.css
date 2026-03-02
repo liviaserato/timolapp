@@ -134,38 +134,4 @@ All colors MUST be HSL.
   animation: timol-wave 0.9s ease-in-out infinite;
 }
 
-/* Login water background */
-.login-water-bg {
-  background:
-    radial-gradient(ellipse 120% 80% at 20% 80%, hsl(200 60% 92% / 0.7), transparent),
-    radial-gradient(ellipse 100% 60% at 80% 20%, hsl(210 50% 90% / 0.6), transparent),
-    radial-gradient(ellipse 80% 100% at 50% 50%, hsl(205 40% 95% / 0.5), transparent),
-    linear-gradient(180deg, hsl(210 40% 97%) 0%, hsl(205 30% 93%) 50%, hsl(200 35% 91%) 100%);
-}
-
-.login-water-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle 300px at 30% 70%, hsl(200 50% 88% / 0.4), transparent),
-    radial-gradient(circle 200px at 70% 30%, hsl(210 45% 90% / 0.3), transparent),
-    radial-gradient(circle 250px at 50% 90%, hsl(195 40% 87% / 0.3), transparent);
-  animation: login-water-drift 12s ease-in-out infinite alternate;
-}
-
-.login-water-bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle 180px at 60% 50%, hsl(205 35% 92% / 0.3), transparent),
-    radial-gradient(circle 220px at 25% 40%, hsl(210 30% 94% / 0.25), transparent);
-  animation: login-water-drift 16s ease-in-out 2s infinite alternate-reverse;
-}
-
-@keyframes login-water-drift {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(8px, -6px) scale(1.02); }
-  100% { transform: translate(-4px, 4px) scale(0.98); }
-}
+/* Login water background removed — now using image */
