@@ -97,7 +97,7 @@ function buildEmailHtml(data: {
   countryName?: string;
 }): string {
   const lang = data.language;
-  const logoUrl = `${SITE_URL}/timol-logo.svg`;
+  const logoUrl = `${SITE_URL}/favicon-timol-azul-escuro.svg`;
   const continueUrl = `${SITE_URL}/continue/${data.continueToken}`;
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `Olá, meu nome é ${data.fullName}, meu ID é ${data.userId}. Preciso de ajuda para concluir meu cadastro.`

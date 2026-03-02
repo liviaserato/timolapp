@@ -163,7 +163,7 @@ const t = (lang: Lang, key: string): string => {
 /* ─── Shared email wrapper ─── */
 function emailShell(lang: Lang, title: string, body: string, siteUrl: string): string {
   const htmlLang = lang === "pt" ? "pt-BR" : lang === "es" ? "es" : "en";
-  const logoUrl = `${siteUrl}/timol-logo.svg`;
+  const logoUrl = `${siteUrl}/favicon-timol-azul-escuro.svg`;
   return `<!DOCTYPE html>
 <html lang="${htmlLang}">
 <head>
