@@ -63,11 +63,11 @@ const Login = () => {
 
       {/* Main container: promo + login side by side */}
       <div className="relative z-10 flex rounded-xl overflow-hidden shadow-2xl max-w-4xl w-full">
-        {/* Promo banner - hidden on mobile */}
-        <LoginPromoBanner className="hidden lg:flex w-[420px] shrink-0" />
+        {/* Promo banner - hidden on mobile, visible from md */}
+        <LoginPromoBanner className="hidden md:flex w-[340px] lg:w-[420px] shrink-0" />
 
         {/* Login card */}
-        <Card className="w-full border-0 rounded-none lg:rounded-r-xl bg-card/95 backdrop-blur-sm">
+        <Card className="w-full max-w-md md:max-w-none border-0 rounded-xl md:rounded-none md:rounded-r-xl bg-card/95 backdrop-blur-sm">
           <CardContent className="flex flex-col gap-5 pt-8 pb-6 px-6">
             {/* Logo + title */}
             <div className="text-center space-y-4">
