@@ -6,6 +6,8 @@ import {
   getCompletedSubject,
 } from "@/lib/emailTemplates";
 
+const siteUrl = window.location.origin;
+
 const pendingHtml = buildPendingEmailHtml({
   fullName: "Maria Silva",
   userId: "1587",
@@ -14,6 +16,7 @@ const pendingHtml = buildPendingEmailHtml({
   sponsorId: "842",
   continueToken: "abc123-demo-token",
   language: "pt",
+  siteUrl,
 });
 
 const completedHtml = buildCompletedEmailHtml({
@@ -30,6 +33,7 @@ const completedHtml = buildCompletedEmailHtml({
   email: "maria@exemplo.com",
   username: "maria.silva",
   language: "pt",
+  siteUrl,
 });
 
 const pendingSubject = getPendingSubject("pt");
