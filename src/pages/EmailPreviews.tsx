@@ -1,4 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TimolLoader } from "@/components/ui/timol-loader";
 import {
   buildPendingEmailHtml,
   buildCompletedEmailHtml,
@@ -47,6 +48,14 @@ export default function EmailPreviews() {
         <p className="text-sm text-muted-foreground mb-6">
           Visualize os modelos de e-mail com dados fictícios antes de integrar o envio real.
         </p>
+
+        <div className="mb-6 rounded-lg border bg-background p-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-foreground">Preview do loader</p>
+            <p className="text-xs text-muted-foreground">Produtos dentro da garrafa com água subindo.</p>
+          </div>
+          <TimolLoader size={120} />
+        </div>
 
         <Tabs defaultValue="pending">
           <TabsList className="w-full">
