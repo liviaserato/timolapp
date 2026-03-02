@@ -82,12 +82,12 @@ const Login = () => {
         <Card className="w-full max-w-md md:max-w-none border-0 rounded-xl md:rounded-none md:rounded-r-xl bg-card/95 backdrop-blur-sm">
           <CardContent className="flex flex-col gap-5 pt-8 pb-6 px-6">
             {/* Logo + title */}
-            <div className="text-center space-y-4">
-              <img src={timolLogoDark} alt="Timol" className="h-10 mx-auto" />
+            <div className="text-center">
+              <img src={timolLogoDark} alt="Timol" className="h-10 mx-auto mb-6" />
               <h1 className="text-lg font-bold text-primary leading-tight">
                 {t("login.title")}
               </h1>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t("login.subtitle")}
               </p>
             </div>
