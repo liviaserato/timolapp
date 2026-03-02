@@ -168,7 +168,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
         <DialogHeader className="items-center space-y-2">
           <img src={timolLogoDark} alt="Timol" className="h-8 mx-auto" />
           <DialogTitle className="text-lg font-bold text-primary">
-            {step === "success" ? t("forgotPw.successTitle") : t("forgotPw.title")}
+            {step === "success" ? t("forgotPw.successTitle") : step === "new-password" ? t("forgotPw.changePasswordTitle") : t("forgotPw.title")}
           </DialogTitle>
           {step === "identifier" && (
             <DialogDescription className="text-xs text-center">
