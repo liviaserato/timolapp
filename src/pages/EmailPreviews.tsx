@@ -76,6 +76,7 @@ export default function EmailPreviews() {
           <TabsContent value="pending">
             <div className="rounded-lg border bg-background shadow-sm overflow-hidden">
               <div className="bg-muted px-4 py-2 text-xs text-muted-foreground border-b space-y-0.5">
+                <div><strong>De:</strong> contato@timol.com.br</div>
                 <div><strong>Para:</strong> maria@exemplo.com</div>
                 <div><strong>Assunto:</strong> {pendingSubject}</div>
               </div>
@@ -91,6 +92,7 @@ export default function EmailPreviews() {
           <TabsContent value="completed">
             <div className="rounded-lg border bg-background shadow-sm overflow-hidden">
               <div className="bg-muted px-4 py-2 text-xs text-muted-foreground border-b space-y-0.5">
+                <div><strong>De:</strong> contato@timol.com.br</div>
                 <div><strong>Para:</strong> maria@exemplo.com</div>
                 <div><strong>Assunto:</strong> {completedSubject}</div>
               </div>
@@ -106,7 +108,7 @@ export default function EmailPreviews() {
           <TabsContent value="pw-changed">
             <div className="rounded-lg border bg-background shadow-sm overflow-hidden">
               <div className="bg-muted px-4 py-2 text-xs text-muted-foreground border-b space-y-0.5">
-                <div><strong>De:</strong> contato@timol.com.br</div>
+                <div><strong>De:</strong> noreply@timol.com.br</div>
                 <div><strong>Para:</strong> liviaserato@yahoo.com.br</div>
                 <div><strong>Assunto:</strong> {passwordChangedSubject}</div>
               </div>
