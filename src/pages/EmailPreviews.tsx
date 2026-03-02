@@ -36,8 +36,42 @@ const completedHtml = buildCompletedEmailHtml({
   siteUrl,
 });
 
+/* Foreigner examples */
+const pendingForeignerHtml = buildPendingEmailHtml({
+  fullName: "John Smith",
+  userId: "2041",
+  document: "AB1234567",
+  sponsorName: "Carlos Oliveira",
+  sponsorId: "310",
+  continueToken: "xyz789-demo-token",
+  language: "en",
+  siteUrl,
+  isForeigner: true,
+  countryCode: "US",
+  countryName: "United States",
+});
+
+const completedForeignerHtml = buildCompletedEmailHtml({
+  fullName: "John Smith",
+  userId: "2041",
+  document: "AB1234567",
+  sponsorName: "Carlos Oliveira",
+  sponsorId: "310",
+  franchiseName: "Platina",
+  paymentMethod: "pix",
+  email: "john@example.com",
+  username: "john.smith",
+  language: "en",
+  siteUrl,
+  isForeigner: true,
+  countryCode: "US",
+  countryName: "United States",
+});
+
 const pendingSubject = getPendingSubject("pt");
 const completedSubject = getCompletedSubject("pt");
+const pendingSubjectEn = getPendingSubject("en");
+const completedSubjectEn = getCompletedSubject("en");
 
 export default function EmailPreviews() {
   return (
@@ -50,8 +84,10 @@ export default function EmailPreviews() {
 
         <Tabs defaultValue="pending">
           <TabsList className="w-full">
-            <TabsTrigger value="pending" className="flex-1">Cadastro Pendente</TabsTrigger>
-            <TabsTrigger value="completed" className="flex-1">Cadastro Concluído</TabsTrigger>
+            <TabsTrigger value="pending" className="flex-1">Pendente (BR)</TabsTrigger>
+            <TabsTrigger value="completed" className="flex-1">Concluído (BR)</TabsTrigger>
+            <TabsTrigger value="pending-foreign" className="flex-1">Pendente (US)</TabsTrigger>
+            <TabsTrigger value="completed-foreign" className="flex-1">Concluído (US)</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending">
@@ -78,6 +114,36 @@ export default function EmailPreviews() {
               <iframe
                 srcDoc={completedHtml}
                 title="E-mail Cadastro Concluído"
+                className="w-full border-0"
+                style={{ minHeight: 1000 }}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="pending-foreign">
+            <div className="rounded-lg border bg-background shadow-sm overflow-hidden">
+              <div className="bg-muted px-4 py-2 text-xs text-muted-foreground border-b space-y-0.5">
+                <div><strong>To:</strong> john@example.com</div>
+                <div><strong>Subject:</strong> {pendingSubjectEn}</div>
+              </div>
+              <iframe
+                srcDoc={pendingForeignerHtml}
+                title="E-mail Pending Registration (Foreigner)"
+                className="w-full border-0"
+                style={{ minHeight: 900 }}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="completed-foreign">
+            <div className="rounded-lg border bg-background shadow-sm overflow-hidden">
+              <div className="bg-muted px-4 py-2 text-xs text-muted-foreground border-b space-y-0.5">
+                <div><strong>To:</strong> john@example.com</div>
+                <div><strong>Subject:</strong> {completedSubjectEn}</div>
+              </div>
+              <iframe
+                srcDoc={completedForeignerHtml}
+                title="E-mail Completed Registration (Foreigner)"
                 className="w-full border-0"
                 style={{ minHeight: 1000 }}
               />

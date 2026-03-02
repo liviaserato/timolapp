@@ -31,7 +31,8 @@ const t = (lang: Lang, key: string): string => {
     },
     labelId: { pt: "ID:", en: "ID:", es: "ID:" },
     labelName: { pt: "Nome:", en: "Name:", es: "Nombre:" },
-    labelDoc: { pt: "CPF:", en: "Document:", es: "Documento:" },
+    labelDocBr: { pt: "CPF:", en: "CPF:", es: "CPF:" },
+    labelDocForeign: { pt: "Documento:", en: "Document:", es: "Documento:" },
     labelSponsor: { pt: "Patrocinador:", en: "Sponsor:", es: "Patrocinador:" },
     pendingAlmost: {
       pt: "Falta só mais um passo para ativar sua franquia e começar sua jornada com a Timol.",
@@ -196,6 +197,29 @@ function emailShell(lang: Lang, title: string, body: string, siteUrl: string): s
 </html>`;
 }
 
+/* ─── Country code → flag emoji ─── */
+function countryFlag(code?: string): string {
+  if (!code || code.length !== 2) return "";
+  const upper = code.toUpperCase();
+  return String.fromCodePoint(
+    ...upper.split("").map((c) => 0x1f1e6 + c.charCodeAt(0) - 65)
+  );
+}
+
+/* ─── Document label + value with optional flag ─── */
+function docLabel(lang: Lang, isForeigner?: boolean): string {
+  return isForeigner ? t(lang, "labelDocForeign") : t(lang, "labelDocBr");
+}
+
+function docValue(document: string, isForeigner?: boolean, countryCode?: string, countryName?: string): string {
+  if (!isForeigner) return document;
+  const flag = countryFlag(countryCode);
+  const ariaLabel = countryName ? ` aria-label="${countryName}"` : "";
+  return flag
+    ? `${document} <span${ariaLabel} style="font-size:16px;vertical-align:middle;">${flag}</span>`
+    : document;
+}
+
 /* ─── Data row helper with vertical-align:top ─── */
 function dataRow(label: string, value: string): string {
   return `<tr>
@@ -251,8 +275,11 @@ function closingBlock(lang: Lang, closingText: string): string {
   <!-- Institutional footer -->
   <div style="margin-top:28px;padding-top:20px;border-top:1px solid #f1f5f9;">
     <p style="margin:0 0 4px;font-size:12px;color:#94a3b8;font-weight:600;">Timol Produtos Magnéticos</p>
-    <p style="margin:0;font-size:12px;color:#94a3b8;">
+    <p style="margin:0 0 4px;font-size:12px;color:#94a3b8;">
       📍 <a href="https://maps.app.goo.gl/fUbcB57rcLuZG69f9" target="_blank" style="color:#94a3b8;text-decoration:none;">Uberlândia – MG, Brasil</a>
+    </p>
+    <p style="margin:0;font-size:12px;color:#94a3b8;">
+      ✉️ <a href="mailto:contato@timol.com.br" style="color:#94a3b8;text-decoration:none;">contato@timol.com.br</a>
     </p>
   </div>
 </div>`;
@@ -271,6 +298,9 @@ export interface PendingEmailData {
   continueToken: string;
   language?: Lang;
   siteUrl?: string;
+  isForeigner?: boolean;
+  countryCode?: string;
+  countryName?: string;
 }
 
 export function getPendingSubject(lang: Lang = "pt"): string {
@@ -304,7 +334,7 @@ export function buildPendingEmailHtml(data: PendingEmailData): string {
       <table class="data-summary" style="width:100%;border-collapse:collapse;">
         ${dataRow(t(lang, "labelId"), data.userId)}
         ${dataRow(t(lang, "labelName"), data.fullName)}
-        ${dataRow(t(lang, "labelDoc"), data.document)}
+        ${dataRow(docLabel(lang, data.isForeigner), docValue(data.document, data.isForeigner, data.countryCode, data.countryName))}
         ${dataRow(t(lang, "labelSponsor"), `${data.sponsorName} (ID ${data.sponsorId})`)}
       </table>
     </div>
@@ -352,6 +382,9 @@ export interface CompletedEmailData {
   username: string;
   language?: Lang;
   siteUrl?: string;
+  isForeigner?: boolean;
+  countryCode?: string;
+  countryName?: string;
 }
 
 export function getCompletedSubject(lang: Lang = "pt"): string {
@@ -386,7 +419,7 @@ export function buildCompletedEmailHtml(data: CompletedEmailData): string {
       <table class="data-summary" style="width:100%;border-collapse:collapse;">
         ${dataRow(t(lang, "labelId"), data.userId)}
         ${dataRow(t(lang, "labelName"), data.fullName)}
-        ${dataRow(t(lang, "labelDoc"), data.document)}
+        ${dataRow(docLabel(lang, data.isForeigner), docValue(data.document, data.isForeigner, data.countryCode, data.countryName))}
         ${dataRow(t(lang, "labelFranchise"), data.franchiseName)}
         ${dataRow(t(lang, "labelSponsor"), `${data.sponsorName} (ID ${data.sponsorId})`)}
       </table>
