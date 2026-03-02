@@ -2,6 +2,21 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { Language, translations } from "./translations";
 
+const STORAGE_KEY = "timol-lang";
+const SUPPORTED: Language[] = ["pt", "en", "es"];
+
+function detectLanguage(): Language {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved && SUPPORTED.includes(saved as Language)) return saved as Language;
+
+  const langs = navigator.languages?.length ? navigator.languages : [navigator.language];
+  for (const l of langs) {
+    const prefix = l.slice(0, 2).toLowerCase();
+    if (SUPPORTED.includes(prefix as Language)) return prefix as Language;
+  }
+  return "pt";
+}
+
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
@@ -11,7 +26,12 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>("pt");
+  const [language, setLanguageState] = useState<Language>(detectLanguage);
+
+  const setLanguage = useCallback((lang: Language) => {
+    localStorage.setItem(STORAGE_KEY, lang);
+    setLanguageState(lang);
+  }, []);
 
   const t = useCallback(
     (key: string) => translations[language][key] || key,
