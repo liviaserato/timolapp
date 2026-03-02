@@ -366,7 +366,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
       <Card className="shadow-lg">
         <CardContent className="pt-6 space-y-4">
           <div className="text-center space-y-1">
-            <h3 className="text-lg font-semibold">{t("sponsor.card.title")}</h3>
+            <h2 className="text-lg font-semibold">{t("sponsor.card.title")}</h2>
             <p className="text-sm text-muted-foreground">{t("sponsor.card.description")}</p>
           </div>
           <div className="max-w-xs mx-auto">
