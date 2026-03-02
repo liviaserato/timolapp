@@ -3,8 +3,10 @@ import { TimolLoader } from "@/components/ui/timol-loader";
 import {
   buildPendingEmailHtml,
   buildCompletedEmailHtml,
+  buildPasswordChangedEmailHtml,
   getPendingSubject,
   getCompletedSubject,
+  getPasswordChangedSubject,
 } from "@/lib/emailTemplates";
 
 const siteUrl = window.location.origin;
@@ -37,8 +39,15 @@ const completedHtml = buildCompletedEmailHtml({
   siteUrl,
 });
 
+const passwordChangedHtml = buildPasswordChangedEmailHtml({
+  fullName: "Lívia Serato",
+  language: "pt",
+  siteUrl,
+});
+
 const pendingSubject = getPendingSubject("pt");
 const completedSubject = getCompletedSubject("pt");
+const passwordChangedSubject = getPasswordChangedSubject("pt");
 
 export default function EmailPreviews() {
   return (
@@ -61,6 +70,7 @@ export default function EmailPreviews() {
           <TabsList className="w-full">
             <TabsTrigger value="pending" className="flex-1">Cadastro Pendente</TabsTrigger>
             <TabsTrigger value="completed" className="flex-1">Cadastro Concluído</TabsTrigger>
+            <TabsTrigger value="pw-changed" className="flex-1">Senha Alterada</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending">
@@ -89,6 +99,22 @@ export default function EmailPreviews() {
                 title="E-mail Cadastro Concluído"
                 className="w-full border-0"
                 style={{ minHeight: 1000 }}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="pw-changed">
+            <div className="rounded-lg border bg-background shadow-sm overflow-hidden">
+              <div className="bg-muted px-4 py-2 text-xs text-muted-foreground border-b space-y-0.5">
+                <div><strong>De:</strong> contato@timol.com.br</div>
+                <div><strong>Para:</strong> liviaserato@yahoo.com.br</div>
+                <div><strong>Assunto:</strong> {passwordChangedSubject}</div>
+              </div>
+              <iframe
+                srcDoc={passwordChangedHtml}
+                title="E-mail Senha Alterada"
+                className="w-full border-0"
+                style={{ minHeight: 700 }}
               />
             </div>
           </TabsContent>

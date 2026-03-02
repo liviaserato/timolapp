@@ -156,6 +156,53 @@ const t = (lang: Lang, key: string): string => {
       en: "We're so happy to have you with us!<br class=\"mobile-hide\"/> Your journey starts now. Count on us!",
       es: "¡Estamos muy felices de tenerte con nosotros!<br class=\"mobile-hide\"/> Tu camino comienza ahora. ¡Cuenta con nosotros!",
     },
+
+    /* ── Password changed email ── */
+    pwChangedSubject: {
+      pt: "Sua senha foi alterada com sucesso | Timol",
+      en: "Your password was changed successfully | Timol",
+      es: "Tu contraseña fue cambiada con éxito | Timol",
+    },
+    pwChangedTitle: {
+      pt: "Senha alterada com sucesso",
+      en: "Password changed successfully",
+      es: "Contraseña cambiada con éxito",
+    },
+    pwChangedGreeting: {
+      pt: "Olá, {{name}}.",
+      en: "Hello, {{name}}.",
+      es: "Hola, {{name}}.",
+    },
+    pwChangedIntro: {
+      pt: "Sua senha de acesso ao Escritório Digital Timol foi alterada com sucesso.",
+      en: "Your Timol Digital Office access password has been changed successfully.",
+      es: "Tu contraseña de acceso a la Oficina Digital Timol fue cambiada con éxito.",
+    },
+    pwChangedSafe: {
+      pt: "Se foi você quem fez essa alteração, nenhuma ação é necessária.",
+      en: "If you made this change, no action is needed.",
+      es: "Si fuiste tú quien realizó este cambio, no es necesaria ninguna acción.",
+    },
+    pwChangedAlert: {
+      pt: "Caso você não tenha solicitado essa alteração, recomendamos que entre em contato com nossa equipe imediatamente para proteger sua conta.",
+      en: "If you did not request this change, we recommend contacting our team immediately to protect your account.",
+      es: "Si no solicitaste este cambio, te recomendamos contactar a nuestro equipo de inmediato para proteger tu cuenta.",
+    },
+    pwChangedWhatsappCta: {
+      pt: "Falar com a Timol pelo WhatsApp",
+      en: "Contact Timol on WhatsApp",
+      es: "Hablar con Timol por WhatsApp",
+    },
+    pwChangedSupport: {
+      pt: "Nossa equipe está pronta para ajudar você a manter sua conta segura.",
+      en: "Our team is ready to help you keep your account secure.",
+      es: "Nuestro equipo está listo para ayudarte a mantener tu cuenta segura.",
+    },
+    pwChangedClosing: {
+      pt: "Conte com a gente para manter sua conta protegida.",
+      en: "Count on us to keep your account protected.",
+      es: "Cuenta con nosotros para mantener tu cuenta protegida.",
+    },
   };
   return map[key]?.[lang] ?? map[key]?.pt ?? key;
 };
@@ -467,4 +514,68 @@ export function buildCompletedEmailHtml(data: CompletedEmailData): string {
   `;
 
   return emailShell(lang, t(lang, "completedSubject"), body, siteUrl);
+}
+
+/* ================================================================
+   PASSWORD CHANGED CONFIRMATION EMAIL
+   ================================================================ */
+
+export interface PasswordChangedEmailData {
+  fullName: string;
+  language?: Lang;
+  siteUrl?: string;
+}
+
+export function getPasswordChangedSubject(lang: Lang = "pt"): string {
+  return t(lang, "pwChangedSubject");
+}
+
+export function buildPasswordChangedEmailHtml(data: PasswordChangedEmailData): string {
+  const lang = data.language || "pt";
+  const siteUrl = data.siteUrl || DEFAULT_SITE_URL;
+  const firstName = data.fullName.split(" ")[0];
+  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    `Olá, meu nome é ${data.fullName}. Preciso de ajuda com a segurança da minha conta.`
+  )}`;
+
+  const body = `
+    <!-- Title -->
+    <h1 style="color:#1e293b;font-size:22px;font-weight:700;margin:0 0 24px;">
+      ${t(lang, "pwChangedTitle")}
+    </h1>
+
+    <!-- Greeting + Intro -->
+    <p style="margin:0 0 16px;font-size:15px;color:#334155;">
+      ${t(lang, "pwChangedGreeting").replace("{{name}}", firstName)}<br/>
+      ${t(lang, "pwChangedIntro")}
+    </p>
+
+    <!-- Safe message -->
+    <p style="margin:0 0 24px;font-size:15px;color:#334155;">
+      ${t(lang, "pwChangedSafe")}
+    </p>
+
+    <!-- Alert block -->
+    <div style="background:#fefce8;border:1px solid #fde68a;border-radius:12px;padding:20px;margin:0 0 24px;">
+      <p style="margin:0;font-size:14px;color:#854d0e;">
+        ⚠️ ${t(lang, "pwChangedAlert")}
+      </p>
+    </div>
+
+    <!-- WhatsApp CTA -->
+    <div style="text-align:center;margin:32px 0;">
+      <a href="${whatsappUrl}" class="cta-btn" style="display:inline-block;background-color:#25D366;color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:8px;font-weight:700;font-size:15px;">
+        💬 ${t(lang, "pwChangedWhatsappCta")}
+      </a>
+    </div>
+
+    <!-- Support text -->
+    <p style="margin:0 0 0;font-size:14px;color:#64748b;text-align:center;">
+      ${t(lang, "pwChangedSupport")}
+    </p>
+
+    ${closingBlock(lang, t(lang, "pwChangedClosing"))}
+  `;
+
+  return emailShell(lang, t(lang, "pwChangedSubject"), body, siteUrl);
 }
