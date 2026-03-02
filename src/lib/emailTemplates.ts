@@ -1,5 +1,4 @@
-const SITE_URL = "https://cadastro-nova-franquia-timol.lovable.app";
-const LOGO_URL = `${SITE_URL}/timol-logo.svg`;
+const DEFAULT_SITE_URL = "https://cadastro-nova-franquia-timol.lovable.app";
 const WHATSAPP_NUMBER = "5534991258000";
 const VIDEO_URL = "https://www.youtube.com/watch?v=PLACEHOLDER";
 const VIDEO_THUMB = `https://img.youtube.com/vi/PLACEHOLDER/hqdefault.jpg`;
@@ -21,9 +20,9 @@ const t = (lang: Lang, key: string): string => {
       es: "¡Hola, {{name}}!",
     },
     pendingIntro: {
-      pt: "Vimos que você já iniciou seu cadastro na Timol e seu ID foi gerado com sucesso. 🎉",
-      en: "We noticed you already started your Timol registration and your ID was generated successfully. 🎉",
-      es: "Vimos que ya iniciaste tu registro en Timol y tu ID fue generado con éxito. 🎉",
+      pt: "Vimos que você já iniciou seu cadastro na Timol e seu ID foi gerado com sucesso.",
+      en: "We noticed you already started your Timol registration and your ID was generated successfully.",
+      es: "Vimos que ya iniciaste tu registro en Timol y tu ID fue generado con éxito.",
     },
     pendingDataTitle: {
       pt: "Aqui estão seus dados para continuar de onde parou:",
@@ -65,9 +64,9 @@ const t = (lang: Lang, key: string): string => {
       es: "▶ Ver video",
     },
     whatsappHelp: {
-      pt: "Se tiver qualquer dúvida, estamos por aqui para te ajudar. Fale diretamente com nossa equipe pelo WhatsApp:",
-      en: "If you have any questions, we're here to help. Talk directly to our team on WhatsApp:",
-      es: "Si tienes alguna duda, estamos aquí para ayudarte. Habla directamente con nuestro equipo por WhatsApp:",
+      pt: "Se tiver qualquer dúvida, estamos por aqui<br class=\"mobile-hide\"/> para te ajudar. Fale diretamente com nossa equipe pelo WhatsApp:",
+      en: "If you have any questions, we're here to help.<br class=\"mobile-hide\"/> Talk directly to our team on WhatsApp:",
+      es: "Si tienes alguna duda, estamos aquí para ayudarte.<br class=\"mobile-hide\"/> Habla directamente con nuestro equipo por WhatsApp:",
     },
     whatsappBtn: {
       pt: "💬 Falar no WhatsApp",
@@ -75,9 +74,9 @@ const t = (lang: Lang, key: string): string => {
       es: "💬 Hablar por WhatsApp",
     },
     closingHappy: {
-      pt: "Estamos felizes por você ter começado essa jornada. Conte com a gente!",
-      en: "We're happy you started this journey. Count on us!",
-      es: "Estamos felices de que hayas comenzado este camino. ¡Cuenta con nosotros!",
+      pt: "Estamos felizes por você ter começado essa jornada.<br class=\"mobile-hide\"/> Conte com a gente!",
+      en: "We're happy you started this journey.<br class=\"mobile-hide\"/> Count on us!",
+      es: "Estamos felices de que hayas comenzado este camino.<br class=\"mobile-hide\"/> ¡Cuenta con nosotros!",
     },
     closingSign: {
       pt: "Abraços,",
@@ -115,9 +114,9 @@ const t = (lang: Lang, key: string): string => {
       es: "PIX (pago confirmado)",
     },
     firstAccessTitle: {
-      pt: "🚀 Primeiro Acesso ao Escritório Digital",
-      en: "🚀 First Access to Digital Office",
-      es: "🚀 Primer Acceso a la Oficina Digital",
+      pt: "🔑 Primeiro Acesso ao TimolSystem",
+      en: "🔑 First Access to TimolSystem",
+      es: "🔑 Primer Acceso a TimolSystem",
     },
     firstAccessDesc: {
       pt: "Para acessar o sistema, utilize os dados abaixo:",
@@ -147,22 +146,23 @@ const t = (lang: Lang, key: string): string => {
       es: "Tu contraseña es personal e intransferible. <strong>Nunca compartas tu contraseña</strong> con terceros, ni siquiera con el equipo Timol. Jamás solicitaremos tu contraseña por correo, WhatsApp o cualquier otro canal.",
     },
     completedWhatsapp: {
-      pt: "Se tiver qualquer dúvida sobre seu acesso ou sobre a Timol, estamos aqui para ajudar:",
-      en: "If you have any questions about your access or Timol, we're here to help:",
-      es: "Si tienes alguna duda sobre tu acceso o sobre Timol, estamos aquí para ayudarte:",
+      pt: "Se tiver qualquer dúvida sobre seu acesso ou sobre a Timol,<br class=\"mobile-hide\"/> estamos aqui para ajudar:",
+      en: "If you have any questions about your access or Timol,<br class=\"mobile-hide\"/> we're here to help:",
+      es: "Si tienes alguna duda sobre tu acceso o sobre Timol,<br class=\"mobile-hide\"/> estamos aquí para ayudarte:",
     },
     completedClosing: {
-      pt: "Estamos muito felizes em ter você conosco! Sua jornada começa agora. Conte com a gente!",
-      en: "We're so happy to have you with us! Your journey starts now. Count on us!",
-      es: "¡Estamos muy felices de tenerte con nosotros! Tu camino comienza ahora. ¡Cuenta con nosotros!",
+      pt: "Estamos muito felizes em ter você conosco!<br class=\"mobile-hide\"/> Sua jornada começa agora. Conte com a gente!",
+      en: "We're so happy to have you with us!<br class=\"mobile-hide\"/> Your journey starts now. Count on us!",
+      es: "¡Estamos muy felices de tenerte con nosotros!<br class=\"mobile-hide\"/> Tu camino comienza ahora. ¡Cuenta con nosotros!",
     },
   };
   return map[key]?.[lang] ?? map[key]?.pt ?? key;
 };
 
 /* ─── Shared email wrapper ─── */
-function emailShell(lang: Lang, title: string, body: string): string {
+function emailShell(lang: Lang, title: string, body: string, siteUrl: string): string {
   const htmlLang = lang === "pt" ? "pt-BR" : lang === "es" ? "es" : "en";
+  const logoUrl = `${siteUrl}/timol-logo.svg`;
   return `<!DOCTYPE html>
 <html lang="${htmlLang}">
 <head>
@@ -172,8 +172,9 @@ function emailShell(lang: Lang, title: string, body: string): string {
   <style>
     @media only screen and (max-width: 480px) {
       .closing-text br.mobile-hide { display: none; }
-      .cta-btn { font-size: 14px !important; padding: 14px 32px !important; }
+      .cta-btn { font-size: 14px !important; padding: 14px 24px !important; width: 100% !important; max-width: 100% !important; box-sizing: border-box !important; }
       .access-table td:first-child { width: 70px !important; }
+      .whatsapp-text br.mobile-hide { display: none; }
     }
   </style>
 </head>
@@ -182,7 +183,7 @@ function emailShell(lang: Lang, title: string, body: string): string {
 
     <!-- Logo — left-aligned -->
     <div style="text-align:left;margin-bottom:32px;">
-      <img src="${LOGO_URL}" alt="Timol" style="height:48px;" />
+      <img src="${logoUrl}" alt="Timol" style="height:48px;" />
     </div>
 
     ${body}
@@ -209,19 +210,21 @@ function videoBlock(lang: Lang): string {
   <p style="margin:0 0 16px;font-size:14px;color:#64748b;">
     ${t(lang, "videoDesc")}
   </p>
-  <!-- Thumbnail with play overlay — links to YouTube -->
-  <a href="${VIDEO_URL}" target="_blank" style="display:inline-block;text-decoration:none;">
-    <img src="${VIDEO_THUMB}" alt="${t(lang, "videoBtn")}" style="width:100%;max-width:480px;border-radius:8px;display:block;margin:0 auto 12px;" />
-  </a>
-  <a href="${VIDEO_URL}" target="_blank" class="cta-btn" style="display:inline-block;background-color:#dc2626;color:#ffffff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">
-    ${t(lang, "videoBtn")}
-  </a>
+  <!-- Thumbnail + button stacked as one block -->
+  <div style="display:inline-block;text-decoration:none;overflow:hidden;border-radius:8px;max-width:480px;width:100%;">
+    <a href="${VIDEO_URL}" target="_blank" style="display:block;text-decoration:none;">
+      <img src="${VIDEO_THUMB}" alt="${t(lang, "videoBtn")}" style="width:100%;display:block;border-radius:8px 8px 0 0;" />
+    </a>
+    <a href="${VIDEO_URL}" target="_blank" class="cta-btn" style="display:block;background-color:#dc2626;color:#ffffff;padding:12px 32px;text-decoration:none;font-weight:700;font-size:14px;text-align:center;border-radius:0 0 8px 8px;">
+      ${t(lang, "videoBtn")}
+    </a>
+  </div>
 </div>`;
 }
 
 /* ─── WhatsApp block ─── */
 function whatsappBlock(lang: Lang, text: string, waUrl: string): string {
-  return `<div style="text-align:center;margin:32px 0;">
+  return `<div style="text-align:center;margin:32px 0;" class="whatsapp-text">
   <p style="margin:0 0 12px;font-size:14px;color:#64748b;">
     ${text}
   </p>
@@ -256,6 +259,7 @@ export interface PendingEmailData {
   sponsorId: string;
   continueToken: string;
   language?: Lang;
+  siteUrl?: string;
 }
 
 export function getPendingSubject(lang: Lang = "pt"): string {
@@ -264,7 +268,8 @@ export function getPendingSubject(lang: Lang = "pt"): string {
 
 export function buildPendingEmailHtml(data: PendingEmailData): string {
   const lang = data.language || "pt";
-  const continueUrl = `${SITE_URL}/continue/${data.continueToken}`;
+  const siteUrl = data.siteUrl || DEFAULT_SITE_URL;
+  const continueUrl = `${siteUrl}/continue/${data.continueToken}`;
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `Olá, meu nome é ${data.fullName}, meu ID é ${data.userId}. Preciso de ajuda para concluir meu cadastro.`
   )}`;
@@ -314,7 +319,7 @@ export function buildPendingEmailHtml(data: PendingEmailData): string {
     ${closingBlock(lang, t(lang, "closingHappy"))}
   `;
 
-  return emailShell(lang, t(lang, "pendingSubject"), body);
+  return emailShell(lang, t(lang, "pendingSubject"), body, siteUrl);
 }
 
 /* ================================================================
@@ -335,6 +340,7 @@ export interface CompletedEmailData {
   email: string;
   username: string;
   language?: Lang;
+  siteUrl?: string;
 }
 
 export function getCompletedSubject(lang: Lang = "pt"): string {
@@ -343,6 +349,7 @@ export function getCompletedSubject(lang: Lang = "pt"): string {
 
 export function buildCompletedEmailHtml(data: CompletedEmailData): string {
   const lang = data.language || "pt";
+  const siteUrl = data.siteUrl || DEFAULT_SITE_URL;
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `Olá, meu nome é ${data.fullName}, meu ID é ${data.userId}. Preciso de ajuda com meu acesso.`
   )}`;
@@ -414,5 +421,5 @@ export function buildCompletedEmailHtml(data: CompletedEmailData): string {
     ${closingBlock(lang, t(lang, "completedClosing"))}
   `;
 
-  return emailShell(lang, t(lang, "completedSubject"), body);
+  return emailShell(lang, t(lang, "completedSubject"), body, siteUrl);
 }
