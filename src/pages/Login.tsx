@@ -9,6 +9,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, LogIn, UserPlus, RotateCcw, Loader2 } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { ResumeRegistrationPopup } from "@/components/screens/ResumeRegistrationPopup";
+import { ForgotPasswordPopup } from "@/components/login/ForgotPasswordPopup";
+import { ForgotUsernamePopup } from "@/components/login/ForgotUsernamePopup";
 import { LoginPromoBanner } from "@/components/login/LoginPromoBanner";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
 import waterDropsBg from "@/assets/water-drops-bg.jpg";
@@ -24,6 +26,8 @@ const Login = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [showResume, setShowResume] = useState(false);
+  const [showForgotPw, setShowForgotPw] = useState(false);
+  const [showForgotUser, setShowForgotUser] = useState(false);
 
   const validate = () => {
     const e: Record<string, string> = {};
@@ -157,7 +161,7 @@ const Login = () => {
                 <button
                   type="button"
                   className="text-muted-foreground hover:text-primary transition-colors underline-offset-2 hover:underline"
-                  onClick={() => {}}
+                  onClick={() => setShowForgotPw(true)}
                 >
                   {t("login.forgotPassword")}
                 </button>
@@ -165,7 +169,7 @@ const Login = () => {
                 <button
                   type="button"
                   className="text-muted-foreground hover:text-primary transition-colors underline-offset-2 hover:underline"
-                  onClick={() => {}}
+                  onClick={() => setShowForgotUser(true)}
                 >
                   {t("login.forgotUsername")}
                 </button>
@@ -211,6 +215,19 @@ const Login = () => {
       <ResumeRegistrationPopup
         open={showResume}
         onClose={() => setShowResume(false)}
+      />
+
+      {/* Forgot Password Popup */}
+      <ForgotPasswordPopup
+        open={showForgotPw}
+        onClose={() => setShowForgotPw(false)}
+        onSwitchToUsername={() => setShowForgotUser(true)}
+      />
+
+      {/* Forgot Username Popup */}
+      <ForgotUsernamePopup
+        open={showForgotUser}
+        onClose={() => setShowForgotUser(false)}
       />
     </div>
   );
