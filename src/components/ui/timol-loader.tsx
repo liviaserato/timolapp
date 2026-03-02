@@ -48,13 +48,14 @@ export const TimolLoader = ({ className, size = 20 }: TimolLoaderProps) => {
         src={produtosSeparados}
         alt=""
         aria-hidden="true"
-        className="absolute z-[2] object-contain pointer-events-none"
+        className="absolute z-[2] object-cover pointer-events-none"
         style={{
-          width: w * 0.5,
-          height: h * 0.48,
-          bottom: h * 0.06,
-          left: '50%',
-          transform: 'translateX(-50%)',
+          width: w * 0.68,
+          height: h * 0.62,
+          bottom: h * 0.01,
+          left: "50%",
+          transform: "translateX(-50%)",
+          objectPosition: "center 58%",
         }}
       />
 
