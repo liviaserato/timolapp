@@ -56,7 +56,7 @@ const Login = () => {
       <Card className="relative z-10 w-full max-w-sm shadow-xl border-0 bg-card/95 backdrop-blur-sm">
         <CardContent className="flex flex-col gap-5 pt-8 pb-6 px-6">
           {/* Logo + title */}
-          <div className="text-center space-y-2">
+          <div className="text-center space-y-4">
             <img src={timolLogoDark} alt="Timol" className="h-10 mx-auto" />
             <h1 className="text-lg font-bold text-primary leading-tight">
               {t("login.title")}
