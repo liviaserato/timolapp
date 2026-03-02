@@ -22,7 +22,6 @@ import {
   AlertCircle,
   Eye,
   EyeOff,
-  CheckCircle2,
   LogIn,
 } from "lucide-react";
 import { countries } from "@/data/countries";
@@ -77,6 +76,9 @@ export const ForgotUsernamePopup = ({ open, onClose, onSwitchToPassword }: Props
   const getCountryName = (c: typeof countries[0]) => {
     return language === "en" ? c.nameEn : language === "es" ? c.nameEs : c.name;
   };
+
+  // Extract first name from full name
+  const firstName = foundName ? foundName.split(" ")[0] : "";
 
   const resetAll = () => {
     setStep("form");
@@ -206,10 +208,12 @@ export const ForgotUsernamePopup = ({ open, onClose, onSwitchToPassword }: Props
         <DialogHeader className="items-center space-y-2">
           <img src={timolLogoDark} alt="Timol" className="h-8 mx-auto" />
           <DialogTitle className="text-lg font-bold text-primary">
-            {t("forgotUser.title")}
+            {step === "form" ? t("forgotUser.title") : t("forgotUser.foundTitle")}
           </DialogTitle>
           <DialogDescription className="text-xs text-center">
-            {step === "form" ? t("forgotUser.description") : t("forgotUser.foundDesc")}
+            {step === "form"
+              ? t("forgotUser.description")
+              : t("forgotUser.foundDescPersonal").replace("{name}", firstName)}
           </DialogDescription>
         </DialogHeader>
 
@@ -346,10 +350,6 @@ export const ForgotUsernamePopup = ({ open, onClose, onSwitchToPassword }: Props
           {step === "found" && (
             <>
               <div className="flex flex-col items-center gap-2 py-2">
-                <CheckCircle2 className="h-8 w-8 text-success" />
-                {foundName && (
-                  <p className="text-sm text-muted-foreground">{foundName}</p>
-                )}
                 <div className="bg-muted rounded-lg px-6 py-3 text-center">
                   <p className="text-xs text-muted-foreground mb-1">{t("forgotUser.yourUsername")}</p>
                   <p className="text-lg font-bold text-primary">{foundUsername}</p>
@@ -395,6 +395,20 @@ export const ForgotUsernamePopup = ({ open, onClose, onSwitchToPassword }: Props
                 {loginLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
                 {t("login.enter")}
               </Button>
+
+              {/* Link to forgot password */}
+              {onSwitchToPassword && (
+                <button
+                  type="button"
+                  className="w-full text-xs text-muted-foreground hover:text-primary transition-colors underline-offset-2 hover:underline text-center"
+                  onClick={() => {
+                    handleClose();
+                    onSwitchToPassword();
+                  }}
+                >
+                  {t("login.forgotPassword")}
+                </button>
+              )}
             </>
           )}
         </div>
