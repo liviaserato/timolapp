@@ -1,46 +1,32 @@
 
+## Ajuste de espaçamento no card de login
 
-# Visualizacao dos E-mails de Recuperacao e Boas-Vindas
+Alterações no arquivo `src/pages/Login.tsx`, no bloco "Logo + title" (linhas 85-93):
 
-## Objetivo
-Criar uma pagina de preview (`/emails`) com duas abas para visualizar os dois modelos de e-mail com dados ficticios, sem integrar envio real.
+1. **Aumentar espaço entre logo e titulo**: Trocar `space-y-4` por layout manual -- adicionar `mb-6` na logo para afastá-la do título
+2. **Diminuir espaço entre titulo e texto descritivo**: Adicionar `mt-1` no parágrafo de subtítulo para mantê-lo próximo ao título
 
-## O que sera feito
+### Detalhe técnico
 
-### 1. Criar pagina `src/pages/EmailPreviews.tsx`
-- Pagina com duas abas (Tabs): **Cadastro Pendente** e **Cadastro Concluido**
-- Cada aba renderiza o HTML do respectivo e-mail dentro de um iframe (via `srcdoc`), simulando exatamente como o destinatario veria no cliente de e-mail
-- Container com `max-width: 700px` centralizado, com borda sutil ao redor do iframe para simular uma "caixa de e-mail"
-- Dados ficticios pre-preenchidos:
-  - Nome: Maria Silva
-  - ID: 1587
-  - CPF: 123.456.789-00
-  - Patrocinador: João Santos (ID 842)
-  - E-mail: maria@exemplo.com
-  - Franquia: Ouro
-  - Pagamento: Cartao final 4521, 3x R$ 333,00
+Substituir o container atual:
+```tsx
+<div className="text-center space-y-4">
+  <img ... className="h-10 mx-auto" />
+  <h1 ...>{t("login.title")}</h1>
+  <p ...>{t("login.subtitle")}</p>
+</div>
+```
 
-### 2. E-mail 1 - Cadastro Pendente (ja existe)
-- Reutilizar o HTML que ja esta em `supabase/functions/send-recovery-email/index.ts` (funcao `buildEmailHtml`)
-- Recriar a mesma funcao no frontend apenas para preview, preenchendo com os dados ficticios
-- Conteudo: saudacao, resumo de dados, botao "CONTINUAR CADASTRO", secao de video, botao WhatsApp, fechamento
+Por:
+```tsx
+<div className="text-center">
+  <img ... className="h-10 mx-auto mb-6" />
+  <h1 ...>{t("login.title")}</h1>
+  <p className="text-xs text-muted-foreground mt-1">
+    {t("login.subtitle")}
+  </p>
+</div>
+```
 
-### 3. E-mail 2 - Cadastro Concluido (novo)
-- Criar o HTML do e-mail de boas-vindas seguindo o mesmo estilo visual (inline CSS, max-width 600px, mesma paleta de cores)
-- Conteudo:
-  - Logo Timol
-  - Saudacao: "Parabens, [Nome]! Sua franquia [Nome Franquia] foi ativada com sucesso!"
-  - Resumo: ID, CPF, Franquia escolhida, Patrocinador
-  - Resumo do pagamento (metodo, ultimos 4 digitos, parcelas)
-  - Secao "Primeiro Acesso" com instrucoes para acessar o TimolSystem
-  - Alerta de seguranca sobre sigilo da senha
-  - Botao WhatsApp para suporte
-  - Fechamento com assinatura Equipe Timol
-
-### 4. Registrar rota em `src/App.tsx`
-- Adicionar rota `/emails` apontando para a nova pagina
-
-## Detalhes tecnicos
-- Os HTMLs dos e-mails serao funcoes TypeScript puras que retornam strings, mantidas dentro do proprio arquivo da pagina (ou em um arquivo auxiliar `src/lib/emailTemplates.ts` para organizacao)
-- O iframe usara `srcdoc` para renderizar o HTML, isolando os estilos inline do e-mail do restante da aplicacao
-- Nenhuma alteracao no backend ou banco de dados
+- `mb-6` na logo cria mais distância antes do título (era `space-y-4` = 1rem, agora 1.5rem)
+- `mt-1` no subtítulo mantém apenas 0.25rem de distância do título (antes era 1rem)
