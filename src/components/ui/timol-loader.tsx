@@ -23,9 +23,9 @@ export const TimolLoader = ({ className, size = 20 }: TimolLoaderProps) => {
         aria-hidden="true"
         className="absolute z-[1] object-contain pointer-events-none"
         style={{
-          width: w * 0.52,
-          height: h * 0.5,
-          bottom: h * 0.15,
+          width: w * 0.48,
+          height: h * 0.45,
+          bottom: h * 0.08,
           left: '50%',
           transform: 'translateX(-50%)',
         }}
