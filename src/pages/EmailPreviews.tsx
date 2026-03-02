@@ -1,5 +1,10 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { buildPendingEmailHtml, buildCompletedEmailHtml } from "@/lib/emailTemplates";
+import {
+  buildPendingEmailHtml,
+  buildCompletedEmailHtml,
+  getPendingSubject,
+  getCompletedSubject,
+} from "@/lib/emailTemplates";
 
 const pendingHtml = buildPendingEmailHtml({
   fullName: "Maria Silva",
@@ -8,6 +13,7 @@ const pendingHtml = buildPendingEmailHtml({
   sponsorName: "João Santos",
   sponsorId: "842",
   continueToken: "abc123-demo-token",
+  language: "pt",
 });
 
 const completedHtml = buildCompletedEmailHtml({
@@ -23,7 +29,11 @@ const completedHtml = buildCompletedEmailHtml({
   installmentValue: "R$ 333,00",
   email: "maria@exemplo.com",
   username: "maria.silva",
+  language: "pt",
 });
+
+const pendingSubject = getPendingSubject("pt");
+const completedSubject = getCompletedSubject("pt");
 
 export default function EmailPreviews() {
   return (
@@ -42,28 +52,30 @@ export default function EmailPreviews() {
 
           <TabsContent value="pending">
             <div className="rounded-lg border bg-background shadow-sm overflow-hidden">
-              <div className="bg-muted px-4 py-2 text-xs text-muted-foreground border-b">
-                <strong>Para:</strong> maria@exemplo.com &nbsp;|&nbsp; <strong>Assunto:</strong> Seu cadastro na Timol já está quase pronto 🚀
+              <div className="bg-muted px-4 py-2 text-xs text-muted-foreground border-b space-y-0.5">
+                <div><strong>Para:</strong> maria@exemplo.com</div>
+                <div><strong>Assunto:</strong> {pendingSubject}</div>
               </div>
               <iframe
                 srcDoc={pendingHtml}
                 title="E-mail Cadastro Pendente"
                 className="w-full border-0"
-                style={{ minHeight: 800 }}
+                style={{ minHeight: 900 }}
               />
             </div>
           </TabsContent>
 
           <TabsContent value="completed">
             <div className="rounded-lg border bg-background shadow-sm overflow-hidden">
-              <div className="bg-muted px-4 py-2 text-xs text-muted-foreground border-b">
-                <strong>Para:</strong> maria@exemplo.com &nbsp;|&nbsp; <strong>Assunto:</strong> Bem-vindo à Timol! Sua franquia foi ativada 🎉
+              <div className="bg-muted px-4 py-2 text-xs text-muted-foreground border-b space-y-0.5">
+                <div><strong>Para:</strong> maria@exemplo.com</div>
+                <div><strong>Assunto:</strong> {completedSubject}</div>
               </div>
               <iframe
                 srcDoc={completedHtml}
                 title="E-mail Cadastro Concluído"
                 className="w-full border-0"
-                style={{ minHeight: 900 }}
+                style={{ minHeight: 1000 }}
               />
             </div>
           </TabsContent>
