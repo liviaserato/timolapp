@@ -323,10 +323,15 @@ export const translations: Record<Language, Record<string, string>> = {
     "login.error.invalid": "Usuário ou senha incorretos. Tente novamente.",
 
     // Forgot password popup
-    "forgotPw.title": "Recuperar senha",
+    "forgotPw.title": "Recuperar Senha",
     "forgotPw.description": "Informe seu usuário ou e-mail para receber um PIN de verificação.",
+    "forgotPw.descLine1": "Informe seu usuário ou e-mail para",
+    "forgotPw.descLine2": "receber um PIN de verificação.",
     "forgotPw.sendPin": "Enviar PIN",
     "forgotPw.pinSent": "Enviamos um PIN de 6 dígitos para o e-mail cadastrado. Digite-o abaixo.",
+    "forgotPw.pinSentConditional": "Se o usuário/e-mail informado estiver correto, você receberá um PIN de 6 dígitos.",
+    "forgotPw.pinHelpTooltip": "Se não receber o PIN, verifique se digitou os dados corretamente, confira a pasta de spam e tente reenviar.",
+    "forgotPw.resendSuccess": "PIN reenviado com sucesso.",
     "forgotPw.pinExpiry": "O PIN expira em 15 minutos.",
     "forgotPw.verifyPin": "Verificar PIN",
     "forgotPw.resendPin": "Reenviar PIN",
@@ -347,7 +352,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "forgotPw.error.resetFailed": "Erro ao alterar a senha. Tente novamente.",
 
     // Forgot username popup
-    "forgotUser.title": "Recuperar usuário",
+    "forgotUser.title": "Recuperar Usuário",
     "forgotUser.description": "Informe seus dados para localizar seu nome de usuário.",
     "forgotUser.foundDesc": "Usuário encontrado! Faça login agora.",
     "forgotUser.method": "Método de validação",
@@ -693,10 +698,15 @@ export const translations: Record<Language, Record<string, string>> = {
     "login.error.invalid": "Invalid username or password. Please try again.",
 
     // Forgot password popup
-    "forgotPw.title": "Recover password",
+    "forgotPw.title": "Recover Password",
     "forgotPw.description": "Enter your username or email to receive a verification PIN.",
+    "forgotPw.descLine1": "Enter your username or email to",
+    "forgotPw.descLine2": "receive a verification PIN.",
     "forgotPw.sendPin": "Send PIN",
     "forgotPw.pinSent": "We sent a 6-digit PIN to your registered email. Enter it below.",
+    "forgotPw.pinSentConditional": "If the username/email is correct, you will receive a 6-digit PIN.",
+    "forgotPw.pinHelpTooltip": "If you didn't receive the PIN, check your spelling, look in spam, and try resending.",
+    "forgotPw.resendSuccess": "PIN resent successfully.",
     "forgotPw.pinExpiry": "The PIN expires in 15 minutes.",
     "forgotPw.verifyPin": "Verify PIN",
     "forgotPw.resendPin": "Resend PIN",
@@ -717,7 +727,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "forgotPw.error.resetFailed": "Error changing password. Please try again.",
 
     // Forgot username popup
-    "forgotUser.title": "Recover username",
+    "forgotUser.title": "Recover Username",
     "forgotUser.description": "Enter your details to find your username.",
     "forgotUser.foundDesc": "Username found! Log in now.",
     "forgotUser.method": "Validation method",
@@ -1063,10 +1073,15 @@ export const translations: Record<Language, Record<string, string>> = {
     "login.error.invalid": "Usuario o contraseña incorrectos. Intente nuevamente.",
 
     // Forgot password popup
-    "forgotPw.title": "Recuperar contraseña",
+    "forgotPw.title": "Recuperar Contraseña",
     "forgotPw.description": "Ingrese su usuario o correo para recibir un PIN de verificación.",
+    "forgotPw.descLine1": "Ingrese su usuario o correo para",
+    "forgotPw.descLine2": "recibir un PIN de verificación.",
     "forgotPw.sendPin": "Enviar PIN",
     "forgotPw.pinSent": "Enviamos un PIN de 6 dígitos a su correo registrado. Ingréselo abajo.",
+    "forgotPw.pinSentConditional": "Si el usuario/correo es correcto, recibirá un PIN de 6 dígitos.",
+    "forgotPw.pinHelpTooltip": "Si no recibió el PIN, verifique los datos, revise la carpeta de spam e intente reenviar.",
+    "forgotPw.resendSuccess": "PIN reenviado con éxito.",
     "forgotPw.pinExpiry": "El PIN expira en 15 minutos.",
     "forgotPw.verifyPin": "Verificar PIN",
     "forgotPw.resendPin": "Reenviar PIN",
@@ -1087,7 +1102,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "forgotPw.error.resetFailed": "Error al cambiar la contraseña. Intente nuevamente.",
 
     // Forgot username popup
-    "forgotUser.title": "Recuperar usuario",
+    "forgotUser.title": "Recuperar Usuario",
     "forgotUser.description": "Ingrese sus datos para localizar su nombre de usuario.",
     "forgotUser.foundDesc": "¡Usuario encontrado! Inicie sesión ahora.",
     "forgotUser.method": "Método de validación",

@@ -25,18 +25,24 @@ import {
   CheckCircle2,
   LogIn,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { countries } from "@/data/countries";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
 
 type Step = "form" | "found";
 
+// Mock test data
+const MOCK_EMAIL = "liviaserato@yahoo.com.br";
+const MOCK_BIRTH = "07/03/1986";
+const MOCK_USERNAME = "liviaserato";
+const MOCK_NAME = "Lívia Serato";
+
 interface Props {
   open: boolean;
   onClose: () => void;
+  onSwitchToPassword?: () => void;
 }
 
-export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
+export const ForgotUsernamePopup = ({ open, onClose, onSwitchToPassword }: Props) => {
   const { t, language } = useLanguage();
 
   const [step, setStep] = useState<Step>("form");
@@ -46,12 +52,11 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
   const [country, setCountry] = useState("BR");
   const [birthDate, setBirthDate] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Found user data
   const [foundUsername, setFoundUsername] = useState("");
   const [foundName, setFoundName] = useState("");
-  const [foundUserId, setFoundUserId] = useState("");
 
   // Quick login
   const [password, setPassword] = useState("");
@@ -80,11 +85,10 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
     setDocument("");
     setCountry("BR");
     setBirthDate("");
-    setError("");
+    setFieldErrors({});
     setLoading(false);
     setFoundUsername("");
     setFoundName("");
-    setFoundUserId("");
     setPassword("");
     setShowPassword(false);
     setLoginLoading(false);
@@ -104,7 +108,7 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
     if (digits.length > 4)
       formatted = digits.slice(0, 2) + "/" + digits.slice(2, 4) + "/" + digits.slice(4);
     setBirthDate(formatted);
-    setError("");
+    setFieldErrors((prev) => ({ ...prev, birthDate: "" }));
   };
 
   // CPF mask
@@ -128,61 +132,51 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
     } else {
       setDocument(val.slice(0, 20));
     }
-    setError("");
+    setFieldErrors((prev) => ({ ...prev, document: "" }));
+  };
+
+  const validate = (): boolean => {
+    const errs: Record<string, string> = {};
+
+    if (method === "email" && !email.trim()) {
+      errs.email = t("forgotUser.error.emailRequired");
+    }
+    if (method === "document" && !document.trim()) {
+      errs.document = t("forgotUser.error.documentRequired");
+    }
+    if (!birthDate || birthDate.length < 10) {
+      errs.birthDate = t("forgotUser.error.birthRequired");
+    }
+
+    setFieldErrors(errs);
+    return Object.keys(errs).length === 0;
   };
 
   const handleSubmit = async () => {
-    if (!birthDate || birthDate.length < 10) {
-      setError(t("forgotUser.error.birthRequired"));
-      return;
-    }
-    if (method === "email" && !email.trim()) {
-      setError(t("forgotUser.error.emailRequired"));
-      return;
-    }
-    if (method === "document" && !document.trim()) {
-      setError(t("forgotUser.error.documentRequired"));
-      return;
-    }
-
-    const parts = birthDate.split("/");
-    const isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    const rawDoc = document.replace(/[^\dA-Za-z]/g, "");
+    if (!validate()) return;
 
     setLoading(true);
-    setError("");
+    setFieldErrors({});
 
-    try {
-      const body: Record<string, string> = {
-        method,
-        birth_date: isoDate,
-      };
-      if (method === "email") {
-        body.email = email.trim();
-      } else {
-        body.document = rawDoc;
-        body.country = country;
-      }
-
-      const { data, error: fnError } = await supabase.functions.invoke("forgot-username", {
-        body,
-      });
-
-      if (fnError || !data?.success) {
-        setError(t("forgotUser.error.notFound"));
-        setLoading(false);
-        return;
-      }
-
-      setFoundUsername(data.username);
-      setFoundName(data.full_name || "");
-      setFoundUserId(data.user_id);
-      setStep("found");
-    } catch {
-      setError(t("forgotUser.error.generic"));
-    } finally {
+    // Mock: check test data
+    setTimeout(() => {
       setLoading(false);
-    }
+
+      // Normalize birth date for comparison (handle 2-digit year)
+      const normalizedBirth = birthDate.length === 10 ? birthDate : "";
+      const birthMatches =
+        normalizedBirth === MOCK_BIRTH ||
+        normalizedBirth === "07/03/86" ||
+        normalizedBirth === "07/03/1986";
+
+      if (method === "email" && email.trim().toLowerCase() === MOCK_EMAIL && birthMatches) {
+        setFoundUsername(MOCK_USERNAME);
+        setFoundName(MOCK_NAME);
+        setStep("found");
+      } else {
+        setFieldErrors({ general: t("forgotUser.error.notFound") });
+      }
+    }, 800);
   };
 
   const handleQuickLogin = async () => {
@@ -192,31 +186,28 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
     }
     setLoginLoading(true);
     setLoginError("");
-    try {
-      // Try login with email from profile
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email: foundUsername, // Will need the actual email; for now use username
-        password,
-      });
-      if (authError) {
-        setLoginError(t("login.error.invalid"));
-      } else {
-        handleClose();
-        // Auth state listener will handle navigation
-      }
-    } catch {
-      setLoginError(t("login.error.invalid"));
-    } finally {
+    // Mock: always fail for now
+    setTimeout(() => {
       setLoginLoading(false);
+      setLoginError(t("login.error.invalid"));
+    }, 800);
+  };
+
+  const handleFormKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmit();
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent className="max-w-sm">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-sm mx-auto rounded-xl">
         <DialogHeader className="items-center space-y-2">
           <img src={timolLogoDark} alt="Timol" className="h-8 mx-auto" />
-          <DialogTitle className="text-base">{t("forgotUser.title")}</DialogTitle>
+          <DialogTitle className="text-lg font-bold text-primary">
+            {t("forgotUser.title")}
+          </DialogTitle>
           <DialogDescription className="text-xs text-center">
             {step === "form" ? t("forgotUser.description") : t("forgotUser.foundDesc")}
           </DialogDescription>
@@ -224,15 +215,15 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
 
         <div className="space-y-3 mt-2">
           {step === "form" && (
-            <>
+            <div onKeyDown={handleFormKeyDown}>
               {/* Method selector */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 mb-3">
                 <Label className="text-xs">{t("forgotUser.method")}</Label>
                 <Select
                   value={method}
                   onValueChange={(v) => {
                     setMethod(v as "email" | "document");
-                    setError("");
+                    setFieldErrors({});
                   }}
                 >
                   <SelectTrigger>
@@ -247,7 +238,7 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
 
               {/* Email field */}
               {method === "email" && (
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 mb-3">
                   <Label className="text-xs">{t("forgotUser.email")}</Label>
                   <Input
                     type="email"
@@ -255,10 +246,13 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value);
-                      setError("");
+                      setFieldErrors((prev) => ({ ...prev, email: "", general: "" }));
                     }}
                     autoCapitalize="none"
                   />
+                  {fieldErrors.email && (
+                    <p className="text-xs text-destructive">{fieldErrors.email}</p>
+                  )}
                 </div>
               )}
 
@@ -266,9 +260,9 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
               {method === "document" && (
                 <>
                   {/* Country selector */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 mb-3">
                     <Label className="text-xs">{t("forgotUser.country")}</Label>
-                    <Select value={country} onValueChange={(v) => { setCountry(v); setDocument(""); setError(""); }}>
+                    <Select value={country} onValueChange={(v) => { setCountry(v); setDocument(""); setFieldErrors({}); }}>
                       <SelectTrigger>
                         <SelectValue>
                           {(() => {
@@ -287,7 +281,7 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
                     </Select>
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 mb-3">
                     <Label className="text-xs">
                       {isBrazilian ? "CPF" : t("forgotUser.document")}
                     </Label>
@@ -298,12 +292,15 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
                       maxLength={isBrazilian ? 14 : 20}
                       inputMode="numeric"
                     />
+                    {fieldErrors.document && (
+                      <p className="text-xs text-destructive">{fieldErrors.document}</p>
+                    )}
                   </div>
                 </>
               )}
 
               {/* Birth date */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 mb-3">
                 <Label className="text-xs">{t("forgotUser.birthDate")}</Label>
                 <Input
                   placeholder="DD/MM/AAAA"
@@ -312,12 +309,15 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
                   maxLength={10}
                   inputMode="numeric"
                 />
+                {fieldErrors.birthDate && (
+                  <p className="text-xs text-destructive">{fieldErrors.birthDate}</p>
+                )}
               </div>
 
-              {error && (
-                <div className="flex items-center gap-2 text-xs text-destructive">
+              {fieldErrors.general && (
+                <div className="flex items-center gap-2 text-xs text-destructive mb-3">
                   <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                  <span>{error}</span>
+                  <span>{fieldErrors.general}</span>
                 </div>
               )}
 
@@ -325,7 +325,21 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t("forgotUser.search")}
               </Button>
-            </>
+
+              {/* Link to forgot password */}
+              {onSwitchToPassword && (
+                <button
+                  type="button"
+                  className="w-full text-xs text-muted-foreground hover:text-primary transition-colors underline-offset-2 hover:underline text-center mt-3"
+                  onClick={() => {
+                    handleClose();
+                    onSwitchToPassword();
+                  }}
+                >
+                  {t("login.forgotPassword")}
+                </button>
+              )}
+            </div>
           )}
 
           {/* Found result */}

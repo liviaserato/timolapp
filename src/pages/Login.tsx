@@ -240,6 +240,7 @@ const Login = () => {
       <ForgotUsernamePopup
         open={showForgotUser}
         onClose={() => setShowForgotUser(false)}
+        onSwitchToPassword={() => setShowForgotPw(true)}
       />
     </div>
   );
