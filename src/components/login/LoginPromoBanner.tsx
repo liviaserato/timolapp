@@ -163,8 +163,8 @@ const GlowSeparator = () => (
         x2="680"
         y2="8"
         stroke="hsl(199 100% 72%)"
-        strokeWidth="2"
-        strokeOpacity="0.5"
+        strokeWidth="3"
+        strokeOpacity="0.7"
         strokeLinecap="round"
         filter="url(#glow)"
       />
