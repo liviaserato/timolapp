@@ -12,7 +12,7 @@ export const LanguageSelector = () => {
   const { language, setLanguage, t } = useLanguage();
 
   return (
-    <div className="flex items-center justify-center gap-1 flex-wrap">
+    <div className="flex items-center justify-center gap-1 flex-nowrap">
       <Globe className="h-4 w-4 text-muted-foreground" />
       {languages.map((lang) => (
         <button
