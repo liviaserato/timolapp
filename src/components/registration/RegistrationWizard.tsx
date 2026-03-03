@@ -171,8 +171,8 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
     setApiError("");
 
     try {
-      const alreadyRegistered = !!initialData.userId;
-      let userId: string | undefined;
+      const alreadyRegistered = !!initialData.franchiseId;
+      let authUid: string | undefined;
 
       if (!alreadyRegistered) {
         const { error: signUpError, data: authData } = await supabase.auth.signUp({
@@ -182,9 +182,9 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         });
 
         if (signUpError) throw signUpError;
-        userId = authData?.user?.id;
+        authUid = authData?.user?.id;
 
-        if (userId) {
+        if (authUid) {
           await supabase.from("profiles").update({
             full_name: data.fullName?.trim(),
             birth_date: data.birthDate || null,
@@ -201,13 +201,13 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
             country: data.country?.trim(),
             username: data.username?.trim(),
             preferred_language: language,
-          }).eq("user_id", userId);
+          }).eq("user_id", authUid);
 
           // Track registration status for recovery emails (via edge function to bypass RLS)
           await supabase.functions.invoke("track-registration", {
             body: {
               mode: "insert",
-              user_id: userId,
+              user_id: authUid,
               full_name: data.fullName?.trim(),
               email: data.email.trim(),
               document: data.document?.trim(),
@@ -245,8 +245,8 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         state: data.state,
         username: data.username,
         documentCheckPassed: !docBlocked,
-        authUserId: alreadyRegistered ? initialData.authUserId : userId,
-        userId: initialData.userId ?? (userId ? String(Math.floor(100000 + Math.random() * 900000)) : undefined),
+        authUserId: alreadyRegistered ? initialData.authUserId : authUid,
+        franchiseId: initialData.franchiseId ?? (authUid ? String(Math.floor(100000 + Math.random() * 900000)) : undefined),
       });
     } catch (err: unknown) {
       const e = err as Error;

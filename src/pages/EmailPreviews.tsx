@@ -13,7 +13,7 @@ const siteUrl = window.location.origin;
 
 const pendingHtml = buildPendingEmailHtml({
   fullName: "Maria Silva",
-  userId: "1587",
+  franchiseId: "1587",
   document: "123.456.789-00",
   sponsorName: "João Santos",
   sponsorId: "842",
@@ -24,7 +24,7 @@ const pendingHtml = buildPendingEmailHtml({
 
 const completedHtml = buildCompletedEmailHtml({
   fullName: "Maria Silva",
-  userId: "1587",
+  franchiseId: "1587",
   document: "123.456.789-00",
   sponsorName: "João Santos",
   sponsorId: "842",

@@ -46,8 +46,8 @@ export interface WizardData {
   agreeRules?: boolean;
   agreeCommunications?: boolean;
 
-  // User ID after registration
-  userId?: string;
+  // Franchise ID after registration
+  franchiseId?: string;
 
   // Payment info
   paymentMethod?: "pix" | "credit";

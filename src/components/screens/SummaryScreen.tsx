@@ -48,7 +48,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
     onConfirm();
   };
 
-  const odataId = data.userId ?? "—";
+  const odataId = data.franchiseId ?? "—";
 
   const price = data.franchisePrice ?? 0;
   const isBrazil = (data.countryIso2 ?? "BR") === "BR";

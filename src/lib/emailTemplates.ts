@@ -339,7 +339,7 @@ function closingBlock(lang: Lang, closingText: string): string {
 
 export interface PendingEmailData {
   fullName: string;
-  userId: string;
+  franchiseId: string;
   document: string;
   sponsorName: string;
   sponsorId: string;
@@ -360,7 +360,7 @@ export function buildPendingEmailHtml(data: PendingEmailData): string {
   const siteUrl = data.siteUrl || DEFAULT_SITE_URL;
   const continueUrl = `${siteUrl}/continue/${data.continueToken}`;
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Olá, meu nome é ${data.fullName}, meu ID é ${data.userId}. Preciso de ajuda para concluir meu cadastro.`
+    `Olá, meu nome é ${data.fullName}, meu ID é ${data.franchiseId}. Preciso de ajuda para concluir meu cadastro.`
   )}`;
 
   const body = `
@@ -380,7 +380,7 @@ export function buildPendingEmailHtml(data: PendingEmailData): string {
     <!-- Data Summary Card -->
     <div style="background:#f1f5f9;border-radius:12px;padding:20px;margin:16px 0 24px;">
       <table class="data-summary" style="width:100%;border-collapse:collapse;">
-        ${dataRow(t(lang, "labelId"), data.userId)}
+        ${dataRow(t(lang, "labelId"), data.franchiseId)}
         ${dataRow(t(lang, "labelName"), data.fullName)}
         ${dataRow(docLabel(lang, data.isForeigner), docValue(data.document, data.isForeigner, data.countryCode, data.countryName))}
         ${dataRow(t(lang, "labelSponsor"), `${data.sponsorName} (ID ${data.sponsorId})`)}
@@ -417,7 +417,7 @@ export function buildPendingEmailHtml(data: PendingEmailData): string {
 
 export interface CompletedEmailData {
   fullName: string;
-  userId: string;
+  franchiseId: string;
   document: string;
   sponsorName: string;
   sponsorId: string;
@@ -443,7 +443,7 @@ export function buildCompletedEmailHtml(data: CompletedEmailData): string {
   const lang = data.language || "pt";
   const siteUrl = data.siteUrl || DEFAULT_SITE_URL;
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Olá, meu nome é ${data.fullName}, meu ID é ${data.userId}. Preciso de ajuda com meu acesso.`
+    `Olá, meu nome é ${data.fullName}, meu ID é ${data.franchiseId}. Preciso de ajuda com meu acesso.`
   )}`;
 
   const paymentSummary =
@@ -465,7 +465,7 @@ export function buildCompletedEmailHtml(data: CompletedEmailData): string {
     <div style="background:#f1f5f9;border-radius:12px;padding:20px;margin:16px 0 24px;">
       <p style="margin:0 0 12px;font-size:15px;color:#1e293b;font-weight:600;">${t(lang, "completedSummaryTitle")}</p>
       <table class="data-summary" style="width:100%;border-collapse:collapse;">
-        ${dataRow(t(lang, "labelId"), data.userId)}
+        ${dataRow(t(lang, "labelId"), data.franchiseId)}
         ${dataRow(t(lang, "labelName"), data.fullName)}
         ${dataRow(docLabel(lang, data.isForeigner), docValue(data.document, data.isForeigner, data.countryCode, data.countryName))}
         ${dataRow(t(lang, "labelFranchise"), data.franchiseName)}

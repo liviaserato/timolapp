@@ -86,7 +86,7 @@ function dataRow(label: string, value: string): string {
 
 function buildEmailHtml(data: {
   fullName: string;
-  userId: string;
+  franchiseId: string;
   document: string;
   sponsorName: string;
   sponsorId: string;
@@ -100,7 +100,7 @@ function buildEmailHtml(data: {
   const logoUrl = `${SITE_URL}/favicon-timol-azul-escuro.svg`;
   const continueUrl = `${SITE_URL}/continue/${data.continueToken}`;
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Olá, meu nome é ${data.fullName}, meu ID é ${data.userId}. Preciso de ajuda para concluir meu cadastro.`
+    `Olá, meu nome é ${data.fullName}, meu ID é ${data.franchiseId}. Preciso de ajuda para concluir meu cadastro.`
   )}`;
 
   const docLbl = data.isForeigner ? txt(lang, "labelDocForeign") : txt(lang, "labelDocBr");
@@ -134,7 +134,7 @@ function buildEmailHtml(data: {
 
     <div style="background:#f1f5f9;border-radius:12px;padding:20px;margin:16px 0 24px;">
       <table style="width:100%;border-collapse:collapse;">
-        ${dataRow(txt(lang, "labelId"), data.userId)}
+        ${dataRow(txt(lang, "labelId"), data.franchiseId)}
         ${dataRow(txt(lang, "labelName"), data.fullName)}
         ${dataRow(docLbl, docVal)}
         ${dataRow(txt(lang, "labelSponsor"), `${data.sponsorName} (ID ${data.sponsorId})`)}
@@ -231,7 +231,7 @@ Deno.serve(async (req: Request) => {
 
     const html = buildEmailHtml({
       fullName: reg.full_name || "Usuário",
-      userId: reg.user_display_id || "—",
+      franchiseId: reg.user_display_id || "—",
       document: reg.document || "—",
       sponsorName: reg.sponsor_name || "—",
       sponsorId: reg.sponsor_id || "—",
