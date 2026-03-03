@@ -96,11 +96,11 @@ export const LoginPromoBanner = ({ className }: Props) => {
 
         {/* Bottom: Hashtag with Breathing font */}
         <div className="relative z-10 text-center">
-          <p className="text-3xl lg:text-4xl font-extrabold tracking-wide">
+          <p className="text-2xl lg:text-3xl font-extrabold tracking-wide">
             <span
               style={{
                 color: "hsl(0 0% 100%)",
-                fontFamily: "'Poppins', sans-serif",
+                fontFamily: "'Roboto', sans-serif",
               }}
             >
               #
@@ -109,7 +109,7 @@ export const LoginPromoBanner = ({ className }: Props) => {
               style={{
                 color: "hsl(0 0% 100%)",
                 fontFamily: "'Breathing', cursive",
-                fontSize: "1.15em",
+                fontSize: "1.1em",
                 textShadow:
                   "0 0 20px hsla(199, 100%, 72%, 0.6), 0 0 40px hsla(199, 100%, 72%, 0.3), 0 2px 12px rgba(0,56,133,0.5)",
               }}
@@ -143,7 +143,7 @@ const ContentBlock = ({
   title: string;
   text: string;
 }) => (
-  <div className="flex gap-4 items-start">
+  <div className="flex gap-4 items-start" style={{ transform: "rotate(-2deg)" }}>
     <div className="shrink-0 pt-0.5" style={{ color: "hsl(199 100% 72%)" }}>
       {icon}
     </div>
