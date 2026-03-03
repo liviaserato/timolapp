@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, ChevronDown, User, Building2, MessageCircle, Settings, Star } from "lucide-react";
+import { Menu, ChevronDown, User, Star } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,19 +10,16 @@ import {
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { AppSidebarNav } from "./AppSidebar";
 import { useSidebarState } from "@/pages/AppLayout";
+import { useFranchise } from "@/contexts/FranchiseContext";
 import timolLogoBranco from "@/assets/logo-timol-branco.svg";
 import iconSuporte from "@/assets/icon-sidebar-suporte.svg";
 import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
 import iconConfiguracoes from "@/assets/icon-sidebar-configuracoes.svg";
 
-interface AppHeaderProps {
-  userName?: string;
-  userId?: string;
-}
-
-export function AppHeader({ userName = "Lívia Serato", userId = "31" }: AppHeaderProps) {
+export function AppHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { toggle } = useSidebarState();
+  const { profiles, selected, setSelectedId, hasMultiple } = useFranchise();
 
   return (
     <header className="shrink-0 z-30 flex h-[70px] items-center justify-between gap-4 bg-gradient-to-b from-app-header to-app-header-gradient px-5 pr-6 shadow-sm">
@@ -73,22 +70,35 @@ export function AppHeader({ userName = "Lívia Serato", userId = "31" }: AppHead
       <div className="flex items-center gap-4 shrink-0">
         <div className="flex flex-col items-end gap-0.5">
           <span className="text-sm font-semibold text-primary-foreground max-w-[110px] truncate leading-tight">
-            {userName}
+            {selected?.name ?? "Usuário"}
           </span>
 
-          {/* ID Switch */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="inline-flex items-center gap-1 text-xs text-primary-foreground/75 hover:text-primary-foreground transition-colors">
-                <span>ID {userId}</span>
-                <ChevronDown className="h-3.5 w-3.5 opacity-85" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-[100px]">
-              <DropdownMenuItem>ID 1</DropdownMenuItem>
-              <DropdownMenuItem>ID 2</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* ID Switch — only show dropdown if multiple IDs */}
+          {hasMultiple ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center gap-1 text-xs text-primary-foreground/75 hover:text-primary-foreground transition-colors">
+                  <span>ID {selected?.franchiseId}</span>
+                  <ChevronDown className="h-3.5 w-3.5 opacity-85" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[140px]">
+                {profiles.map((p) => (
+                  <DropdownMenuItem
+                    key={p.franchiseId}
+                    onClick={() => setSelectedId(p.franchiseId)}
+                    className={p.franchiseId === selected?.franchiseId ? "font-semibold bg-accent" : ""}
+                  >
+                    ID {p.franchiseId}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <span className="text-xs text-primary-foreground/75">
+              ID {selected?.franchiseId}
+            </span>
+          )}
         </div>
 
         {/* Avatar + badge + stars + menu */}

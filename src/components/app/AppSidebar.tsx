@@ -1,7 +1,8 @@
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebarState } from "@/pages/AppLayout";
+import { supabase } from "@/integrations/supabase/client";
 
 import iconPainelInicial from "@/assets/icon-sidebar-painel-inicial.svg";
 import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
@@ -41,6 +42,7 @@ interface AppSidebarNavProps {
 
 export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavProps) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path: string) => {
     if (path === "/app") return pathname === "/app";
@@ -83,10 +85,10 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
           {bottomItems.map(renderLink)}
 
           <button
-            onClick={() => {
+            onClick={async () => {
               onNavigate?.();
-              // TODO: implement logout logic
-              window.location.href = "/login";
+              await supabase.auth.signOut();
+              navigate("/");
             }}
             title={collapsed ? "Sair" : undefined}
             className={navItemClass}
