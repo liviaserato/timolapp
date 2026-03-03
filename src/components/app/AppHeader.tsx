@@ -67,12 +67,12 @@ export function AppHeader() {
                 </span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-[140px]">
+            <DropdownMenuContent align="end" className="min-w-0 w-auto">
               {profiles.map((p) => (
                 <DropdownMenuItem
                   key={p.franchiseId}
                   onClick={() => setSelectedId(p.franchiseId)}
-                  className={p.franchiseId === selected?.franchiseId ? "font-semibold bg-accent" : ""}
+                  className={`text-right ${p.franchiseId === selected?.franchiseId ? "font-semibold bg-accent" : ""}`}
                 >
                   ID {p.franchiseId}
                 </DropdownMenuItem>
@@ -106,7 +106,7 @@ export function AppHeader() {
                   <span className="absolute -top-1 -right-2 text-xs">💎</span>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="min-w-[160px]">
+              <DropdownMenuContent align="end" sideOffset={12} className="min-w-[160px]">
                 <DropdownMenuItem asChild>
                   <Link to="/app/cadastro" className="flex items-center gap-2">
                     <img src={iconCadastro} alt="" className="h-4 w-4 invert-0 brightness-0" /> Meus Dados
