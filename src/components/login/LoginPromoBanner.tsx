@@ -1,70 +1,183 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
-import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
+import { Droplets, TrendingUp, GraduationCap } from "lucide-react";
+import timolFavicon from "@/assets/favicon-timol-azul-escuro.svg";
 
 interface Props {
   className?: string;
 }
 
-// Placeholder promo image when none is uploaded
-const PLACEHOLDER_IMAGE = "";
+// Try loading a custom promo image; if it exists, overlay it
+const PROMO_IMAGE_PATH = "/promo-banner.jpg";
 
 export const LoginPromoBanner = ({ className }: Props) => {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [promoImage, setPromoImage] = useState<string | null>(null);
 
   useEffect(() => {
-    // Try to load the promo image from storage
-    loadPromoImage();
+    // Check if promo-banner.jpg exists in public/
+    const img = new Image();
+    img.onload = () => setPromoImage(PROMO_IMAGE_PATH);
+    img.onerror = () => setPromoImage(null);
+    img.src = PROMO_IMAGE_PATH;
   }, []);
-
-  const loadPromoImage = async () => {
-    try {
-      const { data } = supabase.storage
-        .from("login-promo")
-        .getPublicUrl("promo-banner.jpg");
-
-      if (data?.publicUrl) {
-        // Check if file actually exists by fetching headers
-        const res = await fetch(data.publicUrl, { method: "HEAD" });
-        if (res.ok) {
-          setImageUrl(data.publicUrl);
-        }
-      }
-    } catch {
-      // No image uploaded yet — show placeholder
-    }
-  };
 
   return (
     <div
       className={cn(
-        "relative flex-col items-center justify-center bg-gradient-to-br from-primary to-primary/80 text-primary-foreground p-8",
+        "relative overflow-hidden",
         className
       )}
+      style={{ aspectRatio: "840 / 1200" }}
     >
-      {imageUrl ? (
-        <img
-          src={imageUrl}
-          alt="Promoção Timol"
-          className="absolute inset-0 w-full h-full object-cover"
+      {/* === Text-based default banner (always rendered) === */}
+      <div
+        className="absolute inset-0 flex flex-col justify-between"
+        style={{
+          background: "linear-gradient(165deg, hsl(214 100% 20%) 0%, hsl(214 100% 30%) 40%, hsl(214 80% 24%) 100%)",
+          padding: "clamp(24px, 6.6%, 80px)",
+        }}
+      >
+        {/* Subtle pattern overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.06] pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at 20% 30%, rgba(255,255,255,0.3) 1px, transparent 1px),
+                              radial-gradient(circle at 80% 70%, rgba(255,255,255,0.2) 1px, transparent 1px)`,
+            backgroundSize: "40px 40px, 60px 60px",
+          }}
         />
-      ) : (
-        <div className="flex flex-col items-center justify-center h-full gap-6 text-center">
-          <img src={timolLogoDark} alt="Timol" className="h-12 brightness-0 invert" />
-          <div className="space-y-3">
-            <h2 className="text-xl font-bold leading-tight">
-              Seu negócio digital começa aqui
-            </h2>
-            <p className="text-sm opacity-80 leading-relaxed max-w-[280px]">
-              Faça parte da rede Timol e tenha acesso a produtos exclusivos, treinamentos e suporte completo.
-            </p>
+
+        {/* Top: favicon + title */}
+        <div className="relative z-10 text-center space-y-4">
+          <div className="flex justify-center">
+            <img
+              src={timolFavicon}
+              alt="Timol"
+              className="h-8 lg:h-10 brightness-0 invert opacity-90"
+            />
           </div>
-          <div className="mt-4 px-4 py-2 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 text-xs">
-            #TimolTransforma
-          </div>
+          <h2
+            className="text-lg lg:text-xl font-bold leading-snug tracking-tight"
+            style={{ color: "hsl(0 0% 100%)" }}
+          >
+            Por que vale a pena
+            <br />
+            <span
+              className="text-xl lg:text-2xl"
+              style={{ color: "hsl(199 100% 72%)" }}
+            >
+              fazer parte da Timol?
+            </span>
+          </h2>
         </div>
+
+        {/* Middle: 3 content blocks with diagonal separators */}
+        <div className="relative z-10 flex-1 flex flex-col justify-center gap-2 my-4">
+          {/* Block 1 */}
+          <ContentBlock
+            icon={<Droplets className="h-5 w-5 lg:h-6 lg:w-6" />}
+            title="Produtos que fazem sentido"
+            text="Saúde por meio da água, bem-estar e facilidades do dia a dia."
+          />
+
+          <DiagonalSeparator />
+
+          {/* Block 2 */}
+          <ContentBlock
+            icon={<TrendingUp className="h-5 w-5 lg:h-6 lg:w-6" />}
+            title="Renda extra e crescimento real"
+            text="Plano de carreira, ganhos financeiros atrativos e muitos prêmios."
+          />
+
+          <DiagonalSeparator />
+
+          {/* Block 3 */}
+          <ContentBlock
+            icon={<GraduationCap className="h-5 w-5 lg:h-6 lg:w-6" />}
+            title="Queremos te ver crescer"
+            text="Eventos, treinamentos e mentorias para acelerar seu desenvolvimento."
+          />
+        </div>
+
+        {/* Bottom: Hashtag */}
+        <div className="relative z-10 text-center">
+          <p
+            className="text-2xl lg:text-3xl font-extrabold tracking-wide"
+            style={{
+              color: "hsl(199 100% 72%)",
+              textShadow: "0 2px 12px rgba(0,56,133,0.5)",
+            }}
+          >
+            #VemSerTimol
+          </p>
+        </div>
+      </div>
+
+      {/* === Image overlay (covers text banner if present) === */}
+      {promoImage && (
+        <img
+          src={promoImage}
+          alt="Promoção Timol"
+          className="absolute inset-0 w-full h-full object-cover z-20"
+        />
       )}
     </div>
   );
 };
+
+/* ---- Sub-components ---- */
+
+const ContentBlock = ({
+  icon,
+  title,
+  text,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  text: string;
+}) => (
+  <div className="flex gap-3 items-start">
+    <div
+      className="shrink-0 rounded-lg p-2"
+      style={{ background: "hsla(199, 100%, 72%, 0.15)" }}
+    >
+      <div style={{ color: "hsl(199 100% 72%)" }}>{icon}</div>
+    </div>
+    <div className="space-y-0.5">
+      <h3
+        className="text-sm lg:text-base font-bold leading-tight"
+        style={{ color: "hsl(0 0% 100%)" }}
+      >
+        {title}
+      </h3>
+      <p
+        className="text-xs lg:text-sm leading-snug opacity-75"
+        style={{ color: "hsl(0 0% 100%)" }}
+      >
+        {text}
+      </p>
+    </div>
+  </div>
+);
+
+const DiagonalSeparator = () => (
+  <div className="relative h-4 my-1 overflow-hidden">
+    <svg
+      viewBox="0 0 680 16"
+      preserveAspectRatio="none"
+      className="w-full h-full"
+      aria-hidden="true"
+    >
+      <line
+        x1="0"
+        y1="14"
+        x2="680"
+        y2="2"
+        stroke="hsl(199 100% 72%)"
+        strokeWidth="3"
+        strokeOpacity="0.3"
+        strokeLinecap="round"
+      />
+    </svg>
+  </div>
+);
