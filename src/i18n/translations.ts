@@ -398,8 +398,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "resume.error.generic": "Erro ao buscar cadastro. Tente novamente.",
 
     // Login promo banner
-    "banner.title.line1": "Por que vale a pena",
-    "banner.title.line2": "fazer parte da Timol?",
+    "banner.title.line1": "Vale a pena",
+    "banner.title.line2": "fazer parte da Timol!",
     "banner.block1.title": "Produtos que fazem sentido",
     "banner.block1.text": "Saúde por meio da água, bem-estar e facilidades do dia a dia.",
     "banner.block2.title": "Renda extra e crescimento real",
@@ -791,8 +791,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "resume.error.generic": "Error fetching registration. Please try again.",
 
     // Login promo banner
-    "banner.title.line1": "Why is it worth",
-    "banner.title.line2": "being part of Timol?",
+    "banner.title.line1": "It's worth",
+    "banner.title.line2": "being part of Timol!",
     "banner.block1.title": "Products that make sense",
     "banner.block1.text": "Health through water, well-being and everyday convenience.",
     "banner.block2.title": "Extra income and real growth",
@@ -1184,8 +1184,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "resume.error.generic": "Error al buscar registro. Intente nuevamente.",
 
     // Login promo banner
-    "banner.title.line1": "¿Por qué vale la pena",
-    "banner.title.line2": "ser parte de Timol?",
+    "banner.title.line1": "Vale la pena",
+    "banner.title.line2": "ser parte de Timol!",
     "banner.block1.title": "Productos que tienen sentido",
     "banner.block1.text": "Salud a través del agua, bienestar y facilidades del día a día.",
     "banner.block2.title": "Ingresos extra y crecimiento real",

@@ -69,15 +69,15 @@ export const LoginPromoBanner = ({ className }: Props) => {
           </h2>
         </div>
 
-        {/* Middle: 3 content blocks with hand-drawn separators */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center gap-6 my-6">
+        {/* Middle: 3 content blocks with glowing separators */}
+        <div className="relative z-10 flex-1 flex flex-col justify-center gap-4 my-5">
           <ContentBlock
             icon={<Droplets className="h-8 w-8 lg:h-10 lg:w-10" />}
             title={t("banner.block1.title")}
             text={t("banner.block1.text")}
           />
 
-          <HandDrawnSeparator />
+          <GlowSeparator />
 
           <ContentBlock
             icon={<TrendingUp className="h-8 w-8 lg:h-10 lg:w-10" />}
@@ -85,7 +85,7 @@ export const LoginPromoBanner = ({ className }: Props) => {
             text={t("banner.block2.text")}
           />
 
-          <HandDrawnSeparator />
+          <GlowSeparator />
 
           <ContentBlock
             icon={<GraduationCap className="h-8 w-8 lg:h-10 lg:w-10" />}
@@ -94,17 +94,28 @@ export const LoginPromoBanner = ({ className }: Props) => {
           />
         </div>
 
-        {/* Bottom: Hashtag */}
+        {/* Bottom: Hashtag with Breathing font */}
         <div className="relative z-10 text-center">
-          <p
-            className="text-3xl lg:text-4xl font-extrabold tracking-wide"
-            style={{
-              color: "hsl(199 100% 72%)",
-              textShadow: "0 2px 12px rgba(0,56,133,0.5)",
-              fontFamily: "'Poppins', sans-serif",
-            }}
-          >
-            #VemSerTimol
+          <p className="text-3xl lg:text-4xl font-extrabold tracking-wide">
+            <span
+              style={{
+                color: "hsl(0 0% 100%)",
+                fontFamily: "'Poppins', sans-serif",
+              }}
+            >
+              #
+            </span>
+            <span
+              style={{
+                color: "hsl(0 0% 100%)",
+                fontFamily: "'Breathing', cursive",
+                fontSize: "1.15em",
+                textShadow:
+                  "0 0 20px hsla(199, 100%, 72%, 0.6), 0 0 40px hsla(199, 100%, 72%, 0.3), 0 2px 12px rgba(0,56,133,0.5)",
+              }}
+            >
+              VemSerTimol
+            </span>
           </p>
         </div>
       </div>
@@ -153,22 +164,33 @@ const ContentBlock = ({
   </div>
 );
 
-const HandDrawnSeparator = () => (
-  <div className="relative h-5 my-1 overflow-hidden">
+const GlowSeparator = () => (
+  <div className="relative h-4 my-0.5 overflow-hidden">
     <svg
-      viewBox="0 0 680 20"
+      viewBox="0 0 680 16"
       preserveAspectRatio="none"
       className="w-full h-full"
       aria-hidden="true"
     >
-      <path
-        d="M0 18 C 40 16, 80 6, 140 8 S 220 3, 300 5 S 400 2, 480 6 S 560 1, 640 4 L 680 2"
-        fill="none"
+      <defs>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      <line
+        x1="0"
+        y1="14"
+        x2="680"
+        y2="2"
         stroke="hsl(199 100% 72%)"
-        strokeWidth="2.5"
-        strokeOpacity="0.4"
+        strokeWidth="2"
+        strokeOpacity="0.5"
         strokeLinecap="round"
-        strokeLinejoin="round"
+        filter="url(#glow)"
       />
     </svg>
   </div>
