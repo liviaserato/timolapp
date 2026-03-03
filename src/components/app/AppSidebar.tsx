@@ -1,5 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useSidebarState } from "@/pages/AppLayout";
 
 import iconPainelInicial from "@/assets/icon-sidebar-painel-inicial.svg";
 import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
@@ -13,31 +14,26 @@ import iconRelatorios from "@/assets/icon-sidebar-relatorios.svg";
 import iconTreinamentos from "@/assets/icon-sidebar-treinamentos.svg";
 import iconSuporte from "@/assets/icon-sidebar-suporte.svg";
 
-type NavIcon = { type: "svg"; src: string };
-
-const navItems: { label: string; path: string; icon: NavIcon }[] = [
-  { label: "Painel Inicial", path: "/app", icon: { type: "svg", src: iconPainelInicial } },
-  { label: "Cadastro", path: "/app/cadastro", icon: { type: "svg", src: iconCadastro } },
-  { label: "Rede", path: "/app/rede", icon: { type: "svg", src: iconRede } },
-  { label: "Clientes", path: "/app/clientes", icon: { type: "svg", src: iconClientes } },
-  { label: "Treinamentos", path: "/app/treinamentos", icon: { type: "svg", src: iconTreinamentos } },
-  { label: "Produtos", path: "/app/produtos", icon: { type: "svg", src: iconProdutos } },
-  { label: "Pedidos", path: "/app/pedidos", icon: { type: "svg", src: iconPedidos } },
-  { label: "Financeiro", path: "/app/financeiro", icon: { type: "svg", src: iconFinanceiro } },
-  { label: "Comercial", path: "/app/comercial", icon: { type: "svg", src: iconComercial } },
-  { label: "Relatórios", path: "/app/relatorios", icon: { type: "svg", src: iconRelatorios } },
-  { label: "Suporte", path: "/app/suporte", icon: { type: "svg", src: iconSuporte } },
+const navItems = [
+  { label: "Painel Inicial", path: "/app", icon: iconPainelInicial },
+  { label: "Cadastro", path: "/app/cadastro", icon: iconCadastro },
+  { label: "Rede", path: "/app/rede", icon: iconRede },
+  { label: "Clientes", path: "/app/clientes", icon: iconClientes },
+  { label: "Treinamentos", path: "/app/treinamentos", icon: iconTreinamentos },
+  { label: "Produtos", path: "/app/produtos", icon: iconProdutos },
+  { label: "Pedidos", path: "/app/pedidos", icon: iconPedidos },
+  { label: "Financeiro", path: "/app/financeiro", icon: iconFinanceiro },
+  { label: "Comercial", path: "/app/comercial", icon: iconComercial },
+  { label: "Relatórios", path: "/app/relatorios", icon: iconRelatorios },
+  { label: "Suporte", path: "/app/suporte", icon: iconSuporte },
 ];
 
 interface AppSidebarNavProps {
+  collapsed?: boolean;
   onNavigate?: () => void;
 }
 
-function NavItemIcon({ icon }: { icon: NavIcon }) {
-  return <img src={icon.src} alt="" className="h-5 w-5 shrink-0" />;
-}
-
-export function AppSidebarNav({ onNavigate }: AppSidebarNavProps) {
+export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavProps) {
   const { pathname } = useLocation();
 
   const isActive = (path: string) => {
@@ -52,13 +48,15 @@ export function AppSidebarNav({ onNavigate }: AppSidebarNavProps) {
           key={item.path}
           to={item.path}
           onClick={onNavigate}
+          title={collapsed ? item.label : undefined}
           className={cn(
-            "flex items-center gap-3 px-4 py-3 text-primary-foreground/90 text-[15px] font-medium transition-colors hover:bg-[hsl(var(--app-sidebar-hover))]",
+            "flex items-center gap-3 py-3 text-primary-foreground/90 text-[15px] font-medium transition-colors hover:bg-[hsl(var(--app-sidebar-hover))]",
+            collapsed ? "justify-center px-0" : "px-4",
             isActive(item.path) && "bg-[hsl(var(--app-sidebar-hover))] text-primary-foreground font-semibold"
           )}
         >
-          <NavItemIcon icon={item.icon} />
-          <span>{item.label}</span>
+          <img src={item.icon} alt="" className="h-5 w-5 shrink-0" />
+          {!collapsed && <span>{item.label}</span>}
         </Link>
       ))}
     </nav>
@@ -66,9 +64,16 @@ export function AppSidebarNav({ onNavigate }: AppSidebarNavProps) {
 }
 
 export function AppSidebar() {
+  const { expanded } = useSidebarState();
+
   return (
-    <aside className="hidden lg:block sticky top-[70px] h-[calc(100vh-70px)] w-[200px] overflow-y-auto bg-app-sidebar">
-      <AppSidebarNav />
+    <aside
+      className={cn(
+        "hidden md:flex flex-col shrink-0 overflow-y-auto bg-app-sidebar transition-[width] duration-200 ease-in-out",
+        expanded ? "w-[200px]" : "w-[56px]"
+      )}
+    >
+      <AppSidebarNav collapsed={!expanded} />
     </aside>
   );
 }

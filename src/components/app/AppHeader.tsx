@@ -9,7 +9,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { AppSidebarNav } from "./AppSidebar";
+import { useSidebarState } from "@/pages/AppLayout";
 import timolLogoBranco from "@/assets/logo-timol-branco.svg";
+import iconSuporte from "@/assets/icon-sidebar-suporte.svg";
+import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
+import iconConfiguracoes from "@/assets/icon-sidebar-configuracoes.svg";
 
 interface AppHeaderProps {
   userName?: string;
@@ -18,16 +22,26 @@ interface AppHeaderProps {
 
 export function AppHeader({ userName = "Lívia Serato", userId = "31" }: AppHeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { toggle } = useSidebarState();
 
   return (
-    <header className="sticky top-0 z-30 flex h-[70px] items-center justify-between gap-4 bg-gradient-to-b from-app-header to-app-header-gradient px-5 pr-6 shadow-sm">
-      {/* Left: hamburger + logo */}
+    <header className="shrink-0 z-30 flex h-[70px] items-center justify-between gap-4 bg-gradient-to-b from-app-header to-app-header-gradient px-5 pr-6 shadow-sm">
+      {/* Left: toggle + logo */}
       <div className="flex items-center gap-4">
-        {/* Mobile hamburger */}
+        {/* Desktop/Tablet sidebar toggle - visible md+ */}
+        <button
+          onClick={toggle}
+          className="hidden md:inline-flex items-center justify-center text-primary-foreground hover:text-primary-foreground/80 transition-colors"
+          aria-label="Alternar menu lateral"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
+
+        {/* Mobile hamburger - visible < md */}
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
             <button
-              className="hidden max-lg:inline-flex items-center justify-center text-primary-foreground"
+              className="inline-flex md:hidden items-center justify-center text-primary-foreground"
               aria-label="Abrir menu"
             >
               <Menu className="h-6 w-6" />
@@ -90,22 +104,17 @@ export function AppHeader({ userName = "Lívia Serato", userId = "31" }: AppHead
             <DropdownMenuContent align="end" className="min-w-[160px]">
               <DropdownMenuItem asChild>
                 <Link to="/app/cadastro" className="flex items-center gap-2">
-                  <User className="h-4 w-4" /> Meus Dados
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/app/franquia" className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4" /> Minha Franquia
+                  <img src={iconCadastro} alt="" className="h-4 w-4 invert-0 brightness-0" /> Meus Dados
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/app/suporte" className="flex items-center gap-2">
-                  <MessageCircle className="h-4 w-4" /> Fale Conosco
+                  <img src={iconSuporte} alt="" className="h-4 w-4 invert-0 brightness-0" /> Fale Conosco
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/app/configuracoes" className="flex items-center gap-2">
-                  <Settings className="h-4 w-4" /> Configurações
+                  <img src={iconConfiguracoes} alt="" className="h-4 w-4 invert-0 brightness-0" /> Configurações
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
