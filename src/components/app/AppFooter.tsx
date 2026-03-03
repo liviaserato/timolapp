@@ -9,11 +9,11 @@ import iconRede from "@/assets/icon-sidebar-rede.svg";
 import iconTreinamentos from "@/assets/icon-sidebar-treinamentos.svg";
 
 const footerItems = [
-  { label: "Pedidos", icon: iconPedidos, path: "/app/pedidos" },
-  { label: "Financeiro", icon: iconFinanceiro, path: "/app/financeiro" },
-  { label: "Clientes", icon: iconClientes, path: "/app/clientes" },
-  { label: "Rede", icon: iconRede, path: "/app/rede" },
-  { label: "FAT", icon: iconTreinamentos, path: "/app/treinamentos" },
+  { label: "Rede", icon: iconRede, path: "/app/rede", fat: false },
+  { label: "Clientes", icon: iconClientes, path: "/app/clientes", fat: false },
+  { label: "FAT", icon: iconTreinamentos, path: "/app/treinamentos", fat: true },
+  { label: "Pedidos", icon: iconPedidos, path: "/app/pedidos", fat: false },
+  { label: "Financeiro", icon: iconFinanceiro, path: "/app/financeiro", fat: false },
 ];
 
 export function AppFooter() {
@@ -60,12 +60,22 @@ export function AppFooter() {
             key={item.path}
             to={item.path}
             className={cn(
-              "flex flex-1 flex-col items-center justify-center gap-2 text-[11px] text-primary-foreground/80 hover:text-primary-foreground transition-colors",
-              pathname.startsWith(item.path) && "text-primary-foreground font-semibold"
+              "flex flex-1 flex-col items-center justify-center gap-1.5 text-[11px] text-primary-foreground/80 hover:text-primary-foreground transition-colors",
+              pathname.startsWith(item.path) && "text-primary-foreground font-semibold",
+              item.fat && "relative -mt-3"
             )}
           >
-            <img src={item.icon} alt="" className="h-5 w-5" />
-            <span>{item.label}</span>
+            {item.fat ? (
+              <span className={cn(
+                "flex h-11 w-11 items-center justify-center rounded-full bg-primary-foreground/20 shadow-md",
+                pathname.startsWith(item.path) && "bg-primary-foreground/30 ring-2 ring-primary-foreground/40"
+              )}>
+                <img src={item.icon} alt="" className="h-6 w-6" />
+              </span>
+            ) : (
+              <img src={item.icon} alt="" className="h-5 w-5" />
+            )}
+            <span className={cn(item.fat && "font-bold text-primary-foreground")}>{item.label}</span>
           </Link>
         ))}
       </nav>
