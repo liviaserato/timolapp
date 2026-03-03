@@ -1,34 +1,37 @@
 
 
-## Padronização de nomenclatura de IDs
+# Plano: Criar documentação `docs/api-contract.md`
 
-### Situação atual
+## Objetivo
+Criar um arquivo de documentação completo especificando o contrato da API `/api/people/register` com base no fluxo atual do frontend (WizardData, telas de registro, franquia e pagamento).
 
-| Onde | Campo | Significado |
-|------|-------|-------------|
-| Frontend (`WizardData`) | `authUserId` | UUID interno do Supabase Auth |
-| Frontend (`WizardData`) | `franchiseId` | ID público da franquia (6 dígitos) |
-| Banco de dados (`registration_status`) | `user_id` | UUID interno (ref auth) |
-| Banco de dados (`registration_status`) | `user_display_id` | ID público (6 dígitos) |
-| Banco de dados (`profiles`) | `user_id` | UUID interno (ref auth) |
+## Conteúdo do arquivo
 
-### Recomendação
+O documento cobrirá:
 
-- **`authUserId`** → manter. É o UUID do sistema de autenticação, não tem relação com franquia. Nome claro e padrão.
-- **`user_display_id`** → **renomear para `franchise_id`** no banco e em todas as Edge Functions que o referenciam. Esse campo representa o ID da franquia, não do usuário.
-- **`user_id`** nas tabelas → manter. É a referência ao auth.users, convenção padrão do backend.
+1. **Visão Geral** — fluxo em 2 estágios (pending → completed)
+2. **Autenticação** — JWT do franqueado (não admin), fluxo de obtenção do token
+3. **Endpoint** — `POST /api/people/register` e `PUT /api/people/register/{franchiseId}`
+4. **Estágio 1 (Criação — status `pending`)** — todos os campos extraídos do wizard:
+   - Patrocinador: `sponsorId`, `sponsorName`, `sponsorSource`
+   - Pessoal: `fullName`, `birthDate` (DD-MM-AAAA), `document`, `foreignerNoCpf`, `documentCountry`, `documentCountryIso2`, `gender`
+   - Contato: `email`, `phone`
+   - Endereço: `country`, `countryIso2`, `zipCode`, `street`, `number`, `complement`, `neighborhood`, `city`, `state`
+   - Login: `username`, `password`
+   - Retorno: `franchiseId` (6 dígitos), `authUserId` (UUID)
 
-### Resumo das mudanças
+5. **Estágio 2 (Atualização — status `completed`)** — campos de checkout:
+   - Franquia: `franchise` (bronze/silver/gold/platinum), `franchisePrice`
+   - Pagamento: `paymentMethod` (pix/credit), `cardLast4`, `cardInstallments`, `cardHolderName`
+   - Acordos: `agreeRules`, `agreeCommunications`
+   - Cupom: `couponCode`, `couponDiscount`
 
-1. **Migração SQL**: renomear coluna `user_display_id` → `franchise_id` na tabela `registration_status`
-2. **Edge Functions** que leem/escrevem `user_display_id`: atualizar para `franchise_id` (~6 funções: `track-registration`, `get-pending-registrations`, `continue-registration`, `send-recovery-email`, `check-incomplete-registrations`, `resume-registration`)
-3. **Frontend**: onde o código referencia `user_display_id` (ex: `PendingRegistrations.tsx`), trocar para `franchise_id`
-4. **Atualizar memória** `registration-api-contract` para refletir o novo nome
+6. **DTOs sugeridos (.NET)** — `RegisterPersonRequest`, `RegisterPaymentRequest`, `RegisterResponse`
+7. **Códigos de resposta HTTP** — 201, 200, 400, 401, 404, 409
+8. **Validações** — idade mínima 18, CPF válido, username único, etc.
 
-### Resultado final padronizado
-
-| Campo | Significado |
-|-------|-------------|
-| `user_id` (DB) / `authUserId` (frontend) | UUID interno de autenticação |
-| `franchise_id` (DB) / `franchiseId` (frontend) | ID público da franquia |
+## Detalhes técnicos
+- Arquivo: `docs/api-contract.md`
+- Formato: Markdown com tabelas de campos, tipos, obrigatoriedade e exemplos
+- Baseado 100% nos dados já presentes em `WizardData` e nos componentes do frontend
 
