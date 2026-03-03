@@ -52,11 +52,11 @@ const Login = () => {
       sessionStorage.setItem("timol_session_temp", "true");
     }
 
-    // TODO: Replace with real Supabase auth call
+    // TODO: Replace with real auth call. For now, navigate directly.
     setTimeout(() => {
       setLoading(false);
-      setErrors({ general: t("login.error.invalid") });
-    }, 1500);
+      navigate("/app");
+    }, 800);
   };
 
   return (
