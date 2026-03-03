@@ -55,7 +55,7 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
       title={collapsed ? item.label : undefined}
       className={cn(
         "flex items-center gap-3 py-2.5 text-primary-foreground/90 text-[15px] font-medium transition-colors hover:bg-[hsl(var(--app-sidebar-hover))] whitespace-nowrap overflow-hidden border-l-[3px] border-transparent px-4",
-        collapsed && "justify-center",
+        false,
         isActive(item.path) && "bg-[hsl(var(--app-sidebar-hover))] text-primary-foreground font-semibold border-l-primary-foreground"
       )}
     >
@@ -87,7 +87,7 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
             title={collapsed ? "Sair" : undefined}
             className={cn(
               "flex items-center gap-3 py-2.5 text-primary-foreground/90 text-[15px] font-medium transition-colors hover:bg-[hsl(var(--app-sidebar-hover))] whitespace-nowrap overflow-hidden border-l-[3px] border-transparent px-4",
-              collapsed && "justify-center"
+              false
             )}
           >
             <LogOut className="h-5 w-5 shrink-0" />
