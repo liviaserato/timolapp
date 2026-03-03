@@ -47,7 +47,7 @@ export function AppHeader({ userName = "Lívia Serato", userId = "31" }: AppHead
               <Menu className="h-6 w-6" />
             </button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-[220px] bg-app-sidebar p-0 border-0">
+          <SheetContent side="left" className="w-[220px] bg-app-sidebar p-0 border-0" hideClose>
             <SheetTitle className="sr-only">Menu de navegação</SheetTitle>
             <div className="pt-4">
               <AppSidebarNav onNavigate={() => setMobileOpen(false)} />
