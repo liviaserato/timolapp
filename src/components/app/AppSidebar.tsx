@@ -104,9 +104,10 @@ export function AppSidebar() {
 
   return (
     <aside
+      style={{ scrollbarWidth: 'none' }}
       className={cn(
-        "hidden md:flex flex-col shrink-0 overflow-y-auto overflow-x-hidden bg-app-sidebar transition-[width] duration-200 ease-in-out",
-        expanded ? "w-[200px]" : "w-[56px]"
+        "hidden md:flex flex-col shrink-0 overflow-y-auto overflow-x-hidden bg-app-sidebar transition-[width] duration-200 ease-in-out [&::-webkit-scrollbar]:hidden",
+        expanded ? "w-[200px]" : "w-[60px]"
       )}
     >
       <AppSidebarNav collapsed={!expanded} />
