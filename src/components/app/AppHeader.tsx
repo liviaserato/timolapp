@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, ChevronDown, User, Star } from "lucide-react";
 import {
@@ -7,8 +6,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { AppSidebarNav } from "./AppSidebar";
 import { useSidebarState } from "@/pages/AppLayout";
 import { useFranchise } from "@/contexts/FranchiseContext";
 import timolLogoBranco from "@/assets/logo-timol-branco.svg";
@@ -17,7 +14,6 @@ import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
 import iconConfiguracoes from "@/assets/icon-sidebar-configuracoes.svg";
 
 export function AppHeader() {
-  const [mobileOpen, setMobileOpen] = useState(false);
   const { toggle } = useSidebarState();
   const { profiles, selected, setSelectedId, hasMultiple } = useFranchise();
 
@@ -25,7 +21,7 @@ export function AppHeader() {
     <header className="shrink-0 z-30 flex h-[70px] items-center justify-between gap-4 bg-gradient-to-b from-app-header to-app-header-gradient px-5 pr-6 shadow-sm">
       {/* Left: toggle + logo */}
       <div className="flex items-center gap-4">
-        {/* Desktop/Tablet sidebar toggle - visible md+ */}
+        {/* Desktop/Tablet sidebar toggle - hidden on mobile */}
         <button
           onClick={toggle}
           className="hidden md:inline-flex items-center justify-center text-primary-foreground hover:text-primary-foreground/80 transition-colors"
@@ -33,24 +29,6 @@ export function AppHeader() {
         >
           <Menu className="h-6 w-6" />
         </button>
-
-        {/* Mobile hamburger - visible < md */}
-        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-          <SheetTrigger asChild>
-            <button
-              className="inline-flex md:hidden items-center justify-center text-primary-foreground"
-              aria-label="Abrir menu"
-            >
-              <Menu className="h-6 w-6" />
-            </button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[220px] bg-app-sidebar p-0 border-0" hideClose>
-            <SheetTitle className="sr-only">Menu de navegação</SheetTitle>
-            <div className="pt-4">
-              <AppSidebarNav onNavigate={() => setMobileOpen(false)} />
-            </div>
-          </SheetContent>
-        </Sheet>
 
         <Link to="/app" className="block">
           <img
