@@ -69,8 +69,13 @@ export function AppHeader() {
       {/* Right: user info + avatar */}
       <div className="flex items-center gap-4 shrink-0">
         <div className="flex flex-col items-end gap-0.5">
-          <span className="text-sm font-semibold text-primary-foreground max-w-[110px] truncate leading-tight">
-            {selected?.name ?? "Usuário"}
+          <span className="text-sm font-semibold text-primary-foreground leading-tight md:whitespace-nowrap">
+            <span className="hidden md:inline">{selected?.name ?? "Usuário"}</span>
+            <span className="inline md:hidden">
+              {selected?.name
+                ? selected.name.split(" ").slice(0, 2).join(" ")
+                : "Usuário"}
+            </span>
           </span>
 
           {/* ID Switch — only show dropdown if multiple IDs */}
