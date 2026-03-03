@@ -159,9 +159,9 @@ const GlowSeparator = () => (
       </defs>
       <line
         x1="0"
-        y1="14"
+        y1="8"
         x2="680"
-        y2="2"
+        y2="8"
         stroke="hsl(199 100% 72%)"
         strokeWidth="2"
         strokeOpacity="0.5"
