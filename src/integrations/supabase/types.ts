@@ -130,6 +130,7 @@ export type Database = {
           created_at: string
           document: string | null
           email: string
+          franchise_id: string | null
           franchise_name: string | null
           franchise_selected: boolean
           full_name: string | null
@@ -148,7 +149,6 @@ export type Database = {
           state: string | null
           status: string
           updated_at: string
-          user_display_id: string | null
           user_id: string
           whatsapp_recovery_sent: boolean
           whatsapp_recovery_sent_at: string | null
@@ -160,6 +160,7 @@ export type Database = {
           created_at?: string
           document?: string | null
           email: string
+          franchise_id?: string | null
           franchise_name?: string | null
           franchise_selected?: boolean
           full_name?: string | null
@@ -178,7 +179,6 @@ export type Database = {
           state?: string | null
           status?: string
           updated_at?: string
-          user_display_id?: string | null
           user_id: string
           whatsapp_recovery_sent?: boolean
           whatsapp_recovery_sent_at?: string | null
@@ -190,6 +190,7 @@ export type Database = {
           created_at?: string
           document?: string | null
           email?: string
+          franchise_id?: string | null
           franchise_name?: string | null
           franchise_selected?: boolean
           full_name?: string | null
@@ -208,7 +209,6 @@ export type Database = {
           state?: string | null
           status?: string
           updated_at?: string
-          user_display_id?: string | null
           user_id?: string
           whatsapp_recovery_sent?: boolean
           whatsapp_recovery_sent_at?: string | null

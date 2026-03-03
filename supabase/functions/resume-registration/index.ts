@@ -12,9 +12,9 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { user_display_id, document, birth_date } = await req.json();
+    const { franchise_id, document, birth_date } = await req.json();
 
-    if (!user_display_id || !document || !birth_date) {
+    if (!franchise_id || !document || !birth_date) {
       return new Response(
         JSON.stringify({ error: "All fields are required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -25,11 +25,11 @@ Deno.serve(async (req: Request) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    // Find registration by user_display_id
+    // Find registration by franchise_id
     const { data: reg, error: regError } = await supabase
       .from("registration_status")
       .select("*")
-      .eq("user_display_id", user_display_id)
+      .eq("franchise_id", franchise_id)
       .single();
 
     if (regError || !reg) {

@@ -1,0 +1,1 @@
+ALTER TABLE public.registration_status RENAME COLUMN user_display_id TO franchise_id;
