@@ -1,10 +1,9 @@
 import { useLocation, Link } from "react-router-dom";
-import { Network } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import iconPainelInicial from "@/assets/icon-sidebar-painel-inicial.svg";
 import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
-import iconFranquia from "@/assets/icon-sidebar-franquia.svg";
+import iconRede from "@/assets/icon-sidebar-rede.svg";
 import iconClientes from "@/assets/icon-sidebar-clientes.svg";
 import iconProdutos from "@/assets/icon-sidebar-produtos.svg";
 import iconPedidos from "@/assets/icon-sidebar-pedidos.svg";
@@ -14,13 +13,12 @@ import iconRelatorios from "@/assets/icon-sidebar-relatorios.svg";
 import iconTreinamentos from "@/assets/icon-sidebar-treinamentos.svg";
 import iconSuporte from "@/assets/icon-sidebar-suporte.svg";
 
-type NavIcon = { type: "svg"; src: string } | { type: "lucide"; Icon: React.ComponentType<{ className?: string }> };
+type NavIcon = { type: "svg"; src: string };
 
 const navItems: { label: string; path: string; icon: NavIcon }[] = [
   { label: "Painel Inicial", path: "/app", icon: { type: "svg", src: iconPainelInicial } },
   { label: "Cadastro", path: "/app/cadastro", icon: { type: "svg", src: iconCadastro } },
-  { label: "Franquia", path: "/app/franquia", icon: { type: "svg", src: iconFranquia } },
-  { label: "Rede", path: "/app/rede", icon: { type: "lucide", Icon: Network } },
+  { label: "Rede", path: "/app/rede", icon: { type: "svg", src: iconRede } },
   { label: "Clientes", path: "/app/clientes", icon: { type: "svg", src: iconClientes } },
   { label: "Treinamentos", path: "/app/treinamentos", icon: { type: "svg", src: iconTreinamentos } },
   { label: "Produtos", path: "/app/produtos", icon: { type: "svg", src: iconProdutos } },
@@ -36,11 +34,7 @@ interface AppSidebarNavProps {
 }
 
 function NavItemIcon({ icon }: { icon: NavIcon }) {
-  if (icon.type === "svg") {
-    return <img src={icon.src} alt="" className="h-5 w-5 shrink-0" />;
-  }
-  const { Icon } = icon;
-  return <Icon className="h-5 w-5 shrink-0" />;
+  return <img src={icon.src} alt="" className="h-5 w-5 shrink-0" />;
 }
 
 export function AppSidebarNav({ onNavigate }: AppSidebarNavProps) {
