@@ -19,14 +19,21 @@ const footerItems = [
 export function AppFooter() {
   const { pathname } = useLocation();
   const [visible, setVisible] = useState(true);
+  const hasScrolled = useRef(false);
   const lastScrollY = useRef(0);
 
   const handleScroll = useCallback((e: Event) => {
     const target = e.target as HTMLElement;
     const currentY = target.scrollTop;
-    if (currentY < lastScrollY.current) {
+    if (!hasScrolled.current && currentY > 0) {
+      hasScrolled.current = true;
+    }
+    if (!hasScrolled.current) return;
+    if (currentY <= 0) {
       setVisible(true);
-    } else if (currentY > lastScrollY.current && currentY > 100) {
+    } else if (currentY < lastScrollY.current) {
+      setVisible(true);
+    } else if (currentY > lastScrollY.current) {
       setVisible(false);
     }
     lastScrollY.current = currentY;
