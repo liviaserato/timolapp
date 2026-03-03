@@ -48,83 +48,99 @@ export function AppHeader() {
 
       {/* Right: user info + avatar */}
       <div className="flex items-center gap-4 shrink-0">
-        <div className="flex flex-col items-end gap-0.5">
-          <span className="text-sm font-semibold text-primary-foreground leading-tight md:whitespace-nowrap">
-            <span className="hidden md:inline">{selected?.name ?? "Usuário"}</span>
-            <span className="inline md:hidden">
-              {selected?.name
-                ? selected.name.split(" ").slice(0, 2).join(" ")
-                : "Usuário"}
-            </span>
-          </span>
-
-          {/* ID Switch — only show dropdown if multiple IDs */}
-          {hasMultiple ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center gap-1 text-xs text-primary-foreground/75 hover:text-primary-foreground transition-colors">
+        {/* Name + ID — whole block triggers ID switcher when multiple */}
+        {hasMultiple ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex flex-col items-end gap-0.5 hover:opacity-90 transition-opacity">
+                <span className="text-sm font-semibold text-primary-foreground leading-tight md:whitespace-nowrap">
+                  <span className="hidden md:inline">{selected?.name ?? "Usuário"}</span>
+                  <span className="inline md:hidden">
+                    {selected?.name
+                      ? selected.name.split(" ").slice(0, 2).join(" ")
+                      : "Usuário"}
+                  </span>
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs text-primary-foreground/75">
                   <span>ID {selected?.franchiseId}</span>
                   <ChevronDown className="h-3.5 w-3.5 opacity-85" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="min-w-[140px]">
-                {profiles.map((p) => (
-                  <DropdownMenuItem
-                    key={p.franchiseId}
-                    onClick={() => setSelectedId(p.franchiseId)}
-                    className={p.franchiseId === selected?.franchiseId ? "font-semibold bg-accent" : ""}
-                  >
-                    ID {p.franchiseId}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
+                </span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[140px]">
+              {profiles.map((p) => (
+                <DropdownMenuItem
+                  key={p.franchiseId}
+                  onClick={() => setSelectedId(p.franchiseId)}
+                  className={p.franchiseId === selected?.franchiseId ? "font-semibold bg-accent" : ""}
+                >
+                  ID {p.franchiseId}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <div className="flex flex-col items-end gap-0.5">
+            <span className="text-sm font-semibold text-primary-foreground leading-tight md:whitespace-nowrap">
+              <span className="hidden md:inline">{selected?.name ?? "Usuário"}</span>
+              <span className="inline md:hidden">
+                {selected?.name
+                  ? selected.name.split(" ").slice(0, 2).join(" ")
+                  : "Usuário"}
+              </span>
+            </span>
             <span className="text-xs text-primary-foreground/75">
               ID {selected?.franchiseId}
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Avatar + badge + stars + menu */}
+        {/* Avatar + badge + stars */}
         <div className="relative">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="relative flex h-10 w-10 items-center justify-center rounded-md bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30 transition-colors">
-                <User className="h-5 w-5" />
-                {/* Diamond badge */}
-                <span className="absolute -top-1 -right-2 text-xs">💎</span>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-[160px]">
-              <DropdownMenuItem asChild>
-                <Link to="/app/cadastro" className="flex items-center gap-2">
-                  <img src={iconCadastro} alt="" className="h-4 w-4 invert-0 brightness-0" /> Meus Dados
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/app/suporte" className="flex items-center gap-2">
-                  <img src={iconSuporte} alt="" className="h-4 w-4 invert-0 brightness-0" /> Fale Conosco
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/app/configuracoes" className="flex items-center gap-2">
-                  <img src={iconConfiguracoes} alt="" className="h-4 w-4 invert-0 brightness-0" /> Configurações
-                </Link>
-              </DropdownMenuItem>
-              {/* Separator */}
-              <div className="mx-1 my-1 h-px bg-muted" />
-              <DropdownMenuItem
-                onClick={async () => {
-                  await supabase.auth.signOut();
-                  navigate("/");
-                }}
-                className="flex items-center gap-2"
-              >
-                <LogOut className="h-4 w-4" /> Sair
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Mobile: avatar opens menu */}
+          <div className="md:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="relative flex h-10 w-10 items-center justify-center rounded-md bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30 transition-colors">
+                  <User className="h-5 w-5" />
+                  <span className="absolute -top-1 -right-2 text-xs">💎</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[160px]">
+                <DropdownMenuItem asChild>
+                  <Link to="/app/cadastro" className="flex items-center gap-2">
+                    <img src={iconCadastro} alt="" className="h-4 w-4 invert-0 brightness-0" /> Meus Dados
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/app/suporte" className="flex items-center gap-2">
+                    <img src={iconSuporte} alt="" className="h-4 w-4 invert-0 brightness-0" /> Fale Conosco
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/app/configuracoes" className="flex items-center gap-2">
+                    <img src={iconConfiguracoes} alt="" className="h-4 w-4 invert-0 brightness-0" /> Configurações
+                  </Link>
+                </DropdownMenuItem>
+                <div className="mx-1 my-1 h-px bg-muted" />
+                <DropdownMenuItem
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    navigate("/");
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <LogOut className="h-4 w-4" /> Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Desktop/Tablet: avatar is static (no menu) */}
+          <div className="hidden md:flex relative h-10 w-10 items-center justify-center rounded-md bg-primary-foreground/20 text-primary-foreground">
+            <User className="h-5 w-5" />
+            <span className="absolute -top-1 -right-2 text-xs">💎</span>
+          </div>
 
           {/* Stars */}
           <div className="absolute left-1/2 -translate-x-1/2 top-[calc(100%+2px)] flex items-center gap-0.5">
