@@ -25,11 +25,14 @@ export function AppFooter() {
   const handleScroll = useCallback((e: Event) => {
     const target = e.target as HTMLElement;
     const currentY = target.scrollTop;
+    const atBottom = target.scrollHeight - target.clientHeight - currentY < 10;
+
     if (!hasScrolled.current && currentY > 0) {
       hasScrolled.current = true;
     }
     if (!hasScrolled.current) return;
-    if (currentY <= 0) {
+
+    if (atBottom || currentY <= 0) {
       setVisible(true);
     } else if (currentY < lastScrollY.current) {
       setVisible(true);
