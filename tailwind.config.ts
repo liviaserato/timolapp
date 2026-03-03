@@ -64,6 +64,14 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        app: {
+          header: "hsl(var(--app-header))",
+          "header-gradient": "hsl(var(--app-header-gradient))",
+          sidebar: "hsl(var(--app-sidebar))",
+          footer: "hsl(var(--app-footer))",
+          "page-bg": "hsl(var(--app-page-bg))",
+          "card-border": "hsl(var(--app-card-border))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

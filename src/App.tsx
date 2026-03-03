@@ -10,6 +10,9 @@ import Contract from "./pages/Contract";
 import Continue from "./pages/Continue";
 import PendingRegistrations from "./pages/PendingRegistrations";
 import EmailPreviews from "./pages/EmailPreviews";
+import AppLayout from "./pages/AppLayout";
+import Dashboard from "./pages/app/Dashboard";
+import SectionPlaceholder from "./pages/app/SectionPlaceholder";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +31,10 @@ const App = () => (
             <Route path="/continue/:token" element={<Continue />} />
             <Route path="/pendentes" element={<PendingRegistrations />} />
             <Route path="/emails" element={<EmailPreviews />} />
+            <Route path="/app" element={<AppLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path=":section" element={<SectionPlaceholder />} />
+            </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
