@@ -141,33 +141,13 @@ const ContentBlock = ({
 );
 
 const GlowSeparator = () => (
-  <div className="relative h-4 my-0.5 overflow-hidden">
-    <svg
-      viewBox="0 0 680 16"
-      preserveAspectRatio="none"
-      className="w-full h-full"
-      aria-hidden="true"
-    >
-      <defs>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      <line
-        x1="0"
-        y1="8"
-        x2="680"
-        y2="8"
-        stroke="hsl(199 100% 72%)"
-        strokeWidth="3"
-        strokeOpacity="0.7"
-        strokeLinecap="round"
-        filter="url(#glow)"
-      />
-    </svg>
+  <div className="relative h-[2px] my-2">
+    <div
+      className="absolute inset-0"
+      style={{
+        background: "linear-gradient(90deg, transparent, hsl(199 100% 72% / 0.6) 30%, hsl(199 100% 72% / 0.8) 50%, hsl(199 100% 72% / 0.6) 70%, transparent)",
+        boxShadow: "0 0 8px hsl(199 100% 72% / 0.4), 0 0 20px hsl(199 100% 72% / 0.2)",
+      }}
+    />
   </div>
 );
