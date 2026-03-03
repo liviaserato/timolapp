@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
     );
 
     if (mode === "insert") {
-      const { user_id, full_name, email, document, sponsor_name, sponsor_id, phone, preferred_language, city, state, country, user_display_id, sponsor_source, gender } = body;
+      const { user_id, full_name, email, document, sponsor_name, sponsor_id, phone, preferred_language, city, state, country, franchise_id, sponsor_source, gender } = body;
 
       if (!user_id || !email) {
         return new Response(
@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
           city: city || null,
           state: state || null,
           country: country || null,
-          user_display_id: user_display_id || null,
+          franchise_id: franchise_id || null,
           sponsor_source: sponsor_source || null,
           gender: gender || null,
         });

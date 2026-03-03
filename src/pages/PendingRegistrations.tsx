@@ -24,7 +24,7 @@ interface PendingRegistration {
   city: string | null;
   state: string | null;
   country: string | null;
-  user_display_id: string | null;
+  franchise_id: string | null;
   sponsor_id: string | null;
   sponsor_name: string | null;
   email: string;
@@ -451,7 +451,7 @@ export default function PendingRegistrations() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-start gap-2.5 flex-wrap">
                           <Badge className="bg-primary text-primary-foreground text-xs font-bold px-2.5 py-0.5 shrink-0 mt-[4px]">
-                            {getDisplayId(reg.user_display_id)}
+                            {getDisplayId(reg.franchise_id)}
                           </Badge>
                           <div className="min-w-0">
                             <span className="text-lg font-bold truncate block" title={reg.full_name || undefined}>

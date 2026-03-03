@@ -231,7 +231,7 @@ Deno.serve(async (req: Request) => {
 
     const html = buildEmailHtml({
       fullName: reg.full_name || "Usuário",
-      franchiseId: reg.user_display_id || "—",
+      franchiseId: reg.franchise_id || "—",
       document: reg.document || "—",
       sponsorName: reg.sponsor_name || "—",
       sponsorId: reg.sponsor_id || "—",

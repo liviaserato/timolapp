@@ -99,7 +99,7 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
         "resume-registration",
         {
           body: {
-            user_display_id: userId.trim(),
+            franchise_id: userId.trim(),
             document: rawDoc,
             birth_date: isoDate,
           },
