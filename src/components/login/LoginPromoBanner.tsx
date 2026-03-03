@@ -46,7 +46,7 @@ export const LoginPromoBanner = ({ className }: Props) => {
         />
 
         {/* Content blocks with glowing separators */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center gap-6">
+        <div className="relative z-10 flex flex-col justify-start gap-6" style={{ marginTop: "clamp(32px, 12%, 120px)" }}>
           <ContentBlock
             icon={<Droplets className="h-8 w-8 lg:h-10 lg:w-10" />}
             title={t("banner.block1.title")}
