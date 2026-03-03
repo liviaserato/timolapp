@@ -1,37 +1,44 @@
 import { useLocation, Link } from "react-router-dom";
-import {
-  LayoutDashboard,
-  UserCog,
-  Building2,
-  Network,
-  Users,
-  GraduationCap,
-  Package,
-  ShoppingCart,
-  DollarSign,
-  Briefcase,
-  BarChart3,
-  LifeBuoy,
-} from "lucide-react";
+import { Network, GraduationCap, LifeBuoy } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const navItems = [
-  { label: "Painel Inicial", icon: LayoutDashboard, path: "/app" },
-  { label: "Cadastro", icon: UserCog, path: "/app/cadastro" },
-  { label: "Franquia", icon: Building2, path: "/app/franquia" },
-  { label: "Rede", icon: Network, path: "/app/rede" },
-  { label: "Clientes", icon: Users, path: "/app/clientes" },
-  { label: "Treinamentos", icon: GraduationCap, path: "/app/treinamentos" },
-  { label: "Produtos", icon: Package, path: "/app/produtos" },
-  { label: "Pedidos", icon: ShoppingCart, path: "/app/pedidos" },
-  { label: "Financeiro", icon: DollarSign, path: "/app/financeiro" },
-  { label: "Comercial", icon: Briefcase, path: "/app/comercial" },
-  { label: "Relatórios", icon: BarChart3, path: "/app/relatorios" },
-  { label: "Suporte", icon: LifeBuoy, path: "/app/suporte" },
+import iconPainelInicial from "@/assets/icon-sidebar-painel-inicial.svg";
+import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
+import iconFranquia from "@/assets/icon-sidebar-franquia.svg";
+import iconClientes from "@/assets/icon-sidebar-clientes.svg";
+import iconProdutos from "@/assets/icon-sidebar-produtos.svg";
+import iconPedidos from "@/assets/icon-sidebar-pedidos.svg";
+import iconFinanceiro from "@/assets/icon-sidebar-financeiro.svg";
+import iconComercial from "@/assets/icon-sidebar-comercial.svg";
+import iconRelatorios from "@/assets/icon-sidebar-relatorios.svg";
+
+type NavIcon = { type: "svg"; src: string } | { type: "lucide"; Icon: React.ComponentType<{ className?: string }> };
+
+const navItems: { label: string; path: string; icon: NavIcon }[] = [
+  { label: "Painel Inicial", path: "/app", icon: { type: "svg", src: iconPainelInicial } },
+  { label: "Cadastro", path: "/app/cadastro", icon: { type: "svg", src: iconCadastro } },
+  { label: "Franquia", path: "/app/franquia", icon: { type: "svg", src: iconFranquia } },
+  { label: "Rede", path: "/app/rede", icon: { type: "lucide", Icon: Network } },
+  { label: "Clientes", path: "/app/clientes", icon: { type: "svg", src: iconClientes } },
+  { label: "Treinamentos", path: "/app/treinamentos", icon: { type: "lucide", Icon: GraduationCap } },
+  { label: "Produtos", path: "/app/produtos", icon: { type: "svg", src: iconProdutos } },
+  { label: "Pedidos", path: "/app/pedidos", icon: { type: "svg", src: iconPedidos } },
+  { label: "Financeiro", path: "/app/financeiro", icon: { type: "svg", src: iconFinanceiro } },
+  { label: "Comercial", path: "/app/comercial", icon: { type: "svg", src: iconComercial } },
+  { label: "Relatórios", path: "/app/relatorios", icon: { type: "svg", src: iconRelatorios } },
+  { label: "Suporte", path: "/app/suporte", icon: { type: "lucide", Icon: LifeBuoy } },
 ];
 
 interface AppSidebarNavProps {
   onNavigate?: () => void;
+}
+
+function NavItemIcon({ icon }: { icon: NavIcon }) {
+  if (icon.type === "svg") {
+    return <img src={icon.src} alt="" className="h-5 w-5 shrink-0" />;
+  }
+  const { Icon } = icon;
+  return <Icon className="h-5 w-5 shrink-0" />;
 }
 
 export function AppSidebarNav({ onNavigate }: AppSidebarNavProps) {
@@ -54,7 +61,7 @@ export function AppSidebarNav({ onNavigate }: AppSidebarNavProps) {
             isActive(item.path) && "bg-[hsl(var(--app-sidebar-hover))] text-primary-foreground font-semibold"
           )}
         >
-          <item.icon className="h-5 w-5 shrink-0" />
+          <NavItemIcon icon={item.icon} />
           <span>{item.label}</span>
         </Link>
       ))}
