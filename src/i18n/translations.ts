@@ -396,6 +396,16 @@ export const translations: Record<Language, Record<string, string>> = {
     "resume.error.alreadyCompleted": "Este cadastro já foi concluído. Faça login para acessar.",
     "resume.error.validationFailed": "Os dados informados não correspondem ao cadastro. Verifique e tente novamente.",
     "resume.error.generic": "Erro ao buscar cadastro. Tente novamente.",
+
+    // Login promo banner
+    "banner.title.line1": "Por que vale a pena",
+    "banner.title.line2": "fazer parte da Timol?",
+    "banner.block1.title": "Produtos que fazem sentido",
+    "banner.block1.text": "Saúde por meio da água, bem-estar e facilidades do dia a dia.",
+    "banner.block2.title": "Renda extra e crescimento real",
+    "banner.block2.text": "Plano de carreira, ganhos financeiros atrativos e muitos prêmios.",
+    "banner.block3.title": "Queremos te ver crescer",
+    "banner.block3.text": "Eventos, treinamentos e mentorias para acelerar seu desenvolvimento.",
   },
 
   en: {
@@ -779,6 +789,16 @@ export const translations: Record<Language, Record<string, string>> = {
     "resume.error.alreadyCompleted": "This registration is already completed. Please log in to access.",
     "resume.error.validationFailed": "The details entered do not match the registration. Please check and try again.",
     "resume.error.generic": "Error fetching registration. Please try again.",
+
+    // Login promo banner
+    "banner.title.line1": "Why is it worth",
+    "banner.title.line2": "being part of Timol?",
+    "banner.block1.title": "Products that make sense",
+    "banner.block1.text": "Health through water, well-being and everyday convenience.",
+    "banner.block2.title": "Extra income and real growth",
+    "banner.block2.text": "Career plan, attractive financial earnings and many rewards.",
+    "banner.block3.title": "We want to see you grow",
+    "banner.block3.text": "Events, training and mentoring to accelerate your development.",
   },
 
   es: {
@@ -1162,5 +1182,15 @@ export const translations: Record<Language, Record<string, string>> = {
     "resume.error.alreadyCompleted": "Este registro ya fue completado. Inicie sesión para acceder.",
     "resume.error.validationFailed": "Los datos ingresados no corresponden al registro. Verifique e intente nuevamente.",
     "resume.error.generic": "Error al buscar registro. Intente nuevamente.",
+
+    // Login promo banner
+    "banner.title.line1": "¿Por qué vale la pena",
+    "banner.title.line2": "ser parte de Timol?",
+    "banner.block1.title": "Productos que tienen sentido",
+    "banner.block1.text": "Salud a través del agua, bienestar y facilidades del día a día.",
+    "banner.block2.title": "Ingresos extra y crecimiento real",
+    "banner.block2.text": "Plan de carrera, ganancias financieras atractivas y muchos premios.",
+    "banner.block3.title": "Queremos verte crecer",
+    "banner.block3.text": "Eventos, capacitaciones y mentorías para acelerar tu desarrollo.",
   },
 };
