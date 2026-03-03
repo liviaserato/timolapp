@@ -50,7 +50,7 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
           onClick={onNavigate}
           title={collapsed ? item.label : undefined}
           className={cn(
-            "flex items-center gap-3 py-3 text-primary-foreground/90 text-[15px] font-medium transition-colors hover:bg-[hsl(var(--app-sidebar-hover))]",
+            "flex items-center gap-3 py-3 text-primary-foreground/90 text-[15px] font-medium transition-colors hover:bg-[hsl(var(--app-sidebar-hover))] whitespace-nowrap overflow-hidden",
             collapsed ? "justify-center px-0" : "px-4",
             isActive(item.path) && "bg-[hsl(var(--app-sidebar-hover))] text-primary-foreground font-semibold"
           )}
@@ -69,7 +69,7 @@ export function AppSidebar() {
   return (
     <aside
       className={cn(
-        "hidden md:flex flex-col shrink-0 overflow-y-auto bg-app-sidebar transition-[width] duration-200 ease-in-out",
+        "hidden md:flex flex-col shrink-0 overflow-y-auto overflow-x-hidden bg-app-sidebar transition-[width] duration-200 ease-in-out",
         expanded ? "w-[200px]" : "w-[56px]"
       )}
     >
