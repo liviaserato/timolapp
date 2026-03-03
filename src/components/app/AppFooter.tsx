@@ -9,11 +9,11 @@ import iconRede from "@/assets/icon-sidebar-rede.svg";
 import iconTreinamentos from "@/assets/icon-sidebar-treinamentos.svg";
 
 const footerItems = [
-  { label: "Financeiro", icon: iconFinanceiro, path: "/app/financeiro", fat: false },
-  { label: "Pedidos", icon: iconPedidos, path: "/app/pedidos", fat: false },
-  { label: "Clientes", icon: iconClientes, path: "/app/clientes", fat: false },
-  { label: "Rede", icon: iconRede, path: "/app/rede", fat: false },
-  { label: "FAT", icon: iconTreinamentos, path: "/app/treinamentos", fat: true },
+  { label: "Financeiro", icon: iconFinanceiro, path: "/app/financeiro" },
+  { label: "Pedidos", icon: iconPedidos, path: "/app/pedidos" },
+  { label: "Clientes", icon: iconClientes, path: "/app/clientes" },
+  { label: "Rede", icon: iconRede, path: "/app/rede" },
+  { label: "FAT", icon: iconTreinamentos, path: "/app/treinamentos" },
 ];
 
 export function AppFooter() {
@@ -61,23 +61,12 @@ export function AppFooter() {
             to={item.path}
             className={cn(
               "group flex flex-1 flex-col items-center justify-center gap-1.5 text-[11px] text-primary-foreground/80 hover:text-primary-foreground transition-colors",
-              pathname.startsWith(item.path) && "text-primary-foreground font-semibold",
-              item.fat && "relative -mt-3"
+              pathname.startsWith(item.path) && "text-primary-foreground font-semibold"
             )}
           >
-            {item.fat ? (
-              <span className={cn(
-                "flex h-11 w-11 items-center justify-center rounded-full bg-primary-foreground/20 shadow-md",
-                pathname.startsWith(item.path) && "bg-primary-foreground/30 ring-2 ring-primary-foreground/40"
-              )}>
-                <img src={item.icon} alt="" className="h-7 w-7" />
-              </span>
-            ) : (
-              <img src={item.icon} alt="" className="h-6 w-6" />
-            )}
+            <img src={item.icon} alt="" className="h-6 w-6" />
             <span className={cn(
               "border-b border-transparent transition-all duration-200 group-hover:border-primary-foreground/60 pb-0.5",
-              item.fat && "font-bold text-primary-foreground",
               pathname.startsWith(item.path) && "border-primary-foreground"
             )}>{item.label}</span>
           </Link>
