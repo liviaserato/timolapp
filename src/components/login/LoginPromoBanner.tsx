@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Droplets, TrendingUp, GraduationCap } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import timolFavicon from "@/assets/favicon-timol-azul-escuro.svg";
+
 
 interface Props {
   className?: string;
@@ -45,32 +45,8 @@ export const LoginPromoBanner = ({ className }: Props) => {
           }}
         />
 
-        {/* Top: favicon + title side by side */}
-        <div className="relative z-10 flex items-center justify-center gap-4">
-          <img
-            src={timolFavicon}
-            alt="Timol"
-            className="brightness-0 invert opacity-90"
-            style={{ height: "3.2rem" }}
-          />
-          <h2
-            className="font-bold leading-tight tracking-tight"
-            style={{ color: "hsl(0 0% 100%)", fontFamily: "'Poppins', sans-serif" }}
-          >
-            <span className="block text-lg lg:text-xl">
-              {t("banner.title.line1")}
-            </span>
-            <span
-              className="block text-xl lg:text-2xl font-extrabold"
-              style={{ color: "hsl(199 100% 72%)" }}
-            >
-              {t("banner.title.line2")}
-            </span>
-          </h2>
-        </div>
-
-        {/* Middle: 3 content blocks with glowing separators */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center gap-4 my-5">
+        {/* Content blocks with glowing separators */}
+        <div className="relative z-10 flex-1 flex flex-col justify-center gap-6">
           <ContentBlock
             icon={<Droplets className="h-8 w-8 lg:h-10 lg:w-10" />}
             title={t("banner.block1.title")}
