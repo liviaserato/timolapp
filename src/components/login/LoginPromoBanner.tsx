@@ -8,7 +8,6 @@ interface Props {
   className?: string;
 }
 
-// Try loading a custom promo image; if it exists, overlay it
 const PROMO_IMAGE_PATH = "/promo-banner.jpg";
 
 export const LoginPromoBanner = ({ className }: Props) => {
@@ -24,17 +23,15 @@ export const LoginPromoBanner = ({ className }: Props) => {
 
   return (
     <div
-      className={cn(
-        "relative overflow-hidden",
-        className
-      )}
-      style={{ aspectRatio: "840 / 1200" }}
+      className={cn("relative overflow-hidden", className)}
+      style={{ aspectRatio: "840 / 1200", fontFamily: "'Poppins', sans-serif" }}
     >
-      {/* === Text-based default banner (always rendered) === */}
+      {/* === Text-based default banner === */}
       <div
         className="absolute inset-0 flex flex-col justify-between"
         style={{
-          background: "linear-gradient(165deg, hsl(214 100% 20%) 0%, hsl(214 100% 30%) 40%, hsl(214 80% 24%) 100%)",
+          background:
+            "linear-gradient(165deg, hsl(214 100% 20%) 0%, hsl(214 100% 30%) 40%, hsl(214 80% 24%) 100%)",
           padding: "clamp(24px, 6.6%, 80px)",
         }}
       >
@@ -48,23 +45,23 @@ export const LoginPromoBanner = ({ className }: Props) => {
           }}
         />
 
-        {/* Top: favicon + title */}
-        <div className="relative z-10 text-center space-y-4">
-          <div className="flex justify-center">
-            <img
-              src={timolFavicon}
-              alt="Timol"
-              className="h-8 lg:h-10 brightness-0 invert opacity-90"
-            />
-          </div>
+        {/* Top: favicon + title side by side */}
+        <div className="relative z-10 flex items-center justify-center gap-4">
+          <img
+            src={timolFavicon}
+            alt="Timol"
+            className="brightness-0 invert opacity-90"
+            style={{ height: "3.2rem" }}
+          />
           <h2
-            className="text-lg lg:text-xl font-bold leading-snug tracking-tight"
-            style={{ color: "hsl(0 0% 100%)" }}
+            className="font-bold leading-tight tracking-tight"
+            style={{ color: "hsl(0 0% 100%)", fontFamily: "'Poppins', sans-serif" }}
           >
-            {t("banner.title.line1")}
-            <br />
+            <span className="block text-lg lg:text-xl">
+              {t("banner.title.line1")}
+            </span>
             <span
-              className="text-xl lg:text-2xl"
+              className="block text-xl lg:text-2xl font-extrabold"
               style={{ color: "hsl(199 100% 72%)" }}
             >
               {t("banner.title.line2")}
@@ -72,26 +69,26 @@ export const LoginPromoBanner = ({ className }: Props) => {
           </h2>
         </div>
 
-        {/* Middle: 3 content blocks with diagonal separators */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center gap-2 my-4">
+        {/* Middle: 3 content blocks with hand-drawn separators */}
+        <div className="relative z-10 flex-1 flex flex-col justify-center gap-6 my-6">
           <ContentBlock
-            icon={<Droplets className="h-5 w-5 lg:h-6 lg:w-6" />}
+            icon={<Droplets className="h-8 w-8 lg:h-10 lg:w-10" />}
             title={t("banner.block1.title")}
             text={t("banner.block1.text")}
           />
 
-          <DiagonalSeparator />
+          <HandDrawnSeparator />
 
           <ContentBlock
-            icon={<TrendingUp className="h-5 w-5 lg:h-6 lg:w-6" />}
+            icon={<TrendingUp className="h-8 w-8 lg:h-10 lg:w-10" />}
             title={t("banner.block2.title")}
             text={t("banner.block2.text")}
           />
 
-          <DiagonalSeparator />
+          <HandDrawnSeparator />
 
           <ContentBlock
-            icon={<GraduationCap className="h-5 w-5 lg:h-6 lg:w-6" />}
+            icon={<GraduationCap className="h-8 w-8 lg:h-10 lg:w-10" />}
             title={t("banner.block3.title")}
             text={t("banner.block3.text")}
           />
@@ -100,10 +97,11 @@ export const LoginPromoBanner = ({ className }: Props) => {
         {/* Bottom: Hashtag */}
         <div className="relative z-10 text-center">
           <p
-            className="text-2xl lg:text-3xl font-extrabold tracking-wide"
+            className="text-3xl lg:text-4xl font-extrabold tracking-wide"
             style={{
               color: "hsl(199 100% 72%)",
               textShadow: "0 2px 12px rgba(0,56,133,0.5)",
+              fontFamily: "'Poppins', sans-serif",
             }}
           >
             #VemSerTimol
@@ -111,7 +109,7 @@ export const LoginPromoBanner = ({ className }: Props) => {
         </div>
       </div>
 
-      {/* === Image overlay (covers text banner if present) === */}
+      {/* === Image overlay === */}
       {promoImage && (
         <img
           src={promoImage}
@@ -134,23 +132,20 @@ const ContentBlock = ({
   title: string;
   text: string;
 }) => (
-  <div className="flex gap-3 items-start">
-    <div
-      className="shrink-0 rounded-lg p-2"
-      style={{ background: "hsla(199, 100%, 72%, 0.15)" }}
-    >
-      <div style={{ color: "hsl(199 100% 72%)" }}>{icon}</div>
+  <div className="flex gap-4 items-start">
+    <div className="shrink-0 pt-0.5" style={{ color: "hsl(199 100% 72%)" }}>
+      {icon}
     </div>
-    <div className="space-y-0.5">
+    <div className="space-y-1">
       <h3
-        className="text-sm lg:text-base font-bold leading-tight"
-        style={{ color: "hsl(0 0% 100%)" }}
+        className="text-base lg:text-lg font-bold leading-tight"
+        style={{ color: "hsl(0 0% 100%)", fontFamily: "'Poppins', sans-serif" }}
       >
         {title}
       </h3>
       <p
-        className="text-xs lg:text-sm leading-snug opacity-75"
-        style={{ color: "hsl(0 0% 100%)" }}
+        className="text-sm lg:text-base leading-snug opacity-80"
+        style={{ color: "hsl(0 0% 100%)", fontFamily: "'Poppins', sans-serif" }}
       >
         {text}
       </p>
@@ -158,23 +153,22 @@ const ContentBlock = ({
   </div>
 );
 
-const DiagonalSeparator = () => (
-  <div className="relative h-4 my-1 overflow-hidden">
+const HandDrawnSeparator = () => (
+  <div className="relative h-5 my-1 overflow-hidden">
     <svg
-      viewBox="0 0 680 16"
+      viewBox="0 0 680 20"
       preserveAspectRatio="none"
       className="w-full h-full"
       aria-hidden="true"
     >
-      <line
-        x1="0"
-        y1="14"
-        x2="680"
-        y2="2"
+      <path
+        d="M0 18 C 40 16, 80 6, 140 8 S 220 3, 300 5 S 400 2, 480 6 S 560 1, 640 4 L 680 2"
+        fill="none"
         stroke="hsl(199 100% 72%)"
-        strokeWidth="3"
-        strokeOpacity="0.3"
+        strokeWidth="2.5"
+        strokeOpacity="0.4"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   </div>
