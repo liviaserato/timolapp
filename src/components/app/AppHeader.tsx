@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { AppSidebarNav } from "./AppSidebar";
-import timolLogoLight from "@/assets/logo-timol-azul-claro.svg";
+import timolLogoBranco from "@/assets/logo-timol-branco.svg";
 
 interface AppHeaderProps {
   userName?: string;
@@ -43,7 +43,7 @@ export function AppHeader({ userName = "Lívia Serato", userId = "31" }: AppHead
 
         <Link to="/app" className="block">
           <img
-            src={timolLogoLight}
+            src={timolLogoBranco}
             alt="Timol"
             className="h-[clamp(28px,7vw,40px)] w-auto object-contain"
           />

@@ -1,5 +1,5 @@
 import { useLocation, Link } from "react-router-dom";
-import { Network, GraduationCap, LifeBuoy } from "lucide-react";
+import { Network } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import iconPainelInicial from "@/assets/icon-sidebar-painel-inicial.svg";
@@ -11,6 +11,8 @@ import iconPedidos from "@/assets/icon-sidebar-pedidos.svg";
 import iconFinanceiro from "@/assets/icon-sidebar-financeiro.svg";
 import iconComercial from "@/assets/icon-sidebar-comercial.svg";
 import iconRelatorios from "@/assets/icon-sidebar-relatorios.svg";
+import iconTreinamentos from "@/assets/icon-sidebar-treinamentos.svg";
+import iconSuporte from "@/assets/icon-sidebar-suporte.svg";
 
 type NavIcon = { type: "svg"; src: string } | { type: "lucide"; Icon: React.ComponentType<{ className?: string }> };
 
@@ -20,13 +22,13 @@ const navItems: { label: string; path: string; icon: NavIcon }[] = [
   { label: "Franquia", path: "/app/franquia", icon: { type: "svg", src: iconFranquia } },
   { label: "Rede", path: "/app/rede", icon: { type: "lucide", Icon: Network } },
   { label: "Clientes", path: "/app/clientes", icon: { type: "svg", src: iconClientes } },
-  { label: "Treinamentos", path: "/app/treinamentos", icon: { type: "lucide", Icon: GraduationCap } },
+  { label: "Treinamentos", path: "/app/treinamentos", icon: { type: "svg", src: iconTreinamentos } },
   { label: "Produtos", path: "/app/produtos", icon: { type: "svg", src: iconProdutos } },
   { label: "Pedidos", path: "/app/pedidos", icon: { type: "svg", src: iconPedidos } },
   { label: "Financeiro", path: "/app/financeiro", icon: { type: "svg", src: iconFinanceiro } },
   { label: "Comercial", path: "/app/comercial", icon: { type: "svg", src: iconComercial } },
   { label: "Relatórios", path: "/app/relatorios", icon: { type: "svg", src: iconRelatorios } },
-  { label: "Suporte", path: "/app/suporte", icon: { type: "lucide", Icon: LifeBuoy } },
+  { label: "Suporte", path: "/app/suporte", icon: { type: "svg", src: iconSuporte } },
 ];
 
 interface AppSidebarNavProps {
