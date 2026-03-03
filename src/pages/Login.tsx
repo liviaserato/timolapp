@@ -69,18 +69,18 @@ const Login = () => {
       }}
     >
       {/* Language selector */}
-      <div className="absolute top-4 right-4 z-20">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 md:left-auto md:right-4 md:translate-x-0 z-20">
         <LanguageSelector />
       </div>
 
       {/* Main container: promo + login side by side */}
-      <div className="relative z-10 flex rounded-xl overflow-hidden shadow-2xl max-w-4xl w-full">
+      <div className="relative z-10 flex rounded-xl overflow-hidden shadow-2xl max-w-4xl w-full mt-14 md:mt-0">
         {/* Promo banner - hidden on mobile, visible from md */}
         <LoginPromoBanner className="hidden md:flex w-[340px] lg:w-[420px] shrink-0" />
 
         {/* Login card */}
         <Card className="w-full max-w-md md:max-w-none border-0 rounded-xl md:rounded-none md:rounded-r-xl bg-card/95 backdrop-blur-sm">
-          <CardContent className="flex flex-col gap-5 pt-8 pb-6 px-6">
+          <CardContent className="flex flex-col gap-4 pt-6 pb-5 px-6">
             {/* Logo + title */}
             <div className="text-center">
               <img src={timolLogoDark} alt="Timol" className="h-10 mx-auto mb-6" />
