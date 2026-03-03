@@ -119,7 +119,7 @@ const ContentBlock = ({
   title: string;
   text: string;
 }) => (
-  <div className="flex gap-4 items-start" style={{ transform: "rotate(-2deg)" }}>
+  <div className="flex gap-4 items-start">
     <div className="shrink-0 pt-0.5" style={{ color: "hsl(199 100% 72%)" }}>
       {icon}
     </div>
