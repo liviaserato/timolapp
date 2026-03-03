@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Droplets, TrendingUp, GraduationCap } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 import timolFavicon from "@/assets/favicon-timol-azul-escuro.svg";
 
 interface Props {
@@ -11,10 +12,10 @@ interface Props {
 const PROMO_IMAGE_PATH = "/promo-banner.jpg";
 
 export const LoginPromoBanner = ({ className }: Props) => {
+  const { t } = useLanguage();
   const [promoImage, setPromoImage] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if promo-banner.jpg exists in public/
     const img = new Image();
     img.onload = () => setPromoImage(PROMO_IMAGE_PATH);
     img.onerror = () => setPromoImage(null);
@@ -60,42 +61,39 @@ export const LoginPromoBanner = ({ className }: Props) => {
             className="text-lg lg:text-xl font-bold leading-snug tracking-tight"
             style={{ color: "hsl(0 0% 100%)" }}
           >
-            Por que vale a pena
+            {t("banner.title.line1")}
             <br />
             <span
               className="text-xl lg:text-2xl"
               style={{ color: "hsl(199 100% 72%)" }}
             >
-              fazer parte da Timol?
+              {t("banner.title.line2")}
             </span>
           </h2>
         </div>
 
         {/* Middle: 3 content blocks with diagonal separators */}
         <div className="relative z-10 flex-1 flex flex-col justify-center gap-2 my-4">
-          {/* Block 1 */}
           <ContentBlock
             icon={<Droplets className="h-5 w-5 lg:h-6 lg:w-6" />}
-            title="Produtos que fazem sentido"
-            text="Saúde por meio da água, bem-estar e facilidades do dia a dia."
+            title={t("banner.block1.title")}
+            text={t("banner.block1.text")}
           />
 
           <DiagonalSeparator />
 
-          {/* Block 2 */}
           <ContentBlock
             icon={<TrendingUp className="h-5 w-5 lg:h-6 lg:w-6" />}
-            title="Renda extra e crescimento real"
-            text="Plano de carreira, ganhos financeiros atrativos e muitos prêmios."
+            title={t("banner.block2.title")}
+            text={t("banner.block2.text")}
           />
 
           <DiagonalSeparator />
 
-          {/* Block 3 */}
           <ContentBlock
             icon={<GraduationCap className="h-5 w-5 lg:h-6 lg:w-6" />}
-            title="Queremos te ver crescer"
-            text="Eventos, treinamentos e mentorias para acelerar seu desenvolvimento."
+            title={t("banner.block3.title")}
+            text={t("banner.block3.text")}
           />
         </div>
 
