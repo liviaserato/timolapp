@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import { Menu, ChevronDown, User, Star } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, ChevronDown, User, Star, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,12 +8,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSidebarState } from "@/pages/AppLayout";
 import { useFranchise } from "@/contexts/FranchiseContext";
+import { supabase } from "@/integrations/supabase/client";
 import timolLogoBranco from "@/assets/logo-timol-branco.svg";
 import iconSuporte from "@/assets/icon-sidebar-suporte.svg";
 import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
 import iconConfiguracoes from "@/assets/icon-sidebar-configuracoes.svg";
 
 export function AppHeader() {
+  const navigate = useNavigate();
   const { toggle } = useSidebarState();
   const { profiles, selected, setSelectedId, hasMultiple } = useFranchise();
 
@@ -109,6 +111,17 @@ export function AppHeader() {
                 <Link to="/app/configuracoes" className="flex items-center gap-2">
                   <img src={iconConfiguracoes} alt="" className="h-4 w-4 invert-0 brightness-0" /> Configurações
                 </Link>
+              </DropdownMenuItem>
+              {/* Separator */}
+              <div className="mx-1 my-1 h-px bg-muted" />
+              <DropdownMenuItem
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  navigate("/");
+                }}
+                className="flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" /> Sair
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
