@@ -47,6 +47,9 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
     return pathname.startsWith(path);
   };
 
+  const navItemClass =
+    "flex h-11 items-center gap-3 px-4 text-[15px] font-medium leading-none text-primary-foreground/90 transition-colors hover:bg-[hsl(var(--app-sidebar-hover))] whitespace-nowrap overflow-hidden border-l-[3px] border-transparent";
+
   const renderLink = (item: { label: string; path: string; icon: string }) => (
     <Link
       key={item.path}
@@ -54,12 +57,13 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
       onClick={onNavigate}
       title={collapsed ? item.label : undefined}
       className={cn(
-        "flex items-center gap-3 py-2.5 text-primary-foreground/90 text-[15px] font-medium transition-colors hover:bg-[hsl(var(--app-sidebar-hover))] whitespace-nowrap overflow-hidden border-l-[3px] border-transparent px-4",
-        false,
+        navItemClass,
         isActive(item.path) && "bg-[hsl(var(--app-sidebar-hover))] text-primary-foreground font-semibold border-l-primary-foreground"
       )}
     >
-      <img src={item.icon} alt="" className="h-5 w-5 shrink-0" />
+      <span className="flex h-5 w-5 shrink-0 items-center justify-center">
+        <img src={item.icon} alt="" className="h-5 w-5 object-contain" />
+      </span>
       {!collapsed && <span>{item.label}</span>}
     </Link>
   );
@@ -85,12 +89,11 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
               window.location.href = "/login";
             }}
             title={collapsed ? "Sair" : undefined}
-            className={cn(
-              "flex items-center gap-3 py-2.5 text-primary-foreground/90 text-[15px] font-medium transition-colors hover:bg-[hsl(var(--app-sidebar-hover))] whitespace-nowrap overflow-hidden border-l-[3px] border-transparent px-4",
-              false
-            )}
+            className={navItemClass}
           >
-            <LogOut className="h-5 w-5 shrink-0" />
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center">
+              <LogOut className="h-5 w-5 shrink-0" />
+            </span>
             {!collapsed && <span>Sair</span>}
           </button>
         </nav>
