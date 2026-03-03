@@ -1,32 +1,34 @@
 
-## Ajuste de espaçamento no card de login
 
-Alterações no arquivo `src/pages/Login.tsx`, no bloco "Logo + title" (linhas 85-93):
+## Padronização de nomenclatura de IDs
 
-1. **Aumentar espaço entre logo e titulo**: Trocar `space-y-4` por layout manual -- adicionar `mb-6` na logo para afastá-la do título
-2. **Diminuir espaço entre titulo e texto descritivo**: Adicionar `mt-1` no parágrafo de subtítulo para mantê-lo próximo ao título
+### Situação atual
 
-### Detalhe técnico
+| Onde | Campo | Significado |
+|------|-------|-------------|
+| Frontend (`WizardData`) | `authUserId` | UUID interno do Supabase Auth |
+| Frontend (`WizardData`) | `franchiseId` | ID público da franquia (6 dígitos) |
+| Banco de dados (`registration_status`) | `user_id` | UUID interno (ref auth) |
+| Banco de dados (`registration_status`) | `user_display_id` | ID público (6 dígitos) |
+| Banco de dados (`profiles`) | `user_id` | UUID interno (ref auth) |
 
-Substituir o container atual:
-```tsx
-<div className="text-center space-y-4">
-  <img ... className="h-10 mx-auto" />
-  <h1 ...>{t("login.title")}</h1>
-  <p ...>{t("login.subtitle")}</p>
-</div>
-```
+### Recomendação
 
-Por:
-```tsx
-<div className="text-center">
-  <img ... className="h-10 mx-auto mb-6" />
-  <h1 ...>{t("login.title")}</h1>
-  <p className="text-xs text-muted-foreground mt-1">
-    {t("login.subtitle")}
-  </p>
-</div>
-```
+- **`authUserId`** → manter. É o UUID do sistema de autenticação, não tem relação com franquia. Nome claro e padrão.
+- **`user_display_id`** → **renomear para `franchise_id`** no banco e em todas as Edge Functions que o referenciam. Esse campo representa o ID da franquia, não do usuário.
+- **`user_id`** nas tabelas → manter. É a referência ao auth.users, convenção padrão do backend.
 
-- `mb-6` na logo cria mais distância antes do título (era `space-y-4` = 1rem, agora 1.5rem)
-- `mt-1` no subtítulo mantém apenas 0.25rem de distância do título (antes era 1rem)
+### Resumo das mudanças
+
+1. **Migração SQL**: renomear coluna `user_display_id` → `franchise_id` na tabela `registration_status`
+2. **Edge Functions** que leem/escrevem `user_display_id`: atualizar para `franchise_id` (~6 funções: `track-registration`, `get-pending-registrations`, `continue-registration`, `send-recovery-email`, `check-incomplete-registrations`, `resume-registration`)
+3. **Frontend**: onde o código referencia `user_display_id` (ex: `PendingRegistrations.tsx`), trocar para `franchise_id`
+4. **Atualizar memória** `registration-api-contract` para refletir o novo nome
+
+### Resultado final padronizado
+
+| Campo | Significado |
+|-------|-------------|
+| `user_id` (DB) / `authUserId` (frontend) | UUID interno de autenticação |
+| `franchise_id` (DB) / `franchiseId` (frontend) | ID público da franquia |
+
