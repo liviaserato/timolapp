@@ -50,7 +50,7 @@ const Index = () => {
         sponsorName: data.sponsorName,
         sponsorId: data.sponsorId,
         authUserId: data.authUserId,
-        userId: data.sponsorId, // Display ID
+        franchiseId: data.sponsorId, // Display ID
       });
 
       setScreen("franchise");

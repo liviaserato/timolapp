@@ -11,7 +11,7 @@ interface Props {
 
 export const PaymentConfirmationScreen = ({ data }: Props) => {
   const { t } = useLanguage();
-  const odataId = data.userId ?? "—";
+  const odataId = data.franchiseId ?? "—";
 
   const isBrazilAddress = (data.countryIso2 ?? "BR") === "BR";
   const isEuro = ["AT","BE","CY","EE","FI","FR","DE","GR","IE","IT","LV","LT","LU","MT","NL","PT","SK","SI","ES"].includes(data.countryIso2 ?? "");

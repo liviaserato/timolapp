@@ -260,7 +260,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
           <Button
             onClick={() => {
             const name = data.fullName || "";
-              const id = data.userId || "";
+              const id = data.franchiseId || "";
               const msg = `${t("payment.inPerson.msg1")} ${name}, ${t("payment.inPerson.msg2")} ${franchiseName}, ${t("payment.inPerson.msg3")} ${id}, ${t("payment.inPerson.msg4")} ${formatPrice(discountedPrice)} ${t("payment.inPerson.msg5")}`;
               openWhatsAppLink(msg);
               setShowInPersonPopup(false);

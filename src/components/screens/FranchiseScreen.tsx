@@ -284,7 +284,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
     onNext(f.id, totalPrice);
   };
 
-  const odataId = data.userId ?? "—";
+  const odataId = data.franchiseId ?? "—";
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-6">
