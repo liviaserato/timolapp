@@ -5,24 +5,22 @@ import { AppFooter } from "@/components/app/AppFooter";
 
 export default function AppLayout() {
   return (
-    <div className="min-h-screen grid grid-cols-1 grid-rows-[70px_1fr_70px] lg:grid-cols-[200px_1fr] lg:grid-rows-[70px_1fr] bg-app-page-bg">
-      {/* Header spans full width */}
-      <div className="col-span-full">
-        <AppHeader />
+    <div className="min-h-screen flex flex-col bg-app-page-bg">
+      {/* Header - always fixed at top */}
+      <AppHeader />
+
+      <div className="flex flex-1">
+        {/* Sidebar (desktop only) */}
+        <AppSidebar />
+
+        {/* Main content - add bottom padding on mobile for fixed footer */}
+        <main className="flex-1 min-h-0 w-full p-6 pb-24 lg:pb-6 lg:max-w-[900px]">
+          <Outlet />
+        </main>
       </div>
 
-      {/* Sidebar (desktop only) */}
-      <AppSidebar />
-
-      {/* Main content */}
-      <main className="min-h-0 w-full p-6 lg:max-w-[900px]">
-        <Outlet />
-      </main>
-
-      {/* Footer (mobile only) */}
-      <div className="col-span-full lg:hidden">
-        <AppFooter />
-      </div>
+      {/* Footer (mobile only, smart hide/show) */}
+      <AppFooter />
     </div>
   );
 }
