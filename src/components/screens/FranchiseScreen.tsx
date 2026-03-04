@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { WizardData } from "@/types/wizard";
-import { Check, ChevronLeft, Shield, TrendingUp, Crown, Gem } from "lucide-react";
+import { Check, ChevronLeft, Shield, TrendingUp, Crown, Gem, WalletCards } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -460,32 +460,41 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                       "{f.highlight[lang]}"
                     </p>
 
-                    <div className="hidden xl:flex xl:flex-col xl:items-center xl:justify-center xl:text-center">
+                    <div className="hidden xl:grid xl:grid-cols-[auto_1fr] xl:items-center xl:gap-3 xl:w-full">
+                      <div className="flex items-center justify-center">
+                        <WalletCards className={cn(
+                          "h-5 w-5",
+                          isSelected ? "text-yellow-700" : "text-primary/70"
+                        )} />
+                      </div>
+
                       {currency === "BRL" ? (
-                        <>
-                          <div className="flex items-baseline justify-center gap-0.5">
-                            <span className="text-[11px] text-muted-foreground font-medium">{f.installments}x</span>
-                            <span className="text-[11px] text-muted-foreground font-medium">{sym}</span>
-                            <span className="text-3xl font-extrabold text-foreground leading-none tracking-tight">
+                        <div className="text-right">
+                          <div className="flex items-baseline justify-end gap-0.5">
+                            <span className="text-xs text-muted-foreground font-medium">{f.installments}x</span>
+                            <span className="text-xs text-muted-foreground font-medium">{sym}</span>
+                            <span className="text-4xl font-extrabold text-foreground leading-none tracking-tight">
                               {integer}
                             </span>
-                            <span className="text-sm font-bold text-foreground -translate-y-2">
+                            <span className="text-base font-bold text-foreground -translate-y-2">
                               ,{decimal}
                             </span>
                           </div>
-                          <p className="mt-1 text-xs text-center text-muted-foreground">
+                          <p className="mt-1 text-sm text-muted-foreground">
                             {cashLabel[lang]}: {sym} {cashFormatted}
                           </p>
-                        </>
+                        </div>
                       ) : (
-                        <div className="flex items-baseline justify-center gap-0.5">
-                          <span className="text-[11px] text-muted-foreground font-medium">{sym}</span>
-                          <span className="text-3xl font-extrabold text-foreground leading-none tracking-tight">
-                            {splitPrice(f.installmentPrice[currency] * f.installments, locale).integer}
-                          </span>
-                          <span className="text-sm font-bold text-foreground -translate-y-2">
-                            ,{splitPrice(f.installmentPrice[currency] * f.installments, locale).decimal}
-                          </span>
+                        <div className="text-right">
+                          <div className="flex items-baseline justify-end gap-0.5">
+                            <span className="text-xs text-muted-foreground font-medium">{sym}</span>
+                            <span className="text-4xl font-extrabold text-foreground leading-none tracking-tight">
+                              {splitPrice(f.installmentPrice[currency] * f.installments, locale).integer}
+                            </span>
+                            <span className="text-base font-bold text-foreground -translate-y-2">
+                              ,{splitPrice(f.installmentPrice[currency] * f.installments, locale).decimal}
+                            </span>
+                          </div>
                         </div>
                       )}
                     </div>
