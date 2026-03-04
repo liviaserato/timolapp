@@ -335,13 +335,13 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                     "px-4 pt-5 pb-4 rounded-t-[calc(0.5rem-2px)]",
                     isSelected ? "bg-[#FEFAD2]" : "bg-primary/5"
                   )}>
-                    <div className="flex items-center justify-between gap-3 xl:flex-col xl:items-start xl:justify-start xl:gap-4">
-                      <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex items-center justify-between gap-3 xl:flex-col xl:items-center xl:justify-start xl:gap-6">
+                      <div className="flex items-center gap-3 min-w-0 xl:flex-col xl:items-center xl:justify-center xl:text-center xl:gap-2">
                         <Icon className={cn(
                           "h-7 w-7 flex-shrink-0 xl:mt-0.5",
                           isSelected ? "text-yellow-800" : "text-primary/60"
                         )} />
-                        <div className="flex flex-col min-w-0">
+                        <div className="flex flex-col min-w-0 xl:items-center xl:text-center">
                           <span className={cn(
                             "text-xs font-medium uppercase tracking-wider leading-tight",
                             isSelected ? "text-yellow-800" : "text-primary/60"
@@ -386,7 +386,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                       </div>
                     </div>
 
-                    <div className="hidden xl:flex xl:flex-col xl:items-center xl:justify-center xl:text-center xl:pt-1">
+                    <div className="hidden xl:flex xl:flex-col xl:items-center xl:justify-center xl:text-center xl:pt-3">
                       {currency === "BRL" ? (
                         <>
                           <div className="flex items-baseline justify-center gap-0.5">
