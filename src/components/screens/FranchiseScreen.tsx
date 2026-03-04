@@ -353,7 +353,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                         )}>{t(f.nameKey)}</h3>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end min-w-0 text-right">
+                    <div className="flex flex-col items-end min-w-0 text-right xl:hidden">
                       {currency === "BRL" ? (
                         <>
                           <div className="flex items-baseline gap-0.5">
@@ -447,20 +447,50 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
               </div>
 
               {/* Highlight / impact phrase */}
-              <div className="mt-auto">
-                <Separator className={isSelected ? "bg-yellow-500" : ""} />
-                <div className={cn(
-                  "px-4 py-3 rounded-b-[calc(0.5rem-2px)]",
-                  isSelected ? "bg-[#FEFAD2]" : "bg-muted/20"
-                )}>
-                  <p className={cn(
-                    "text-sm font-semibold italic text-center",
-                    isSelected ? "text-yellow-700" : "text-primary/70"
+                <div className="mt-auto">
+                  <Separator className={isSelected ? "bg-yellow-500" : ""} />
+                  <div className={cn(
+                    "px-4 py-3 rounded-b-[calc(0.5rem-2px)]",
+                    isSelected ? "bg-[#FEFAD2]" : "bg-muted/20"
                   )}>
-                    "{f.highlight[lang]}"
-                  </p>
+                    <p className={cn(
+                      "text-sm font-semibold italic text-center xl:hidden",
+                      isSelected ? "text-yellow-700" : "text-primary/70"
+                    )}>
+                      "{f.highlight[lang]}"
+                    </p>
+
+                    <div className="hidden xl:flex xl:flex-col xl:items-center xl:justify-center xl:text-center">
+                      {currency === "BRL" ? (
+                        <>
+                          <div className="flex items-baseline justify-center gap-0.5">
+                            <span className="text-[11px] text-muted-foreground font-medium">{f.installments}x</span>
+                            <span className="text-[11px] text-muted-foreground font-medium">{sym}</span>
+                            <span className="text-3xl font-extrabold text-foreground leading-none tracking-tight">
+                              {integer}
+                            </span>
+                            <span className="text-sm font-bold text-foreground -translate-y-2">
+                              ,{decimal}
+                            </span>
+                          </div>
+                          <p className="mt-1 text-xs text-center text-muted-foreground">
+                            {cashLabel[lang]}: {sym} {cashFormatted}
+                          </p>
+                        </>
+                      ) : (
+                        <div className="flex items-baseline justify-center gap-0.5">
+                          <span className="text-[11px] text-muted-foreground font-medium">{sym}</span>
+                          <span className="text-3xl font-extrabold text-foreground leading-none tracking-tight">
+                            {splitPrice(f.installmentPrice[currency] * f.installments, locale).integer}
+                          </span>
+                          <span className="text-sm font-bold text-foreground -translate-y-2">
+                            ,{splitPrice(f.installmentPrice[currency] * f.installments, locale).decimal}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
 
               {/* Selected indicator */}
               {isSelected && (
