@@ -336,7 +336,7 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
                     isSelected ? "bg-[#FEFAD2]" : "bg-primary/5"
                   )}>
                     <div className="flex items-center justify-between gap-3 xl:flex-col xl:items-center xl:justify-start xl:gap-6">
-                      <div className="flex items-center gap-3 min-w-0 xl:flex-col xl:items-center xl:justify-center xl:text-center xl:gap-2">
+                      <div className="flex items-center gap-3 min-w-0 xl:flex-row xl:items-center xl:justify-center xl:text-center xl:gap-3">
                         <Icon className={cn(
                           "h-7 w-7 flex-shrink-0 xl:mt-0.5",
                           isSelected ? "text-yellow-800" : "text-primary/60"
