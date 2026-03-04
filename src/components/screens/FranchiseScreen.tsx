@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { WizardData } from "@/types/wizard";
-import { Check, ChevronLeft, Shield, TrendingUp, Crown, Gem, WalletCards } from "lucide-react";
+import { Check, ChevronLeft, Shield, TrendingUp, Crown, Gem, BadgeDollarSign } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -462,8 +462,8 @@ export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
 
                     <div className="hidden xl:grid xl:grid-cols-[auto_1fr] xl:items-center xl:gap-3 xl:w-full">
                       <div className="flex items-center justify-center">
-                        <WalletCards className={cn(
-                          "h-5 w-5",
+                        <BadgeDollarSign className={cn(
+                          "h-8 w-8",
                           isSelected ? "text-yellow-700" : "text-primary/70"
                         )} />
                       </div>
