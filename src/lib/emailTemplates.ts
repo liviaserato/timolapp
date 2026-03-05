@@ -429,7 +429,6 @@ export function buildPendingEmailHtml(data: PendingEmailData): string {
       <table class="data-summary" style="width:100%;border-collapse:collapse;">
         ${dataRow(t(lang, "labelId"), data.franchiseId)}
         ${dataRow(t(lang, "labelName"), data.fullName)}
-        ${dataRow(docLabel(lang, data.isForeigner), docValue(data.document, data.isForeigner, data.countryCode, data.countryName))}
         ${dataRow(t(lang, "labelSponsor"), `${data.sponsorName} (ID ${data.sponsorId})`)}
       </table>
     </div>
@@ -514,7 +513,6 @@ export function buildCompletedEmailHtml(data: CompletedEmailData): string {
       <table class="data-summary" style="width:100%;border-collapse:collapse;">
         ${dataRow(t(lang, "labelId"), data.franchiseId)}
         ${dataRow(t(lang, "labelName"), data.fullName)}
-        ${dataRow(docLabel(lang, data.isForeigner), docValue(data.document, data.isForeigner, data.countryCode, data.countryName))}
         ${dataRow(t(lang, "labelFranchise"), data.franchiseName)}
         ${dataRow(t(lang, "labelSponsor"), `${data.sponsorName} (ID ${data.sponsorId})`)}
       </table>

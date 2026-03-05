@@ -135,10 +135,10 @@ export default function EmailPreviews() {
                     isActive && "border-primary shadow-lg ring-2 ring-primary/20"
                   )}
                 >
-                  <CardHeader className="space-y-3 pb-4">
+                  <CardHeader className="space-y-2 pb-3">
                     <div className="flex items-start justify-between gap-3">
                       <CardTitle className="text-base leading-snug text-foreground">{email.title}</CardTitle>
-                      <span className="inline-flex shrink-0 rounded-full bg-secondary px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-secondary-foreground">
+                      <span className="inline-flex shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-secondary-foreground">
                         {email.badge}
                       </span>
                     </div>
@@ -154,25 +154,25 @@ export default function EmailPreviews() {
 
         {activeEmail ? (
           <Card className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-            <CardHeader className="space-y-4 border-b border-border bg-muted/40">
+            <CardHeader className="space-y-4 border-b border-primary/15 bg-primary/10">
               <div>
                 <CardTitle className="text-base text-foreground">{activeEmail.title}</CardTitle>
-                <CardDescription className="mt-1 text-sm leading-relaxed">
+                <CardDescription className="mt-1 text-sm leading-relaxed text-foreground/80">
                   {activeEmail.description}
                 </CardDescription>
               </div>
 
               <div className="grid gap-3 text-sm md:grid-cols-3">
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Assunto</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/60">Assunto</p>
                   <p className="mt-1 text-foreground">{activeEmail.subject}</p>
                 </div>
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">De</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/60">De</p>
                   <p className="mt-1 text-foreground">{activeEmail.from}</p>
                 </div>
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Para</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/60">Para</p>
                   <p className="mt-1 text-foreground">{activeEmail.to}</p>
                 </div>
               </div>
