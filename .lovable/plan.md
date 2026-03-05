@@ -1,197 +1,107 @@
 
 Objetivo
 
-Implementar o fluxo real de “Recuperar Senha” com:
-- validação do usuário/e-mail em uma API externa via GET com `exists`
-- hint vermelha quando não encontrar cadastro
-- geração/envio de PIN de 6 dígitos aleatório com validade de 15 minutos
-- invalidação automática do PIN vencido
-- cancelamento do PIN anterior ao reenviar
-- validação do PIN e troca de senha no mesmo fluxo já existente
+Sim, dá para fazer. O padrão mais aceito não é só “bloquear depois de 5 erros”, e sim combinar:
+- limite de tentativas por conta
+- limite por IP/dispositivo
+- bloqueio temporário curto
+- mensagem genérica no login
+- reset da contagem quando a pessoa acerta a senha
 
-O que já existe hoje
+O que encontrei no projeto
 
-- A UI do popup já está pronta em `src/components/login/ForgotPasswordPopup.tsx`, mas ainda usa mock (`MOCK_USER` / `MOCK_PIN`).
-- Já existem backend functions para o fluxo:
-  - `supabase/functions/forgot-password/index.ts`
-  - `supabase/functions/verify-reset-pin/index.ts`
-  - `supabase/functions/reset-password/index.ts`
-- Já existe a tabela `password_reset_pins` com os campos certos para esse caso:
-  - `pin`
-  - `expires_at`
-  - `used`
-  - `verified`
-  - `reset_token`
-  - `user_id`
-  - `email`
+- Hoje a tela `src/pages/Login.tsx` ainda está em modo mock: ela faz `setTimeout` e entra em `/app` sem autenticação real.
+- Então essa trava de 5 tentativas precisa ser implementada junto com o login real no backend, senão ela não protege nada de verdade.
+- O projeto já usa autenticação no cadastro e já tem `profiles` com `username`, então o caminho natural é autenticar por usuário no frontend e validar/bloquear no backend.
 
-Resposta curta à sua pergunta
+Padrão “universal” recomendado
 
-Não é necessário criar uma nova tabela de PIN.
-A tabela `password_reset_pins` já existe e já suporta exatamente esse fluxo.
+Para este app, eu recomendaria este padrão:
+- até 5 tentativas erradas
+- ao errar a 5ª vez: bloquear por 10 minutos
+- aplicar a regra por `username` e também observar IP/origem
+- ao acertar a senha: zerar tentativas
+- sempre mostrar erro genérico como “Usuário ou senha inválidos” ou “Tente novamente mais tarde”
+- não informar se o bloqueio foi por usuário inexistente, senha errada ou conta bloqueada
+- opcional depois: CAPTCHA após muitas tentativas repetidas
+
+Esse é um padrão comum e equilibrado. Não existe um número único “universal” obrigatório, mas 5 tentativas + 10 a 15 minutos de bloqueio é bem aceitável.
 
 Plano de implementação
 
-1. Validar existência do usuário/e-mail no backend
-- Ajustar `forgot-password` para consultar a API externa via GET.
-- Entrada: `identifier`.
-- Saída esperada do adaptador: `exists`, e se existir, os dados mínimos necessários para continuar (ou complementar a busca com o banco local, se a API só devolver boolean).
-- Se `exists = false`, a function retorna `404` / `not_found`.
-- Se `exists = true`, segue para criação do novo PIN.
+1. Trocar o login mock por login real
+- Substituir o `setTimeout` do `Login.tsx` por uma chamada a uma backend function própria de login.
+- Essa function receberá `username` e `password`.
 
-2. Cancelar PIN anterior e gerar um novo
-- Antes de inserir o novo PIN, marcar todos os PINs ativos do usuário como `used = true`.
-- Gerar novo código aleatório de 6 dígitos.
-- Definir `expires_at = now + 15 minutos`.
-- Inserir novo registro em `password_reset_pins`.
+2. Validar bloqueio antes de autenticar
+- A backend function verifica se o usuário está temporariamente bloqueado.
+- Se estiver, retorna resposta genérica com tempo restante.
 
-3. Preparar o envio do e-mail do PIN
-- Como você escolheu “implementar e ativar depois”, eu deixaria o envio real encapsulado em um ponto único dentro de `forgot-password`.
-- O fluxo já fica pronto para usar remetente `noreply@timol.com.br` quando a configuração do envio for ativada.
-- Enquanto isso, o sistema pode:
-  - manter log seguro para teste, ou
-  - usar um “stub” isolado para não quebrar o fluxo.
+3. Registrar tentativas falhas
+- Criar uma tabela específica de controle, separada de `profiles`, por exemplo:
+  - `login_security`
+  - ou `login_attempts`
+- Campos típicos:
+  - `username`
+  - `failed_attempts`
+  - `locked_until`
+  - `last_failed_at`
+  - `last_ip`
+  - `updated_at`
 
-4. Validar PIN corretamente
-- Manter `verify-reset-pin` como etapa separada.
-- Validar:
-  - PIN com 6 dígitos
-  - `used = false`
-  - `verified = false`
-  - `expires_at >= now`
-- Se válido:
-  - marcar `verified = true`
-  - devolver `reset_token`
-- Se expirado ou inválido:
-  - devolver erro controlado para UI mostrar mensagem vermelha.
+4. Fazer o fluxo de autenticação seguro
+- A function localiza o usuário pelo `username`.
+- Faz a autenticação real no backend.
+- Se falhar:
+  - incrementa contador
+  - se chegou ao limite, grava `locked_until = now + 10 min`
+- Se der certo:
+  - zera contador e remove bloqueio
 
-5. Trocar a senha com token validado
-- `reset-password` já está quase pronto.
-- Confirmar a regra:
-  - só aceita `reset_token` de registro `verified = true`, `used = false`, não expirado
-- Após alterar a senha:
-  - marcar o registro como `used = true`
-  - opcionalmente disparar o e-mail de confirmação de senha alterada depois
+5. Ajustar a UI do login
+- Mostrar mensagem amigável e genérica.
+- Se bloqueado, pode exibir algo como:
+  - “Muitas tentativas. Tente novamente em alguns minutos.”
+- Não mostrar detalhes que permitam adivinhar contas válidas.
 
-6. Ligar a UI do popup ao backend real
-- Substituir todos os `setTimeout` e mocks em `ForgotPasswordPopup`.
-- Fluxo final da UI:
-  - Etapa 1: usuário digita usuário/e-mail
-  - chama `forgot-password`
-  - se `not_found`, mostra hint vermelha
-  - se sucesso, vai para etapa PIN
-  - Etapa 2: digita PIN
-  - chama `verify-reset-pin`
-  - se sucesso, vai para nova senha
-  - Etapa 3: define nova senha
-  - chama `reset-password`
-  - se sucesso, mostra tela final
+Recomendação de segurança
 
-7. Reenviar PIN
-- Ao clicar em “Reenviar PIN”:
-  - chamar de novo `forgot-password`
-  - invalidar o PIN anterior
-  - criar novo PIN
-  - manter cooldown visual de 60s no frontend
-- Resultado: só o PIN mais recente continua válido.
-
-Ajustes de UI que eu faria
-
-- Na etapa inicial, trocar o comportamento atual “sempre segue” por:
-  - erro vermelho: “Usuário ou e-mail não encontrado.”
-- Na etapa do PIN, manter:
-  - mensagem de 15 minutos
-  - botão de reenviar
-  - erro vermelho quando PIN estiver inválido/expirado
-- Preservar o foco automático e o submit automático ao completar 6 dígitos, porque isso já combina com o fluxo atual.
+Eu não recomendo bloquear só por usuário.
+O ideal é:
+- regra principal por usuário
+- proteção extra por IP/origem
+Porque, se for só por usuário, alguém pode bloquear a conta de outra pessoa de propósito.
 
 Detalhes técnicos
 
-Arquivos principais
-- `src/components/login/ForgotPasswordPopup.tsx`
-- `supabase/functions/forgot-password/index.ts`
-- `supabase/functions/verify-reset-pin/index.ts`
-- `supabase/functions/reset-password/index.ts`
-- `src/i18n/translations.ts`
+Arquivos que provavelmente entrarão nessa mudança:
+- `src/pages/Login.tsx`
+- uma nova backend function de login
+- uma migration para criar a tabela de tentativas/bloqueio
+- possivelmente proteção de rota em `src/App.tsx` / layout do app
 
-Mudanças esperadas por arquivo
+Decisões de produto que eu seguiria por padrão
+- Limite: 5 erros
+- Janela/bloqueio: 10 minutos
+- Reset ao sucesso: sim
+- Mensagem detalhada: não
+- CAPTCHA depois de abuso repetido: recomendado numa segunda etapa
 
-1. `forgot-password/index.ts`
-- trocar a busca puramente local por:
-  - chamada GET na API externa com `identifier`
-  - interpretação do retorno `exists`
-- retornar `not_found` quando não existir
-- invalidar PINs anteriores
-- gerar novo PIN aleatório
-- salvar com expiração de 15 min
-- deixar o envio do e-mail pronto para ativação posterior
+Resumo prático
 
-2. `verify-reset-pin/index.ts`
-- manter a regra de expiração já existente
-- garantir respostas mais claras para:
-  - PIN inválido
-  - PIN expirado
-  - PIN já substituído / cancelado
+Sim, é totalmente viável.
+O melhor padrão para seu caso seria:
+- 5 senhas erradas
+- bloqueio temporário de 10 minutos
+- controle no backend
+- por usuário + sinal de IP/origem
+- mensagem genérica
+- zerar ao login bem-sucedido
 
-3. `reset-password/index.ts`
-- manter atualização de senha com token validado
-- marcar PIN como usado no final
+Observação importante
 
-4. `ForgotPasswordPopup.tsx`
-- integrar com backend real
-- tratar `404 not_found`
-- mostrar hint vermelha
-- manter cooldown e reenvio
-- guardar `reset_token` retornado pela verificação
+Como o login atual ainda não é real, eu trataria isso como uma implementação em duas partes:
+1. conectar o login de verdade ao backend
+2. acoplar o bloqueio temporário no mesmo fluxo
 
-5. `translations.ts`
-- adicionar chaves específicas como:
-  - usuário/e-mail não encontrado
-  - PIN reenviado
-  - PIN expirado
-  - erro temporário de validação
-
-Ponto importante de segurança
-
-Você pediu para avisar em vermelho quando não encontrar usuário/e-mail. Isso é possível, mas muda o comportamento atual de “não revelar se existe”.
-Na prática, isso facilita enumeração de contas.
-Se quiser seguir exatamente como pediu, eu implemento assim; só estou sinalizando o trade-off.
-
-Sobre a API externa
-
-Como você confirmou:
-- a API já existe
-- ela é GET
-- ela responde com `exists`
-
-Então eu estruturaria a integração de forma desacoplada, para depois só ajustar:
-- URL exata
-- nome do parâmetro (`identifier`, `username`, `email`, etc.)
-- shape exato da resposta
-
-Banco de dados
-
-- Não preciso criar nova tabela.
-- A estrutura atual já atende.
-- No máximo, eu avaliaria depois uma melhoria opcional:
-  - índice por `user_identifier`, `pin`, `created_at`
-- Mas para a funcionalidade em si, não é obrigatório.
-
-Resultado final esperado
-
-Quando a implementação for feita:
-1. Usuário informa usuário ou e-mail
-2. Sistema valida na API externa
-3. Se não existir: mensagem vermelha imediata
-4. Se existir: gera PIN novo de 6 dígitos
-5. PIN vale por 15 minutos
-6. Reenviar cancela o anterior e cria outro
-7. PIN válido libera troca de senha
-8. Senha é alterada com segurança
-9. Fluxo atual do popup continua igual visualmente, mas deixa de ser mock
-
-Dependência que vai faltar para ativar o envio real
-
-Para o e-mail sair de fato de `noreply@timol.com.br`, depois só vai faltar ligar o provedor de envio/infra do remetente.
-Como você pediu “implementar e ativar depois”, eu deixaria tudo pronto para essa última conexão sem refazer o fluxo.
-
+Assim a regra fica realmente segura e não só visual.
