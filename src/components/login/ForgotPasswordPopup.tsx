@@ -424,9 +424,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
           </DialogTitle>
           {step === "identifier" && (
             <DialogDescription className="text-xs text-center">
-              {t("forgotPw.descLine1")}
-              <br />
-              {t("forgotPw.descLine2")}
+              {`${t("forgotPw.descLine1")} ${t("forgotPw.descLine2")}`}
             </DialogDescription>
           )}
           {step === "pin" && (
