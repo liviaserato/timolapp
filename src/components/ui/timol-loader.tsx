@@ -50,8 +50,8 @@ export const TimolLoader = ({ className, size = 20 }: TimolLoaderProps) => {
         aria-hidden="true"
         className="absolute z-[2] object-contain pointer-events-none"
         style={{
-          width: w * 0.74,
-          height: h * 0.68,
+          width: w * 0.37,
+          height: h * 0.34,
           bottom: h * 0.005,
           left: "50%",
           transform: "translateX(-50%)",
