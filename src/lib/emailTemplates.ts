@@ -156,6 +156,16 @@ const t = (lang: Lang, key: string): string => {
       en: "We're so happy to have you with us!<br class=\"mobile-hide\"/> Your journey starts now. Count on us!",
       es: "¡Estamos muy felices de tenerte con nosotros!<br class=\"mobile-hide\"/> Tu camino comienza ahora. ¡Cuenta con nosotros!",
     },
+    completedContractTitle: {
+      pt: "📎 Contrato em anexo",
+      en: "📎 Contract attached",
+      es: "📎 Contrato adjunto",
+    },
+    completedContractDesc: {
+      pt: "Segue em anexo o seu contrato de franquia. Recomendamos não deletar este e-mail para manter esse documento e seus dados de ativação sempre à mão.",
+      en: "Your franchise agreement is attached. We recommend not deleting this email so you can keep this document and your activation details handy.",
+      es: "Tu contrato de franquicia se adjunta a este correo. Te recomendamos no eliminar este email para conservar este documento y tus datos de activación siempre a mano.",
+    },
 
     /* ── Password reset PIN email ── */
     recoveryPinSubject: {
@@ -522,6 +532,12 @@ export function buildCompletedEmailHtml(data: CompletedEmailData): string {
     <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:20px;margin:0 0 24px;">
       <p style="margin:0 0 8px;font-size:15px;color:#1e293b;font-weight:600;">${t(lang, "labelPayment")}</p>
       <p style="margin:0;font-size:14px;color:#334155;">${paymentSummary}</p>
+    </div>
+
+    <!-- Contract Notice -->
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:20px;margin:0 0 24px;">
+      <p style="margin:0 0 8px;font-size:15px;color:#1e293b;font-weight:700;">${t(lang, "completedContractTitle")}</p>
+      <p style="margin:0;font-size:14px;color:#334155;">${t(lang, "completedContractDesc")}</p>
     </div>
 
     <!-- First Access Section -->

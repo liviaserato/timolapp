@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type SyntheticEvent } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   buildCompletedEmailHtml,
@@ -54,6 +54,19 @@ const passwordChangedHtml = buildPasswordChangedEmailHtml({
 
 export default function EmailPreviews() {
   const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
+  const [iframeHeights, setIframeHeights] = useState<Record<string, number>>({});
+
+  const handleIframeLoad = (emailId: string) => (event: SyntheticEvent<HTMLIFrameElement>) => {
+    const iframe = event.currentTarget;
+    const iframeDocument = iframe.contentWindow?.document;
+    const contentHeight = iframeDocument?.documentElement?.scrollHeight ?? iframeDocument?.body?.scrollHeight;
+
+    if (contentHeight) {
+      setIframeHeights((current) =>
+        current[emailId] === contentHeight ? current : { ...current, [emailId]: contentHeight + 8 }
+      );
+    }
+  };
 
   const emailCards = useMemo(
     () => [
@@ -180,7 +193,9 @@ export default function EmailPreviews() {
                 srcDoc={activeEmail.html}
                 title={`Preview ${activeEmail.title}`}
                 className="w-full border-0 bg-background"
-                style={{ minHeight: activeEmail.minHeight }}
+                scrolling="no"
+                onLoad={handleIframeLoad(activeEmail.id)}
+                style={{ height: iframeHeights[activeEmail.id] ?? activeEmail.minHeight }}
               />
             </CardContent>
           </Card>
