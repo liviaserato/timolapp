@@ -6,10 +6,6 @@ import {
   buildPasswordChangedEmailHtml,
   buildPasswordResetPinEmailHtml,
   buildPendingEmailHtml,
-  getCompletedSubject,
-  getPasswordChangedSubject,
-  getPasswordResetPinSubject,
-  getPendingSubject,
 } from "@/lib/emailTemplates";
 import { cn } from "@/lib/utils";
 
@@ -67,9 +63,6 @@ export default function EmailPreviews() {
         badge: "Cadastro",
         title: "Cadastro pendente",
         description: "Recuperação do cadastro incompleto com CTA para continuar.",
-        from: "contato@timol.com.br",
-        to: "maria@exemplo.com",
-        subject: getPendingSubject("pt"),
         html: pendingHtml,
         minHeight: 900,
       },
@@ -78,9 +71,6 @@ export default function EmailPreviews() {
         badge: "Cadastro",
         title: "Cadastro concluído",
         description: "Confirmação de franquia ativada com dados de primeiro acesso.",
-        from: "contato@timol.com.br",
-        to: "maria@exemplo.com",
-        subject: getCompletedSubject("pt"),
         html: completedHtml,
         minHeight: 1000,
       },
@@ -89,9 +79,6 @@ export default function EmailPreviews() {
         badge: "Segurança",
         title: "PIN de recuperação",
         description: "Código com validade de 5 minutos e alerta antifraude no corpo do e-mail.",
-        from: "noreply@timol.com.br",
-        to: "liviaserato@yahoo.com.br",
-        subject: getPasswordResetPinSubject(resetPin, "pt"),
         html: recoveryPinHtml,
         minHeight: 760,
       },
@@ -100,9 +87,6 @@ export default function EmailPreviews() {
         badge: "Segurança",
         title: "Senha alterada",
         description: "Confirmação da troca de senha com orientação de suporte.",
-        from: "noreply@timol.com.br",
-        to: "liviaserato@yahoo.com.br",
-        subject: getPasswordChangedSubject("pt"),
         html: passwordChangedHtml,
         minHeight: 700,
       },
@@ -147,12 +131,11 @@ export default function EmailPreviews() {
                     isActive && "border-primary shadow-lg ring-2 ring-primary/20"
                   )}
                 >
-                  <CardHeader className="space-y-3 pb-4">
-                    <div className="flex items-center justify-between gap-3">
+                  <CardHeader className="space-y-3 pb-5">
+                    <div className="flex items-center gap-3">
                       <span className="inline-flex rounded-full bg-secondary px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-secondary-foreground">
                         {email.badge}
                       </span>
-                      <span className="text-xs text-muted-foreground">Preview</span>
                     </div>
                     <div>
                       <CardTitle className="text-lg text-foreground">{email.title}</CardTitle>
@@ -161,20 +144,6 @@ export default function EmailPreviews() {
                       </CardDescription>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3 text-xs text-muted-foreground">
-                    <div className="rounded-xl bg-muted/60 p-3">
-                      <p className="mb-1 font-medium text-foreground">Assunto</p>
-                      <p className="line-clamp-3">{email.subject}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p>
-                        <strong className="text-foreground">De:</strong> {email.from}
-                      </p>
-                      <p>
-                        <strong className="text-foreground">Para:</strong> {email.to}
-                      </p>
-                    </div>
-                  </CardContent>
                 </Card>
               </button>
             );
@@ -186,33 +155,15 @@ export default function EmailPreviews() {
             <CardTitle className="text-base text-foreground">
               {activeEmail ? activeEmail.title : "Selecione um e-mail para visualizar"}
             </CardTitle>
-            <CardDescription>
-              {activeEmail
-                ? "O preview só é carregado depois que você escolhe um card."
-                : "Nenhum preview aberto ainda."}
-            </CardDescription>
           </CardHeader>
 
           {activeEmail ? (
-            <>
-              <div className="space-y-0.5 border-b border-border bg-background px-4 py-3 text-xs text-muted-foreground">
-                <div>
-                  <strong className="text-foreground">De:</strong> {activeEmail.from}
-                </div>
-                <div>
-                  <strong className="text-foreground">Para:</strong> {activeEmail.to}
-                </div>
-                <div>
-                  <strong className="text-foreground">Assunto:</strong> {activeEmail.subject}
-                </div>
-              </div>
-              <iframe
-                srcDoc={activeEmail.html}
-                title={`Preview ${activeEmail.title}`}
-                className="w-full border-0 bg-background"
-                style={{ minHeight: activeEmail.minHeight }}
-              />
-            </>
+            <iframe
+              srcDoc={activeEmail.html}
+              title={`Preview ${activeEmail.title}`}
+              className="w-full border-0 bg-background"
+              style={{ minHeight: activeEmail.minHeight }}
+            />
           ) : (
             <CardContent className="flex min-h-[260px] items-center justify-center p-8 text-center text-sm text-muted-foreground">
               Clique em um card acima para abrir o preview correspondente.
