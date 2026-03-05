@@ -67,10 +67,19 @@ export default function EmailPreviews() {
         </div>
 
         <Tabs defaultValue="pending">
-          <TabsList className="w-full">
-            <TabsTrigger value="pending" className="flex-1">Cadastro Pendente</TabsTrigger>
-            <TabsTrigger value="completed" className="flex-1">Cadastro Concluído</TabsTrigger>
-            <TabsTrigger value="pw-changed" className="flex-1">Senha Alterada</TabsTrigger>
+          <TabsList className="grid h-auto w-full grid-cols-3 gap-1 rounded-lg bg-muted p-1">
+            <TabsTrigger value="pending" className="h-auto min-h-[3rem] whitespace-normal px-2 py-2 text-center text-xs leading-tight sm:text-sm">
+              <span className="block sm:inline">Cadastro</span>
+              <span className="block sm:inline sm:ml-1">Pendente</span>
+            </TabsTrigger>
+            <TabsTrigger value="completed" className="h-auto min-h-[3rem] whitespace-normal px-2 py-2 text-center text-xs leading-tight sm:text-sm">
+              <span className="block sm:inline">Cadastro</span>
+              <span className="block sm:inline sm:ml-1">Concluído</span>
+            </TabsTrigger>
+            <TabsTrigger value="pw-changed" className="h-auto min-h-[3rem] whitespace-normal px-2 py-2 text-center text-xs leading-tight sm:text-sm">
+              <span className="block sm:inline">Senha</span>
+              <span className="block sm:inline sm:ml-1">Alterada</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending">
