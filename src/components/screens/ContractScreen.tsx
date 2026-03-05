@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
-import { FileText, ChevronLeft } from "lucide-react";
+import { FileText, ChevronLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { Language } from "@/i18n/translations";
 import timolLogo from "@/assets/logo-timol-azul-escuro.svg";
@@ -15,6 +14,11 @@ type ContractSection = {
 type ContractContent = {
   sections: ContractSection[];
 };
+
+interface ContractScreenProps {
+  mode?: "page" | "modal";
+  onClose?: () => void;
+}
 
 const contractContent: Record<Language, ContractContent> = {
   pt: {
@@ -481,22 +485,29 @@ const contractContent: Record<Language, ContractContent> = {
   },
 };
 
-export const ContractScreen = () => {
+export const ContractScreen = ({ mode = "page", onClose }: ContractScreenProps) => {
   const { language, t } = useLanguage();
-
   const content = contractContent[language];
+  const isModal = mode === "modal";
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-muted/20">
+    <div className={isModal ? "fixed inset-0 z-50 flex flex-col bg-background" : "flex h-screen flex-col overflow-hidden bg-muted/20"}>
       <header className="z-20 shrink-0 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="mx-auto flex w-full max-w-4xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <img src={timolLogo} alt="Timol" className="h-10 w-fit" />
-          <Button asChild variant="outline" size="sm" className="w-full justify-center sm:w-auto">
-            <Link to="/cadastro">
-              <ChevronLeft className="mr-2 h-4 w-4" />
-              {t("contract.back")}
-            </Link>
-          </Button>
+          {isModal ? (
+            <Button type="button" variant="outline" size="sm" className="shrink-0" onClick={onClose}>
+              <X className="mr-2 h-4 w-4" />
+              {t("contract.close")}
+            </Button>
+          ) : (
+            <Button asChild variant="outline" size="sm" className="shrink-0">
+              <Link to="/cadastro">
+                <ChevronLeft className="mr-2 h-4 w-4" />
+                {t("contract.back")}
+              </Link>
+            </Button>
+          )}
         </div>
       </header>
 
