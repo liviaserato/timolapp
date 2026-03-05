@@ -29,6 +29,7 @@ import { supabase } from "@/integrations/supabase/client";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
 
 type Step = "identifier" | "pin" | "new-password" | "success";
+type EmailValidationState = "idle" | "success" | "error";
 
 interface Props {
   open: boolean;
@@ -57,6 +58,12 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
 
   const [step, setStep] = useState<Step>("identifier");
   const [identifier, setIdentifier] = useState("");
+  const [maskedEmail, setMaskedEmail] = useState("");
+  const [emailConfirmation, setEmailConfirmation] = useState("");
+  const [confirmedEmail, setConfirmedEmail] = useState("");
+  const [emailValidationState, setEmailValidationState] = useState<EmailValidationState>("idle");
+  const [emailValidationMessage, setEmailValidationMessage] = useState("");
+  const [emailValidationLoading, setEmailValidationLoading] = useState(false);
   const [pin, setPin] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -70,6 +77,9 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
   const [showExpiryHint, setShowExpiryHint] = useState(false);
   const [resendHint, setResendHint] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+
+  const showEmailValidation = Boolean(maskedEmail);
+  const emailValidated = emailValidationState === "success" && Boolean(confirmedEmail);
 
   useEffect(() => {
     if (resendCooldown <= 0) return;
@@ -90,6 +100,12 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
       switch (code) {
         case "not_found":
           return t("forgotPw.error.notFound");
+        case "email_required":
+          return t("forgotPw.error.emailRequired");
+        case "email_mismatch":
+          return t("forgotPw.error.emailMismatch");
+        case "email_unavailable":
+          return t("forgotPw.error.emailUnavailable");
         case "pin_expired":
         case "expired_token":
         case "invalid_token":
@@ -108,9 +124,19 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
     [t]
   );
 
+  const resetEmailValidation = useCallback(() => {
+    setMaskedEmail("");
+    setEmailConfirmation("");
+    setConfirmedEmail("");
+    setEmailValidationState("idle");
+    setEmailValidationMessage("");
+    setEmailValidationLoading(false);
+  }, []);
+
   const resetAll = useCallback(() => {
     setStep("identifier");
     setIdentifier("");
+    resetEmailValidation();
     setPin("");
     setNewPassword("");
     setConfirmPassword("");
@@ -123,17 +149,115 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
     setShowExpiryHint(false);
     setResendHint(false);
     setResendCooldown(0);
-  }, []);
+  }, [resetEmailValidation]);
 
   const handleClose = () => {
     resetAll();
     onClose();
   };
 
+  const handleValidateUsername = async () => {
+    const normalizedIdentifier = identifier.trim().toLowerCase();
+
+    if (!normalizedIdentifier) {
+      setError(t("forgotPw.error.identifierRequired"));
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    resetEmailValidation();
+
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke("forgot-password", {
+        body: {
+          action: "validate-username",
+          username: normalizedIdentifier,
+        },
+      });
+
+      if (fnError) {
+        const errorCode = await extractFunctionErrorCode(fnError);
+        setError(getErrorMessage(errorCode));
+        return;
+      }
+
+      if (!data?.masked_email) {
+        setError(t("forgotPw.error.generic"));
+        return;
+      }
+
+      setIdentifier(normalizedIdentifier);
+      setMaskedEmail(String(data.masked_email));
+    } catch {
+      setError(t("forgotPw.error.generic"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleValidateEmail = async () => {
+    const normalizedIdentifier = identifier.trim().toLowerCase();
+    const normalizedEmail = emailConfirmation.trim().toLowerCase();
+
+    if (!normalizedEmail) {
+      setEmailValidationState("error");
+      setEmailValidationMessage(t("forgotPw.error.emailRequired"));
+      setConfirmedEmail("");
+      return;
+    }
+
+    setEmailValidationLoading(true);
+    setError("");
+    setEmailValidationState("idle");
+    setEmailValidationMessage("");
+
+    try {
+      const { error: fnError } = await supabase.functions.invoke("forgot-password", {
+        body: {
+          action: "validate-email",
+          username: normalizedIdentifier,
+          email: normalizedEmail,
+        },
+      });
+
+      if (fnError) {
+        const errorCode = await extractFunctionErrorCode(fnError);
+        const message = getErrorMessage(errorCode);
+
+        if (errorCode === "email_required" || errorCode === "email_mismatch") {
+          setEmailValidationState("error");
+          setEmailValidationMessage(message);
+          setConfirmedEmail("");
+          return;
+        }
+
+        setError(message);
+        return;
+      }
+
+      setConfirmedEmail(normalizedEmail);
+      setEmailValidationState("success");
+      setEmailValidationMessage(t("forgotPw.emailValidation.success"));
+    } catch {
+      setError(t("forgotPw.error.generic"));
+    } finally {
+      setEmailValidationLoading(false);
+    }
+  };
+
   const requestPin = useCallback(
     async (showResendMessage = false) => {
-      if (!identifier.trim()) {
+      const normalizedIdentifier = identifier.trim().toLowerCase();
+
+      if (!normalizedIdentifier) {
         setError(t("forgotPw.error.identifierRequired"));
+        return;
+      }
+
+      if (!confirmedEmail) {
+        setEmailValidationState("error");
+        setEmailValidationMessage(t("forgotPw.error.emailRequired"));
         return;
       }
 
@@ -143,14 +267,26 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
       setShowExpiryHint(false);
 
       try {
-        const normalizedIdentifier = identifier.trim();
         const { error: fnError } = await supabase.functions.invoke("forgot-password", {
-          body: { identifier: normalizedIdentifier },
+          body: {
+            action: "send-pin",
+            username: normalizedIdentifier,
+            email: confirmedEmail,
+          },
         });
 
         if (fnError) {
           const errorCode = await extractFunctionErrorCode(fnError);
-          setError(getErrorMessage(errorCode));
+          const message = getErrorMessage(errorCode);
+
+          if (errorCode === "email_required" || errorCode === "email_mismatch") {
+            setEmailValidationState("error");
+            setEmailValidationMessage(message);
+            setConfirmedEmail("");
+            return;
+          }
+
+          setError(message);
           return;
         }
 
@@ -172,7 +308,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
         setLoading(false);
       }
     },
-    [getErrorMessage, identifier, t]
+    [confirmedEmail, getErrorMessage, identifier, t]
   );
 
   const handleSendPin = async () => {
@@ -336,21 +472,90 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
                   onChange={(e) => {
                     setIdentifier(e.target.value);
                     setError("");
+                    resetEmailValidation();
                   }}
                   autoCapitalize="none"
                   autoCorrect="off"
-                  onKeyDown={(e) => e.key === "Enter" && handleSendPin()}
+                  onKeyDown={(e) => e.key === "Enter" && !showEmailValidation && void handleValidateUsername()}
                 />
               </div>
+
+              {showEmailValidation && (
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground text-center">
+                    {t("forgotPw.emailValidationHint")}
+                  </p>
+                  <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                      {t("forgotPw.maskedEmailLabel")}
+                    </p>
+                    <p className="text-sm font-medium text-foreground break-all">{maskedEmail}</p>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="fp-email" className="text-xs">
+                      {t("forgotPw.emailValidationLabel")}
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="fp-email"
+                        type="email"
+                        placeholder={t("forgotPw.emailValidation.placeholder")}
+                        value={emailConfirmation}
+                        onChange={(e) => {
+                          setEmailConfirmation(e.target.value);
+                          setError("");
+                          setConfirmedEmail("");
+                          setEmailValidationState("idle");
+                          setEmailValidationMessage("");
+                        }}
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        className="pr-24"
+                        onKeyDown={(e) => e.key === "Enter" && void handleValidateEmail()}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="absolute right-1 top-1/2 h-8 -translate-y-1/2 px-3 text-xs"
+                        onClick={() => void handleValidateEmail()}
+                        disabled={emailValidationLoading || !emailConfirmation.trim()}
+                      >
+                        {emailValidationLoading ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          t("forgotPw.validateEmail")
+                        )}
+                      </Button>
+                    </div>
+                    {emailValidationState !== "idle" && emailValidationMessage && (
+                      <p
+                        className={`text-xs ${
+                          emailValidationState === "success" ? "text-success" : "text-destructive"
+                        }`}
+                      >
+                        {emailValidationMessage}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {error && (
                 <p className="text-xs text-destructive text-center">{error}</p>
               )}
 
-              <Button className="w-full gap-2" onClick={handleSendPin} disabled={loading}>
-                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                {t("forgotPw.sendPin")}
-              </Button>
+              {!showEmailValidation ? (
+                <Button className="w-full gap-2" onClick={() => void handleValidateUsername()} disabled={loading}>
+                  {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {t("forgotPw.startReset")}
+                </Button>
+              ) : (
+                <Button className="w-full gap-2" onClick={handleSendPin} disabled={loading || !emailValidated}>
+                  {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {t("forgotPw.sendPin")}
+                </Button>
+              )}
 
               <button
                 type="button"
@@ -474,7 +679,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
                     }}
                     className="pr-9"
                     placeholder={t("forgotPw.confirmPassword.placeholder")}
-                    onKeyDown={(e) => e.key === "Enter" && handleResetPassword()}
+                    onKeyDown={(e) => e.key === "Enter" && void handleResetPassword()}
                   />
                   <button
                     type="button"

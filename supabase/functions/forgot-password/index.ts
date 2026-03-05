@@ -14,12 +14,27 @@ const timolHeaders = {
   Referer: "https://timolsystem.com.br/",
 };
 
+type ForgotPasswordAction = "validate-username" | "validate-email" | "send-pin";
+
 function generatePin(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-function isEmailIdentifier(identifier: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+function normalizeValue(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function maskEmail(email: string): string {
+  const [localPart, domain] = email.split("@");
+
+  if (!localPart || !domain) {
+    return email;
+  }
+
+  const visiblePart = localPart.slice(0, 2);
+  const hiddenLength = Math.max(localPart.length - visiblePart.length, 4);
+
+  return `${visiblePart}${"*".repeat(hiddenLength)}@${domain}`;
 }
 
 function parseExistsValue(payload: unknown): boolean | null {
@@ -35,15 +50,9 @@ function parseExistsValue(payload: unknown): boolean | null {
   return null;
 }
 
-async function checkExternalIdentifierExists(identifier: string): Promise<boolean> {
-  const emailIdentifier = isEmailIdentifier(identifier);
-  const url = new URL(
-    emailIdentifier
-      ? "https://www.timolweb.com.br/api/people/email-check"
-      : "https://www.timolweb.com.br/api/people/username-check"
-  );
-
-  url.searchParams.set(emailIdentifier ? "email" : "username", identifier);
+async function checkExternalUsernameExists(username: string): Promise<boolean> {
+  const url = new URL("https://www.timolweb.com.br/api/people/username-check");
+  url.searchParams.set("username", username);
 
   const response = await fetch(url.toString(), {
     headers: timolHeaders,
@@ -69,9 +78,22 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { identifier } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const username =
+      typeof body.username === "string"
+        ? normalizeValue(body.username)
+        : typeof body.identifier === "string"
+          ? normalizeValue(body.identifier)
+          : "";
+    const email = typeof body.email === "string" ? normalizeValue(body.email) : "";
+    const action =
+      typeof body.action === "string"
+        ? (body.action as ForgotPasswordAction)
+        : email
+          ? "send-pin"
+          : "validate-username";
 
-    if (!identifier || typeof identifier !== "string" || identifier.trim().length < 2) {
+    if (!username || username.length < 2) {
       return new Response(
         JSON.stringify({ success: false, error: "invalid_identifier" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
@@ -83,13 +105,10 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const trimmed = identifier.trim().toLowerCase();
-    const identifierColumn = isEmailIdentifier(trimmed) ? "email" : "username";
-
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("user_id, email, username")
-      .ilike(identifierColumn, trimmed)
+      .ilike("username", username)
       .limit(1)
       .maybeSingle();
 
@@ -101,23 +120,63 @@ Deno.serve(async (req) => {
     let exists = false;
 
     try {
-      exists = await checkExternalIdentifierExists(trimmed);
+      exists = await checkExternalUsernameExists(username);
     } catch (validationError) {
       console.warn("[forgot-password] External validation fallback:", validationError);
-      exists = Boolean(profile);
+      exists = Boolean(profile?.user_id);
     }
 
-    if (!exists) {
+    if (!exists || !profile?.user_id || !profile.username) {
       return new Response(
         JSON.stringify({ success: false, error: "not_found" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
       );
     }
 
-    if (!profile?.user_id || !profile.email) {
+    const normalizedProfileEmail = profile.email ? normalizeValue(profile.email) : "";
+
+    if (!normalizedProfileEmail) {
       return new Response(
         JSON.stringify({ success: false, error: "email_unavailable" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 409 }
+      );
+    }
+
+    if (action === "validate-username") {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          masked_email: maskEmail(normalizedProfileEmail),
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!email) {
+      return new Response(
+        JSON.stringify({ success: false, error: "email_required" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+      );
+    }
+
+    if (email !== normalizedProfileEmail) {
+      return new Response(
+        JSON.stringify({ success: false, error: "email_mismatch" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+      );
+    }
+
+    if (action === "validate-email") {
+      return new Response(
+        JSON.stringify({ success: true }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (action !== "send-pin") {
+      return new Response(
+        JSON.stringify({ success: false, error: "invalid_action" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
       );
     }
 
@@ -137,8 +196,8 @@ Deno.serve(async (req) => {
 
     const { error: insertError } = await supabase.from("password_reset_pins").insert({
       user_id: profile.user_id,
-      user_identifier: trimmed,
-      email: profile.email,
+      user_identifier: username,
+      email: normalizedProfileEmail,
       pin,
       expires_at: expiresAt,
     });
@@ -148,7 +207,9 @@ Deno.serve(async (req) => {
       throw insertError;
     }
 
-    console.log(`[forgot-password] Email sending stub ready for noreply@timol.com.br -> ${profile.email}; PIN: ${pin}; expires_at: ${expiresAt}`);
+    console.log(
+      `[forgot-password] Email sending stub ready for noreply@timol.com.br -> ${normalizedProfileEmail}; PIN: ${pin}; expires_at: ${expiresAt}`
+    );
 
     return new Response(
       JSON.stringify({ success: true, message: "pin_sent" }),
