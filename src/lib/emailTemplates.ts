@@ -518,7 +518,7 @@ export function buildCompletedEmailHtml(data: CompletedEmailData): string {
     </p>
 
     <!-- Data Summary Card -->
-    <div style="background:#f1f5f9;border-radius:12px;padding:20px;margin:16px 0 24px;">
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin:16px 0 24px;">
       <p style="margin:0 0 12px;font-size:15px;color:#1e293b;font-weight:600;">${t(lang, "completedSummaryTitle")}</p>
       <table class="data-summary" style="width:100%;border-collapse:collapse;">
         ${dataRow(t(lang, "labelId"), data.franchiseId)}
@@ -529,19 +529,19 @@ export function buildCompletedEmailHtml(data: CompletedEmailData): string {
     </div>
 
     <!-- Payment Summary -->
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:20px;margin:0 0 24px;">
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin:0 0 24px;">
       <p style="margin:0 0 8px;font-size:15px;color:#1e293b;font-weight:600;">${t(lang, "labelPayment")}</p>
       <p style="margin:0;font-size:14px;color:#334155;">${paymentSummary}</p>
     </div>
 
     <!-- Contract Notice -->
-    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:20px;margin:0 0 24px;">
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin:0 0 24px;">
       <p style="margin:0 0 8px;font-size:15px;color:#1e293b;font-weight:700;">${t(lang, "completedContractTitle")}</p>
       <p style="margin:0;font-size:14px;color:#334155;">${t(lang, "completedContractDesc")}</p>
     </div>
 
     <!-- First Access Section -->
-    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:24px;margin:0 0 24px;">
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:0 0 24px;">
       <p style="margin:0 0 12px;font-size:16px;color:#1e293b;font-weight:700;">
         ${t(lang, "firstAccessTitle")}
       </p>
