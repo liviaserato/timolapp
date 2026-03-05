@@ -19,24 +19,37 @@ import {
 } from "@/components/ui/tooltip";
 import {
   Loader2,
-  AlertCircle,
   Eye,
   EyeOff,
   CheckCircle2,
   ArrowLeft,
   HelpCircle,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
 
 type Step = "identifier" | "pin" | "new-password" | "success";
-
-const MOCK_USER = "liviaserato";
-const MOCK_PIN = "123456";
 
 interface Props {
   open: boolean;
   onClose: () => void;
   onSwitchToUsername: () => void;
+}
+
+async function extractFunctionErrorCode(error: unknown): Promise<string | null> {
+  const context =
+    error && typeof error === "object" && "context" in error
+      ? (error as { context?: unknown }).context
+      : null;
+
+  if (!(context instanceof Response)) {
+    return null;
+  }
+
+  const payload = await context.json().catch(() => null);
+  return payload && typeof payload === "object" && "error" in payload
+    ? String(payload.error)
+    : null;
 }
 
 export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props) => {
@@ -47,20 +60,17 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
   const [pin, setPin] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [resetToken, setResetToken] = useState("");
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // PIN sent state
   const [pinSent, setPinSent] = useState(false);
   const [showExpiryHint, setShowExpiryHint] = useState(false);
   const [resendHint, setResendHint] = useState(false);
-
-  // Resend cooldown (60s)
   const [resendCooldown, setResendCooldown] = useState(0);
 
-  // Cooldown timer
   useEffect(() => {
     if (resendCooldown <= 0) return;
     const timer = setInterval(() => {
@@ -75,12 +85,36 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
     return () => clearInterval(timer);
   }, [resendCooldown]);
 
+  const getErrorMessage = useCallback(
+    (code: string | null, fallbackKey = "forgotPw.error.generic") => {
+      switch (code) {
+        case "not_found":
+          return t("forgotPw.error.notFound");
+        case "pin_expired":
+        case "expired_token":
+        case "invalid_token":
+          return t("forgotPw.error.pinExpired");
+        case "replaced_pin":
+        case "pin_used":
+          return t("forgotPw.error.pinReplaced");
+        case "invalid_pin":
+          return t("forgotPw.error.invalidPin");
+        case "update_failed":
+          return t("forgotPw.error.resetFailed");
+        default:
+          return t(fallbackKey);
+      }
+    },
+    [t]
+  );
+
   const resetAll = useCallback(() => {
     setStep("identifier");
     setIdentifier("");
     setPin("");
     setNewPassword("");
     setConfirmPassword("");
+    setResetToken("");
     setShowNew(false);
     setShowConfirm(false);
     setError("");
@@ -96,70 +130,148 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
     onClose();
   };
 
-  // Step 1: Send PIN (mock)
+  const requestPin = useCallback(
+    async (showResendMessage = false) => {
+      if (!identifier.trim()) {
+        setError(t("forgotPw.error.identifierRequired"));
+        return;
+      }
+
+      setLoading(true);
+      setError("");
+      setResendHint(false);
+      setShowExpiryHint(false);
+
+      try {
+        const normalizedIdentifier = identifier.trim();
+        const { error: fnError } = await supabase.functions.invoke("forgot-password", {
+          body: { identifier: normalizedIdentifier },
+        });
+
+        if (fnError) {
+          const errorCode = await extractFunctionErrorCode(fnError);
+          setError(getErrorMessage(errorCode));
+          return;
+        }
+
+        setIdentifier(normalizedIdentifier);
+        setPin("");
+        setResetToken("");
+        setPinSent(true);
+        setShowExpiryHint(true);
+        setResendCooldown(60);
+        setStep("pin");
+
+        if (showResendMessage) {
+          setResendHint(true);
+          window.setTimeout(() => setResendHint(false), 10000);
+        }
+      } catch {
+        setError(t("forgotPw.error.generic"));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [getErrorMessage, identifier, t]
+  );
+
   const handleSendPin = async () => {
-    if (!identifier.trim()) {
-      setError(t("forgotPw.error.identifierRequired"));
-      return;
-    }
-    setLoading(true);
-    setError("");
-    setShowExpiryHint(false);
-    setTimeout(() => {
-      setLoading(false);
-      setPinSent(true);
-      setShowExpiryHint(true);
-      setResendCooldown(60);
-      setStep("pin");
-    }, 800);
+    await requestPin(false);
   };
 
-  // Step 2: Verify PIN (mock)
-  const handleVerifyPin = async () => {
-    if (pin.length !== 6) {
+  const handleVerifyPin = async (pinValue = pin) => {
+    if (pinValue.length !== 6) {
       setError(t("forgotPw.error.pinLength"));
       setShowExpiryHint(false);
       return;
     }
+
     setLoading(true);
     setError("");
-    setTimeout(() => {
-      setLoading(false);
-      if (identifier.trim().toLowerCase() === MOCK_USER && pin === MOCK_PIN) {
-        setStep("new-password");
-      } else {
-        setError(t("forgotPw.error.invalidPin"));
+
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke("verify-reset-pin", {
+        body: {
+          identifier: identifier.trim(),
+          pin: pinValue,
+        },
+      });
+
+      if (fnError) {
+        const errorCode = await extractFunctionErrorCode(fnError);
+        setError(getErrorMessage(errorCode));
         setShowExpiryHint(false);
+        return;
       }
-    }, 800);
+
+      if (!data?.reset_token) {
+        setError(t("forgotPw.error.generic"));
+        setShowExpiryHint(false);
+        return;
+      }
+
+      setResetToken(String(data.reset_token));
+      setStep("new-password");
+    } catch {
+      setError(t("forgotPw.error.generic"));
+      setShowExpiryHint(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Step 3: Set new password (mock)
   const handleResetPassword = async () => {
     if (newPassword.length < 6) {
       setError(t("forgotPw.error.passwordMin"));
       return;
     }
+
     if (newPassword !== confirmPassword) {
       setError(t("forgotPw.error.passwordMismatch"));
       return;
     }
+
+    if (!resetToken) {
+      setError(t("forgotPw.error.generic"));
+      return;
+    }
+
     setLoading(true);
     setError("");
-    setTimeout(() => {
-      setLoading(false);
+
+    try {
+      const { error: fnError } = await supabase.functions.invoke("reset-password", {
+        body: {
+          reset_token: resetToken,
+          new_password: newPassword,
+        },
+      });
+
+      if (fnError) {
+        const errorCode = await extractFunctionErrorCode(fnError);
+
+        if (errorCode === "expired_token" || errorCode === "invalid_token") {
+          setStep("pin");
+          setPin("");
+          setResetToken("");
+          setShowExpiryHint(false);
+        }
+
+        setError(getErrorMessage(errorCode, "forgotPw.error.resetFailed"));
+        return;
+      }
+
       setStep("success");
-    }, 800);
+    } catch {
+      setError(t("forgotPw.error.resetFailed"));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleResendPin = () => {
-    if (resendCooldown > 0) return;
-    setPin("");
-    setError("");
-    setShowExpiryHint(true);
-    setResendHint(true);
-    setResendCooldown(60);
-    setTimeout(() => setResendHint(false), 10000);
+  const handleResendPin = async () => {
+    if (resendCooldown > 0 || loading) return;
+    await requestPin(true);
   };
 
   return (
@@ -168,7 +280,11 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
         <DialogHeader className="items-center space-y-2">
           <img src={timolLogoDark} alt="Timol" className="h-8 mx-auto" />
           <DialogTitle className="text-lg font-bold text-primary">
-            {step === "success" ? t("forgotPw.successTitle") : step === "new-password" ? t("forgotPw.changePasswordTitle") : t("forgotPw.title")}
+            {step === "success"
+              ? t("forgotPw.successTitle")
+              : step === "new-password"
+                ? t("forgotPw.changePasswordTitle")
+                : t("forgotPw.title")}
           </DialogTitle>
           {step === "identifier" && (
             <DialogDescription className="text-xs text-center">
@@ -185,7 +301,10 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button type="button" className="inline-flex ml-1 align-middle text-muted-foreground hover:text-primary transition-colors">
+                    <button
+                      type="button"
+                      className="inline-flex ml-1 align-middle text-muted-foreground hover:text-primary transition-colors"
+                    >
                       <HelpCircle className="h-3.5 w-3.5" />
                     </button>
                   </TooltipTrigger>
@@ -204,7 +323,6 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
         </DialogHeader>
 
         <div className="space-y-4 mt-2">
-          {/* Step: Identifier */}
           {step === "identifier" && (
             <>
               <div className="space-y-1.5">
@@ -247,7 +365,6 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
             </>
           )}
 
-          {/* Step: PIN */}
           {step === "pin" && (
             <>
               <div className="flex flex-col items-center gap-3">
@@ -260,7 +377,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
                     setError("");
                   }}
                   onComplete={(val) => {
-                    if (val.length === 6) handleVerifyPin();
+                    if (val.length === 6) void handleVerifyPin(val);
                   }}
                 >
                   <InputOTPGroup>
@@ -274,40 +391,36 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
                 </InputOTP>
               </div>
 
-              {/* Verify PIN button */}
               <Button
                 className="w-full gap-2"
-                onClick={handleVerifyPin}
+                onClick={() => void handleVerifyPin()}
                 disabled={loading || pin.length !== 6}
-                onKeyDown={(e) => e.key === "Enter" && pin.length === 6 && handleVerifyPin()}
+                onKeyDown={(e) => e.key === "Enter" && pin.length === 6 && void handleVerifyPin()}
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t("forgotPw.verifyPin")}
               </Button>
 
-              {/* Expiry hint - shown after send/resend, hidden on error */}
               {showExpiryHint && !error && (
                 <p className="text-xs text-muted-foreground text-center">
                   {t("forgotPw.pinExpiry")}
                 </p>
               )}
 
-              {/* Error hint - centered */}
               {error && (
                 <p className="text-xs text-destructive text-center">{error}</p>
               )}
 
-              {/* Resend PIN button - only after first send */}
               {pinSent && (
                 <button
                   type="button"
                   className={`flex items-center justify-center gap-1 w-full text-xs transition-colors ${
-                    resendCooldown > 0
+                    resendCooldown > 0 || loading
                       ? "text-muted-foreground/50 cursor-not-allowed"
                       : "text-muted-foreground hover:text-primary"
                   }`}
-                  onClick={handleResendPin}
-                  disabled={resendCooldown > 0}
+                  onClick={() => void handleResendPin()}
+                  disabled={resendCooldown > 0 || loading}
                   aria-label={t("forgotPw.resendPinAria")}
                 >
                   {t("forgotPw.resendPin")}
@@ -315,7 +428,6 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
                 </button>
               )}
 
-              {/* Resend success hint - centered, below resend button */}
               {resendHint && (
                 <p className="text-xs text-success text-center">
                   {t("forgotPw.resendSuccess")}
@@ -324,7 +436,6 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
             </>
           )}
 
-          {/* Step: New Password */}
           {step === "new-password" && (
             <>
               <div className="space-y-1.5">
@@ -387,7 +498,6 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
             </>
           )}
 
-          {/* Step: Success */}
           {step === "success" && (
             <div className="flex flex-col items-center gap-4 py-4">
               <CheckCircle2 className="h-12 w-12 text-success" />

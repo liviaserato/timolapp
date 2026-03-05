@@ -26,16 +26,19 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Find verified PIN record by reset_token
-    const { data: record } = await supabase
+    const now = new Date().toISOString();
+
+    const { data: record, error: lookupError } = await supabase
       .from("password_reset_pins")
-      .select("*")
+      .select("id, user_id, expires_at, used, verified")
       .eq("reset_token", reset_token)
-      .eq("verified", true)
-      .eq("used", false)
-      .gte("expires_at", new Date().toISOString())
       .limit(1)
-      .single();
+      .maybeSingle();
+
+    if (lookupError) {
+      console.error("[reset-password] Lookup error:", lookupError);
+      throw lookupError;
+    }
 
     if (!record) {
       return new Response(
@@ -44,7 +47,26 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Update password via admin API
+    if (record.expires_at < now) {
+      await supabase
+        .from("password_reset_pins")
+        .update({ used: true })
+        .eq("id", record.id)
+        .eq("used", false);
+
+      return new Response(
+        JSON.stringify({ success: false, error: "expired_token" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+      );
+    }
+
+    if (record.used || !record.verified) {
+      return new Response(
+        JSON.stringify({ success: false, error: "invalid_token" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+      );
+    }
+
     const { error: updateError } = await supabase.auth.admin.updateUserById(
       record.user_id,
       { password: new_password }
@@ -58,11 +80,16 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Mark PIN as used
-    await supabase
+    const { error: invalidateError } = await supabase
       .from("password_reset_pins")
       .update({ used: true })
-      .eq("id", record.id);
+      .eq("user_id", record.user_id)
+      .eq("used", false);
+
+    if (invalidateError) {
+      console.error("[reset-password] Invalidate error:", invalidateError);
+      throw invalidateError;
+    }
 
     return new Response(
       JSON.stringify({ success: true }),
