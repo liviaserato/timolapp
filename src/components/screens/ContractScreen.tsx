@@ -487,8 +487,8 @@ export const ContractScreen = () => {
   const content = contractContent[language];
 
   return (
-    <div className="h-screen overflow-hidden bg-muted/20">
-      <header className="sticky top-0 z-20 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <div className="flex h-screen flex-col overflow-hidden bg-muted/20">
+      <header className="z-20 shrink-0 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <img src={timolLogo} alt="Timol" className="h-10 w-fit" />
           <Button asChild variant="outline" size="sm" className="w-full justify-center sm:w-auto">
@@ -500,7 +500,7 @@ export const ContractScreen = () => {
         </div>
       </header>
 
-      <main className="h-[calc(100vh-89px)] overflow-y-auto">
+      <main className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-6 sm:px-6 sm:py-8">
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/50 px-3 py-1 text-xs font-medium text-muted-foreground">
@@ -517,7 +517,7 @@ export const ContractScreen = () => {
             </div>
           </div>
 
-          <div className="space-y-8 pb-8">
+          <div className="space-y-8">
             {content.sections.map((section, index) => (
               <section
                 key={section.title}
@@ -549,7 +549,7 @@ export const ContractScreen = () => {
             ))}
           </div>
 
-          <div className="border-t border-border/60 pt-5">
+          <div className="border-t border-border/60 pb-8 pt-5 sm:pb-10">
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
               {t("contract.endOfDocument")}
             </p>
