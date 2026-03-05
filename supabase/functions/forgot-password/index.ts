@@ -6,8 +6,61 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+const timolHeaders = {
+  Accept: "application/json",
+  "Content-Type": "application/json",
+  "User-Agent": "Mozilla/5.0 (compatible; TimolApp/1.0)",
+  Origin: "https://timolsystem.com.br",
+  Referer: "https://timolsystem.com.br/",
+};
+
 function generatePin(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function isEmailIdentifier(identifier: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+}
+
+function parseExistsValue(payload: unknown): boolean | null {
+  if (!payload || typeof payload !== "object") return null;
+
+  const exists = (payload as { exists?: unknown }).exists;
+  if (typeof exists === "boolean") return exists;
+  if (typeof exists === "string") return exists.toLowerCase() === "true";
+
+  const person = (payload as { person?: unknown }).person;
+  if (Array.isArray(person)) return person.length > 0;
+
+  return null;
+}
+
+async function checkExternalIdentifierExists(identifier: string): Promise<boolean> {
+  const emailIdentifier = isEmailIdentifier(identifier);
+  const url = new URL(
+    emailIdentifier
+      ? "https://www.timolweb.com.br/api/people/email-check"
+      : "https://www.timolweb.com.br/api/people/username-check"
+  );
+
+  url.searchParams.set(emailIdentifier ? "email" : "username", identifier);
+
+  const response = await fetch(url.toString(), {
+    headers: timolHeaders,
+  });
+
+  if (!response.ok) {
+    throw new Error(`upstream_${response.status}`);
+  }
+
+  const payload = await response.json();
+  const exists = parseExistsValue(payload);
+
+  if (exists === null) {
+    throw new Error("unexpected_response");
+  }
+
+  return exists;
 }
 
 Deno.serve(async (req) => {
@@ -31,35 +84,58 @@ Deno.serve(async (req) => {
     );
 
     const trimmed = identifier.trim().toLowerCase();
+    const identifierColumn = isEmailIdentifier(trimmed) ? "email" : "username";
 
-    // Look up user by username or email in profiles
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("user_id, email, username")
-      .or(`username.ilike.${trimmed},email.ilike.${trimmed}`)
+      .ilike(identifierColumn, trimmed)
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (!profile || !profile.email) {
-      // Don't reveal whether user exists — always say "sent"
+    if (profileError) {
+      console.error("[forgot-password] Profile lookup error:", profileError);
+      throw profileError;
+    }
+
+    let exists = false;
+
+    try {
+      exists = await checkExternalIdentifierExists(trimmed);
+    } catch (validationError) {
+      console.warn("[forgot-password] External validation fallback:", validationError);
+      exists = Boolean(profile);
+    }
+
+    if (!exists) {
       return new Response(
-        JSON.stringify({ success: true, message: "pin_sent" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ success: false, error: "not_found" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
       );
     }
 
-    // Invalidate any existing unused PINs for this user
-    await supabase
+    if (!profile?.user_id || !profile.email) {
+      return new Response(
+        JSON.stringify({ success: false, error: "email_unavailable" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 409 }
+      );
+    }
+
+    const { error: invalidateError } = await supabase
       .from("password_reset_pins")
       .update({ used: true })
       .eq("user_id", profile.user_id)
       .eq("used", false);
 
-    // Generate and store PIN
+    if (invalidateError) {
+      console.error("[forgot-password] PIN invalidation error:", invalidateError);
+      throw invalidateError;
+    }
+
     const pin = generatePin();
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
-    await supabase.from("password_reset_pins").insert({
+    const { error: insertError } = await supabase.from("password_reset_pins").insert({
       user_id: profile.user_id,
       user_identifier: trimmed,
       email: profile.email,
@@ -67,9 +143,12 @@ Deno.serve(async (req) => {
       expires_at: expiresAt,
     });
 
-    // TODO: Send email with PIN
-    // For now, log it for testing
-    console.log(`[forgot-password] PIN for ${profile.email}: ${pin}`);
+    if (insertError) {
+      console.error("[forgot-password] PIN insert error:", insertError);
+      throw insertError;
+    }
+
+    console.log(`[forgot-password] Email sending stub ready for noreply@timol.com.br -> ${profile.email}; PIN: ${pin}; expires_at: ${expiresAt}`);
 
     return new Response(
       JSON.stringify({ success: true, message: "pin_sent" }),

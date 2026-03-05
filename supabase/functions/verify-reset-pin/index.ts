@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
   try {
     const { identifier, pin } = await req.json();
 
-    if (!identifier || !pin || pin.length !== 6) {
+    if (!identifier || !pin || typeof pin !== "string" || pin.length !== 6) {
       return new Response(
         JSON.stringify({ success: false, error: "invalid_input" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
@@ -27,19 +27,21 @@ Deno.serve(async (req) => {
     );
 
     const trimmed = identifier.trim().toLowerCase();
+    const now = new Date().toISOString();
 
-    // Find matching PIN
-    const { data: record } = await supabase
+    const { data: record, error: lookupError } = await supabase
       .from("password_reset_pins")
-      .select("*")
+      .select("id, reset_token, expires_at, used, verified")
       .eq("user_identifier", trimmed)
       .eq("pin", pin)
-      .eq("used", false)
-      .eq("verified", false)
-      .gte("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
+
+    if (lookupError) {
+      console.error("[verify-reset-pin] Lookup error:", lookupError);
+      throw lookupError;
+    }
 
     if (!record) {
       return new Response(
@@ -48,14 +50,52 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Mark as verified
-    await supabase
+    if (record.expires_at < now) {
+      await supabase
+        .from("password_reset_pins")
+        .update({ used: true })
+        .eq("id", record.id)
+        .eq("used", false);
+
+      return new Response(
+        JSON.stringify({ success: false, error: "pin_expired" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+      );
+    }
+
+    if (record.used && !record.verified) {
+      return new Response(
+        JSON.stringify({ success: false, error: "replaced_pin" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+      );
+    }
+
+    if (record.used || record.verified) {
+      return new Response(
+        JSON.stringify({ success: false, error: "pin_used" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+      );
+    }
+
+    const { data: verifiedRecord, error: verifyError } = await supabase
       .from("password_reset_pins")
       .update({ verified: true })
-      .eq("id", record.id);
+      .eq("id", record.id)
+      .eq("used", false)
+      .eq("verified", false)
+      .select("reset_token")
+      .maybeSingle();
+
+    if (verifyError || !verifiedRecord?.reset_token) {
+      console.error("[verify-reset-pin] Verify error:", verifyError);
+      return new Response(
+        JSON.stringify({ success: false, error: "invalid_pin" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+      );
+    }
 
     return new Response(
-      JSON.stringify({ success: true, reset_token: record.reset_token }),
+      JSON.stringify({ success: true, reset_token: verifiedRecord.reset_token }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
