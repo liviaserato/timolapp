@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/i18n/LanguageContext";
+import { AuthGate } from "@/components/auth/AuthGate";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Contract from "./pages/Contract";
@@ -25,13 +26,13 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Login />} />
+            <Route path="/" element={<AuthGate mode="guest"><Login /></AuthGate>} />
             <Route path="/cadastro" element={<Index />} />
             <Route path="/contrato" element={<Contract />} />
             <Route path="/continue/:token" element={<Continue />} />
             <Route path="/pendentes" element={<PendingRegistrations />} />
             <Route path="/emails" element={<EmailPreviews />} />
-            <Route path="/app" element={<AppLayout />}>
+            <Route path="/app" element={<AuthGate mode="protected"><AppLayout /></AuthGate>}>
               <Route index element={<Dashboard />} />
               <Route path=":section" element={<SectionPlaceholder />} />
             </Route>

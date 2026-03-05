@@ -328,6 +328,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "login.newFranchisee": "Cadastrar novo franqueado",
     "login.resumeRegistration": "Concluir meu cadastro",
     "login.error.invalid": "Usuário ou senha incorretos. Tente novamente.",
+    "login.error.locked": "Muitas tentativas. Tente novamente em alguns minutos.",
 
     // Forgot password popup
     "forgotPw.title": "Recuperar Senha",
@@ -746,6 +747,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "login.newFranchisee": "Register new franchisee",
     "login.resumeRegistration": "Complete my registration",
     "login.error.invalid": "Invalid username or password. Please try again.",
+    "login.error.locked": "Too many attempts. Please try again in a few minutes.",
 
     // Forgot password popup
     "forgotPw.title": "Recover Password",
@@ -1164,6 +1166,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "login.newFranchisee": "Registrar nuevo franquiciado",
     "login.resumeRegistration": "Completar mi registro",
     "login.error.invalid": "Usuario o contraseña incorrectos. Intente nuevamente.",
+    "login.error.locked": "Demasiados intentos. Inténtelo nuevamente en unos minutos.",
 
     // Forgot password popup
     "forgotPw.title": "Recuperar Contraseña",

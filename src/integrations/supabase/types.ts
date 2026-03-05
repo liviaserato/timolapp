@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      login_security: {
+        Row: {
+          created_at: string
+          failed_attempts: number
+          id: string
+          last_failed_at: string | null
+          last_ip: unknown
+          locked_until: string | null
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          failed_attempts?: number
+          id?: string
+          last_failed_at?: string | null
+          last_ip?: unknown
+          locked_until?: string | null
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          failed_attempts?: number
+          id?: string
+          last_failed_at?: string | null
+          last_ip?: unknown
+          locked_until?: string | null
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
       password_reset_pins: {
         Row: {
           created_at: string
