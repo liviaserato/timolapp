@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { SponsorScreen } from "@/components/screens/SponsorScreen";
 import { RegistrationWizard } from "@/components/registration/RegistrationWizard";
 import { FranchiseScreen } from "@/components/screens/FranchiseScreen";
@@ -9,6 +9,7 @@ import { PaymentScreen } from "@/components/screens/PaymentScreen";
 import { PaymentPendingScreen } from "@/components/screens/PaymentPendingScreen";
 import { PaymentConfirmationScreen } from "@/components/screens/PaymentConfirmationScreen";
 import { WelcomeBackPopup } from "@/components/screens/WelcomeBackPopup";
+import { ContractScreen } from "@/components/screens/ContractScreen";
 import { AppScreen, WizardData } from "@/types/wizard";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -18,6 +19,8 @@ const Index = () => {
   const [wizardData, setWizardData] = useState<WizardData>({});
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const isContractOpen = searchParams.get("contract") === "1";
 
   // Handle continue flow from recovery email
   useEffect(() => {
@@ -78,6 +81,13 @@ const Index = () => {
     } catch (e) {
       console.error("Failed to update registration status:", e);
     }
+  };
+
+  const handleCloseContract = () => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("contract");
+
+    navigate(nextParams.toString() ? `/cadastro?${nextParams.toString()}` : "/cadastro", { replace: true });
   };
 
   const renderScreen = () => {
@@ -169,6 +179,8 @@ const Index = () => {
         open={showWelcomeBack}
         onClose={() => setShowWelcomeBack(false)}
       />
+
+      {isContractOpen && <ContractScreen mode="modal" onClose={handleCloseContract} />}
     </div>
   );
 };
