@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { countries, getCountryName } from "@/data/countries";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
@@ -37,6 +37,8 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!documentCountryIso2) return;
+
     const selectedCountry = countries.find((country) => country.iso2 === documentCountryIso2) ?? defaultCountry;
     setDocumentCountrySearch(getCountryName(selectedCountry, language));
   }, [defaultCountry, documentCountryIso2, language]);
@@ -97,6 +99,14 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
 
     setDocumentCountryIso2(iso2);
     setDocumentCountrySearch(getCountryName(selectedCountry, language));
+    setShowDocumentCountryList(false);
+    setDocument("");
+    setError("");
+  };
+
+  const handleClearDocumentCountry = () => {
+    setDocumentCountryIso2("");
+    setDocumentCountrySearch("");
     setShowDocumentCountryList(false);
     setDocument("");
     setError("");
@@ -227,14 +237,27 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
 
           <div className="space-y-1.5 relative" ref={documentCountryRef}>
             <Label htmlFor="resume-document-country" className="text-xs">{t("step1.documentCountry")}</Label>
-            <Input
-              id="resume-document-country"
-              placeholder={t("step1.documentCountry.placeholder")}
-              value={documentCountrySearch}
-              onChange={(e) => handleDocumentCountryChange(e.target.value)}
-              onFocus={() => setShowDocumentCountryList(true)}
-              autoComplete="off"
-            />
+            <div className="relative">
+              <Input
+                id="resume-document-country"
+                placeholder={t("step1.documentCountry.placeholder")}
+                value={documentCountrySearch}
+                onChange={(e) => handleDocumentCountryChange(e.target.value)}
+                onFocus={() => setShowDocumentCountryList(true)}
+                autoComplete="off"
+                className={documentCountrySearch ? "pr-10" : undefined}
+              />
+              {documentCountrySearch && (
+                <button
+                  type="button"
+                  onClick={handleClearDocumentCountry}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground transition-colors hover:text-foreground"
+                  aria-label="Limpar país emissor"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
             {showDocumentCountryList && (
               <div className="absolute top-full z-50 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border bg-popover shadow-lg">
                 {filteredCountries.length > 0 ? (
