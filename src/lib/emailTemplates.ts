@@ -157,6 +157,53 @@ const t = (lang: Lang, key: string): string => {
       es: "¡Estamos muy felices de tenerte con nosotros!<br class=\"mobile-hide\"/> Tu camino comienza ahora. ¡Cuenta con nosotros!",
     },
 
+    /* ── Password reset PIN email ── */
+    recoveryPinSubject: {
+      pt: "{{pin}} | Código para alterar sua senha Timol",
+      en: "{{pin}} | Timol password change code",
+      es: "{{pin}} | Código para cambiar tu contraseña Timol",
+    },
+    recoveryPinTitle: {
+      pt: "Código para alteração de senha",
+      en: "Password change code",
+      es: "Código para cambio de contraseña",
+    },
+    recoveryPinGreeting: {
+      pt: "Olá, {{name}}!",
+      en: "Hello, {{name}}!",
+      es: "¡Hola, {{name}}!",
+    },
+    recoveryPinIntro: {
+      pt: "Use o PIN abaixo para continuar a alteração da sua senha no Escritório Digital Timol.",
+      en: "Use the PIN below to continue changing your password in the Timol Digital Office.",
+      es: "Usa el PIN abajo para continuar el cambio de tu contraseña en la Oficina Digital Timol.",
+    },
+    recoveryPinLabel: {
+      pt: "PIN de segurança",
+      en: "Security PIN",
+      es: "PIN de seguridad",
+    },
+    recoveryPinExpiry: {
+      pt: "Este código é válido por 5 minutos.",
+      en: "This code is valid for 5 minutes.",
+      es: "Este código es válido por 5 minutos.",
+    },
+    recoveryPinAlertTitle: {
+      pt: "⚠️ Atenção",
+      en: "⚠️ Attention",
+      es: "⚠️ Atención",
+    },
+    recoveryPinAlert: {
+      pt: "Não repasse este código para terceiros. A Timol nunca irá solicitar esse código.",
+      en: "Do not share this code with third parties. Timol will never ask you for this code.",
+      es: "No compartas este código con terceros. Timol nunca te pedirá este código.",
+    },
+    recoveryPinIgnore: {
+      pt: "Se você não solicitou esta alteração, ignore este e-mail e fale com nossa equipe caso precise de suporte.",
+      en: "If you did not request this change, ignore this email and contact our team if you need support.",
+      es: "Si no solicitaste este cambio, ignora este correo y contacta a nuestro equipo si necesitas ayuda.",
+    },
+
     /* ── Password changed email ── */
     pwChangedSubject: {
       pt: "Sua senha foi alterada com sucesso | Timol",
@@ -514,6 +561,71 @@ export function buildCompletedEmailHtml(data: CompletedEmailData): string {
   `;
 
   return emailShell(lang, t(lang, "completedSubject"), body, siteUrl);
+}
+
+/* ================================================================
+   PASSWORD RESET PIN EMAIL
+   ================================================================ */
+
+export interface PasswordResetPinEmailData {
+  fullName: string;
+  pin: string;
+  language?: Lang;
+  siteUrl?: string;
+}
+
+export function getPasswordResetPinSubject(pin: string, lang: Lang = "pt"): string {
+  return t(lang, "recoveryPinSubject").replace("{{pin}}", pin);
+}
+
+export function buildPasswordResetPinEmailHtml(data: PasswordResetPinEmailData): string {
+  const lang = data.language || "pt";
+  const siteUrl = data.siteUrl || DEFAULT_SITE_URL;
+  const firstName = data.fullName.split(" ")[0];
+
+  const body = `
+    <h1 style="color:#1e293b;font-size:22px;font-weight:700;margin:0 0 20px;">
+      ${t(lang, "recoveryPinTitle")}
+    </h1>
+
+    <p style="margin:0 0 12px;font-size:15px;color:#334155;">
+      ${t(lang, "recoveryPinGreeting").replace("{{name}}", firstName)}
+    </p>
+
+    <p style="margin:0 0 20px;font-size:15px;color:#334155;">
+      ${t(lang, "recoveryPinIntro")}
+    </p>
+
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:16px;padding:24px;margin:0 0 20px;text-align:center;">
+      <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#64748b;">
+        ${t(lang, "recoveryPinLabel")}
+      </p>
+      <p style="margin:0;font-size:32px;font-weight:700;letter-spacing:0.35em;color:#0f2b4a;">
+        ${data.pin}
+      </p>
+    </div>
+
+    <p style="margin:0 0 20px;font-size:14px;color:#475569;">
+      ${t(lang, "recoveryPinExpiry")}
+    </p>
+
+    <div style="background:#fefce8;border:1px solid #fde68a;border-radius:12px;padding:18px 20px;margin:0 0 20px;">
+      <p style="margin:0 0 8px;font-size:14px;font-weight:700;color:#854d0e;">
+        ${t(lang, "recoveryPinAlertTitle")}
+      </p>
+      <p style="margin:0;font-size:14px;color:#854d0e;">
+        ${t(lang, "recoveryPinAlert")}
+      </p>
+    </div>
+
+    <p style="margin:0;font-size:14px;color:#64748b;">
+      ${t(lang, "recoveryPinIgnore")}
+    </p>
+
+    ${closingBlock(lang, t(lang, "pwChangedClosing"))}
+  `;
+
+  return emailShell(lang, getPasswordResetPinSubject(data.pin, lang), body, siteUrl);
 }
 
 /* ================================================================
