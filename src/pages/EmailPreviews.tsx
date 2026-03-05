@@ -83,7 +83,7 @@ export default function EmailPreviews() {
         id: "recovery-pin",
         badge: "Segurança",
         title: "PIN de recuperação",
-        description: "Código com validade de 5 minutos e alerta antifraude no corpo do e-mail.",
+        description: "PIN válido por 5 minutos com alerta antifraude.",
         subject: "Seu PIN de recuperação Timol",
         from: "noreply@timol.com.br",
         to: "livia@exemplo.com",
