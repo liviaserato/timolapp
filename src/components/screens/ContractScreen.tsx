@@ -13,16 +13,11 @@ type ContractSection = {
 };
 
 type ContractContent = {
-  preface: string[];
   sections: ContractSection[];
 };
 
 const contractContent: Record<Language, ContractContent> = {
   pt: {
-    preface: [
-      "No momento da formalização, será gerada a versão contratual individual com a identificação completa das partes, data de contratação e demais informações aplicáveis.",
-      "Para fins deste modelo, a empresa franqueadora será identificada apenas como TIMOL.",
-    ],
     sections: [
       {
         title: "Cláusula 1 — Objeto",
@@ -177,10 +172,6 @@ const contractContent: Record<Language, ContractContent> = {
     ],
   },
   en: {
-    preface: [
-      "At formalization, an individual contract version will be generated with the full identification of the parties, contract date, and other applicable information.",
-      "For the purposes of this model, the franchising company is referred to simply as TIMOL.",
-    ],
     sections: [
       {
         title: "Clause 1 — Purpose",
@@ -335,10 +326,6 @@ const contractContent: Record<Language, ContractContent> = {
     ],
   },
   es: {
-    preface: [
-      "En la formalización se generará la versión contractual individual con la identificación completa de las partes, la fecha de contratación y demás informaciones aplicables.",
-      "Para fines de este modelo, la empresa franquiciadora será identificada únicamente como TIMOL.",
-    ],
     sections: [
       {
         title: "Cláusula 1 — Objeto",
@@ -497,12 +484,6 @@ const contractContent: Record<Language, ContractContent> = {
 export const ContractScreen = () => {
   const { language, t } = useLanguage();
 
-  const formalizationSteps = [
-    t("contract.step1"),
-    t("contract.step2"),
-    t("contract.step3"),
-  ];
-
   const content = contractContent[language];
 
   return (
@@ -535,30 +516,8 @@ export const ContractScreen = () => {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border/60 bg-muted/30 p-4 sm:p-5">
-              <p className="text-sm font-medium text-foreground">
-                {t("contract.formalization")}
-              </p>
-              <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                {formalizationSteps.map((step) => (
-                  <li key={step} className="flex items-start gap-3">
-                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
-                    <span>{step}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
             <div className="rounded-2xl border border-border/60 bg-background p-5 sm:p-6">
-              <div className="space-y-4 border-b border-border/60 pb-6">
-                {content.preface.map((paragraph) => (
-                  <p key={paragraph} className="text-sm leading-6 text-muted-foreground sm:text-[15px]">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-
-              <div className="space-y-8 pt-6">
+              <div className="space-y-8">
                 {content.sections.map((section, index) => (
                   <section
                     key={section.title}
