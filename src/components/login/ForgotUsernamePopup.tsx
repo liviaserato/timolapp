@@ -20,9 +20,8 @@ import {
 import {
   Loader2,
   AlertCircle,
-  Eye,
-  EyeOff,
-  LogIn,
+  Copy,
+  Check,
 } from "lucide-react";
 import { countries } from "@/data/countries";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
@@ -41,7 +40,7 @@ interface Props {
   onSwitchToPassword?: () => void;
 }
 
-export const ForgotUsernamePopup = ({ open, onClose, onSwitchToPassword }: Props) => {
+export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
   const { t, language } = useLanguage();
 
   const [step, setStep] = useState<Step>("form");
@@ -56,12 +55,7 @@ export const ForgotUsernamePopup = ({ open, onClose, onSwitchToPassword }: Props
   // Found user data
   const [foundUsername, setFoundUsername] = useState("");
   const [foundName, setFoundName] = useState("");
-
-  // Quick login
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [loginError, setLoginError] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const isBrazilian = country === "BR";
 
@@ -91,10 +85,7 @@ export const ForgotUsernamePopup = ({ open, onClose, onSwitchToPassword }: Props
     setLoading(false);
     setFoundUsername("");
     setFoundName("");
-    setPassword("");
-    setShowPassword(false);
-    setLoginLoading(false);
-    setLoginError("");
+    setCopied(false);
   };
 
   const handleClose = () => {
@@ -181,18 +172,16 @@ export const ForgotUsernamePopup = ({ open, onClose, onSwitchToPassword }: Props
     }, 800);
   };
 
-  const handleQuickLogin = async () => {
-    if (!password) {
-      setLoginError(t("validation.required"));
-      return;
+  const handleCopyUsername = async () => {
+    if (!foundUsername) return;
+
+    try {
+      await navigator.clipboard.writeText(foundUsername);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
     }
-    setLoginLoading(true);
-    setLoginError("");
-    // Mock: always fail for now
-    setTimeout(() => {
-      setLoginLoading(false);
-      setLoginError(t("login.error.invalid"));
-    }, 800);
   };
 
   const handleFormKeyDown = (e: React.KeyboardEvent) => {
@@ -330,86 +319,34 @@ export const ForgotUsernamePopup = ({ open, onClose, onSwitchToPassword }: Props
                 {t("forgotUser.search")}
               </Button>
 
-              {/* Link to forgot password */}
-              {onSwitchToPassword && (
-                <button
-                  type="button"
-                  className="w-full text-xs text-muted-foreground hover:text-primary transition-colors underline-offset-2 hover:underline text-center mt-3"
-                  onClick={() => {
-                    handleClose();
-                    onSwitchToPassword();
-                  }}
-                >
-                  {t("login.forgotPassword")}
-                </button>
-              )}
             </div>
           )}
 
-          {/* Found result */}
           {step === "found" && (
-            <>
+            <div className="space-y-3">
               <div className="flex flex-col items-center gap-2 py-2">
-                <div className="bg-muted rounded-lg px-6 py-3 text-center">
-                  <p className="text-xs text-muted-foreground mb-1">{t("forgotUser.yourUsername")}</p>
-                  <p className="text-lg font-bold text-primary">{foundUsername}</p>
+                <div className="w-full rounded-lg bg-muted px-4 py-4 text-center">
+                  <p className="mb-1 text-xs text-muted-foreground">{t("forgotUser.yourUsername")}</p>
+                  <div className="flex items-center justify-center gap-2">
+                    <p className="text-lg font-bold text-primary">{foundUsername}</p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 text-primary hover:text-primary"
+                      onClick={() => void handleCopyUsername()}
+                      aria-label="Copiar usuário"
+                    >
+                      {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    </Button>
+                  </div>
                 </div>
               </div>
 
-              {/* Quick login */}
-              <div className="space-y-1.5">
-                <Label className="text-xs">{t("login.password")}</Label>
-                <div className="relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder={t("login.password.placeholder")}
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      setLoginError("");
-                    }}
-                    className="pr-9"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    onKeyDown={(e) => e.key === "Enter" && handleQuickLogin()}
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    onClick={() => setShowPassword(!showPassword)}
-                    tabIndex={-1}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-
-              {loginError && (
-                <div className="flex items-center gap-2 text-xs text-destructive">
-                  <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                  <span>{loginError}</span>
-                </div>
-              )}
-
-              <Button className="w-full gap-2" onClick={handleQuickLogin} disabled={loginLoading}>
-                {loginLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
-                {t("login.enter")}
-              </Button>
-
-              {/* Link to forgot password */}
-              {onSwitchToPassword && (
-                <button
-                  type="button"
-                  className="w-full text-xs text-muted-foreground hover:text-primary transition-colors underline-offset-2 hover:underline text-center"
-                  onClick={() => {
-                    handleClose();
-                    onSwitchToPassword();
-                  }}
-                >
-                  {t("login.forgotPassword")}
-                </button>
-              )}
-            </>
+              <p className={`text-center text-xs ${copied ? "text-success" : "text-muted-foreground"}`}>
+                {copied ? "Usuário copiado. Agora é só fechar e fazer login." : "Copie seu usuário e feche este popup para entrar na tela de login."}
+              </p>
+            </div>
           )}
         </div>
       </DialogContent>
