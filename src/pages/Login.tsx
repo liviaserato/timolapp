@@ -12,6 +12,7 @@ import { ResumeRegistrationPopup } from "@/components/screens/ResumeRegistration
 import { ForgotPasswordPopup } from "@/components/login/ForgotPasswordPopup";
 import { ForgotUsernamePopup } from "@/components/login/ForgotUsernamePopup";
 import { LoginPromoBanner } from "@/components/login/LoginPromoBanner";
+import { loginWithUsername } from "@/lib/login";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
 import waterDropsBg from "@/assets/water-drops-bg.jpg";
 
@@ -39,24 +40,25 @@ const Login = () => {
   };
 
   const handleLogin = async () => {
-    if (!validate()) return;
+    if (!validate() || loading) return;
     setLoading(true);
+    setErrors((prev) => ({ ...prev, general: "" }));
 
-    // Persist "remember me" preference for session management
-    if (rememberMe) {
-      localStorage.setItem("timol_remember_me", "true");
-      // Session will persist for 30 days (handled by auth config)
-    } else {
-      localStorage.removeItem("timol_remember_me");
-      // Session should expire when browser closes
-      sessionStorage.setItem("timol_session_temp", "true");
+    localStorage.setItem("timol_remember_me", rememberMe ? "true" : "false");
+
+    const result = await loginWithUsername({ username, password });
+
+    if (result.success === false) {
+      setErrors((prev) => ({
+        ...prev,
+        general: result.error === "temporarily_locked" ? t("login.error.locked") : t("login.error.invalid"),
+      }));
+      setLoading(false);
+      return;
     }
 
-    // TODO: Replace with real auth call. For now, navigate directly.
-    setTimeout(() => {
-      setLoading(false);
-      navigate("/app");
-    }, 800);
+    setLoading(false);
+    navigate("/app");
   };
 
   return (
