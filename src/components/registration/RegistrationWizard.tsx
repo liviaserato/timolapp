@@ -10,7 +10,7 @@ import { StepLogin } from "./StepLogin";
 import { DocumentCheckPopup } from "./DocumentCheckPopup";
 import { supabase } from "@/integrations/supabase/client";
 import { XCircle, Loader2 } from "lucide-react";
-import { TimolLoader } from "@/components/ui/timol-loader";
+import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 import { WizardData } from "@/types/wizard";
 import { useDocumentCheck } from "@/hooks/useDocumentCheck";
 
@@ -333,17 +333,12 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         />
       )}
 
-      {/* Full-screen branded loader on submit */}
       {loading && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
-          <TimolLoader size={64} />
-          <p className="mt-6 text-lg font-semibold text-foreground text-center px-6">
-            {t("submit.loading.title")}
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground text-center px-6">
-            {t("submit.loading.hint")}
-          </p>
-        </div>
+        <FullScreenTimolLoader
+          title={t("submit.loading.title")}
+          hint={t("submit.loading.hint")}
+          size={64}
+        />
       )}
     </>
   );

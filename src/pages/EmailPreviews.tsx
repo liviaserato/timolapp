@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { TimolLoader } from "@/components/ui/timol-loader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   buildCompletedEmailHtml,
@@ -106,13 +105,6 @@ export default function EmailPreviews() {
           </p>
         </div>
 
-        <div className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
-          <div>
-            <p className="text-sm font-medium text-foreground">Preview do loader</p>
-            <p className="text-xs text-muted-foreground">Produtos dentro da garrafa com água subindo.</p>
-          </div>
-          <TimolLoader size={120} />
-        </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {emailCards.map((email) => {
