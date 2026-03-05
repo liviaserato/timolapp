@@ -24,6 +24,8 @@ function normalizeValue(value: string): string {
   return value.trim().toLowerCase();
 }
 
+const PIN_EXPIRY_MINUTES = 5;
+
 function maskEmail(email: string): string {
   const [localPart, domain] = email.split("@");
 
@@ -35,6 +37,30 @@ function maskEmail(email: string): string {
   const hiddenLength = Math.max(localPart.length - visiblePart.length, 4);
 
   return `${visiblePart}${"*".repeat(hiddenLength)}@${domain}`;
+}
+
+function getPasswordResetPinSubject(pin: string): string {
+  return `${pin} | Código para alterar sua senha Timol`;
+}
+
+function buildPasswordResetPinEmailHtml(pin: string): string {
+  return `<!DOCTYPE html>
+<html lang="pt-BR">
+  <body style="margin:0;padding:24px;background:#ffffff;font-family:'Segoe UI',Roboto,Arial,sans-serif;color:#1e293b;line-height:1.6;">
+    <div style="max-width:560px;margin:0 auto;border:1px solid #e2e8f0;border-radius:16px;padding:32px;">
+      <h1 style="margin:0 0 16px;font-size:24px;color:#0f2b4a;">Alteração de senha</h1>
+      <p style="margin:0 0 16px;font-size:15px;">Use o código abaixo para continuar a alteração da sua senha:</p>
+      <div style="margin:0 0 20px;padding:18px 20px;border-radius:12px;background:#eff6ff;border:1px solid #bfdbfe;text-align:center;">
+        <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;">PIN de segurança</p>
+        <p style="margin:0;font-size:32px;font-weight:700;letter-spacing:0.4em;color:#0f2b4a;">${pin}</p>
+      </div>
+      <p style="margin:0 0 16px;font-size:14px;color:#475569;">Este código é válido por 5 minutos.</p>
+      <div style="padding:16px 18px;border-radius:12px;background:#fefce8;border:1px solid #fde68a;">
+        <p style="margin:0;font-size:14px;color:#854d0e;"><strong>Não repasse este código para terceiros.</strong> A Timol nunca irá solicitar esse código.</p>
+      </div>
+    </div>
+  </body>
+</html>`;
 }
 
 function parseExistsValue(payload: unknown): boolean | null {
@@ -192,7 +218,7 @@ Deno.serve(async (req) => {
     }
 
     const pin = generatePin();
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+    const expiresAt = new Date(Date.now() + PIN_EXPIRY_MINUTES * 60 * 1000).toISOString();
 
     const { error: insertError } = await supabase.from("password_reset_pins").insert({
       user_id: profile.user_id,
@@ -207,8 +233,11 @@ Deno.serve(async (req) => {
       throw insertError;
     }
 
+    const subject = getPasswordResetPinSubject(pin);
+    const html = buildPasswordResetPinEmailHtml(pin);
+
     console.log(
-      `[forgot-password] Email sending stub ready for noreply@timol.com.br -> ${normalizedProfileEmail}; PIN: ${pin}; expires_at: ${expiresAt}`
+      `[forgot-password] Email sending stub ready for noreply@timol.com.br -> ${normalizedProfileEmail}; subject: ${subject}; PIN: ${pin}; expires_at: ${expiresAt}; html_size: ${html.length}`
     );
 
     return new Response(
