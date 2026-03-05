@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   buildCompletedEmailHtml,
   buildPasswordChangedEmailHtml,
@@ -142,26 +142,24 @@ export default function EmailPreviews() {
           })}
         </div>
 
-        <Card className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-          <CardHeader className="border-b border-border bg-muted/40">
-            <CardTitle className="text-base text-foreground">
-              {activeEmail ? activeEmail.title : "Selecione um e-mail para visualizar"}
-            </CardTitle>
-          </CardHeader>
+        <section className="space-y-4">
+          <h2 className="text-base font-semibold text-foreground">
+            {activeEmail ? activeEmail.title : "Selecione um e-mail para visualizar"}
+          </h2>
 
           {activeEmail ? (
             <iframe
               srcDoc={activeEmail.html}
               title={`Preview ${activeEmail.title}`}
-              className="w-full border-0 bg-background"
+              className="w-full bg-background"
               style={{ minHeight: activeEmail.minHeight }}
             />
           ) : (
-            <CardContent className="flex min-h-[260px] items-center justify-center p-8 text-center text-sm text-muted-foreground">
+            <div className="flex min-h-[260px] items-center justify-center text-center text-sm text-muted-foreground">
               Clique em um card acima para abrir o preview correspondente.
-            </CardContent>
+            </div>
           )}
-        </Card>
+        </section>
       </div>
     </div>
   );
