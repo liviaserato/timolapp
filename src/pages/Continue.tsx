@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { TimolLoader } from "@/components/ui/timol-loader";
+import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 
 const Continue = () => {
   const { token } = useParams<{ token: string }>();
@@ -57,10 +57,12 @@ const Continue = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary/10 flex flex-col items-center justify-center">
-      <TimolLoader size={48} />
-      <p className="mt-4 text-sm text-muted-foreground">Carregando seus dados...</p>
-    </div>
+    <FullScreenTimolLoader
+      mode="page"
+      size={48}
+      title="Carregando seus dados..."
+      className="bg-gradient-to-br from-primary/5 via-background to-primary/10"
+    />
   );
 };
 

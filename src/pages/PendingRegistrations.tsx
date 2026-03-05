@@ -9,6 +9,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 import { countries, getCountryName } from "@/data/countries";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -419,9 +420,11 @@ export default function PendingRegistrations() {
         <h1 className="text-xl md:text-2xl font-semibold mb-6 text-center text-primary">Cadastros Pendentes</h1>
 
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
+          <FullScreenTimolLoader
+            mode="page"
+            title="Carregando cadastros pendentes..."
+            className="min-h-[320px] bg-background"
+          />
         ) : error ? (
           <p className="text-center text-destructive py-8">{error}</p>
         ) : registrations.length === 0 ? (

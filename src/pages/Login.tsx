@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, LogIn, UserPlus, RotateCcw, Loader2 } from "lucide-react";
+import { Eye, EyeOff, LogIn, UserPlus, RotateCcw } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { ResumeRegistrationPopup } from "@/components/screens/ResumeRegistrationPopup";
 import { ForgotPasswordPopup } from "@/components/login/ForgotPasswordPopup";
 import { ForgotUsernamePopup } from "@/components/login/ForgotUsernamePopup";
 import { LoginPromoBanner } from "@/components/login/LoginPromoBanner";
+import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 import { loginWithUsername } from "@/lib/login";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
 import waterDropsBg from "@/assets/water-drops-bg.jpg";
@@ -166,7 +167,7 @@ const Login = () => {
 
               {/* Login button */}
               <Button className="w-full gap-2" onClick={handleLogin} disabled={loading}>
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
+                <LogIn className="h-4 w-4" />
                 {t("login.enter")}
               </Button>
 
@@ -244,6 +245,13 @@ const Login = () => {
         onClose={() => setShowForgotUser(false)}
         onSwitchToPassword={() => setShowForgotPw(true)}
       />
+
+      {loading && (
+        <FullScreenTimolLoader
+          title="Entrando no seu Escritório Digital..."
+          hint="Aguarde um instante."
+        />
+      )}
     </div>
   );
 };

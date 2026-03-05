@@ -11,10 +11,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Loader2, AlertCircle, X } from "lucide-react";
+import { AlertCircle, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { countries, getCountryName } from "@/data/countries";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
+import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 
 interface Props {
   open: boolean;
@@ -318,9 +319,15 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
             onClick={handleSubmit}
             disabled={loading}
           >
-            {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {t("resume.submit")}
           </Button>
+
+          {loading && (
+            <FullScreenTimolLoader
+              title="Buscando seu cadastro..."
+              hint="Aguarde enquanto retomamos a próxima etapa."
+            />
+          )}
         </div>
       </DialogContent>
     </Dialog>

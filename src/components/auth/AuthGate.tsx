@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { TimolLoader } from "@/components/ui/timol-loader";
+import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 import type { Session } from "@supabase/supabase-js";
 
 interface AuthGateProps {
@@ -38,12 +38,11 @@ export function AuthGate({ children, mode }: AuthGateProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background px-6">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <TimolLoader size={56} />
-          <p className="text-sm text-muted-foreground">Carregando sessão...</p>
-        </div>
-      </div>
+      <FullScreenTimolLoader
+        mode="page"
+        title="Carregando sessão..."
+        className="bg-background"
+      />
     );
   }
 
