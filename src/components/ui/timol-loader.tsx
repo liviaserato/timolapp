@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import produtosSeparados from "@/assets/produtos-loader-transparent.png";
+import minisTop from "@/assets/minis-top.svg";
 
 interface TimolLoaderProps {
   className?: string;
@@ -45,14 +45,14 @@ export const TimolLoader = ({ className, size = 20 }: TimolLoaderProps) => {
 
       {/* Products image - in front of water, behind bottle outline */}
       <img
-        src={produtosSeparados}
+        src={minisTop}
         alt=""
         aria-hidden="true"
         className="absolute z-[2] object-contain pointer-events-none"
         style={{
-          width: w * 0.68,
-          height: h * 0.62,
-          bottom: h * 0.01,
+          width: w * 0.74,
+          height: h * 0.68,
+          bottom: h * 0.005,
           left: "50%",
           transform: "translateX(-50%)",
         }}
