@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   buildCompletedEmailHtml,
   buildPasswordChangedEmailHtml,
@@ -62,6 +62,9 @@ export default function EmailPreviews() {
         badge: "Cadastro",
         title: "Cadastro pendente",
         description: "Recuperação do cadastro incompleto com CTA para continuar.",
+        subject: "Continue seu cadastro Timol",
+        from: "contato@timol.com.br",
+        to: "maria@exemplo.com",
         html: pendingHtml,
         minHeight: 900,
       },
@@ -70,6 +73,9 @@ export default function EmailPreviews() {
         badge: "Cadastro",
         title: "Cadastro concluído",
         description: "Confirmação de franquia ativada com dados de primeiro acesso.",
+        subject: "Sua franquia Timol foi ativada",
+        from: "contato@timol.com.br",
+        to: "maria@exemplo.com",
         html: completedHtml,
         minHeight: 1000,
       },
@@ -78,6 +84,9 @@ export default function EmailPreviews() {
         badge: "Segurança",
         title: "PIN de recuperação",
         description: "Código com validade de 5 minutos e alerta antifraude no corpo do e-mail.",
+        subject: "Seu PIN de recuperação Timol",
+        from: "noreply@timol.com.br",
+        to: "livia@exemplo.com",
         html: recoveryPinHtml,
         minHeight: 760,
       },
@@ -86,6 +95,9 @@ export default function EmailPreviews() {
         badge: "Segurança",
         title: "Senha alterada",
         description: "Confirmação da troca de senha com orientação de suporte.",
+        subject: "Sua senha foi alterada",
+        from: "noreply@timol.com.br",
+        to: "livia@exemplo.com",
         html: passwordChangedHtml,
         minHeight: 700,
       },
@@ -106,7 +118,7 @@ export default function EmailPreviews() {
         </div>
 
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           {emailCards.map((email) => {
             const isActive = activeEmail?.id === email.id;
 
@@ -123,18 +135,16 @@ export default function EmailPreviews() {
                     isActive && "border-primary shadow-lg ring-2 ring-primary/20"
                   )}
                 >
-                  <CardHeader className="space-y-3 pb-5">
-                    <div className="flex items-center gap-3">
-                      <span className="inline-flex rounded-full bg-secondary px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-secondary-foreground">
+                  <CardHeader className="space-y-3 pb-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <CardTitle className="text-base leading-snug text-foreground">{email.title}</CardTitle>
+                      <span className="inline-flex shrink-0 rounded-full bg-secondary px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-secondary-foreground">
                         {email.badge}
                       </span>
                     </div>
-                    <div>
-                      <CardTitle className="text-lg text-foreground">{email.title}</CardTitle>
-                      <CardDescription className="mt-2 text-sm leading-relaxed">
-                        {email.description}
-                      </CardDescription>
-                    </div>
+                    <CardDescription className="text-sm leading-relaxed">
+                      {email.description}
+                    </CardDescription>
                   </CardHeader>
                 </Card>
               </button>
@@ -142,24 +152,42 @@ export default function EmailPreviews() {
           })}
         </div>
 
-        <section className="space-y-4">
-          <h2 className="text-base font-semibold text-foreground">
-            {activeEmail ? activeEmail.title : "Selecione um e-mail para visualizar"}
-          </h2>
+        {activeEmail ? (
+          <Card className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <CardHeader className="space-y-4 border-b border-border bg-muted/40">
+              <div>
+                <CardTitle className="text-base text-foreground">{activeEmail.title}</CardTitle>
+                <CardDescription className="mt-1 text-sm leading-relaxed">
+                  {activeEmail.description}
+                </CardDescription>
+              </div>
 
-          {activeEmail ? (
-            <iframe
-              srcDoc={activeEmail.html}
-              title={`Preview ${activeEmail.title}`}
-              className="w-full bg-background"
-              style={{ minHeight: activeEmail.minHeight }}
-            />
-          ) : (
-            <div className="flex min-h-[260px] items-center justify-center text-center text-sm text-muted-foreground">
-              Clique em um card acima para abrir o preview correspondente.
-            </div>
-          )}
-        </section>
+              <div className="grid gap-3 text-sm md:grid-cols-3">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Assunto</p>
+                  <p className="mt-1 text-foreground">{activeEmail.subject}</p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">De</p>
+                  <p className="mt-1 text-foreground">{activeEmail.from}</p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Para</p>
+                  <p className="mt-1 text-foreground">{activeEmail.to}</p>
+                </div>
+              </div>
+            </CardHeader>
+
+            <CardContent className="p-0">
+              <iframe
+                srcDoc={activeEmail.html}
+                title={`Preview ${activeEmail.title}`}
+                className="w-full border-0 bg-background"
+                style={{ minHeight: activeEmail.minHeight }}
+              />
+            </CardContent>
+          </Card>
+        ) : null}
       </div>
     </div>
   );
