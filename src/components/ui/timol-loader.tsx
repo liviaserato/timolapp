@@ -27,16 +27,16 @@ export const TimolLoader = ({ className, size = 20 }: TimolLoaderProps) => {
         {/* Water fill - animated via CSS clipPath (behind products) */}
         <path
           d="M7 1h6v3l2.5 3.5c.8 1 1.5 2 1.5 3.2V22a3 3 0 01-3 3H6a3 3 0 01-3-3V10.7c0-1.2.7-2.2 1.5-3.2L7 4V1z"
-          fill="hsl(var(--primary))"
-          opacity="0.15"
+          fill="hsl(var(--loader-water))"
+          opacity="0.22"
           className="timol-loader-fill"
         />
         {/* Wave on top of water */}
         <path
           d="M3.5 16c1.5-1 3-1.5 5-.5s4 .5 5.5-.5"
-          stroke="hsl(var(--primary))"
+          stroke="hsl(var(--loader-water-wave))"
           strokeWidth="1"
-          opacity="0.35"
+          opacity="0.5"
           className="timol-loader-wave"
           fill="none"
           strokeLinecap="round"
