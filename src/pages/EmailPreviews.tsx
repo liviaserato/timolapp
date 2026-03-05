@@ -156,10 +156,7 @@ export default function EmailPreviews() {
           <Card className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
             <CardHeader className="space-y-4 border-b border-primary/15 bg-primary/10">
               <div>
-                <CardTitle className="text-base text-foreground">{activeEmail.title}</CardTitle>
-                <CardDescription className="mt-1 text-sm leading-relaxed text-foreground/80">
-                  {activeEmail.description}
-                </CardDescription>
+                <CardTitle className="text-xl font-bold text-foreground">E-mail {activeEmail.title}</CardTitle>
               </div>
 
               <div className="grid gap-3 text-sm md:grid-cols-3">
