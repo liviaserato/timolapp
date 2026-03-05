@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,12 +8,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { WizardData } from "@/types/wizard";
 import { ChevronLeft, User, MapPin, Shield, Gem, Crown, Star, Ticket, X, Loader2 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 const franchiseIcons: Record<string, React.ReactNode> = {
   bronze: <Shield className="h-4 w-4" />,
@@ -33,7 +28,6 @@ interface Props {
 export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditAddress, onChangeFranchise }: Props) => {
   const { t } = useLanguage();
   const [agreeRules, setAgreeRules] = useState(data.agreeRules ?? false);
-  const [termsOpen, setTermsOpen] = useState(false);
   const [agreeCommunications, setAgreeCommunications] = useState(data.agreeCommunications ?? false);
   const [errors, setErrors] = useState<string[]>([]);
   const [couponCode, setCouponCode] = useState("");
@@ -260,13 +254,13 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
             />
             <Label htmlFor="agreeRules" className="text-sm leading-snug cursor-pointer">
               {t("summary.agreeRules")}
-              <button
-                type="button"
-                className="text-primary underline underline-offset-2 hover:text-primary/80 inline"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTermsOpen(true); }}
+              <Link
+                to="/contrato"
+                className="text-primary underline underline-offset-2 hover:text-primary/80"
+                onClick={(e) => e.stopPropagation()}
               >
                 {t("summary.agreeRules.link")}
-              </button>
+              </Link>
               {t("summary.agreeRules.suffix")}
             </Label>
           </div>
@@ -296,26 +290,6 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
           {t("summary.confirm")}
         </Button>
       </div>
-
-      {/* Terms modal */}
-      <Dialog open={termsOpen} onOpenChange={setTermsOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>{t("summary.terms.title")}</DialogTitle>
-          </DialogHeader>
-          <div className="flex-1 overflow-y-auto pr-2 text-sm text-muted-foreground leading-relaxed space-y-3">
-            <p>Conteúdo dos termos será inserido aqui.</p>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-            </p>
-            <p>
-              Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-              Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
@@ -328,3 +302,4 @@ function Row({ label, value, highlight }: { label: string; value: React.ReactNod
     </div>
   );
 }
+
