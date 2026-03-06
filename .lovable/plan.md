@@ -1,107 +1,66 @@
 
-Objetivo
 
-Sim, dá para fazer. O padrão mais aceito não é só “bloquear depois de 5 erros”, e sim combinar:
-- limite de tentativas por conta
-- limite por IP/dispositivo
-- bloqueio temporário curto
-- mensagem genérica no login
-- reset da contagem quando a pessoa acerta a senha
+## Plano: Integração Stripe para pagamentos de franquia
 
-O que encontrei no projeto
+### Pré-requisito
 
-- Hoje a tela `src/pages/Login.tsx` ainda está em modo mock: ela faz `setTimeout` e entra em `/app` sem autenticação real.
-- Então essa trava de 5 tentativas precisa ser implementada junto com o login real no backend, senão ela não protege nada de verdade.
-- O projeto já usa autenticação no cadastro e já tem `profiles` com `username`, então o caminho natural é autenticar por usuário no frontend e validar/bloquear no backend.
+A ferramenta de ativação do Stripe está com instabilidade temporária. Assim que estiver disponível, vou ativá-la e ela vai solicitar sua **Secret Key** de forma segura. A chave ficará armazenada como secret no backend, nunca exposta no código.
 
-Padrão “universal” recomendado
+### Arquitetura
 
-Para este app, eu recomendaria este padrão:
-- até 5 tentativas erradas
-- ao errar a 5ª vez: bloquear por 10 minutos
-- aplicar a regra por `username` e também observar IP/origem
-- ao acertar a senha: zerar tentativas
-- sempre mostrar erro genérico como “Usuário ou senha inválidos” ou “Tente novamente mais tarde”
-- não informar se o bloqueio foi por usuário inexistente, senha errada ou conta bloqueada
-- opcional depois: CAPTCHA após muitas tentativas repetidas
+```text
+┌──────────────┐     ┌────────────────────────┐     ┌─────────┐
+│ PaymentScreen│────▶│ EF: create-checkout     │────▶│ Stripe  │
+│ (frontend)   │     │ (cria Payment Intent)   │     │   API   │
+└──────────────┘     └────────────────────────┘     └─────────┘
+                              │
+                     ┌────────▼───────────────┐
+                     │ EF: stripe-webhook      │
+                     │ (confirma pagamento)     │
+                     └─────────────────────────┘
+```
 
-Esse é um padrão comum e equilibrado. Não existe um número único “universal” obrigatório, mas 5 tentativas + 10 a 15 minutos de bloqueio é bem aceitável.
+### O que será feito
 
-Plano de implementação
+**1. Armazenar a Stripe Secret Key**
+- Adicionar `STRIPE_SECRET_KEY` como secret seguro no backend
 
-1. Trocar o login mock por login real
-- Substituir o `setTimeout` do `Login.tsx` por uma chamada a uma backend function própria de login.
-- Essa function receberá `username` e `password`.
+**2. Criar Edge Function `create-checkout`**
+- Recebe: `franchiseTypeCode`, `price`, `currency`, `customerEmail`, `franchiseId`, `installments` (para BRL)
+- Cria um Payment Intent no Stripe com os dados da franquia
+- Retorna `clientSecret` para o frontend
 
-2. Validar bloqueio antes de autenticar
-- A backend function verifica se o usuário está temporariamente bloqueado.
-- Se estiver, retorna resposta genérica com tempo restante.
+**3. Criar Edge Function `stripe-webhook`**
+- Recebe eventos do Stripe (`payment_intent.succeeded`, `payment_intent.payment_failed`)
+- Atualiza o status do registro no banco (registration_status → `payment_completed`)
+- Valida a assinatura do webhook com `STRIPE_WEBHOOK_SECRET`
 
-3. Registrar tentativas falhas
-- Criar uma tabela específica de controle, separada de `profiles`, por exemplo:
-  - `login_security`
-  - ou `login_attempts`
-- Campos típicos:
-  - `username`
-  - `failed_attempts`
-  - `locked_until`
-  - `last_failed_at`
-  - `last_ip`
-  - `updated_at`
+**4. Atualizar `PaymentScreen.tsx`**
+- Ao confirmar cartão de crédito: chamar `create-checkout` para obter o `clientSecret`
+- Usar Stripe.js (`@stripe/stripe-js`) para confirmar o pagamento no frontend
+- Remover a lógica mock atual (random approval, test name "LIVIA")
+- PIX continua como está (sem Stripe por enquanto)
 
-4. Fazer o fluxo de autenticação seguro
-- A function localiza o usuário pelo `username`.
-- Faz a autenticação real no backend.
-- Se falhar:
-  - incrementa contador
-  - se chegou ao limite, grava `locked_until = now + 10 min`
-- Se der certo:
-  - zera contador e remove bloqueio
+**5. Atualizar `Index.tsx`**
+- O fluxo pós-pagamento será determinado pelo resultado real do Stripe:
+  - Sucesso → `paymentConfirmation`
+  - Falha/pendente → `paymentPending`
 
-5. Ajustar a UI do login
-- Mostrar mensagem amigável e genérica.
-- Se bloqueado, pode exibir algo como:
-  - “Muitas tentativas. Tente novamente em alguns minutos.”
-- Não mostrar detalhes que permitam adivinhar contas válidas.
+**6. Configurar `config.toml`**
+- Adicionar `create-checkout` e `stripe-webhook` com `verify_jwt = false`
 
-Recomendação de segurança
+### Arquivos afetados
 
-Eu não recomendo bloquear só por usuário.
-O ideal é:
-- regra principal por usuário
-- proteção extra por IP/origem
-Porque, se for só por usuário, alguém pode bloquear a conta de outra pessoa de propósito.
+| Arquivo | Ação |
+|---|---|
+| `supabase/functions/create-checkout/index.ts` | Criar |
+| `supabase/functions/stripe-webhook/index.ts` | Criar |
+| `supabase/config.toml` | Editar (add funções) |
+| `src/components/screens/PaymentScreen.tsx` | Editar (integrar Stripe.js) |
+| `src/pages/Index.tsx` | Editar (ajustar fluxo pós-pagamento) |
+| `package.json` | Adicionar `@stripe/stripe-js` |
 
-Detalhes técnicos
+### Próximo passo imediato
 
-Arquivos que provavelmente entrarão nessa mudança:
-- `src/pages/Login.tsx`
-- uma nova backend function de login
-- uma migration para criar a tabela de tentativas/bloqueio
-- possivelmente proteção de rota em `src/App.tsx` / layout do app
+Preciso ativar a integração Stripe para armazenar sua Secret Key. Vou tentar novamente na próxima mensagem.
 
-Decisões de produto que eu seguiria por padrão
-- Limite: 5 erros
-- Janela/bloqueio: 10 minutos
-- Reset ao sucesso: sim
-- Mensagem detalhada: não
-- CAPTCHA depois de abuso repetido: recomendado numa segunda etapa
-
-Resumo prático
-
-Sim, é totalmente viável.
-O melhor padrão para seu caso seria:
-- 5 senhas erradas
-- bloqueio temporário de 10 minutos
-- controle no backend
-- por usuário + sinal de IP/origem
-- mensagem genérica
-- zerar ao login bem-sucedido
-
-Observação importante
-
-Como o login atual ainda não é real, eu trataria isso como uma implementação em duas partes:
-1. conectar o login de verdade ao backend
-2. acoplar o bloqueio temporário no mesmo fluxo
-
-Assim a regra fica realmente segura e não só visual.
