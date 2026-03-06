@@ -49,7 +49,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
 
   const handleConfirm = () => {
     const errs: string[] = [];
-    if (!agreeRules) errs.push(t("summary.error.rules"));
+    if (!agreeContract) errs.push(t("summary.error.rules"));
     setErrors(errs);
     if (errs.length > 0) return;
     onConfirm();
