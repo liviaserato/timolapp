@@ -37,7 +37,7 @@ interface Props {
   onBack: () => void;
 }
 
-type PaymentMethod = "pix" | "credit";
+type PaymentMethod = "pix" | "credit-card" | "deposit";
 
 const INTEREST_RATE = 0.03;
 const FREE_INSTALLMENTS = 12;
@@ -83,7 +83,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
   const isBrazilAddress = (data.countryIso2 ?? "BR") === "BR";
   const isForeigner = data.foreignerNoCpf === "true";
   const canUsePix = !isForeigner && isBrazilAddress;
-  const [method, setMethod] = useState<PaymentMethod>(canUsePix ? "pix" : "credit");
+  const [method, setMethod] = useState<PaymentMethod>(canUsePix ? "pix" : "credit-card");
   const [installments, setInstallments] = useState("1");
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
@@ -118,7 +118,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (method === "credit") {
+    if (method === "credit-card") {
       if (cardNumber.replace(/\s/g, "").length < 16) e.cardNumber = t("payment.error.cardNumber");
       if (!cardName.trim()) e.cardName = t("payment.error.cardHolder");
       if (cardExpiry.length < 5) {
@@ -146,9 +146,9 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
       const last4 = cardNumber.replace(/\s/g, "").slice(-4);
       onConfirm({
         paymentMethod: method,
-        cardLast4: method === "credit" ? last4 : undefined,
-        cardInstallments: method === "credit" ? parseInt(installments) : undefined,
-        cardHolderName: method === "credit" ? cardName.trim() : undefined,
+        cardLast4: method === "credit-card" ? last4 : undefined,
+        installments: method === "credit-card" ? parseInt(installments) : undefined,
+        cardHolderName: method === "credit-card" ? cardName.trim() : undefined,
       });
     }, 2000);
   };
@@ -163,7 +163,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
     }
   };
 
-  const franchiseName = data.franchise ? t(`franchise.${data.franchise}`) : "";
+  const franchiseName = data.franchiseTypeCode ? t(`franchise.${data.franchiseTypeCode}`) : "";
 
   return (
     <div className="w-full max-w-md mx-auto space-y-4">
@@ -202,11 +202,11 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
           </button>
           <button
             role="tab"
-            aria-selected={method === "credit"}
-            onClick={() => setMethod("credit")}
+            aria-selected={method === "credit-card"}
+            onClick={() => setMethod("credit-card")}
             className={cn(
               "flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all",
-              method === "credit"
+              method === "credit-card"
                 ? "border-primary bg-primary/5 text-primary"
                 : "border-border hover:border-primary/50"
             )}
@@ -275,7 +275,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
       </Dialog>
 
       {/* Credit Card */}
-      {method === "credit" && (
+      {method === "credit-card" && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">{t("payment.credit.details")}</CardTitle>

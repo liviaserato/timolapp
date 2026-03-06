@@ -6,17 +6,19 @@
 
 import { api } from "./client";
 
-// ─── Search ─────────────────────────────────────────────────────
+// ─── Shared Sponsor Result ─────────────────────────────────────
 
 export interface SponsorResult {
   franchiseId: string;
-  fullName: string;
-  city: string;
-  state: string;
-  countryIso2: string;
-  countryFlag?: string;
+  sponsorName: string;
+  sponsorCity: string;
+  sponsorState: string;
+  sponsorCountryIso2: string;
+  sponsorCountryFlag?: string;
   photo?: string;
 }
+
+// ─── Search ─────────────────────────────────────────────────────
 
 export interface SponsorSearchResponse {
   exists: boolean;

@@ -38,7 +38,7 @@ const Index = () => {
         fullName: data.fullName,
         email: data.email,
         document: data.document,
-        phone: data.phone,
+        phoneNumber: data.phoneNumber ?? data.phone,
         birthDate: data.birthDate,
         gender: data.gender,
         country: data.country,
@@ -47,13 +47,13 @@ const Index = () => {
         number: data.number,
         complement: data.complement,
         neighborhood: data.neighborhood,
-        city: data.city,
-        state: data.state,
+        cityId: data.cityId ?? data.city,
+        stateId: data.stateId ?? data.state,
         username: data.username,
         sponsorName: data.sponsorName,
-        sponsorId: data.sponsorId,
+        sponsorFranchiseId: data.sponsorFranchiseId ?? data.sponsorId,
         authUserId: data.authUserId,
-        franchiseId: data.sponsorId, // Display ID
+        franchiseId: data.sponsorFranchiseId ?? data.sponsorId, // Display ID
       });
 
       setScreen("franchise");
@@ -118,8 +118,8 @@ const Index = () => {
         return (
           <FranchiseScreen
             data={wizardData}
-            onNext={(franchise, price) => {
-              updateData({ franchise, franchisePrice: price });
+            onNext={(franchiseTypeCode, price) => {
+              updateData({ franchiseTypeCode, franchisePrice: price });
               updateRegistrationStatus({ franchise_selected: true });
               setScreen("summary");
             }}
@@ -144,8 +144,10 @@ const Index = () => {
             onConfirm={(paymentInfo: Partial<WizardData>) => {
               updateData(paymentInfo);
               updateRegistrationStatus({ payment_completed: true, status: "completed" });
-              const method = paymentInfo.paymentMethod ?? "credit";
+              const method = paymentInfo.paymentMethod ?? "credit-card";
               if (method === "pix" && wizardData.foreignerNoCpf !== "true") {
+                setScreen("paymentPending");
+              } else if (method === "deposit") {
                 setScreen("paymentPending");
               } else {
                 const isTestApproved = paymentInfo.cardHolderName?.toUpperCase() === "LIVIA";

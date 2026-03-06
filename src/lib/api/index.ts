@@ -1,6 +1,6 @@
 /**
  * Centralized API module — re-exports all API functions and types.
- * 
+ *
  * Usage:
  *   import { login, searchSponsor, checkDocument } from "@/lib/api";
  */
@@ -18,13 +18,17 @@ export { searchSponsor, suggestSponsors } from "./sponsors";
 export type { SponsorResult, SponsorSearchResponse, SponsorSuggestResponse } from "./sponsors";
 
 // People / Registration
-export { checkDocument, checkEmail, checkUsername, registerPending, continueRegistration, registerComplete } from "./people";
-export type { CheckDocumentRequest, CheckDocumentResponse, CheckEmailResponse, CheckUsernameResponse, RegisterPendingRequest, RegisterPendingResponse, ContinueRegistrationResponse, RegisterCompleteRequest, RegisterCompleteResponse } from "./people";
+export { checkDocument, checkEmail, checkUsername, registerPending, registerPendingCheck, sendPendingEmail, continueRegistration, registerComplete } from "./people";
+export type { CheckDocumentRequest, CheckDocumentResponse, CheckEmailResponse, CheckUsernameResponse, RegisterPendingRequest, RegisterPendingResponse, RegisterPendingCheckRequest, RegisterPendingCheckResponse, SendPendingEmailRequest, ContinueRegistrationResponse, RegisterCompleteRequest, RegisterCompleteResponse } from "./people";
 
 // Registrations (admin)
-export { getPendingRegistrations, recordTouchpoint, approvePayment } from "./registrations";
-export type { PendingRegistration, PendingRegistrationsResponse, RecordTouchpointResponse, ApprovePaymentResponse } from "./registrations";
+export { getPendingRegistrations, getRegistrationNotes, createRegistrationNote, recordWhatsappTouchpoint, recordSponsorNotifiedTouchpoint } from "./registrations";
+export type { PendingRegistrationItem, PendingRegistrationsResponse, RegistrationNote, RegistrationNotesResponse, TouchpointResponse } from "./registrations";
+
+// Payments
+export { manualApprovePayment } from "./payments";
+export type { ManualApproveRequest, ManualApproveResponse } from "./payments";
 
 // Coupons
 export { validateCoupon } from "./coupons";
-export type { ValidateCouponRequest, ValidateCouponResponse } from "./coupons";
+export type { ValidateCouponRequest, ValidateCouponResponse, DiscountPreview } from "./coupons";

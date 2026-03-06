@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { continueRegistration } from "@/lib/api";
 import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 
 const Continue = () => {
@@ -16,18 +16,18 @@ const Continue = () => {
 
     const loadData = async () => {
       try {
-        const { data, error: fnError } = await supabase.functions.invoke(
-          "continue-registration",
-          { body: { token } }
-        );
+        const result = await continueRegistration(token);
 
-        if (fnError || !data?.success) {
-          setError(data?.error || "Link inválido ou expirado.");
+        if (!result.isValid) {
+          setError("Link inválido ou expirado.");
           return;
         }
 
         // Store wizard data in sessionStorage for Index to pick up
-        sessionStorage.setItem("continueData", JSON.stringify(data.data));
+        sessionStorage.setItem("continueData", JSON.stringify({
+          franchiseId: result.franchiseId,
+          registrationStatus: result.registrationStatus,
+        }));
         navigate("/?continue=1", { replace: true });
       } catch (err) {
         console.error("Continue error:", err);

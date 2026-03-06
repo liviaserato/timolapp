@@ -5,18 +5,32 @@
 
 import { api } from "./client";
 
+// ─── Discount Preview ───────────────────────────────────────────
+
+export interface DiscountPreview {
+  discountType: "percentage" | "fixed";
+  value: number;
+  capAmount?: number;
+  discountAmount: number;
+  finalAmount: number;
+  currencyCode: string;
+}
+
+// ─── Validate ───────────────────────────────────────────────────
+
 export interface ValidateCouponRequest {
   couponCode: string;
+  scope: string; // e.g. "franchisePurchase"
+  franchiseId?: string;
   franchiseTypeCode?: string;
-  currencyCode?: string;
+  amount: number;
+  currencyCode: string;
 }
 
 export interface ValidateCouponResponse {
-  valid: boolean;
-  discountType?: "percentage" | "fixed";
-  discountValue?: number;
-  finalAmount?: number;
-  message?: string;
+  isValid: boolean;
+  reasonCode?: string;
+  discountPreview?: DiscountPreview;
 }
 
 export async function validateCoupon(req: ValidateCouponRequest): Promise<ValidateCouponResponse> {

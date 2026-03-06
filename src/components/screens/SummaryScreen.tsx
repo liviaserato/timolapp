@@ -27,7 +27,7 @@ interface Props {
 
 export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditAddress, onChangeFranchise }: Props) => {
   const { t } = useLanguage();
-  const [agreeRules, setAgreeRules] = useState(data.agreeRules ?? false);
+  const [agreeContract, setAgreeContract] = useState(data.agreeContract ?? false);
   const [agreeCommunications, setAgreeCommunications] = useState(data.agreeCommunications ?? false);
   const [errors, setErrors] = useState<string[]>([]);
   const [couponCode, setCouponCode] = useState("");
@@ -49,7 +49,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
 
   const handleConfirm = () => {
     const errs: string[] = [];
-    if (!agreeRules) errs.push(t("summary.error.rules"));
+    if (!agreeContract) errs.push(t("summary.error.rules"));
     setErrors(errs);
     if (errs.length > 0) return;
     onConfirm();
@@ -154,7 +154,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
           <CardContent className="space-y-1 text-sm">
             <Row label={t("summary.addressLine")} value={`${data.street ?? ""}${data.number ? `, ${data.number}` : ""}${data.complement ? ` - ${data.complement}` : ""}`} />
             {data.neighborhood && <Row label={t("summary.neighborhood")} value={data.neighborhood} />}
-            <Row label={t("summary.cityState")} value={`${data.city ?? "—"}, ${data.state ?? "—"}`} />
+            <Row label={t("summary.cityState")} value={`${data.cityId ?? "—"}, ${data.stateId ?? "—"}`} />
             <Row label={t("summary.zipCode")} value={data.zipCode ?? "—"} />
             <Row label={t("summary.country")} value={data.country ?? "—"} />
           </CardContent>
@@ -165,7 +165,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
-                {franchiseIcons[data.franchise ?? "bronze"]}
+                {franchiseIcons[data.franchiseTypeCode ?? "bronze"]}
                 {t("summary.franchise")}
               </CardTitle>
               {onChangeFranchise && (
@@ -176,14 +176,14 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
             </div>
           </CardHeader>
           <CardContent className="space-y-1 text-sm">
-            <Row label={t("summary.sponsor")} value={`${data.sponsorName ?? "—"} (ID ${data.sponsorId ?? "—"})`} />
+            <Row label={t("summary.sponsor")} value={`${data.sponsorName ?? "—"} (ID ${data.sponsorFranchiseId ?? "—"})`} />
             <Row
               label={t("summary.franchiseChosen")}
               value={
-                <span className="flex items-center gap-1.5 font-semibold">
-                  {franchiseIcons[data.franchise ?? "bronze"]}
-                  {t(`franchise.${data.franchise}`)}
-                </span>
+                  <span className="flex items-center gap-1.5 font-semibold">
+                    {franchiseIcons[data.franchiseTypeCode ?? "bronze"]}
+                    {t(`franchise.${data.franchiseTypeCode}`)}
+                  </span>
               }
             />
             <Row
@@ -261,12 +261,12 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
           <CardContent className="pt-4 space-y-3">
             <div className="flex items-center gap-3">
               <Checkbox
-                id="agreeRules"
-                checked={agreeRules}
-                onCheckedChange={(v) => { setAgreeRules(!!v); setErrors([]); }}
+                id="agreeContract"
+                checked={agreeContract}
+                onCheckedChange={(v) => { setAgreeContract(!!v); setErrors([]); }}
                 className="mt-0"
               />
-              <Label htmlFor="agreeRules" className="text-sm leading-snug cursor-pointer">
+              <Label htmlFor="agreeContract" className="text-sm leading-snug cursor-pointer">
                 {t("summary.agreeRules")}
                 <button
                   type="button"

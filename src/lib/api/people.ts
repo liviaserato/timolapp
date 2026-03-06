@@ -3,9 +3,11 @@
  * POST /api/people/check-document
  * POST /api/people/check-email
  * POST /api/people/check-username
- * POST /api/people/register (pending — 1st send)
+ * POST /api/people/register (1st send — pending)
+ * POST /api/people/register/pending (validate pending registration)
+ * POST /api/people/register/pending-email (trigger pending email)
  * POST /api/people/register/continue
- * POST /api/people/register (completed — 2nd send)
+ * POST /api/people/register/complete (2nd send — completed)
  */
 
 import { api } from "./client";
@@ -18,13 +20,8 @@ export interface CheckDocumentRequest {
 }
 
 export interface CheckDocumentResponse {
-  available: boolean;
-  exists: boolean;
-  person?: Record<string, unknown>;
-  franchises?: {
-    count: number;
-    items: Array<{ id?: string; franchiseType?: string }>;
-  };
+  isAvailable: boolean;
+  reason?: string;
 }
 
 export async function checkDocument(req: CheckDocumentRequest, signal?: AbortSignal): Promise<CheckDocumentResponse> {
@@ -32,7 +29,8 @@ export async function checkDocument(req: CheckDocumentRequest, signal?: AbortSig
 }
 
 export interface CheckEmailResponse {
-  available: boolean;
+  isAvailable: boolean;
+  reason?: string;
 }
 
 export async function checkEmail(email: string, signal?: AbortSignal): Promise<CheckEmailResponse> {
@@ -40,7 +38,8 @@ export async function checkEmail(email: string, signal?: AbortSignal): Promise<C
 }
 
 export interface CheckUsernameResponse {
-  available: boolean;
+  isAvailable: boolean;
+  reason?: string;
 }
 
 export async function checkUsername(username: string, signal?: AbortSignal): Promise<CheckUsernameResponse> {
@@ -56,22 +55,21 @@ export interface RegisterPendingRequest {
   // Personal data
   fullName: string;
   birthDate: string;
+  gender: string;
   document: string;
   documentCountryCode: string;
-  gender: string;
   // Contact
   email: string;
-  phone: string;
+  phoneNumber: string;
   // Address
-  country: string;
   countryIso2: string;
   zipCode: string;
   street: string;
   number: string;
   complement?: string;
   neighborhood?: string;
-  city: string;
-  state: string;
+  cityId: string;
+  stateId: string;
   // Login
   username: string;
   password: string;
@@ -79,19 +77,49 @@ export interface RegisterPendingRequest {
 
 export interface RegisterPendingResponse {
   franchiseId: string;
+  registrationStatus: string;
 }
 
 export async function registerPending(req: RegisterPendingRequest): Promise<RegisterPendingResponse> {
   return api.post<RegisterPendingResponse>("/api/people/register", req, { auth: false });
 }
 
+// ─── Validate Pending Registration ──────────────────────────────
+
+export interface RegisterPendingCheckRequest {
+  franchiseId: string;
+  document: string;
+  documentCountryCode: string;
+  birthDate: string;
+}
+
+export interface RegisterPendingCheckResponse {
+  found: boolean;
+  registrationStatus: string;
+  maskedEmail: string;
+}
+
+export async function registerPendingCheck(req: RegisterPendingCheckRequest): Promise<RegisterPendingCheckResponse> {
+  return api.post<RegisterPendingCheckResponse>("/api/people/register/pending", req, { auth: false });
+}
+
+// ─── Trigger Pending Email ──────────────────────────────────────
+
+export interface SendPendingEmailRequest {
+  franchiseId: string;
+  languageCode: string;
+}
+
+export async function sendPendingEmail(req: SendPendingEmailRequest): Promise<void> {
+  await api.post("/api/people/register/pending-email", req, { auth: false });
+}
+
 // ─── Continue Registration ──────────────────────────────────────
 
 export interface ContinueRegistrationResponse {
+  isValid: boolean;
   franchiseId: string;
-  status: string;
-  // May include additional data to restore the UI
-  data?: Record<string, unknown>;
+  registrationStatus: string;
 }
 
 export async function continueRegistration(token: string): Promise<ContinueRegistrationResponse> {
@@ -107,17 +135,10 @@ export interface RegisterCompleteRequest {
   agreeContract: boolean;
   agreeCommunications: boolean;
   // Payment
-  paymentMethod: string;
+  paymentMethod: "pix" | "credit-card" | "deposit";
+  installments?: number;
   amountPaid: number;
   currencyCode: string;
-  installments?: number;
-  cardData?: {
-    cardNumber: string;
-    holderName: string;
-    expirationDate: string;
-    cvv: string;
-    brand: string;
-  };
   // Contract
   contractVersion: string;
   acceptedAt: string; // ISO datetime
@@ -131,5 +152,5 @@ export interface RegisterCompleteResponse {
 }
 
 export async function registerComplete(req: RegisterCompleteRequest): Promise<RegisterCompleteResponse> {
-  return api.post<RegisterCompleteResponse>("/api/people/register", req);
+  return api.post<RegisterCompleteResponse>("/api/people/register/complete", req);
 }

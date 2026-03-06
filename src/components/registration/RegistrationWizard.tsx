@@ -9,7 +9,7 @@ import { StepAddress } from "./StepAddress";
 import { StepLogin } from "./StepLogin";
 import { DocumentCheckPopup } from "./DocumentCheckPopup";
 import { supabase } from "@/integrations/supabase/client";
-import { XCircle, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 import { WizardData } from "@/types/wizard";
 import { useDocumentCheck } from "@/hooks/useDocumentCheck";
@@ -32,7 +32,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
     document: initialData.document ?? "",
     gender: initialData.gender ?? "",
     email: initialData.email ?? "",
-    phone: initialData.phone ?? "",
+    phoneNumber: initialData.phoneNumber ?? "",
     country: initialData.country ?? "",
     countryIso2: initialData.countryIso2 ?? "",
     zipCode: initialData.zipCode ?? "",
@@ -40,14 +40,14 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
     number: initialData.number ?? "",
     complement: initialData.complement ?? "",
     neighborhood: initialData.neighborhood ?? "",
-    city: initialData.city ?? "",
-    state: initialData.state ?? "",
+    cityId: initialData.cityId ?? "",
+    stateId: initialData.stateId ?? "",
     username: initialData.username ?? "",
     password: initialData.password ?? "",
     confirmPassword: initialData.confirmPassword ?? "",
     foreignerNoCpf: initialData.foreignerNoCpf ?? "false",
     documentCountry: initialData.documentCountry ?? "",
-    documentCountryIso2: initialData.documentCountryIso2 ?? "",
+    documentCountryCode: initialData.documentCountryCode ?? "",
     documentCountryFlag: initialData.documentCountryFlag ?? "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -65,7 +65,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
   } = useDocumentCheck({
     document: data.document,
     isForeigner,
-    issuerCountryIso2: isForeigner ? data.documentCountryIso2 : "BR",
+    issuerCountryIso2: isForeigner ? data.documentCountryCode : "BR",
     enabled: step === 1,
   });
 
@@ -77,7 +77,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
   // Document is not yet validated if still checking, has error, or API hasn't responded yet
   const rawDocClean = isForeigner ? data.document.trim() : data.document.replace(/\D/g, "");
   const docShouldBeValidated = isForeigner
-    ? rawDocClean.length > 0 && !!data.documentCountryIso2
+    ? rawDocClean.length > 0 && !!data.documentCountryCode
     : rawDocClean.length === 11;
   const docNotValidated = step === 1
     ? (docChecking || !!docCheckError || (docShouldBeValidated && !docCheckResult))
@@ -119,15 +119,15 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
     } else if (step === 2) {
       if (!data.email?.trim()) newErrors.email = req;
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) newErrors.email = t("validation.email");
-      if (!data.phone?.trim()) newErrors.phone = req;
-      else if (data.phone.replace(/\D/g, "").length < 7) newErrors.phone = t("validation.phoneMin");
+      if (!data.phoneNumber?.trim()) newErrors.phoneNumber = req;
+      else if (data.phoneNumber.replace(/\D/g, "").length < 7) newErrors.phoneNumber = t("validation.phoneMin");
     } else if (step === 3) {
       if (!data.country?.trim()) newErrors.country = req;
       if (!data.zipCode?.trim()) newErrors.zipCode = req;
       if (!data.street?.trim()) newErrors.street = req;
       if (!data.number?.trim()) newErrors.number = req;
-      if (!data.city?.trim()) newErrors.city = req;
-      if (!data.state?.trim()) newErrors.state = req;
+      if (!data.cityId?.trim()) newErrors.cityId = req;
+      if (!data.stateId?.trim()) newErrors.stateId = req;
     } else if (step === 4) {
       if (!data.username?.trim()) {
         newErrors.username = req;
@@ -191,14 +191,14 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
             birth_date: data.birthDate || null,
             document: data.document?.trim(),
             gender: data.gender,
-            phone: data.phone?.trim(),
+            phone: data.phoneNumber?.trim(),
             zip_code: data.zipCode?.trim(),
             street: data.street?.trim(),
             number: data.number?.trim(),
             complement: data.complement?.trim() || null,
             neighborhood: data.neighborhood?.trim() || null,
-            city: data.city?.trim(),
-            state: data.state?.trim(),
+            city: data.cityId?.trim(),
+            state: data.stateId?.trim(),
             country: data.country?.trim(),
             username: data.username?.trim(),
             preferred_language: language,
@@ -213,10 +213,10 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
               email: data.email.trim(),
               document: data.document?.trim(),
               sponsor_name: initialData.sponsorName || null,
-              sponsor_id: initialData.sponsorId || null,
-              phone: data.phone?.trim() || null,
+              sponsor_id: initialData.sponsorFranchiseId || null,
+              phone: data.phoneNumber?.trim() || null,
               preferred_language: language,
-              sponsor_source: initialData.sponsorSource || null,
+              sponsor_source: initialData.sponsorSelectionMethod || null,
               gender: data.gender || null,
             },
           });
@@ -230,11 +230,11 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         document: data.document,
         foreignerNoCpf: data.foreignerNoCpf,
         documentCountry: data.documentCountry,
-        documentCountryIso2: data.documentCountryIso2,
+        documentCountryCode: data.documentCountryCode,
         documentCountryFlag: data.documentCountryFlag,
         gender: data.gender,
         email: data.email,
-        phone: data.phone,
+        phoneNumber: data.phoneNumber,
         country: data.country,
         countryIso2: data.countryIso2,
         zipCode: data.zipCode,
@@ -242,8 +242,8 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         number: data.number,
         complement: data.complement,
         neighborhood: data.neighborhood,
-        city: data.city,
-        state: data.state,
+        cityId: data.cityId,
+        stateId: data.stateId,
         username: data.username,
         documentCheckPassed: !docBlocked,
         authUserId: alreadyRegistered ? initialData.authUserId : authUid,

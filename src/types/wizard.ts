@@ -1,37 +1,39 @@
 // Shared wizard context to pass data between all screens
+// Field names MUST match the backend API contract (camelCase)
 export interface WizardData {
   // Sponsor
-  sponsorId?: string;
+  sponsorFranchiseId?: string;
   sponsorName?: string;
   sponsorCity?: string;
   sponsorState?: string;
+  sponsorCountryIso2?: string;
   sponsorCountryFlag?: string;
-  sponsorSource?: "search" | "suggestion";
+  sponsorSelectionMethod?: "search" | "suggest";
 
   // Personal (Step 1)
   fullName?: string;
   birthDate?: string;
   document?: string;
-  foreignerNoCpf?: string; // "true" | "false"
-  documentCountry?: string;
-  documentCountryIso2?: string;
-  documentCountryFlag?: string;
+  foreignerNoCpf?: string; // "true" | "false" — UI-only toggle
+  documentCountryCode?: string;
+  documentCountry?: string; // display name (UI-only)
+  documentCountryFlag?: string; // display (UI-only)
   gender?: string;
 
   // Contact (Step 2)
   email?: string;
-  phone?: string;
+  phoneNumber?: string;
 
   // Address (Step 3)
-  country?: string;
+  country?: string; // display name (UI-only)
   countryIso2?: string;
   zipCode?: string;
   street?: string;
   number?: string;
   complement?: string;
   neighborhood?: string;
-  city?: string;
-  state?: string;
+  cityId?: string;
+  stateId?: string;
 
   // Login (Step 4)
   username?: string;
@@ -39,21 +41,38 @@ export interface WizardData {
   confirmPassword?: string;
 
   // Franchise
-  franchise?: string;
+  franchiseTypeCode?: string;
   franchisePrice?: number;
 
   // Agreements
-  agreeRules?: boolean;
+  agreeContract?: boolean;
   agreeCommunications?: boolean;
 
   // Franchise ID after registration
   franchiseId?: string;
 
+  // Registration status
+  registrationStatus?: string;
+
   // Payment info
-  paymentMethod?: "pix" | "credit";
+  paymentMethod?: "pix" | "credit-card" | "deposit";
   cardLast4?: string;
-  cardInstallments?: number;
+  installments?: number;
   cardHolderName?: string;
+  amountPaid?: number;
+  currencyCode?: string;
+
+  // Contract
+  contractVersion?: string;
+  acceptedAt?: string;
+  ipAddress?: string;
+  userAgent?: string;
+
+  // Coupon
+  couponCode?: string;
+
+  // Language
+  sourceLanguage?: string;
 
   // Document check — already registered document was validated
   documentCheckPassed?: boolean;

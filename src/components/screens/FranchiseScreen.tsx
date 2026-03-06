@@ -270,7 +270,7 @@ function styleEmTags(html: string): string {
 
 export const FranchiseScreen = ({ data, onNext, onBack }: Props) => {
   const { t, language } = useLanguage();
-  const [selected, setSelected] = useState<string | null>(data.franchise ?? null);
+  const [selected, setSelected] = useState<string | null>(data.franchiseTypeCode ?? null);
 
   const currency = getCurrencyFromCountry(data.countryIso2);
   const sym = currencySymbol[currency];
