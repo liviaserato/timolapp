@@ -20,7 +20,7 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   accessToken: string;
-  // Backend may include additional fields
+  expiresAt: string;
   franchiseId?: string;
   fullName?: string;
 }
@@ -65,6 +65,7 @@ export async function passwordRequestPin(username: string): Promise<void> {
 
 export interface VerifyPinResponse {
   resetToken: string;
+  expiresAt: string;
 }
 
 /** Step 3: Verify PIN */

@@ -12,10 +12,10 @@ export const StepContact = ({ data, onChange, errors }: Props) => {
   const { t } = useLanguage();
   const isForeigner = data.foreignerNoCpf === "true";
 
-  // Default +55 for non-foreigners when phone is empty
+  // Default +55 for non-foreigners when phoneNumber is empty
   const handleFocus = () => {
-    if (!isForeigner && !data.phone) {
-      onChange("phone", "+55 ");
+    if (!isForeigner && !data.phoneNumber) {
+      onChange("phoneNumber", "+55 ");
     }
   };
 
@@ -35,20 +35,20 @@ export const StepContact = ({ data, onChange, errors }: Props) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="phone">{t("step2.phone")}</Label>
+        <Label htmlFor="phoneNumber">{t("step2.phone")}</Label>
         <Input
-          id="phone"
+          id="phoneNumber"
           placeholder={t("step2.phone.placeholder")}
-          value={data.phone || ""}
+          value={data.phoneNumber || ""}
           onFocus={handleFocus}
           onChange={(e) => {
             const val = e.target.value.replace(/[^\d+\s()-]/g, "");
-            onChange("phone", val);
+            onChange("phoneNumber", val);
           }}
           inputMode="tel"
           maxLength={20}
         />
-        {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
+        {errors.phoneNumber && <p className="text-sm text-destructive">{errors.phoneNumber}</p>}
       </div>
     </div>
   );
