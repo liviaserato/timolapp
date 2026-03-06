@@ -80,7 +80,7 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
     const c = countries.find((x) => x.iso2 === iso2);
     if (c) {
       onChange("documentCountry", getCountryName(c, language));
-      onChange("documentCountryIso2", iso2);
+      onChange("documentCountryCode", iso2);
       onChange("documentCountryFlag", c.flag);
     }
     setShowDocCountryList(false);
