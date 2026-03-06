@@ -220,6 +220,19 @@ const Login = () => {
                 <RotateCcw className="h-4 w-4" />
                 {t("login.resumeRegistration")}
               </Button>
+
+              {/* ⚠️ TEMPORARY DEV BYPASS — remove when API is ready */}
+              <Button
+                variant="outline"
+                className="w-full gap-2 text-sm border-dashed border-amber-500 text-amber-600 hover:bg-amber-50"
+                onClick={() => {
+                  setAccessToken("dev-bypass", true);
+                  navigate("/app");
+                }}
+              >
+                <FlaskConical className="h-4 w-4" />
+                Entrar como Dev (bypass)
+              </Button>
             </div>
           </CardContent>
         </Card>
