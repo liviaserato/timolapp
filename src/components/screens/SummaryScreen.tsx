@@ -180,10 +180,10 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
             <Row
               label={t("summary.franchiseChosen")}
               value={
-                <span className="flex items-center gap-1.5 font-semibold">
-                  {franchiseIcons[data.franchise ?? "bronze"]}
-                  {t(`franchise.${data.franchise}`)}
-                </span>
+                  <span className="flex items-center gap-1.5 font-semibold">
+                    {franchiseIcons[data.franchiseTypeCode ?? "bronze"]}
+                    {t(`franchise.${data.franchiseTypeCode}`)}
+                  </span>
               }
             />
             <Row
