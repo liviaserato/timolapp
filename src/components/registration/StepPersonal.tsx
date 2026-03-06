@@ -89,7 +89,7 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
 
   const clearDocCountry = () => {
     onChange("documentCountry", "");
-    onChange("documentCountryIso2", "");
+    onChange("documentCountryCode", "");
     onChange("documentCountryFlag", "");
     setDocCountrySearch("");
   };
