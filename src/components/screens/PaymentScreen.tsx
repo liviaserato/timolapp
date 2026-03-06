@@ -37,7 +37,7 @@ interface Props {
   onBack: () => void;
 }
 
-type PaymentMethod = "pix" | "credit";
+type PaymentMethod = "pix" | "credit-card" | "deposit";
 
 const INTEREST_RATE = 0.03;
 const FREE_INSTALLMENTS = 12;
