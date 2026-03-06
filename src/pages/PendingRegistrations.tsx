@@ -163,8 +163,13 @@ export default function PendingRegistrations() {
         const response = await getPendingRegistrations();
         setRegistrations(response.items || []);
       } catch (err: any) {
-        console.error("Error fetching pending registrations:", err);
-        setError("Erro ao carregar cadastros pendentes.");
+        // If the API returns 404, it means the endpoint is not yet active — treat as empty list
+        if (err?.status === 404) {
+          setRegistrations([]);
+        } else {
+          console.error("Error fetching pending registrations:", err);
+          setError("Erro ao carregar cadastros pendentes.");
+        }
       } finally {
         setLoading(false);
       }
