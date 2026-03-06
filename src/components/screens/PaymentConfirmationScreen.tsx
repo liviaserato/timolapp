@@ -28,8 +28,8 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
   let paymentLine2 = "";
   if (data.paymentMethod === "pix") {
     paymentLine1 = "PIX";
-  } else if (data.paymentMethod === "credit" && data.cardLast4) {
-    const n = data.cardInstallments ?? 1;
+  } else if (data.paymentMethod === "credit-card" && data.cardLast4) {
+    const n = data.installments ?? 1;
     paymentLine1 = `${t("paymentPending.card")} •••• ${data.cardLast4}`;
     if (n === 1) {
       paymentLine2 = isBrazilAddress ? t("paymentDone.inFull") : "";

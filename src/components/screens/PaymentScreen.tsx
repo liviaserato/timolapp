@@ -275,7 +275,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
       </Dialog>
 
       {/* Credit Card */}
-      {method === "credit" && (
+      {method === "credit-card" && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">{t("payment.credit.details")}</CardTitle>

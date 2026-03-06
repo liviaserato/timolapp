@@ -246,7 +246,7 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
           </div>
         )}
 
-        {isForeigner && !!data.documentCountryIso2 && !foreignerHintDismissed && (
+        {isForeigner && !!data.documentCountryCode && !foreignerHintDismissed && (
           <div className="relative rounded-md border bg-amber-50 border-amber-200 px-3 py-2 pr-8 text-sm text-amber-700 flex items-start gap-2">
             <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
             <span>{t("step1.foreignerHint")}</span>

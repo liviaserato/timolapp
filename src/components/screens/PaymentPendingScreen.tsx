@@ -31,7 +31,7 @@ export const PaymentPendingScreen = ({ data, onConfirmed, onChangePayment }: Pro
   const buildPaymentLines = () => {
     if (isPix) return { line1: "PIX", line2: "" };
     const cardEnd = data.cardLast4 ? `${t("paymentPending.card")} •••• ${data.cardLast4}` : t("paymentPending.card");
-    const n = data.cardInstallments ?? 1;
+    const n = data.installments ?? 1;
     if (n === 1) return { line1: cardEnd, line2: t("paymentDone.inFull") };
     const installValue = price / n;
     return { line1: cardEnd, line2: `${n}× ${formatPrice(installValue)}` };

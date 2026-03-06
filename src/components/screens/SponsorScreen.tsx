@@ -152,12 +152,12 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const handleConfirmSponsor = () => {
     if (!foundSponsor) return;
     onNext({
-      sponsorId: foundSponsor.id,
+      sponsorFranchiseId: foundSponsor.id,
       sponsorName: foundSponsor.name,
       sponsorCity: foundSponsor.city,
       sponsorState: foundSponsor.state,
       sponsorCountryFlag: foundSponsor.countryFlag,
-      sponsorSource: fromNoSponsorFlow ? "suggestion" : "search",
+      sponsorSelectionMethod: fromNoSponsorFlow ? "suggest" : "search",
     });
   };
 

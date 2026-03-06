@@ -261,12 +261,12 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
           <CardContent className="pt-4 space-y-3">
             <div className="flex items-center gap-3">
               <Checkbox
-                id="agreeRules"
-                checked={agreeRules}
-                onCheckedChange={(v) => { setAgreeRules(!!v); setErrors([]); }}
+                id="agreeContract"
+                checked={agreeContract}
+                onCheckedChange={(v) => { setAgreeContract(!!v); setErrors([]); }}
                 className="mt-0"
               />
-              <Label htmlFor="agreeRules" className="text-sm leading-snug cursor-pointer">
+              <Label htmlFor="agreeContract" className="text-sm leading-snug cursor-pointer">
                 {t("summary.agreeRules")}
                 <button
                   type="button"

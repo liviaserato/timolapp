@@ -121,8 +121,8 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
     { key: "number", prefix: "step3.number", maxLength: 10 },
     { key: "complement", prefix: "step3.complement", maxLength: 100 },
     { key: "neighborhood", prefix: "step3.neighborhood", maxLength: 100 },
-    { key: "city", prefix: "step3.city", maxLength: 100 },
-    { key: "state", prefix: "step3.state", maxLength: 100 },
+    { key: "cityId", prefix: "step3.city", maxLength: 100 },
+    { key: "stateId", prefix: "step3.state", maxLength: 100 },
   ];
 
   return (
