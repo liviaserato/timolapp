@@ -75,8 +75,8 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
       } else {
         if (json.logradouro) onChange("street", json.logradouro);
         if (json.bairro) onChange("neighborhood", json.bairro);
-        if (json.localidade) onChange("city", json.localidade);
-        if (json.uf) onChange("state", json.uf);
+        if (json.localidade) onChange("cityId", json.localidade);
+        if (json.uf) onChange("stateId", json.uf);
       }
     } catch {
       setCepError(t("step3.cep.error"));
