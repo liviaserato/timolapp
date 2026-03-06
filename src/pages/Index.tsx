@@ -143,16 +143,22 @@ const Index = () => {
             data={wizardData}
             onConfirm={(paymentInfo: Partial<WizardData>) => {
               updateData(paymentInfo);
-              updateRegistrationStatus({ payment_completed: true, status: "completed" });
               const method = paymentInfo.paymentMethod ?? "credit-card";
-              if (method === "pix" && wizardData.foreignerNoCpf !== "true") {
+              if (method === "credit-card") {
+                // Real Stripe result — registrationStatus set by PaymentScreen
+                const confirmed = paymentInfo.registrationStatus === "payment_confirmed";
+                if (confirmed) {
+                  updateRegistrationStatus({ payment_completed: true, status: "completed" });
+                  setScreen("paymentConfirmation");
+                } else {
+                  setScreen("paymentPending");
+                }
+              } else if (method === "pix" && wizardData.foreignerNoCpf !== "true") {
                 setScreen("paymentPending");
               } else if (method === "deposit") {
                 setScreen("paymentPending");
               } else {
-                const isTestApproved = paymentInfo.cardHolderName?.toUpperCase() === "LIVIA";
-                const approved = isTestApproved || Math.random() > 0.5;
-                setScreen(approved ? "paymentConfirmation" : "paymentPending");
+                setScreen("paymentPending");
               }
             }}
             onBack={() => setScreen("summary")}
