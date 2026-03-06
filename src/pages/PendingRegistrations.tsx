@@ -485,7 +485,11 @@ export default function PendingRegistrations() {
         ) : error ? (
           <p className="text-center text-destructive py-8">{error}</p>
         ) : registrations.length === 0 ? (
-          <p className="text-center text-muted-foreground py-8">Nenhum cadastro pendente encontrado.</p>
+          <div className="text-center py-12">
+            <CheckCircle2 className="h-12 w-12 text-emerald-400 mx-auto mb-3" />
+            <p className="text-lg font-medium text-foreground mb-1">Tudo em dia!</p>
+            <p className="text-sm text-muted-foreground">Não há cadastros pendentes no momento.</p>
+          </div>
         ) : (
           <div className="flex flex-col gap-5 items-center">
             {registrations.map((reg) => {
