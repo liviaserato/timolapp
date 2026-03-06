@@ -154,7 +154,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
           <CardContent className="space-y-1 text-sm">
             <Row label={t("summary.addressLine")} value={`${data.street ?? ""}${data.number ? `, ${data.number}` : ""}${data.complement ? ` - ${data.complement}` : ""}`} />
             {data.neighborhood && <Row label={t("summary.neighborhood")} value={data.neighborhood} />}
-            <Row label={t("summary.cityState")} value={`${data.city ?? "—"}, ${data.state ?? "—"}`} />
+            <Row label={t("summary.cityState")} value={`${data.cityId ?? "—"}, ${data.stateId ?? "—"}`} />
             <Row label={t("summary.zipCode")} value={data.zipCode ?? "—"} />
             <Row label={t("summary.country")} value={data.country ?? "—"} />
           </CardContent>
