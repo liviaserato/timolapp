@@ -1,52 +1,39 @@
 project_id = "sinflvoxbphblalcsaba"
 
-[functions.document-lookup]
-verify_jwt = false
-
-[functions.sponsor-lookup]
-verify_jwt = false
-
-[functions.places-autocomplete]
-verify_jwt = false
-
-[functions.document-check]
-verify_jwt = false
-
-[functions.username-check]
-verify_jwt = false
-
-[functions.send-recovery-email]
-verify_jwt = false
-
-[functions.check-incomplete-registrations]
-verify_jwt = false
-
-[functions.continue-registration]
-verify_jwt = false
-
-[functions.send-whatsapp-recovery]
-verify_jwt = false
-
-[functions.check-whatsapp-recovery]
-verify_jwt = false
-
-[functions.track-registration]
-verify_jwt = false
-
-[functions.mark-recovery-sent]
-verify_jwt = false
-
-[functions.get-pending-registrations]
-verify_jwt = false
-
-[functions.forgot-password]
-verify_jwt = false
-
-[functions.verify-reset-pin]
-verify_jwt = false
-
-[functions.reset-password]
-verify_jwt = false
-
-[functions.forgot-username]
-verify_jwt = false
+[functions]
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.check-incomplete-registrations]
+    verify_jwt = false
+  [functions.check-whatsapp-recovery]
+    verify_jwt = false
+  [functions.continue-registration]
+    verify_jwt = false
+  [functions.document-check]
+    verify_jwt = false
+  [functions.document-lookup]
+    verify_jwt = false
+  [functions.forgot-password]
+    verify_jwt = false
+  [functions.forgot-username]
+    verify_jwt = false
+  [functions.get-pending-registrations]
+    verify_jwt = false
+  [functions.mark-recovery-sent]
+    verify_jwt = false
+  [functions.places-autocomplete]
+    verify_jwt = false
+  [functions.reset-password]
+    verify_jwt = false
+  [functions.send-recovery-email]
+    verify_jwt = false
+  [functions.send-whatsapp-recovery]
+    verify_jwt = false
+  [functions.sponsor-lookup]
+    verify_jwt = false
+  [functions.track-registration]
+    verify_jwt = false
+  [functions.username-check]
+    verify_jwt = false
+  [functions.verify-reset-pin]
+    verify_jwt = false
