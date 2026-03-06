@@ -23,7 +23,7 @@ interface Props {
   onBack?: () => void;
 }
 
-export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComplete }: Props) => {
+export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComplete, onBack: onBackToSponsor }: Props) => {
   const { t, language } = useLanguage();
   const [step, setStep] = useState(initialStep);
   const [data, setData] = useState<Record<string, string>>({
