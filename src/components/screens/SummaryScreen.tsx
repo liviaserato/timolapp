@@ -27,7 +27,7 @@ interface Props {
 
 export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditAddress, onChangeFranchise }: Props) => {
   const { t } = useLanguage();
-  const [agreeRules, setAgreeRules] = useState(data.agreeRules ?? false);
+  const [agreeContract, setAgreeContract] = useState(data.agreeContract ?? false);
   const [agreeCommunications, setAgreeCommunications] = useState(data.agreeCommunications ?? false);
   const [errors, setErrors] = useState<string[]>([]);
   const [couponCode, setCouponCode] = useState("");
