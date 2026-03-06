@@ -20,7 +20,7 @@ export const PaymentConfirmationScreen = ({ data }: Props) => {
   const price = data.franchisePrice ?? 0;
   const formatPrice = (v: number) => `${sym} ${v.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-  const franchiseName = data.franchise ? t(`franchise.${data.franchise}`) : "—";
+  const franchiseName = data.franchiseTypeCode ? t(`franchise.${data.franchiseTypeCode}`) : "—";
   const isForeigner = data.foreignerNoCpf === "true";
 
   // Build payment summary lines
