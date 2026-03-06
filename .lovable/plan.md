@@ -1,107 +1,70 @@
 
-Objetivo
 
-Sim, dá para fazer. O padrão mais aceito não é só “bloquear depois de 5 erros”, e sim combinar:
-- limite de tentativas por conta
-- limite por IP/dispositivo
-- bloqueio temporário curto
-- mensagem genérica no login
-- reset da contagem quando a pessoa acerta a senha
+## Plano: Padronizar e-mails transacionais + remover preview page
 
-O que encontrei no projeto
+### Resumo
 
-- Hoje a tela `src/pages/Login.tsx` ainda está em modo mock: ela faz `setTimeout` e entra em `/app` sem autenticação real.
-- Então essa trava de 5 tentativas precisa ser implementada junto com o login real no backend, senão ela não protege nada de verdade.
-- O projeto já usa autenticação no cadastro e já tem `profiles` com `username`, então o caminho natural é autenticar por usuário no frontend e validar/bloquear no backend.
+Converter os 4 e-mails transacionais (cadastro pendente, cadastro concluído, PIN de recuperação, senha alterada) para o mesmo padrão React Email usado nos templates do Cloud (`supabase/functions/_shared/email-templates/`), remover botões/blocos WhatsApp de todos, e deletar a página `/emails`.
 
-Padrão “universal” recomendado
+### O que muda
 
-Para este app, eu recomendaria este padrão:
-- até 5 tentativas erradas
-- ao errar a 5ª vez: bloquear por 10 minutos
-- aplicar a regra por `username` e também observar IP/origem
-- ao acertar a senha: zerar tentativas
-- sempre mostrar erro genérico como “Usuário ou senha inválidos” ou “Tente novamente mais tarde”
-- não informar se o bloqueio foi por usuário inexistente, senha errada ou conta bloqueada
-- opcional depois: CAPTCHA após muitas tentativas repetidas
+**1. Criar novos templates React Email em `_shared/email-templates/`**
 
-Esse é um padrão comum e equilibrado. Não existe um número único “universal” obrigatório, mas 5 tentativas + 10 a 15 minutos de bloqueio é bem aceitável.
+- **`pending-registration.tsx`** — Cadastro pendente. Remove bloco de vídeo e WhatsApp. Mantém: logo, saudação, dados resumidos (ID, nome, patrocinador), CTA "Continuar Cadastro", fechamento com Equipe Timol.
 
-Plano de implementação
+- **`completed-registration.tsx`** — Cadastro concluído. Remove WhatsApp. Mantém: logo, parabéns, resumo de dados, pagamento, contrato em anexo, primeiro acesso, alerta de segurança, fechamento.
 
-1. Trocar o login mock por login real
-- Substituir o `setTimeout` do `Login.tsx` por uma chamada a uma backend function própria de login.
-- Essa function receberá `username` e `password`.
+- **`password-changed.tsx`** — Senha alterada. Clean: logo, título, confirmação, mensagem discreta tipo "Se não foi você, sua conta pode estar comprometida. [Clique aqui](link) para reportar." — link abre chamado (pode ser mailto ou URL de suporte). Sem botão WhatsApp.
 
-2. Validar bloqueio antes de autenticar
-- A backend function verifica se o usuário está temporariamente bloqueado.
-- Se estiver, retorna resposta genérica com tempo restante.
+**2. Atualizar `reauthentication.tsx` (PIN)**
 
-3. Registrar tentativas falhas
-- Criar uma tabela específica de controle, separada de `profiles`, por exemplo:
-  - `login_security`
-  - ou `login_attempts`
-- Campos típicos:
-  - `username`
-  - `failed_attempts`
-  - `locked_until`
-  - `last_failed_at`
-  - `last_ip`
-  - `updated_at`
+- Usar este template como padrão para o PIN de recuperação de senha também (já é o mesmo conceito).
+- Adicionar texto de segurança: "Ninguém da Timol vai solicitar esse código. Não repasse a terceiros."
+- Adicionar validade: "Este código expira em 5 minutos."
 
-4. Fazer o fluxo de autenticação seguro
-- A function localiza o usuário pelo `username`.
-- Faz a autenticação real no backend.
-- Se falhar:
-  - incrementa contador
-  - se chegou ao limite, grava `locked_until = now + 10 min`
-- Se der certo:
-  - zera contador e remove bloqueio
+**3. Registrar novos templates no `auth-email-hook/index.ts`**
 
-5. Ajustar a UI do login
-- Mostrar mensagem amigável e genérica.
-- Se bloqueado, pode exibir algo como:
-  - “Muitas tentativas. Tente novamente em alguns minutos.”
-- Não mostrar detalhes que permitam adivinhar contas válidas.
+- Os templates de pending/completed/password-changed não são auth emails (não passam pelo hook de auth). Eles são enviados por edge functions específicas (`send-recovery-email`, `forgot-password`).
+- Portanto: atualizar as edge functions `forgot-password` e `send-recovery-email` para usar os novos templates React Email em vez do HTML inline.
 
-Recomendação de segurança
+**4. Atualizar edge functions que enviam esses e-mails**
 
-Eu não recomendo bloquear só por usuário.
-O ideal é:
-- regra principal por usuário
-- proteção extra por IP/origem
-Porque, se for só por usuário, alguém pode bloquear a conta de outra pessoa de propósito.
+- **`forgot-password/index.ts`**: substituir o HTML inline do PIN pelo import do template `reauthentication.tsx` (renderizado via `renderAsync`).
+- **`send-recovery-email/index.ts`**: substituir o HTML inline do cadastro pendente pelo import do template `pending-registration.tsx`.
 
-Detalhes técnicos
+**5. Remover a página de preview**
 
-Arquivos que provavelmente entrarão nessa mudança:
-- `src/pages/Login.tsx`
-- uma nova backend function de login
-- uma migration para criar a tabela de tentativas/bloqueio
-- possivelmente proteção de rota em `src/App.tsx` / layout do app
+- Deletar `src/pages/EmailPreviews.tsx`
+- Remover rota `/emails` de `src/App.tsx`
+- O arquivo `src/lib/emailTemplates.ts` será mantido por enquanto pois pode ter dependências em edge functions, mas as funções de build dos 4 emails serão marcadas como deprecated ou removidas se não houver mais uso.
 
-Decisões de produto que eu seguiria por padrão
-- Limite: 5 erros
-- Janela/bloqueio: 10 minutos
-- Reset ao sucesso: sim
-- Mensagem detalhada: não
-- CAPTCHA depois de abuso repetido: recomendado numa segunda etapa
+**6. Limpar `src/lib/emailTemplates.ts`**
 
-Resumo prático
+- Remover `buildPasswordResetPinEmailHtml`, `buildPasswordChangedEmailHtml`, `buildPendingEmailHtml` — as edge functions passarão a usar os templates React Email diretamente.
+- Manter `buildCompletedEmailHtml` temporariamente se ainda for usado em alguma edge function.
 
-Sim, é totalmente viável.
-O melhor padrão para seu caso seria:
-- 5 senhas erradas
-- bloqueio temporário de 10 minutos
-- controle no backend
-- por usuário + sinal de IP/origem
-- mensagem genérica
-- zerar ao login bem-sucedido
+### Padrão visual dos novos templates
 
-Observação importante
+Todos seguem o mesmo estilo dos templates Cloud:
+- Fundo branco `#ffffff`
+- Logo Timol do bucket `email-assets`
+- Cor primária `#003885` para botões e destaques
+- Tipografia `'Segoe UI', Roboto, Arial, sans-serif`
+- Footer discreto `#94a3b8`
+- Sem emojis nos títulos
+- Sem botões WhatsApp
 
-Como o login atual ainda não é real, eu trataria isso como uma implementação em duas partes:
-1. conectar o login de verdade ao backend
-2. acoplar o bloqueio temporário no mesmo fluxo
+### Arquivos afetados
 
-Assim a regra fica realmente segura e não só visual.
+| Arquivo | Ação |
+|---|---|
+| `supabase/functions/_shared/email-templates/reauthentication.tsx` | Editar (add segurança + validade) |
+| `supabase/functions/_shared/email-templates/pending-registration.tsx` | Criar |
+| `supabase/functions/_shared/email-templates/completed-registration.tsx` | Criar |
+| `supabase/functions/_shared/email-templates/password-changed.tsx` | Criar |
+| `supabase/functions/forgot-password/index.ts` | Editar (usar template React Email) |
+| `supabase/functions/send-recovery-email/index.ts` | Editar (usar template React Email) |
+| `src/pages/EmailPreviews.tsx` | Deletar |
+| `src/App.tsx` | Editar (remover rota /emails) |
+| `src/lib/emailTemplates.ts` | Limpar funções não usadas |
+
