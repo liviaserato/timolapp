@@ -30,7 +30,7 @@ const App = () => (
             <Route path="/contrato" element={<Navigate to="/cadastro?contract=1" replace />} />
             <Route path="/continue/:token" element={<Continue />} />
             <Route path="/pendentes" element={<PendingRegistrations />} />
-            <Route path="/emails" element={<EmailPreviews />} />
+            
             <Route path="/app" element={<AuthGate mode="protected"><AppLayout /></AuthGate>}>
               <Route index element={<Dashboard />} />
               <Route path=":section" element={<SectionPlaceholder />} />

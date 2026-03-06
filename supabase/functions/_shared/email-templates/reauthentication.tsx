@@ -10,6 +10,7 @@ import {
   Html,
   Img,
   Preview,
+  Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
 
@@ -29,10 +30,22 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
         <Img src={LOGO_URL} alt="Timol" height="44" style={logo} />
         <Heading style={h1}>Código de verificação</Heading>
         <Text style={text}>Use o código abaixo para confirmar sua identidade:</Text>
-        <Text style={codeStyle}>{token}</Text>
+
+        <Section style={codeBox}>
+          <Text style={codeLabel}>PIN DE SEGURANÇA</Text>
+          <Text style={codeStyle}>{token}</Text>
+        </Section>
+
+        <Text style={expiry}>Este código expira em 5 minutos.</Text>
+
+        <Section style={alertBox}>
+          <Text style={alertText}>
+            <strong>Ninguém da Timol vai solicitar esse código.</strong> Não repasse a terceiros.
+          </Text>
+        </Section>
+
         <Text style={footer}>
-          Este código expira em breve. Se você não solicitou, ignore este e-mail
-          com segurança.
+          Se você não solicitou este código, ignore este e-mail com segurança.
         </Text>
       </Container>
     </Body>
@@ -56,12 +69,44 @@ const text = {
   lineHeight: '1.6',
   margin: '0 0 20px',
 }
+const codeBox = {
+  backgroundColor: '#eff6ff',
+  border: '1px solid #bfdbfe',
+  borderRadius: '16px',
+  padding: '24px',
+  textAlign: 'center' as const,
+  margin: '0 0 20px',
+}
+const codeLabel = {
+  fontSize: '12px',
+  letterSpacing: '0.14em',
+  textTransform: 'uppercase' as const,
+  color: '#64748b',
+  margin: '0 0 8px',
+}
 const codeStyle = {
   fontFamily: 'Courier, monospace',
-  fontSize: '28px',
+  fontSize: '32px',
   fontWeight: 'bold' as const,
   color: '#003885',
-  letterSpacing: '4px',
-  margin: '0 0 30px',
+  letterSpacing: '0.35em',
+  margin: '0',
+}
+const expiry = {
+  fontSize: '14px',
+  color: '#475569',
+  margin: '0 0 20px',
+}
+const alertBox = {
+  backgroundColor: '#fefce8',
+  border: '1px solid #fde68a',
+  borderRadius: '12px',
+  padding: '18px 20px',
+  margin: '0 0 20px',
+}
+const alertText = {
+  fontSize: '14px',
+  color: '#854d0e',
+  margin: '0',
 }
 const footer = { fontSize: '12px', color: '#94a3b8', margin: '32px 0 0' }
