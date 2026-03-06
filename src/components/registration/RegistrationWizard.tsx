@@ -20,6 +20,7 @@ interface Props {
   initialData?: WizardData;
   initialStep?: number;
   onComplete: (data: WizardData) => void;
+  onBack?: () => void;
 }
 
 export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComplete }: Props) => {
