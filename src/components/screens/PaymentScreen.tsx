@@ -163,7 +163,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
     }
   };
 
-  const franchiseName = data.franchise ? t(`franchise.${data.franchise}`) : "";
+  const franchiseName = data.franchiseTypeCode ? t(`franchise.${data.franchiseTypeCode}`) : "";
 
   return (
     <div className="w-full max-w-md mx-auto space-y-4">
