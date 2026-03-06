@@ -23,6 +23,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { loadStripe } from "@stripe/stripe-js";
+import { supabase } from "@/integrations/supabase/client";
 import visaIcon from "@/assets/credit-card-visa.svg";
 import masterIcon from "@/assets/credit-card-master.svg";
 import amexIcon from "@/assets/credit-card-amex.svg";
@@ -78,6 +80,9 @@ const allBrandKeys = ["visa", "mastercard", "amex", "elo", "diners", "discover"]
 
 const PIX_CODE = "00020126580014BR.GOV.BCB.PIX0136timol-pix-key@timol.com.br5204000053039865802BR5913TIMOL SISTEMA6009SAO PAULO62070503***6304ABCD";
 
+// Stripe publishable key — safe to expose in frontend
+const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "";
+
 export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
   const { t } = useLanguage();
   const isBrazilAddress = (data.countryIso2 ?? "BR") === "BR";
@@ -103,6 +108,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
   const isEuro = ["AT","BE","CY","EE","FI","FR","DE","GR","IE","IT","LV","LT","LU","MT","NL","PT","SK","SI","ES"].includes(data.countryIso2 ?? "");
   const sym = isBrazilAddress ? "R$" : isEuro ? "€" : "US$";
   const locale = isBrazilAddress ? "pt-BR" : isEuro ? "de-DE" : "en-US";
+  const currencyCode = isBrazilAddress ? "brl" : isEuro ? "eur" : "usd";
 
   const formatPrice = (v: number) => `${sym} ${v.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
@@ -138,19 +144,98 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
     return Object.keys(e).length === 0;
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!validate()) return;
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      if (method === "credit-card") {
+        // 1. Create PaymentIntent via edge function
+        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+          "create-checkout",
+          {
+            body: {
+              price,
+              currency: currencyCode,
+              customerEmail: data.email,
+              franchiseTypeCode: data.franchiseTypeCode,
+              franchiseId: data.franchiseId,
+              installments: isBrazilAddress && !isForeigner ? parseInt(installments) : 1,
+              customerName: data.fullName,
+              authUserId: data.authUserId,
+            },
+          }
+        );
+
+        if (checkoutError || !checkoutData?.clientSecret) {
+          console.error("Checkout error:", checkoutError, checkoutData);
+          setErrors({ general: t("payment.error.general") });
+          setLoading(false);
+          return;
+        }
+
+        // 2. Confirm payment with Stripe.js
+        const stripe = await loadStripe(STRIPE_PUBLISHABLE_KEY);
+        if (!stripe) {
+          setErrors({ general: t("payment.error.general") });
+          setLoading(false);
+          return;
+        }
+
+        const [expMonth, expYear] = cardExpiry.split("/").map(Number);
+        const cardNumberClean = cardNumber.replace(/\s/g, "");
+
+        const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(
+          checkoutData.clientSecret,
+          {
+            payment_method: {
+              card: {
+                number: cardNumberClean,
+                exp_month: expMonth,
+                exp_year: 2000 + expYear,
+                cvc: cardCvv,
+              } as any,
+              billing_details: {
+                name: cardName,
+                email: data.email,
+              },
+            },
+          }
+        );
+
+        setLoading(false);
+
+        if (stripeError) {
+          console.error("Stripe error:", stripeError);
+          setErrors({ general: stripeError.message || t("payment.error.general") });
+          return;
+        }
+
+        const last4 = cardNumberClean.slice(-4);
+        const succeeded = paymentIntent?.status === "succeeded";
+
+        onConfirm({
+          paymentMethod: "credit-card",
+          cardLast4: last4,
+          installments: parseInt(installments),
+          cardHolderName: cardName.trim(),
+          amountPaid: price,
+          currencyCode,
+          // Signal to Index.tsx whether payment succeeded
+          registrationStatus: succeeded ? "payment_confirmed" : "payment_pending",
+        });
+      } else {
+        // PIX flow — unchanged
+        setLoading(false);
+        onConfirm({
+          paymentMethod: method,
+        });
+      }
+    } catch (err) {
+      console.error("Payment error:", err);
+      setErrors({ general: t("payment.error.general") });
       setLoading(false);
-      const last4 = cardNumber.replace(/\s/g, "").slice(-4);
-      onConfirm({
-        paymentMethod: method,
-        cardLast4: method === "credit-card" ? last4 : undefined,
-        installments: method === "credit-card" ? parseInt(installments) : undefined,
-        cardHolderName: method === "credit-card" ? cardName.trim() : undefined,
-      });
-    }, 2000);
+    }
   };
 
   const handleCopyPix = async () => {
@@ -281,6 +366,12 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
             <CardTitle className="text-base">{t("payment.credit.details")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
+            {errors.general && (
+              <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">
+                {errors.general}
+              </div>
+            )}
+
             <div className="space-y-1">
               <Label>{t("payment.card.number")}</Label>
               <div className="relative">
