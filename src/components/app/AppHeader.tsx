@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSidebarState } from "@/pages/AppLayout";
 import { useFranchise } from "@/contexts/FranchiseContext";
-import { supabase } from "@/integrations/supabase/client";
+import { logout } from "@/lib/api";
 import timolLogoBranco from "@/assets/logo-timol-branco.svg";
 import iconSuporte from "@/assets/icon-sidebar-suporte.svg";
 import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
@@ -124,10 +124,7 @@ export function AppHeader() {
                 </DropdownMenuItem>
                 <div className="mx-1 my-1 h-px bg-muted" />
                 <DropdownMenuItem
-                  onClick={async () => {
-                    await supabase.auth.signOut();
-                    navigate("/");
-                  }}
+                  onClick={() => logout()}
                   className="flex items-center gap-2"
                 >
                   <LogOut className="h-4 w-4" /> Sair

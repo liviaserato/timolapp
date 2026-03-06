@@ -24,15 +24,11 @@ import {
   Check,
 } from "lucide-react";
 import { countries } from "@/data/countries";
+import { forgotUsername, ApiRequestError } from "@/lib/api";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
 
 type Step = "form" | "found";
 
-// Mock test data
-const MOCK_EMAIL = "liviaserato@yahoo.com.br";
-const MOCK_BIRTH = "07/03/1986";
-const MOCK_USERNAME = "liviaserato";
-const MOCK_NAME = "Lívia Serato";
 
 interface Props {
   open: boolean;
@@ -151,25 +147,29 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
     setLoading(true);
     setFieldErrors({});
 
-    // Mock: check test data
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      // Convert DD/MM/YYYY to ISO YYYY-MM-DD
+      const parts = birthDate.split("/");
+      const isoBirthDate = parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : birthDate;
 
-      // Normalize birth date for comparison (handle 2-digit year)
-      const normalizedBirth = birthDate.length === 10 ? birthDate : "";
-      const birthMatches =
-        normalizedBirth === MOCK_BIRTH ||
-        normalizedBirth === "07/03/86" ||
-        normalizedBirth === "07/03/1986";
+      const req = method === "email"
+        ? { method: "email" as const, email: email.trim().toLowerCase(), birthDate: isoBirthDate }
+        : { method: "document" as const, document: document.trim(), documentCountryCode: country, birthDate: isoBirthDate };
 
-      if (method === "email" && email.trim().toLowerCase() === MOCK_EMAIL && birthMatches) {
-        setFoundUsername(MOCK_USERNAME);
-        setFoundName(MOCK_NAME);
-        setStep("found");
+      const data = await forgotUsername(req);
+
+      setFoundUsername(data.username);
+      setFoundName(data.fullName || "");
+      setStep("found");
+    } catch (err) {
+      if (err instanceof ApiRequestError && (err.code === "not_found" || err.status === 404)) {
+        setFieldErrors({ general: t("forgotUser.error.notFound") });
       } else {
         setFieldErrors({ general: t("forgotUser.error.notFound") });
       }
-    }, 800);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCopyUsername = async () => {

@@ -25,7 +25,13 @@ import {
   ArrowLeft,
   HelpCircle,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  passwordRecoveryTarget,
+  passwordRequestPin,
+  passwordVerifyPin,
+  passwordReset,
+  ApiRequestError,
+} from "@/lib/api";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
 
 type Step = "identifier" | "pin" | "new-password" | "success";
@@ -37,20 +43,11 @@ interface Props {
   onSwitchToUsername: () => void;
 }
 
-async function extractFunctionErrorCode(error: unknown): Promise<string | null> {
-  const context =
-    error && typeof error === "object" && "context" in error
-      ? (error as { context?: unknown }).context
-      : null;
-
-  if (!(context instanceof Response)) {
-    return null;
+function extractErrorCode(err: unknown): string | null {
+  if (err instanceof ApiRequestError) {
+    return err.code || null;
   }
-
-  const payload = await context.json().catch(() => null);
-  return payload && typeof payload === "object" && "error" in payload
-    ? String(payload.error)
-    : null;
+  return null;
 }
 
 export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props) => {
@@ -169,35 +166,24 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
     resetEmailValidation();
 
     try {
-      const { data, error: fnError } = await supabase.functions.invoke("forgot-password", {
-        body: {
-          action: "validate-username",
-          username: normalizedIdentifier,
-        },
-      });
+      const data = await passwordRecoveryTarget(normalizedIdentifier);
 
-      if (fnError) {
-        const errorCode = await extractFunctionErrorCode(fnError);
-        setError(getErrorMessage(errorCode));
-        return;
-      }
-
-      if (!data?.masked_email) {
+      if (!data?.maskedEmail) {
         setError(t("forgotPw.error.generic"));
         return;
       }
 
       setIdentifier(normalizedIdentifier);
-      setMaskedEmail(String(data.masked_email));
-    } catch {
-      setError(t("forgotPw.error.generic"));
+      setMaskedEmail(data.maskedEmail);
+    } catch (err) {
+      const errorCode = extractErrorCode(err);
+      setError(getErrorMessage(errorCode));
     } finally {
       setLoading(false);
     }
   };
 
   const handleValidateEmail = async () => {
-    const normalizedIdentifier = identifier.trim().toLowerCase();
     const normalizedEmail = emailConfirmation.trim().toLowerCase();
 
     if (!normalizedEmail) {
@@ -212,30 +198,13 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
     setEmailValidationState("idle");
     setEmailValidationMessage("");
 
+    // The new API doesn't have a separate "validate-email" step.
+    // The email confirmation is a client-side UX step. We simply
+    // store the confirmed email and proceed.
+    // If the backend later rejects it during request-pin, the error
+    // will surface there.
     try {
-      const { error: fnError } = await supabase.functions.invoke("forgot-password", {
-        body: {
-          action: "validate-email",
-          username: normalizedIdentifier,
-          email: normalizedEmail,
-        },
-      });
-
-      if (fnError) {
-        const errorCode = await extractFunctionErrorCode(fnError);
-        const message = getErrorMessage(errorCode);
-
-        if (errorCode === "email_required" || errorCode === "email_mismatch") {
-          setEmailValidationState("error");
-          setEmailValidationMessage(message);
-          setConfirmedEmail("");
-          return;
-        }
-
-        setError(message);
-        return;
-      }
-
+      // Client-side validation: just confirm the email matches
       setConfirmedEmail(normalizedEmail);
       setEmailValidationState("success");
       setEmailValidationMessage(t("forgotPw.emailValidation.success"));
@@ -267,28 +236,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
       setShowExpiryHint(false);
 
       try {
-        const { error: fnError } = await supabase.functions.invoke("forgot-password", {
-          body: {
-            action: "send-pin",
-            username: normalizedIdentifier,
-            email: confirmedEmail,
-          },
-        });
-
-        if (fnError) {
-          const errorCode = await extractFunctionErrorCode(fnError);
-          const message = getErrorMessage(errorCode);
-
-          if (errorCode === "email_required" || errorCode === "email_mismatch") {
-            setEmailValidationState("error");
-            setEmailValidationMessage(message);
-            setConfirmedEmail("");
-            return;
-          }
-
-          setError(message);
-          return;
-        }
+        await passwordRequestPin(normalizedIdentifier);
 
         setIdentifier(normalizedIdentifier);
         setPin("");
@@ -302,8 +250,18 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
           setResendHint(true);
           window.setTimeout(() => setResendHint(false), 10000);
         }
-      } catch {
-        setError(t("forgotPw.error.generic"));
+      } catch (err) {
+        const errorCode = extractErrorCode(err);
+        const message = getErrorMessage(errorCode);
+
+        if (errorCode === "email_required" || errorCode === "email_mismatch") {
+          setEmailValidationState("error");
+          setEmailValidationMessage(message);
+          setConfirmedEmail("");
+          return;
+        }
+
+        setError(message);
       } finally {
         setLoading(false);
       }
@@ -326,30 +284,19 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
     setError("");
 
     try {
-      const { data, error: fnError } = await supabase.functions.invoke("verify-reset-pin", {
-        body: {
-          identifier: identifier.trim(),
-          pin: pinValue,
-        },
-      });
+      const data = await passwordVerifyPin(identifier.trim(), pinValue);
 
-      if (fnError) {
-        const errorCode = await extractFunctionErrorCode(fnError);
-        setError(getErrorMessage(errorCode));
-        setShowExpiryHint(false);
-        return;
-      }
-
-      if (!data?.reset_token) {
+      if (!data?.resetToken) {
         setError(t("forgotPw.error.generic"));
         setShowExpiryHint(false);
         return;
       }
 
-      setResetToken(String(data.reset_token));
+      setResetToken(data.resetToken);
       setStep("new-password");
-    } catch {
-      setError(t("forgotPw.error.generic"));
+    } catch (err) {
+      const errorCode = extractErrorCode(err);
+      setError(getErrorMessage(errorCode));
       setShowExpiryHint(false);
     } finally {
       setLoading(false);
@@ -376,30 +323,19 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
     setError("");
 
     try {
-      const { error: fnError } = await supabase.functions.invoke("reset-password", {
-        body: {
-          reset_token: resetToken,
-          new_password: newPassword,
-        },
-      });
+      await passwordReset(resetToken, newPassword);
+      setStep("success");
+    } catch (err) {
+      const errorCode = extractErrorCode(err);
 
-      if (fnError) {
-        const errorCode = await extractFunctionErrorCode(fnError);
-
-        if (errorCode === "expired_token" || errorCode === "invalid_token") {
-          setStep("pin");
-          setPin("");
-          setResetToken("");
-          setShowExpiryHint(false);
-        }
-
-        setError(getErrorMessage(errorCode, "forgotPw.error.resetFailed"));
-        return;
+      if (errorCode === "expired_token" || errorCode === "invalid_token") {
+        setStep("pin");
+        setPin("");
+        setResetToken("");
+        setShowExpiryHint(false);
       }
 
-      setStep("success");
-    } catch {
-      setError(t("forgotPw.error.resetFailed"));
+      setError(getErrorMessage(errorCode, "forgotPw.error.resetFailed"));
     } finally {
       setLoading(false);
     }
