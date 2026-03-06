@@ -9,7 +9,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Continue from "./pages/Continue";
 import PendingRegistrations from "./pages/PendingRegistrations";
-import EmailPreviews from "./pages/EmailPreviews";
+
 import AppLayout from "./pages/AppLayout";
 import Dashboard from "./pages/app/Dashboard";
 import SectionPlaceholder from "./pages/app/SectionPlaceholder";
