@@ -9,7 +9,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Continue from "./pages/Continue";
 import PendingRegistrations from "./pages/PendingRegistrations";
-import EmailPreviews from "./pages/EmailPreviews";
+
 import AppLayout from "./pages/AppLayout";
 import Dashboard from "./pages/app/Dashboard";
 import SectionPlaceholder from "./pages/app/SectionPlaceholder";
@@ -30,7 +30,7 @@ const App = () => (
             <Route path="/contrato" element={<Navigate to="/cadastro?contract=1" replace />} />
             <Route path="/continue/:token" element={<Continue />} />
             <Route path="/pendentes" element={<PendingRegistrations />} />
-            <Route path="/emails" element={<EmailPreviews />} />
+            
             <Route path="/app" element={<AuthGate mode="protected"><AppLayout /></AuthGate>}>
               <Route index element={<Dashboard />} />
               <Route path=":section" element={<SectionPlaceholder />} />

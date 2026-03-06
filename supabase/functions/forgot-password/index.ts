@@ -1,4 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import * as React from "npm:react@18.3.1";
+import { renderAsync } from "npm:@react-email/components@0.0.22";
+import { ReauthenticationEmail } from "../_shared/email-templates/reauthentication.tsx";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -28,73 +31,30 @@ const PIN_EXPIRY_MINUTES = 5;
 
 function maskEmail(email: string): string {
   const [localPart, domain] = email.split("@");
-
-  if (!localPart || !domain) {
-    return email;
-  }
-
+  if (!localPart || !domain) return email;
   const visiblePart = localPart.slice(0, 2);
   const hiddenLength = Math.max(localPart.length - visiblePart.length, 4);
-
   return `${visiblePart}${"*".repeat(hiddenLength)}@${domain}`;
-}
-
-function getPasswordResetPinSubject(pin: string): string {
-  return `${pin} | Código para alterar sua senha Timol`;
-}
-
-function buildPasswordResetPinEmailHtml(pin: string): string {
-  return `<!DOCTYPE html>
-<html lang="pt-BR">
-  <body style="margin:0;padding:24px;background:#ffffff;font-family:'Segoe UI',Roboto,Arial,sans-serif;color:#1e293b;line-height:1.6;">
-    <div style="max-width:560px;margin:0 auto;border:1px solid #e2e8f0;border-radius:16px;padding:32px;">
-      <h1 style="margin:0 0 16px;font-size:24px;color:#0f2b4a;">Alteração de senha</h1>
-      <p style="margin:0 0 16px;font-size:15px;">Use o código abaixo para continuar a alteração da sua senha:</p>
-      <div style="margin:0 0 20px;padding:18px 20px;border-radius:12px;background:#eff6ff;border:1px solid #bfdbfe;text-align:center;">
-        <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;">PIN de segurança</p>
-        <p style="margin:0;font-size:32px;font-weight:700;letter-spacing:0.4em;color:#0f2b4a;">${pin}</p>
-      </div>
-      <p style="margin:0 0 16px;font-size:14px;color:#475569;">Este código é válido por 5 minutos.</p>
-      <div style="padding:16px 18px;border-radius:12px;background:#fefce8;border:1px solid #fde68a;">
-        <p style="margin:0;font-size:14px;color:#854d0e;"><strong>Não repasse este código para terceiros.</strong> A Timol nunca irá solicitar esse código.</p>
-      </div>
-    </div>
-  </body>
-</html>`;
 }
 
 function parseExistsValue(payload: unknown): boolean | null {
   if (!payload || typeof payload !== "object") return null;
-
   const exists = (payload as { exists?: unknown }).exists;
   if (typeof exists === "boolean") return exists;
   if (typeof exists === "string") return exists.toLowerCase() === "true";
-
   const person = (payload as { person?: unknown }).person;
   if (Array.isArray(person)) return person.length > 0;
-
   return null;
 }
 
 async function checkExternalUsernameExists(username: string): Promise<boolean> {
   const url = new URL("https://www.timolweb.com.br/api/people/username-check");
   url.searchParams.set("username", username);
-
-  const response = await fetch(url.toString(), {
-    headers: timolHeaders,
-  });
-
-  if (!response.ok) {
-    throw new Error(`upstream_${response.status}`);
-  }
-
+  const response = await fetch(url.toString(), { headers: timolHeaders });
+  if (!response.ok) throw new Error(`upstream_${response.status}`);
   const payload = await response.json();
   const exists = parseExistsValue(payload);
-
-  if (exists === null) {
-    throw new Error("unexpected_response");
-  }
-
+  if (exists === null) throw new Error("unexpected_response");
   return exists;
 }
 
@@ -144,7 +104,6 @@ Deno.serve(async (req) => {
     }
 
     let exists = false;
-
     try {
       exists = await checkExternalUsernameExists(username);
     } catch (validationError) {
@@ -170,10 +129,7 @@ Deno.serve(async (req) => {
 
     if (action === "validate-username") {
       return new Response(
-        JSON.stringify({
-          success: true,
-          masked_email: maskEmail(normalizedProfileEmail),
-        }),
+        JSON.stringify({ success: true, masked_email: maskEmail(normalizedProfileEmail) }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -233,8 +189,12 @@ Deno.serve(async (req) => {
       throw insertError;
     }
 
-    const subject = getPasswordResetPinSubject(pin);
-    const html = buildPasswordResetPinEmailHtml(pin);
+    // Render the PIN email using the same React Email template as auth reauthentication
+    const html = await renderAsync(
+      React.createElement(ReauthenticationEmail, { token: pin })
+    );
+
+    const subject = `${pin} | Código para alterar sua senha Timol`;
 
     console.log(
       `[forgot-password] Email sending stub ready for noreply@timol.com.br -> ${normalizedProfileEmail}; subject: ${subject}; PIN: ${pin}; expires_at: ${expiresAt}; html_size: ${html.length}`
