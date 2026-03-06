@@ -118,7 +118,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (method === "credit") {
+    if (method === "credit-card") {
       if (cardNumber.replace(/\s/g, "").length < 16) e.cardNumber = t("payment.error.cardNumber");
       if (!cardName.trim()) e.cardName = t("payment.error.cardHolder");
       if (cardExpiry.length < 5) {
