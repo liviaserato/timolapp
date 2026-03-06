@@ -20,9 +20,10 @@ interface Props {
   initialData?: WizardData;
   initialStep?: number;
   onComplete: (data: WizardData) => void;
+  onBack?: () => void;
 }
 
-export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComplete }: Props) => {
+export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComplete, onBack: onBackToSponsor }: Props) => {
   const { t, language } = useLanguage();
   const [step, setStep] = useState(initialStep);
   const [data, setData] = useState<Record<string, string>>({
@@ -304,6 +305,10 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
               <div className="flex justify-between gap-2">
                 {step > 1 ? (
                   <Button type="button" variant="outline" onClick={handleBack} disabled={loading}>
+                    {t("btn.back")}
+                  </Button>
+                ) : onBackToSponsor ? (
+                  <Button type="button" variant="outline" onClick={onBackToSponsor} disabled={loading}>
                     {t("btn.back")}
                   </Button>
                 ) : (
