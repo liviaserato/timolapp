@@ -17,8 +17,10 @@ import {
 
 /* ── mock data (will be replaced by real DB queries) ── */
 
+const isBrazilian = true; // toggle to test foreigner view
+const countryFlag = "🇧🇷";
+
 const personalData = {
-  franchiseId: "100231",
   fullName: "Lívia Serato",
   document: "123.456.789-00",
   birthDate: "15-03-1990",
@@ -39,10 +41,10 @@ const loginData = {
 };
 
 const franchiseData = {
+  id: "100231",
   sponsor: "Maria Silva (ID 99001)",
   plan: "Ouro",
   planCode: "gold",
-  price: "R$ 1.500,00",
 };
 
 interface BankAccount {
@@ -111,6 +113,12 @@ export default function Cadastro() {
     });
   };
 
+  const docLabel = isBrazilian ? "CPF" : (
+    <span className="flex items-center gap-1">
+      <span>{countryFlag}</span> Documento
+    </span>
+  );
+
   return (
     <div>
       <header className="text-center mb-4">
@@ -120,20 +128,18 @@ export default function Cadastro() {
         </p>
       </header>
 
-      {/* 2-column responsive grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {/* Dados Pessoais */}
-        <DashboardCard icon={User} title="Dados Pessoais">
+        {/* Dados Pessoais — spans full width on desktop */}
+        <DashboardCard icon={User} title="Dados Pessoais" className="md:col-span-2">
           <div className="mt-1">
-            <Row label="ID" value={personalData.franchiseId} />
             <Row label="Nome Completo" value={personalData.fullName} />
-            <Row label="CPF" value={personalData.document} />
+            <Row label={docLabel as any} value={personalData.document} />
             <Row label="Nascimento" value={personalData.birthDate} />
             <Row label="Gênero" value={personalData.gender} />
           </div>
         </DashboardCard>
 
-        {/* Contato */}
+        {/* Contato — left column */}
         <DashboardCard icon={Phone} title="Contato">
           <div className="mt-1">
             <Row label="E-mail" value={contactData.email} />
@@ -141,12 +147,12 @@ export default function Cadastro() {
           </div>
         </DashboardCard>
 
-        {/* Endereço */}
+        {/* Endereço — right column, same row as Contato */}
         <DashboardCard icon={MapPin} title="Endereço">
           <p className="mt-1 text-sm">{addressData.full}</p>
         </DashboardCard>
 
-        {/* Acesso */}
+        {/* Acesso — left column */}
         <DashboardCard icon={KeyRound} title="Acesso">
           <div className="mt-1">
             <Row label="Usuário" value={loginData.username} />
@@ -161,16 +167,16 @@ export default function Cadastro() {
           </div>
         </DashboardCard>
 
-        {/* Franquia */}
+        {/* Franquia — right column */}
         <DashboardCard icon={Gem} title="Franquia">
           <div className="mt-1">
+            <Row label="ID" value={franchiseData.id} />
             <Row label="Patrocinador" value={franchiseData.sponsor} />
             <Row label="Plano" value={franchiseData.plan} />
-            <Row label="Valor" value={franchiseData.price} />
           </div>
         </DashboardCard>
 
-        {/* Dados Financeiros */}
+        {/* Dados Financeiros — full width */}
         <DashboardCard icon={Landmark} title="Dados Financeiros" className="md:col-span-2">
           <div className="mt-2 space-y-3">
             {accounts.length === 0 && (
