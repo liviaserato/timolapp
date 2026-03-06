@@ -171,8 +171,8 @@ export default function Cadastro() {
         <DashboardCard icon={Gem} title="Franquia">
           <div className="mt-1">
             <Row label="ID" value={franchiseData.id} />
+            <Row label="Franquia" value={franchiseData.plan} />
             <Row label="Patrocinador" value={franchiseData.sponsor} />
-            <Row label="Plano" value={franchiseData.plan} />
           </div>
         </DashboardCard>
 
