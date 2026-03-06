@@ -202,7 +202,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
           </button>
           <button
             role="tab"
-            aria-selected={method === "credit"}
+            aria-selected={method === "credit-card"}
             onClick={() => setMethod("credit-card")}
             className={cn(
               "flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all",

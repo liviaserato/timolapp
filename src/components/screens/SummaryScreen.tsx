@@ -165,7 +165,7 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
-                {franchiseIcons[data.franchise ?? "bronze"]}
+                {franchiseIcons[data.franchiseTypeCode ?? "bronze"]}
                 {t("summary.franchise")}
               </CardTitle>
               {onChangeFranchise && (
