@@ -111,6 +111,7 @@ const Index = () => {
               updateData(data);
               setScreen("franchise");
             }}
+            onBack={() => setScreen("sponsor")}
           />
         );
       case "franchise":

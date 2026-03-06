@@ -307,6 +307,10 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
                   <Button type="button" variant="outline" onClick={handleBack} disabled={loading}>
                     {t("btn.back")}
                   </Button>
+                ) : onBackToSponsor ? (
+                  <Button type="button" variant="outline" onClick={onBackToSponsor} disabled={loading}>
+                    {t("btn.back")}
+                  </Button>
                 ) : (
                   <div />
                 )}
