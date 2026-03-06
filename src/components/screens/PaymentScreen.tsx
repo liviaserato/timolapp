@@ -203,10 +203,10 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
           <button
             role="tab"
             aria-selected={method === "credit"}
-            onClick={() => setMethod("credit")}
+            onClick={() => setMethod("credit-card")}
             className={cn(
               "flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all",
-              method === "credit"
+              method === "credit-card"
                 ? "border-primary bg-primary/5 text-primary"
                 : "border-border hover:border-primary/50"
             )}
