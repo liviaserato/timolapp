@@ -3,6 +3,9 @@ import { Navigate } from "react-router-dom";
 import { isAuthenticated, clearAccessToken } from "@/lib/api";
 import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 
+// ⚠️ TEMPORARY: Set to false when the real API is ready
+const DEV_BYPASS = true;
+
 interface AuthGateProps {
   children: ReactNode;
   mode: "guest" | "protected";
@@ -20,7 +23,6 @@ export function AuthGate({ children, mode }: AuthGateProps) {
   useEffect(() => {
     checkAuth();
 
-    // Listen for storage changes (e.g., logout in another tab)
     const onStorage = (e: StorageEvent) => {
       if (e.key === "timol_access_token" || e.key === null) {
         checkAuth();
@@ -29,6 +31,11 @@ export function AuthGate({ children, mode }: AuthGateProps) {
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, [checkAuth]);
+
+  // DEV BYPASS: skip all auth checks
+  if (DEV_BYPASS) {
+    return <>{children}</>;
+  }
 
   if (!checked) {
     return (
