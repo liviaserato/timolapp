@@ -129,8 +129,8 @@ export default function Cadastro() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {/* Dados Pessoais — spans full width on desktop */}
-        <DashboardCard icon={User} title="Dados Pessoais" className="md:col-span-2">
+        {/* Dados Pessoais — left, stretches to match right column */}
+        <DashboardCard icon={User} title="Dados Pessoais" className="md:row-span-2">
           <div className="mt-1">
             <Row label="Nome Completo" value={personalData.fullName} />
             <Row label={docLabel as any} value={personalData.document} />
@@ -139,7 +139,7 @@ export default function Cadastro() {
           </div>
         </DashboardCard>
 
-        {/* Contato — left column */}
+        {/* Contato — top right */}
         <DashboardCard icon={Phone} title="Contato">
           <div className="mt-1">
             <Row label="E-mail" value={contactData.email} />
@@ -147,7 +147,7 @@ export default function Cadastro() {
           </div>
         </DashboardCard>
 
-        {/* Endereço — right column, same row as Contato */}
+        {/* Endereço — bottom right */}
         <DashboardCard icon={MapPin} title="Endereço">
           <p className="mt-1 text-sm">{addressData.full}</p>
         </DashboardCard>
