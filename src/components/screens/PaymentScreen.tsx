@@ -146,9 +146,9 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
       const last4 = cardNumber.replace(/\s/g, "").slice(-4);
       onConfirm({
         paymentMethod: method,
-        cardLast4: method === "credit" ? last4 : undefined,
-        cardInstallments: method === "credit" ? parseInt(installments) : undefined,
-        cardHolderName: method === "credit" ? cardName.trim() : undefined,
+        cardLast4: method === "credit-card" ? last4 : undefined,
+        installments: method === "credit-card" ? parseInt(installments) : undefined,
+        cardHolderName: method === "credit-card" ? cardName.trim() : undefined,
       });
     }, 2000);
   };
