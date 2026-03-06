@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import {
   Loader2, FileText, Mail, Phone, Users, Award, CreditCard,
   Calendar, MessageCircle, StickyNote, ChevronDown, ChevronUp,
   SearchCheck, Sparkles, Check, Copy, Bell, AlertTriangle, X,
+  CheckCircle2,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -16,35 +16,16 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-
-interface PendingRegistration {
-  id: string;
-  user_id: string;
-  full_name: string | null;
-  document: string | null;
-  city: string | null;
-  state: string | null;
-  country: string | null;
-  franchise_id: string | null;
-  sponsor_id: string | null;
-  sponsor_name: string | null;
-  email: string;
-  phone: string | null;
-  created_at: string;
-  status: string;
-  franchise_selected: boolean;
-  franchise_name: string | null;
-  payment_completed: boolean;
-  recovery_email_sent: boolean;
-  recovery_email_sent_at: string | null;
-  whatsapp_recovery_sent: boolean;
-  whatsapp_recovery_sent_at: string | null;
-  sponsor_source: string | null;
-  sponsor_notified: boolean;
-  sponsor_notified_at: string | null;
-  gender: string | null;
-  preferred_language: string | null;
-}
+import {
+  getPendingRegistrations,
+  getRegistrationNotes,
+  createRegistrationNote,
+  recordWhatsappTouchpoint,
+  recordSponsorNotifiedTouchpoint,
+  type PendingRegistrationItem,
+  type RegistrationNote,
+} from "@/lib/api/registrations";
+import { manualApprovePayment } from "@/lib/api/payments";
 
 type AlertLevel = "green" | "yellow" | "red" | null;
 type AlertType = "whatsapp" | "sponsor";
@@ -75,9 +56,9 @@ function getDaysSinceCreation(createdAt: string): number {
   return (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
 }
 
-function getWhatsappAlert(reg: PendingRegistration): FollowUpAlert | null {
-  if (reg.whatsapp_recovery_sent) return null;
-  const days = getDaysSinceCreation(reg.created_at);
+function getWhatsappAlert(reg: PendingRegistrationItem): FollowUpAlert | null {
+  if (reg.whatsappSentAt) return null;
+  const days = getDaysSinceCreation(reg.createdAt);
 
   if (days >= 4) {
     return {
@@ -103,10 +84,10 @@ function getWhatsappAlert(reg: PendingRegistration): FollowUpAlert | null {
   return null;
 }
 
-function getSponsorAlert(reg: PendingRegistration): FollowUpAlert | null {
-  if (!reg.whatsapp_recovery_sent) return null;
-  if (reg.sponsor_notified) return null;
-  const days = getDaysSinceCreation(reg.created_at);
+function getSponsorAlert(reg: PendingRegistrationItem): FollowUpAlert | null {
+  if (!reg.whatsappSentAt) return null;
+  if (reg.sponsorNotifiedAt) return null;
+  const days = getDaysSinceCreation(reg.createdAt);
 
   if (days >= 10) {
     return {
@@ -161,25 +142,26 @@ function getAlertStyles(level: AlertLevel) {
 }
 
 export default function PendingRegistrations() {
-  const [registrations, setRegistrations] = useState<PendingRegistration[]>([]);
+  const [registrations, setRegistrations] = useState<PendingRegistrationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [notes, setNotes] = useState<Record<string, string>>({});
-  const [savedNotes, setSavedNotes] = useState<Record<string, string>>({});
+  const [notesDraft, setNotesDraft] = useState<Record<string, string>>({});
+  const [notesHistory, setNotesHistory] = useState<Record<string, RegistrationNote[]>>({});
+  const [savingNote, setSavingNote] = useState<Record<string, boolean>>({});
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
-  const [whatsappDialog, setWhatsappDialog] = useState<{ open: boolean; reg: PendingRegistration | null }>({ open: false, reg: null });
-  const [sponsorDialog, setSponsorDialog] = useState<{ open: boolean; reg: PendingRegistration | null }>({ open: false, reg: null });
+  const [whatsappDialog, setWhatsappDialog] = useState<{ open: boolean; reg: PendingRegistrationItem | null }>({ open: false, reg: null });
+  const [sponsorDialog, setSponsorDialog] = useState<{ open: boolean; reg: PendingRegistrationItem | null }>({ open: false, reg: null });
   const [copied, setCopied] = useState(false);
   const [dismissedAlerts, setDismissedAlerts] = useState<Record<string, Set<AlertType>>>({});
+  const [approvingPayment, setApprovingPayment] = useState<Record<string, boolean>>({});
 
   useEffect(() => { document.title = "Cadastro Nova Franquia"; return () => { document.title = "Timol System"; }; }, []);
 
   useEffect(() => {
     async function fetchPending() {
       try {
-        const { data, error } = await supabase.functions.invoke("get-pending-registrations");
-        if (error) throw error;
-        setRegistrations(data?.data || []);
+        const response = await getPendingRegistrations();
+        setRegistrations(response.items || []);
       } catch (err: any) {
         console.error("Error fetching pending registrations:", err);
         setError("Erro ao carregar cadastros pendentes.");
@@ -190,54 +172,72 @@ export default function PendingRegistrations() {
     fetchPending();
   }, []);
 
-  const formatDateTime = (dateStr: string | null) => {
+  // Load notes for a registration when expanded
+  const loadNotes = async (franchiseId: string) => {
+    if (notesHistory[franchiseId]) return; // already loaded
+    try {
+      const response = await getRegistrationNotes(franchiseId);
+      setNotesHistory((prev) => ({ ...prev, [franchiseId]: response.notes }));
+    } catch (err) {
+      console.error("Error loading notes:", err);
+    }
+  };
+
+  const formatDateTime = (dateStr: string | null | undefined) => {
     if (!dateStr) return "";
     return new Date(dateStr).toLocaleDateString("pt-BR", {
       day: "2-digit", month: "2-digit", year: "2-digit",
     });
   };
 
-  const getCountryData = (iso2: string | null) => {
+  const getCountryData = (iso2: string | null | undefined) => {
     if (!iso2) return null;
     return countries.find((c) => c.iso2 === iso2.toUpperCase());
   };
 
-  const isBrazilian = (countryIso: string | null) => !countryIso || countryIso.toUpperCase() === "BR";
+  const isBrazilian = (countryCode: string | null | undefined) => !countryCode || countryCode.toUpperCase() === "BR";
 
-  const isSponsorBlocked = (reg: PendingRegistration) => {
-    if (!reg.whatsapp_recovery_sent || !reg.whatsapp_recovery_sent_at) return true;
-    const sentDate = new Date(reg.whatsapp_recovery_sent_at);
+  const isSponsorBlocked = (reg: PendingRegistrationItem) => {
+    if (!reg.whatsappSentAt) return true;
+    const sentDate = new Date(reg.whatsappSentAt);
     const now = new Date();
     const diffDays = (now.getTime() - sentDate.getTime()) / (1000 * 60 * 60 * 24);
     return diffDays < 5;
   };
 
-  const getSponsorBlockedDaysLeft = (reg: PendingRegistration) => {
-    if (!reg.whatsapp_recovery_sent_at) return 0;
-    const sentDate = new Date(reg.whatsapp_recovery_sent_at);
+  const getSponsorBlockedDaysLeft = (reg: PendingRegistrationItem) => {
+    if (!reg.whatsappSentAt) return 0;
+    const sentDate = new Date(reg.whatsappSentAt);
     const now = new Date();
     const diffDays = (now.getTime() - sentDate.getTime()) / (1000 * 60 * 60 * 24);
     return Math.ceil(5 - diffDays);
   };
 
-  const isWhatsappBlocked = (reg: PendingRegistration) => {
-    const created = new Date(reg.created_at);
+  const isWhatsappBlocked = (reg: PendingRegistrationItem) => {
+    const created = new Date(reg.createdAt);
     const now = new Date();
     const diffDays = (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
     return diffDays < 2;
   };
 
-  const getWhatsappBlockedDaysLeft = (reg: PendingRegistration) => {
-    const created = new Date(reg.created_at);
+  const getWhatsappBlockedDaysLeft = (reg: PendingRegistrationItem) => {
+    const created = new Date(reg.createdAt);
     const now = new Date();
     const diffDays = (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
     return Math.ceil(2 - diffDays);
   };
 
-  const getPaymentLabel = (reg: PendingRegistration) => {
-    if (reg.payment_completed) return "Confirmado";
-    if (reg.franchise_selected) return "Pagamento não aprovado";
+  const getPaymentLabel = (reg: PendingRegistrationItem) => {
+    if (reg.paymentStatus === "approved" || reg.paymentStatus === "completed") return "Confirmado";
+    if (reg.paymentStatus === "pending_manual_approval") return "Aguardando aprovação";
+    if (reg.paymentStatus === "pending") return "Pendente";
+    if (reg.paymentStatus === "rejected") return "Rejeitado";
+    if (reg.franchiseTypeCode) return "Pagamento não aprovado";
     return "";
+  };
+
+  const showManualApproveButton = (reg: PendingRegistrationItem) => {
+    return reg.approvalMethod === "manual" || reg.paymentStatus === "pending_manual_approval";
   };
 
   const getDisplayId = (raw: string | null) => {
@@ -246,19 +246,39 @@ export default function PendingRegistrations() {
     return `ID ${parseInt(nums, 10) || nums}`;
   };
 
-  const toggleCollapse = (id: string) =>
-    setCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
-
-  const handleSaveNote = (id: string) => {
-    setSavedNotes((prev) => ({ ...prev, [id]: notes[id] || "" }));
-    toast.success("Observação salva.");
+  const toggleCollapse = (franchiseId: string) => {
+    const willExpand = collapsed[franchiseId] !== false;
+    setCollapsed((prev) => ({ ...prev, [franchiseId]: !prev[franchiseId] }));
+    if (willExpand) {
+      loadNotes(franchiseId);
+    }
   };
 
-  const handleCancelNote = (id: string) => {
-    setNotes((prev) => ({ ...prev, [id]: savedNotes[id] || "" }));
+  const handleSaveNote = async (franchiseId: string) => {
+    const noteText = notesDraft[franchiseId]?.trim();
+    if (!noteText) return;
+    setSavingNote((prev) => ({ ...prev, [franchiseId]: true }));
+    try {
+      const created = await createRegistrationNote(franchiseId, noteText);
+      setNotesHistory((prev) => ({
+        ...prev,
+        [franchiseId]: [...(prev[franchiseId] || []), created],
+      }));
+      setNotesDraft((prev) => ({ ...prev, [franchiseId]: "" }));
+      toast.success("Observação salva.");
+    } catch (err) {
+      console.error("Error saving note:", err);
+      toast.error("Erro ao salvar observação.");
+    } finally {
+      setSavingNote((prev) => ({ ...prev, [franchiseId]: false }));
+    }
   };
 
-  const getActiveAlerts = (reg: PendingRegistration): FollowUpAlert[] => {
+  const handleCancelNote = (franchiseId: string) => {
+    setNotesDraft((prev) => ({ ...prev, [franchiseId]: "" }));
+  };
+
+  const getActiveAlerts = (reg: PendingRegistrationItem): FollowUpAlert[] => {
     const alerts: FollowUpAlert[] = [];
     const waAlert = getWhatsappAlert(reg);
     if (waAlert) alerts.push(waAlert);
@@ -267,37 +287,37 @@ export default function PendingRegistrations() {
     return alerts;
   };
 
-  const isDismissed = (regId: string, alertType: AlertType) => {
-    return dismissedAlerts[regId]?.has(alertType) || false;
+  const isDismissed = (franchiseId: string, alertType: AlertType) => {
+    return dismissedAlerts[franchiseId]?.has(alertType) || false;
   };
 
-  const dismissAlert = (regId: string, alertType: AlertType) => {
+  const dismissAlert = (franchiseId: string, alertType: AlertType) => {
     setDismissedAlerts((prev) => {
-      const current = prev[regId] || new Set();
+      const current = prev[franchiseId] || new Set();
       const next = new Set(current);
       next.add(alertType);
-      return { ...prev, [regId]: next };
+      return { ...prev, [franchiseId]: next };
     });
   };
 
-  const restoreAlert = (regId: string, alertType: AlertType) => {
+  const restoreAlert = (franchiseId: string, alertType: AlertType) => {
     setDismissedAlerts((prev) => {
-      const current = prev[regId];
+      const current = prev[franchiseId];
       if (!current) return prev;
       const next = new Set(current);
       next.delete(alertType);
-      return { ...prev, [regId]: next };
+      return { ...prev, [franchiseId]: next };
     });
   };
 
-  const hasDismissedAlerts = (reg: PendingRegistration): FollowUpAlert[] => {
+  const hasDismissedAlerts = (reg: PendingRegistrationItem): FollowUpAlert[] => {
     const alerts = getActiveAlerts(reg);
-    return alerts.filter((a) => isDismissed(reg.id, a.type));
+    return alerts.filter((a) => isDismissed(reg.franchiseId, a.type));
   };
 
-  const buildWhatsAppMessage = (reg: PendingRegistration) => {
-    const name = capitalize(reg.full_name || "");
-    const lang = reg.preferred_language || "pt";
+  const buildWhatsAppMessage = (reg: PendingRegistrationItem) => {
+    const name = capitalize(reg.fullName || "");
+    const lang = reg.preferredLanguage || "pt";
 
     if (lang === "en") {
       return `Hi, ${name}! How are you? 😊\nI noticed you started your registration at Timol and wanted to check in to offer some quick support.\n\nIf you're still evaluating or have any questions, I can explain things simply and with no commitment.\nThat way you can decide with confidence whether to continue or not 👍\n\nIf it makes sense to you, reach out and I'll help you.`;
@@ -308,7 +328,7 @@ export default function PendingRegistrations() {
     return `Oi, ${name}! Tudo bem? 😊\nVi que você começou seu cadastro na Timol e quis passar aqui pra te dar um suporte rápido.\n\nSe ainda estiver avaliando ou ficou com alguma dúvida, posso te explicar de forma simples e sem compromisso.\nAssim você decide com segurança se quer continuar ou não 👍\n\nSe fizer sentido pra você, me chama aqui que eu te ajudo.`;
   };
 
-  const formatDateOnly = (dateStr: string | null, lang?: string) => {
+  const formatDateOnly = (dateStr: string | null | undefined, lang?: string) => {
     if (!dateStr) return "";
     const locale = lang === "en" ? "en-US" : lang === "es" ? "es-ES" : "pt-BR";
     return new Date(dateStr).toLocaleDateString(locale, {
@@ -316,14 +336,14 @@ export default function PendingRegistrations() {
     });
   };
 
-  const buildSponsorMessage = (reg: PendingRegistration) => {
-    const sponsorFirst = firstName(reg.sponsor_name);
-    const userFirst = firstName(reg.full_name);
-    const userFull = capitalize(reg.full_name || "");
-    const lang = reg.preferred_language || "pt";
-    const date = formatDateOnly(reg.created_at, lang);
+  const buildSponsorMessage = (reg: PendingRegistrationItem) => {
+    const sponsorFirst = firstName(reg.sponsorName || null);
+    const userFirst = firstName(reg.fullName);
+    const userFull = capitalize(reg.fullName || "");
+    const lang = reg.preferredLanguage || "pt";
+    const date = formatDateOnly(reg.createdAt, lang);
     const phone = reg.phone || "";
-    const location = [reg.city, reg.state, (() => { const c = getCountryData(reg.country); return c ? getCountryName(c, lang) : null; })()].filter(Boolean).join(", ");
+    const location = [reg.cityId, reg.stateId, (() => { const c = getCountryData(reg.country); return c ? getCountryName(c, lang) : null; })()].filter(Boolean).join(", ");
 
     const fem = reg.gender === "female";
 
@@ -333,7 +353,7 @@ export default function PendingRegistrations() {
       const heSheMin = fem ? "she" : "he";
       const helpPronoun = fem ? "help her" : "help him";
 
-      if (reg.sponsor_source === "suggestion") {
+      if (reg.sponsorSelectionMethod === "suggest") {
         return `Hi, ${sponsorFirst}! How are you? 😊\nYour ID was randomly suggested during a franchise registration. ${userFirst} started the process on ${date}, but hasn't completed it yet.\n\nEven if you don't know ${pronoun}, this is a good time to reach out. ${heShe} could end up being part of your network.\n\nWhen you can, introduce yourself, see if there are any questions, and try to ${helpPronoun} move forward 🤝\n\nName: ${userFull}\nContact: ${phone}\nLocation: ${location}\n\nNote: If you're unable to follow up, please let me know so I can assign another sponsor.`;
       }
       return `Hi, ${sponsorFirst}! How are you? 😊\n${userFirst} started a franchise registration on ${date}, but hasn't completed it yet.\n\nSince ${heSheMin} is in your network, your approach can make all the difference right now.\nWhen you can, it's worth a quick check to see if there are any questions and ${helpPronoun} move forward with the decision 🤝\n\nName: ${userFull}\nContact: ${phone}`;
@@ -345,7 +365,7 @@ export default function PendingRegistrations() {
       const ellaElMin = fem ? "ella" : "él";
       const ayudar = fem ? "ayudarla" : "ayudarlo";
 
-      if (reg.sponsor_source === "suggestion") {
+      if (reg.sponsorSelectionMethod === "suggest") {
         return `¡Hola, ${sponsorFirst}! ¿Todo bien? 😊\nTu ID fue sugerido de forma aleatoria en un registro de franquicia. ${userFirst} inició el proceso el día ${date}, pero aún no lo completó.\n\nAunque no ${pronEs} conozcas, este es un buen momento para un acercamiento. ${ellaEl} puede terminar formando parte de tu red.\n\nCuando puedas, preséntate, entiende si quedó alguna duda y ve si puedes ${ayudar} a avanzar 🤝\n\nNombre: ${userFull}\nContacto: ${phone}\nUbicación: ${location}\n\nObs.: Si no puedes hacer el seguimiento, avísame por favor para que pueda indicar otro patrocinador.`;
       }
       return `¡Hola, ${sponsorFirst}! ¿Todo bien? 😊\n${userFirst} inició el registro de una franquicia el día ${date}, pero aún no lo completó.\n\nComo ${ellaElMin} está en tu red, tu acercamiento puede marcar toda la diferencia ahora.\nCuando puedas, vale la pena un contacto rápido para entender si quedó alguna duda y ${ayudar} a avanzar en la decisión 🤝\n\nNombre: ${userFull}\nContacto: ${phone}`;
@@ -358,7 +378,7 @@ export default function PendingRegistrations() {
     const elxMin = fem ? "ela" : "ele";
     const ajuda = fem ? "ajudá-la" : "ajudá-lo";
 
-    if (reg.sponsor_source === "suggestion") {
+    if (reg.sponsorSelectionMethod === "suggest") {
       return `Olá, ${sponsorFirst}! Tudo bem? 😊\nSeu ID foi sugerido de forma aleatória em um cadastro de franquia. ${artigo} ${userFirst} iniciou o processo no dia ${date}, mas ainda não concluiu.\n\nMesmo que você não ${pronome} conheça, esse é um bom momento para uma abordagem. ${elx} pode acabar fazendo parte da sua rede.\n\nQuando puder, se apresente, entenda se ficou alguma dúvida e veja se consegue ${ajuda} a avançar 🤝\n\nNome: ${userFull}\nContato: ${phone}\nLocalização: ${location}\n\nObs.: Caso não consiga fazer o acompanhamento, me avise por favor para que eu possa indicar outro patrocinador.`;
     }
 
@@ -381,29 +401,35 @@ export default function PendingRegistrations() {
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
-  const handleConfirmSent = async (regId: string, type: "whatsapp" | "sponsor") => {
+  const handleConfirmSent = async (reg: PendingRegistrationItem, type: "whatsapp" | "sponsor") => {
     try {
-      const { data, error } = await supabase.functions.invoke("mark-recovery-sent", {
-        body: { registration_id: regId, type },
-      });
-      if (error) throw error;
-      const sentAt = data?.sent_at || new Date().toISOString();
-      setRegistrations((prev) =>
-        prev.map((r) =>
-          r.id === regId
-            ? type === "whatsapp"
-              ? { ...r, whatsapp_recovery_sent: true, whatsapp_recovery_sent_at: sentAt }
-              : { ...r, sponsor_notified: true, sponsor_notified_at: sentAt }
-            : r
-        )
-      );
+      const noteText = notesDraft[reg.franchiseId]?.trim() || undefined;
+      if (type === "whatsapp") {
+        const result = await recordWhatsappTouchpoint(reg.franchiseId, noteText);
+        setRegistrations((prev) =>
+          prev.map((r) =>
+            r.franchiseId === reg.franchiseId
+              ? { ...r, whatsappSentAt: result.sentAt }
+              : r
+          )
+        );
+      } else {
+        const result = await recordSponsorNotifiedTouchpoint(reg.franchiseId, noteText);
+        setRegistrations((prev) =>
+          prev.map((r) =>
+            r.franchiseId === reg.franchiseId
+              ? { ...r, sponsorNotifiedAt: result.sentAt }
+              : r
+          )
+        );
+      }
       // Clear dismissed state for this alert type since it's now resolved
       setDismissedAlerts((prev) => {
-        const current = prev[regId];
+        const current = prev[reg.franchiseId];
         if (!current) return prev;
         const next = new Set(current);
         next.delete(type);
-        return { ...prev, [regId]: next };
+        return { ...prev, [reg.franchiseId]: next };
       });
       toast.success("Envio confirmado!");
       if (type === "whatsapp") setWhatsappDialog({ open: false, reg: null });
@@ -411,6 +437,32 @@ export default function PendingRegistrations() {
     } catch (err) {
       console.error("Error confirming sent:", err);
       toast.error("Erro ao confirmar envio.");
+    }
+  };
+
+  const handleManualApprove = async (reg: PendingRegistrationItem) => {
+    setApprovingPayment((prev) => ({ ...prev, [reg.franchiseId]: true }));
+    try {
+      const result = await manualApprovePayment({
+        franchiseId: reg.franchiseId,
+        approved: true,
+        note: `Aprovação manual do pagamento por depósito – franchiseId ${reg.franchiseId}`,
+      });
+      if (result.success) {
+        setRegistrations((prev) =>
+          prev.map((r) =>
+            r.franchiseId === reg.franchiseId
+              ? { ...r, paymentStatus: result.status || "approved" }
+              : r
+          )
+        );
+        toast.success("Pagamento aprovado com sucesso!");
+      }
+    } catch (err) {
+      console.error("Error approving payment:", err);
+      toast.error("Erro ao aprovar pagamento.");
+    } finally {
+      setApprovingPayment((prev) => ({ ...prev, [reg.franchiseId]: false }));
     }
   };
 
@@ -432,38 +484,39 @@ export default function PendingRegistrations() {
         ) : (
           <div className="flex flex-col gap-5 items-center">
             {registrations.map((reg) => {
-              const countryData = getCountryData(reg.country);
-              const brazilian = isBrazilian(reg.country);
+              const countryData = getCountryData(reg.documentCountryCode);
+              const brazilian = isBrazilian(reg.documentCountryCode);
               const countryName = countryData ? getCountryName(countryData, "pt") : null;
-              const isCollapsed = collapsed[reg.id] || false;
-              const noteChanged = (notes[reg.id] || "") !== (savedNotes[reg.id] || "");
+              const isCollapsed = collapsed[reg.franchiseId] !== false;
+              const noteText = notesDraft[reg.franchiseId] || "";
+              const regNotes = notesHistory[reg.franchiseId] || [];
 
               const activeAlerts = getActiveAlerts(reg);
-              const visibleAlerts = activeAlerts.filter((a) => !isDismissed(reg.id, a.type));
+              const visibleAlerts = activeAlerts.filter((a) => !isDismissed(reg.franchiseId, a.type));
               const dismissedAlertsList = hasDismissedAlerts(reg);
 
               return (
-                <Card key={reg.id} className="overflow-hidden flex flex-col w-full max-w-[600px]">
+                <Card key={reg.franchiseId} className="overflow-hidden flex flex-col w-full max-w-[600px]">
                   {/* Header */}
                   <CardHeader
                     className="pb-3 cursor-pointer select-none flex flex-col justify-center"
                     style={{ backgroundColor: "hsl(210 60% 96%)" }}
-                    onClick={() => toggleCollapse(reg.id)}
+                    onClick={() => toggleCollapse(reg.franchiseId)}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-start gap-2.5 flex-wrap">
                           <Badge className="bg-primary text-primary-foreground text-xs font-bold px-2.5 py-0.5 shrink-0 mt-[4px]">
-                            {getDisplayId(reg.franchise_id)}
+                            {getDisplayId(reg.franchiseId)}
                           </Badge>
                           <div className="min-w-0">
-                            <span className="text-lg font-bold truncate block" title={reg.full_name || undefined}>
-                              {capitalize(reg.full_name)}
+                            <span className="text-lg font-bold truncate block" title={reg.fullName || undefined}>
+                              {capitalize(reg.fullName)}
                             </span>
                             <p className="text-xs text-muted-foreground min-h-[1rem]">
-                              {reg.city
+                              {reg.cityId
                                 ? <>
-                                    {[reg.city, reg.state, countryName].filter(Boolean).join(", ")}
+                                    {[reg.cityId, reg.stateId, reg.country].filter(Boolean).join(", ")}
                                     {countryData && (
                                       <span title={countryName || undefined} className="ml-1">{countryData.flag}</span>
                                     )}
@@ -485,7 +538,7 @@ export default function PendingRegistrations() {
                               title={alert.type === "whatsapp" ? "Alerta WhatsApp (clique para reabrir)" : "Alerta Patrocinador (clique para reabrir)"}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                restoreAlert(reg.id, alert.type);
+                                restoreAlert(reg.franchiseId, alert.type);
                               }}
                             >
                               <AlertTriangle className="h-4 w-4" />
@@ -529,22 +582,42 @@ export default function PendingRegistrations() {
                         {/* Right column */}
                         <div className="space-y-2.5 sm:border-0 border-t border-border/40 pt-4 sm:pt-0">
                           <InfoItem icon={Users} label="Patrocinador">
-                            {reg.sponsor_source && (reg.sponsor_id || reg.sponsor_name) && <SponsorTypeBadge type={reg.sponsor_source === "suggestion" ? "suggestion" : "search"} />}
+                            {reg.sponsorSelectionMethod && (reg.sponsorFranchiseId || reg.sponsorName) && (
+                              <SponsorTypeBadge type={reg.sponsorSelectionMethod === "suggest" ? "suggestion" : "search"} />
+                            )}
                             <span className="truncate" title={
-                              reg.sponsor_id && reg.sponsor_name
-                                ? `${reg.sponsor_id} – ${capitalize(reg.sponsor_name)}`
-                                : capitalize(reg.sponsor_name) || reg.sponsor_id || undefined
+                              reg.sponsorFranchiseId && reg.sponsorName
+                                ? `${reg.sponsorFranchiseId} – ${capitalize(reg.sponsorName)}`
+                                : capitalize(reg.sponsorName || null) || reg.sponsorFranchiseId || undefined
                             }>
-                              {reg.sponsor_id && reg.sponsor_name
-                                ? `${reg.sponsor_id} – ${capitalize(reg.sponsor_name)}`
-                                : capitalize(reg.sponsor_name) || reg.sponsor_id || ""}
+                              {reg.sponsorFranchiseId && reg.sponsorName
+                                ? `${reg.sponsorFranchiseId} – ${capitalize(reg.sponsorName)}`
+                                : capitalize(reg.sponsorName || null) || reg.sponsorFranchiseId || ""}
                             </span>
                           </InfoItem>
                           <InfoItem icon={Award} label="Franquia">
-                            {reg.franchise_name || ""}
+                            {reg.franchiseTypeCode || ""}
                           </InfoItem>
                           <InfoItem icon={CreditCard} label="Pagamento">
-                            {getPaymentLabel(reg)}
+                            <span className="flex items-center gap-2">
+                              {getPaymentLabel(reg)}
+                              {showManualApproveButton(reg) && reg.paymentStatus !== "approved" && reg.paymentStatus !== "completed" && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-[10px] h-6 px-2 border-emerald-400 text-emerald-700 hover:bg-emerald-50"
+                                  onClick={(e) => { e.stopPropagation(); handleManualApprove(reg); }}
+                                  disabled={approvingPayment[reg.franchiseId]}
+                                >
+                                  {approvingPayment[reg.franchiseId] ? (
+                                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                                  ) : (
+                                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                                  )}
+                                  Aprovar
+                                </Button>
+                              )}
+                            </span>
                           </InfoItem>
                         </div>
                       </div>
@@ -556,27 +629,48 @@ export default function PendingRegistrations() {
                           <StickyNote className="h-3.5 w-3.5" aria-hidden="true" />
                           Observações
                         </label>
+
+                        {/* Existing notes */}
+                        {regNotes.length > 0 && (
+                          <div className="space-y-2 mb-3">
+                            {regNotes.map((n) => (
+                              <div key={n.registrationNoteId} className="rounded-md border bg-muted/30 p-2 text-xs">
+                                <p className="text-foreground">{n.note}</p>
+                                <p className="text-[10px] text-muted-foreground mt-1">
+                                  {new Date(n.createdAt).toLocaleDateString("pt-BR", {
+                                    day: "2-digit", month: "2-digit", year: "2-digit",
+                                    hour: "2-digit", minute: "2-digit",
+                                  })}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* New note input */}
                         <Textarea
                           placeholder="Anote a resposta do cliente, quais dúvidas ele tem e tente identificar por que ainda não concluiu o cadastro."
                           className="text-xs min-h-[60px] resize-y"
-                          value={notes[reg.id] || ""}
-                          onChange={(e) => setNotes((prev) => ({ ...prev, [reg.id]: e.target.value }))}
+                          value={noteText}
+                          onChange={(e) => setNotesDraft((prev) => ({ ...prev, [reg.franchiseId]: e.target.value }))}
                         />
-                        {noteChanged && (
+                        {noteText.trim() && (
                           <div className="flex gap-2 mt-2 justify-end">
                             <Button
                               variant="outline"
                               size="sm"
                               className="text-xs h-7"
-                              onClick={() => handleCancelNote(reg.id)}
+                              onClick={() => handleCancelNote(reg.franchiseId)}
                             >
                               Cancelar
                             </Button>
                             <Button
                               size="sm"
                               className="text-xs h-7"
-                              onClick={() => handleSaveNote(reg.id)}
+                              onClick={() => handleSaveNote(reg.franchiseId)}
+                              disabled={savingNote[reg.franchiseId]}
                             >
+                              {savingNote[reg.franchiseId] && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
                               Salvar
                             </Button>
                           </div>
@@ -600,7 +694,7 @@ export default function PendingRegistrations() {
                               <p className="flex-1 pr-5">{alert.message}</p>
                               <button
                                 className={`absolute top-2 right-2 p-0.5 rounded hover:bg-black/5 transition-colors ${styles.iconColor}`}
-                                onClick={() => dismissAlert(reg.id, alert.type)}
+                                onClick={() => dismissAlert(reg.franchiseId, alert.type)}
                                 title="Fechar alerta"
                               >
                                 <X className="h-3.5 w-3.5" />
@@ -622,18 +716,18 @@ export default function PendingRegistrations() {
                       <TimelineStep
                         icon={Calendar}
                         label="Cadastro"
-                        value={formatDateTime(reg.created_at) || "—"}
+                        value={formatDateTime(reg.createdAt) || "—"}
                       />
                       <TimelineStep
                         icon={Mail}
                         label="Email"
-                        value={formatDateTime(reg.recovery_email_sent_at) || "—"}
+                        value={formatDateTime(reg.recoveryEmailSentAt) || "—"}
                       />
                       <TimelineStepAction
                         icon={MessageCircle}
                         label="WhatsApp"
-                        value={formatDateTime(reg.whatsapp_recovery_sent_at)}
-                        done={reg.whatsapp_recovery_sent}
+                        value={formatDateTime(reg.whatsappSentAt)}
+                        done={!!reg.whatsappSentAt}
                         buttonLabel="Enviar"
                         buttonLabelDesktop="Enviar mensagem"
                         onAction={() => setWhatsappDialog({ open: true, reg })}
@@ -644,13 +738,13 @@ export default function PendingRegistrations() {
                       <TimelineStepAction
                         icon={Bell}
                         label="Patrocinador"
-                        value={formatDateTime(reg.sponsor_notified_at)}
-                        done={reg.sponsor_notified}
+                        value={formatDateTime(reg.sponsorNotifiedAt)}
+                        done={!!reg.sponsorNotifiedAt}
                         buttonLabel="Notificar"
                         onAction={() => setSponsorDialog({ open: true, reg })}
                         disabled={isSponsorBlocked(reg)}
-                        disabledText={isSponsorBlocked(reg) ? (!reg.whatsapp_recovery_sent ? "Após o WhatsApp" : (() => { const d = getSponsorBlockedDaysLeft(reg); return d === 1 ? "1 dia" : `${d} dias`; })()) : undefined}
-                        disabledAriaLabel={isSponsorBlocked(reg) ? (!reg.whatsapp_recovery_sent ? "Notifique o patrocinador após enviar o WhatsApp ao cliente." : (() => { const d = getSponsorBlockedDaysLeft(reg); return `Notifique o patrocinador em ${d === 1 ? "1 dia" : `${d} dias`}.`; })()) : undefined}
+                        disabledText={isSponsorBlocked(reg) ? (!reg.whatsappSentAt ? "Após o WhatsApp" : (() => { const d = getSponsorBlockedDaysLeft(reg); return d === 1 ? "1 dia" : `${d} dias`; })()) : undefined}
+                        disabledAriaLabel={isSponsorBlocked(reg) ? (!reg.whatsappSentAt ? "Notifique o patrocinador após enviar o WhatsApp ao cliente." : (() => { const d = getSponsorBlockedDaysLeft(reg); return `Notifique o patrocinador em ${d === 1 ? "1 dia" : `${d} dias`}.`; })()) : undefined}
                       />
                     </div>
                   </CardFooter>
@@ -669,10 +763,10 @@ export default function PendingRegistrations() {
         message={whatsappDialog.reg ? buildWhatsAppMessage(whatsappDialog.reg) : ""}
         phone={whatsappDialog.reg?.phone || null}
         copied={copied}
-        confirmed={whatsappDialog.reg?.whatsapp_recovery_sent || false}
+        confirmed={!!whatsappDialog.reg?.whatsappSentAt}
         onCopy={handleCopyMessage}
         onSend={handleSendWhatsApp}
-        onConfirm={() => whatsappDialog.reg && handleConfirmSent(whatsappDialog.reg.id, "whatsapp")}
+        onConfirm={() => whatsappDialog.reg && handleConfirmSent(whatsappDialog.reg, "whatsapp")}
         onClose={() => setWhatsappDialog({ open: false, reg: null })}
       />
 
@@ -684,10 +778,10 @@ export default function PendingRegistrations() {
         message={sponsorDialog.reg ? buildSponsorMessage(sponsorDialog.reg) : ""}
         phone={sponsorDialog.reg?.phone || null}
         copied={copied}
-        confirmed={sponsorDialog.reg?.sponsor_notified || false}
+        confirmed={!!sponsorDialog.reg?.sponsorNotifiedAt}
         onCopy={handleCopyMessage}
         onSend={handleSendWhatsApp}
-        onConfirm={() => sponsorDialog.reg && handleConfirmSent(sponsorDialog.reg.id, "sponsor")}
+        onConfirm={() => sponsorDialog.reg && handleConfirmSent(sponsorDialog.reg, "sponsor")}
         onClose={() => setSponsorDialog({ open: false, reg: null })}
       />
     </div>
