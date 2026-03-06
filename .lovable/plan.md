@@ -1,15 +1,22 @@
 
 
-## Plano: Armazenar o Webhook Secret do Stripe
-
-O Webhook Signing Secret (`whsec_...`) será armazenado como secret seguro no backend, permitindo que a Edge Function `stripe-webhook` valide a assinatura dos eventos recebidos do Stripe.
+## Plano: Bypass temporário de login para desenvolvimento
 
 ### O que será feito
 
-1. **Armazenar `STRIPE_WEBHOOK_SECRET`** como secret no backend usando a ferramenta de secrets
-2. A Edge Function `stripe-webhook` já está preparada para usar esse secret — nenhuma alteração de código necessária
+Adicionar um **modo de desenvolvimento** no `AuthGate` que simula autenticação, permitindo acesso direto ao `/app` sem login real.
+
+### Implementação
+
+1. **`src/components/auth/AuthGate.tsx`** — Adicionar flag `DEV_BYPASS`:
+   - Quando `DEV_BYPASS = true` e `mode === "protected"`, renderizar os children diretamente sem verificar token
+   - Quando `DEV_BYPASS = true` e `mode === "guest"`, não redirecionar para `/app`
+
+2. **`src/pages/Login.tsx`** — Adicionar botão temporário "Entrar como Dev" que:
+   - Seta um token fake no localStorage (`setAccessToken("dev-bypass", true)`)
+   - Navega para `/app`
 
 ### Resultado
 
-Com esse secret configurado, o webhook passará a validar a assinatura de cada evento, garantindo que apenas notificações legítimas do Stripe sejam processadas.
+Você poderá acessar e visualizar todas as telas do `/app` sem depender da API de autenticação. Quando a API estiver pronta, basta remover o bypass (mudar flag para `false`).
 
