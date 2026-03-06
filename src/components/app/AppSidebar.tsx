@@ -2,7 +2,7 @@ import { useLocation, Link, useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebarState } from "@/pages/AppLayout";
-import { supabase } from "@/integrations/supabase/client";
+import { logout } from "@/lib/api";
 
 import iconPainelInicial from "@/assets/icon-sidebar-painel-inicial.svg";
 import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
@@ -85,10 +85,9 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
           {bottomItems.map(renderLink)}
 
           <button
-            onClick={async () => {
+            onClick={() => {
               onNavigate?.();
-              await supabase.auth.signOut();
-              navigate("/");
+              logout();
             }}
             title={collapsed ? "Sair" : undefined}
             className={navItemClass}

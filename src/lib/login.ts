@@ -1,73 +1,40 @@
-import { supabase } from "@/integrations/supabase/client";
+/**
+ * Login helper — delegates to the centralized API client.
+ */
+
+import { login as apiLogin, ApiRequestError } from "@/lib/api";
 
 export type LoginErrorCode =
   | "temporarily_locked"
   | "invalid_credentials"
   | "server_error";
 
-interface LoginFunctionSuccess {
-  success: true;
-  session: {
-    access_token: string;
-    refresh_token: string;
-  };
-}
-
-interface LoginFunctionFailure {
-  success?: false;
-  error?: LoginErrorCode;
-  retry_after_seconds?: number;
-}
-
 export async function loginWithUsername({
   username,
   password,
+  rememberMe = false,
 }: {
   username: string;
   password: string;
+  rememberMe?: boolean;
 }): Promise<{ success: true } | { success: false; error: LoginErrorCode; retryAfterSeconds?: number }> {
   try {
-    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/login-with-username`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-      },
-      body: JSON.stringify({
-        username: username.trim(),
-        password,
-      }),
-    });
-
-    const payload = (await response.json().catch(() => ({}))) as LoginFunctionSuccess | LoginFunctionFailure;
-
-    if (!response.ok || !payload || payload.success !== true) {
-      return {
-        success: false,
-        error:
-          payload && "error" in payload && payload.error
-            ? payload.error
-            : response.status === 429
-              ? "temporarily_locked"
-              : "server_error",
-        retryAfterSeconds:
-          payload && "retry_after_seconds" in payload && typeof payload.retry_after_seconds === "number"
-            ? payload.retry_after_seconds
-            : undefined,
-      };
-    }
-
-    const { error } = await supabase.auth.setSession({
-      access_token: payload.session.access_token,
-      refresh_token: payload.session.refresh_token,
-    });
-
-    if (error) {
-      return { success: false, error: "server_error" };
-    }
-
+    await apiLogin({ username, password, rememberMe });
     return { success: true };
-  } catch {
+  } catch (err) {
+    if (err instanceof ApiRequestError) {
+      if (err.status === 429 || err.code === "temporarily_locked") {
+        const raw = err.raw as Record<string, unknown> | undefined;
+        return {
+          success: false,
+          error: "temporarily_locked",
+          retryAfterSeconds: typeof raw?.retryAfterSeconds === "number" ? raw.retryAfterSeconds : undefined,
+        };
+      }
+      if (err.status === 401 || err.code === "invalid_credentials") {
+        return { success: false, error: "invalid_credentials" };
+      }
+    }
     return { success: false, error: "server_error" };
   }
 }

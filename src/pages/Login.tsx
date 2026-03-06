@@ -45,9 +45,7 @@ const Login = () => {
     setLoading(true);
     setErrors((prev) => ({ ...prev, general: "" }));
 
-    localStorage.setItem("timol_remember_me", rememberMe ? "true" : "false");
-
-    const result = await loginWithUsername({ username, password });
+    const result = await loginWithUsername({ username, password, rememberMe });
 
     if (result.success === false) {
       setErrors((prev) => ({
