@@ -1,23 +1,15 @@
 import { useState } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  User,
-  Phone,
-  MapPin,
-  KeyRound,
-  Gem,
-  Landmark,
-  Plus,
-  Star,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { User, Phone, MapPin, KeyRound } from "lucide-react";
+import { AddressManager, type Address } from "@/components/app/cadastro/AddressManager";
+import { FranchiseCard } from "@/components/app/cadastro/FranchiseCard";
+import { FinancialManager, type FinancialAccount } from "@/components/app/cadastro/FinancialManager";
+import { DocumentsCard } from "@/components/app/cadastro/DocumentsCard";
 
-/* ── mock data (will be replaced by real DB queries) ── */
+/* ── mock data ── */
 
-const isBrazilian = true; // toggle to test foreigner view
+const isBrazilian = true;
 const countryFlag = "🇧🇷";
 
 const personalData = {
@@ -32,10 +24,6 @@ const contactData = {
   phone: "+55 11 99999-0000",
 };
 
-const addressData = {
-  full: "Rua das Flores, 123 - Apto 45, Jardim Paulista, São Paulo - SP, 01234-567, Brasil",
-};
-
 const loginData = {
   username: "livia.serato",
 };
@@ -47,36 +35,41 @@ const franchiseData = {
   planCode: "gold",
 };
 
-interface BankAccount {
-  id: string;
-  label: string;
-  bank: string;
-  agency: string;
-  account: string;
-  type: string;
-  pix?: string;
-  isDefault: boolean;
-}
-
-const initialAccounts: BankAccount[] = [
+const initialAddresses: Address[] = [
   {
     id: "1",
+    label: "Casa",
+    country: "Brasil",
+    countryIso2: "BR",
+    zipCode: "01234-567",
+    street: "Rua das Flores",
+    number: "123",
+    complement: "Apto 45",
+    neighborhood: "Jardim Paulista",
+    city: "São Paulo",
+    state: "SP",
+    isDefault: true,
+  },
+];
+
+const initialAccounts: FinancialAccount[] = [
+  {
+    id: "1",
+    type: "bank",
     label: "Conta Principal",
     bank: "Banco do Brasil",
     agency: "1234-5",
     account: "12345-6",
-    type: "Corrente",
-    pix: "livia.serato@email.com",
+    accountType: "Corrente",
+    pixKey: "livia.serato@email.com",
     isDefault: true,
   },
   {
     id: "2",
-    label: "Conta Secundária",
-    bank: "Nubank",
-    agency: "0001",
-    account: "9876543-2",
-    type: "Corrente",
-    pix: "123.456.789-00",
+    type: "pix",
+    label: "PIX Nubank",
+    pixKey: "123.456.789-00",
+    pixKeyType: "CPF",
     isDefault: false,
   },
 ];
@@ -95,23 +88,8 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 /* ── component ── */
 
 export default function Cadastro() {
-  const [accounts, setAccounts] = useState<BankAccount[]>(initialAccounts);
-
-  const handleSetDefault = (id: string) => {
-    setAccounts((prev) =>
-      prev.map((a) => ({ ...a, isDefault: a.id === id }))
-    );
-  };
-
-  const handleRemove = (id: string) => {
-    setAccounts((prev) => {
-      const next = prev.filter((a) => a.id !== id);
-      if (next.length > 0 && !next.some((a) => a.isDefault)) {
-        next[0].isDefault = true;
-      }
-      return next;
-    });
-  };
+  const [addresses, setAddresses] = useState<Address[]>(initialAddresses);
+  const [accounts, setAccounts] = useState<FinancialAccount[]>(initialAccounts);
 
   const docLabel = isBrazilian ? "CPF" : (
     <span className="flex items-center gap-1">
@@ -129,8 +107,10 @@ export default function Cadastro() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {/* Dados Pessoais — left, stretches to match right column */}
-        <DashboardCard icon={User} title="Dados Pessoais" className="md:row-span-2">
+        {/* ═══ LEFT COLUMN ═══ */}
+
+        {/* Dados Pessoais */}
+        <DashboardCard icon={User} title="Dados Pessoais">
           <div className="mt-1">
             <Row label="Nome Completo" value={personalData.fullName} />
             <Row label={docLabel as any} value={personalData.document} />
@@ -139,7 +119,16 @@ export default function Cadastro() {
           </div>
         </DashboardCard>
 
-        {/* Contato — top right */}
+        {/* ═══ RIGHT COLUMN ═══ */}
+
+        {/* Franquia — with tabs */}
+        <FranchiseCard
+          franchiseId={franchiseData.id}
+          planCode={franchiseData.planCode}
+          sponsor={franchiseData.sponsor}
+        />
+
+        {/* Contato */}
         <DashboardCard icon={Phone} title="Contato">
           <div className="mt-1">
             <Row label="E-mail" value={contactData.email} />
@@ -147,12 +136,7 @@ export default function Cadastro() {
           </div>
         </DashboardCard>
 
-        {/* Endereço — bottom right */}
-        <DashboardCard icon={MapPin} title="Endereço">
-          <p className="mt-1 text-sm">{addressData.full}</p>
-        </DashboardCard>
-
-        {/* Acesso — left column */}
+        {/* Acesso */}
         <DashboardCard icon={KeyRound} title="Acesso">
           <div className="mt-1">
             <Row label="Usuário" value={loginData.username} />
@@ -167,86 +151,16 @@ export default function Cadastro() {
           </div>
         </DashboardCard>
 
-        {/* Franquia — right column */}
-        <DashboardCard icon={Gem} title="Franquia">
-          <div className="mt-1">
-            <Row label="ID" value={franchiseData.id} />
-            <Row label="Franquia" value={franchiseData.plan} />
-            <Row label="Patrocinador" value={franchiseData.sponsor} />
-          </div>
+        {/* Endereço */}
+        <DashboardCard icon={MapPin} title="Endereço">
+          <AddressManager addresses={addresses} onChange={setAddresses} />
         </DashboardCard>
 
-        {/* Dados Financeiros — full width */}
-        <DashboardCard icon={Landmark} title="Dados Financeiros" className="md:col-span-2">
-          <div className="mt-2 space-y-3">
-            {accounts.length === 0 && (
-              <p className="text-sm text-muted-foreground">
-                Nenhuma conta bancária cadastrada.
-              </p>
-            )}
+        {/* Dados Financeiros */}
+        <FinancialManager accounts={accounts} onChange={setAccounts} />
 
-            {accounts.map((acc) => (
-              <div
-                key={acc.id}
-                className="rounded-md border border-app-card-border p-3 relative"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm">{acc.label}</span>
-                    {acc.isDefault && (
-                      <Badge variant="secondary" className="text-[10px] gap-1 px-1.5 py-0">
-                        <Star className="h-3 w-3 fill-warning text-warning" />
-                        Padrão
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" className="h-7 w-7">
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 text-destructive hover:text-destructive"
-                      onClick={() => handleRemove(acc.id)}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                  <Row label="Banco" value={acc.bank} />
-                  <Row label="Agência" value={acc.agency} />
-                  <Row label="Conta" value={acc.account} />
-                  <Row label="Tipo" value={acc.type} />
-                  {acc.pix && (
-                    <div className="col-span-2">
-                      <Row label="Chave PIX" value={acc.pix} />
-                    </div>
-                  )}
-                </div>
-
-                {!acc.isDefault && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="mt-2 text-xs h-7"
-                    onClick={() => handleSetDefault(acc.id)}
-                  >
-                    <Star className="h-3 w-3 mr-1" />
-                    Definir como padrão
-                  </Button>
-                )}
-              </div>
-            ))}
-
-            <Button variant="outline" size="sm" className="w-full gap-1.5">
-              <Plus className="h-4 w-4" />
-              Adicionar conta bancária
-            </Button>
-          </div>
-        </DashboardCard>
+        {/* Documentos */}
+        <DocumentsCard />
       </div>
     </div>
   );
