@@ -57,7 +57,7 @@ export function PontosCard({ currentQualification, totalPoints, expiringPoints, 
       )}
 
       <div className="mt-3">
-        <Button variant="outline" size="sm" className="w-full gap-2" asChild>
+        <Button variant="outline" size="default" className="w-full gap-2 sm:h-9" asChild>
           <a href="/app/premios">
             <Award className="h-4 w-4" />
             Prêmios
