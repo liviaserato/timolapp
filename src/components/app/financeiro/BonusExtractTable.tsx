@@ -241,66 +241,68 @@ export function BonusExtractTable({ data, currency }: Props) {
 
       {/* Table */}
       <div className="rounded-md border border-app-card-border overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-app-table-header">
-              <TableHead className="text-xs px-2 pr-4 py-1.5 hidden sm:table-cell">Data</TableHead>
-              <TableHead className="text-xs px-2 py-1.5 text-left">Pedido</TableHead>
-              <TableHead className="text-xs px-2 py-1.5 text-right">ID</TableHead>
-              <TableHead className="text-xs px-2 py-1.5 text-center">Tipo</TableHead>
-              <TableHead className="text-xs px-2 py-1.5 text-right">Pts</TableHead>
-              <TableHead className="text-xs px-2 py-1.5 text-right">Valor</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {displayedRows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-8">
-                  Nenhuma movimentação encontrada.
-                </TableCell>
+        <div className="max-h-[480px] overflow-y-auto">
+          <Table>
+            <TableHeader className="sticky top-0 z-10">
+              <TableRow className="bg-app-table-header">
+                <TableHead className="text-xs px-2 pr-4 py-1.5 hidden sm:table-cell">Data</TableHead>
+                <TableHead className="text-xs px-2 py-1.5 text-left">Pedido</TableHead>
+                <TableHead className="text-xs px-2 py-1.5 text-right">ID</TableHead>
+                <TableHead className="text-xs px-2 py-1.5 text-center">Tipo</TableHead>
+                <TableHead className="text-xs px-2 py-1.5 text-right">Pts</TableHead>
+                <TableHead className="text-xs px-2 py-1.5 text-right">Valor</TableHead>
               </TableRow>
-            ) : (
-              displayedRows.map((row, i) => {
-                const q = qualificationLabels[row.qualification];
-                const { symbol, number: numStr } = formatCurrencySplit(row.value, currency);
-                return (
-                  <TableRow key={i}>
-                    <TableCell className="text-xs whitespace-nowrap px-2 pr-4 py-1 hidden sm:table-cell">
-                      {formatShortDate(row.date)}
-                    </TableCell>
-                    <TableCell className="text-xs font-mono px-2 py-1 text-left">
-                      <span className="flex items-center gap-1">
-                        {q && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="cursor-default text-xs leading-none" aria-label={q.label}>{q.icon}</span>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="text-xs">{q.label}</TooltipContent>
-                          </Tooltip>
-                        )}
-                        <span>
-                          {row.orderNumber}
-                          <span className="block sm:hidden text-[10px] text-muted-foreground font-normal">
-                            {formatShortDate(row.date)}
+            </TableHeader>
+            <TableBody>
+              {displayedRows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-8">
+                    Nenhuma movimentação encontrada.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                displayedRows.map((row, i) => {
+                  const q = qualificationLabels[row.qualification];
+                  const { symbol, number: numStr } = formatCurrencySplit(row.value, currency);
+                  return (
+                    <TableRow key={i}>
+                      <TableCell className="text-xs whitespace-nowrap px-2 pr-4 py-1 hidden sm:table-cell">
+                        {formatShortDate(row.date)}
+                      </TableCell>
+                      <TableCell className="text-xs font-mono px-2 py-1 text-left">
+                        <span className="flex items-center gap-1">
+                          {q && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="cursor-default text-xs leading-none" aria-label={q.label}>{q.icon}</span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="text-xs">{q.label}</TooltipContent>
+                            </Tooltip>
+                          )}
+                          <span>
+                            {row.orderNumber}
+                            <span className="block sm:hidden text-[10px] text-muted-foreground font-normal">
+                              {formatShortDate(row.date)}
+                            </span>
                           </span>
                         </span>
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-xs font-mono px-2 py-1 text-right">{row.id}</TableCell>
-                    <TableCell className="text-xs px-2 py-1 text-center">{row.type}</TableCell>
-                    <TableCell className="text-xs text-right px-2 py-1">{row.points ?? "-"}</TableCell>
-                    <TableCell className={`text-xs text-right font-medium px-2 py-1 ${row.value < 0 ? "text-negative" : ""}`}>
-                      <span className="inline-flex items-baseline justify-end gap-0.5 w-full">
-                        <span className="text-[10px] font-normal">{symbol}</span>
-                        <span>{numStr}</span>
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
+                      </TableCell>
+                      <TableCell className="text-xs font-mono px-2 py-1 text-right">{row.id}</TableCell>
+                      <TableCell className="text-xs px-2 py-1 text-center">{row.type}</TableCell>
+                      <TableCell className="text-xs text-right px-2 py-1">{row.points ?? "-"}</TableCell>
+                      <TableCell className={`text-xs text-right font-medium px-2 py-1 ${row.value < 0 ? "text-negative" : ""}`}>
+                        <span className="inline-flex items-baseline justify-end gap-0.5 w-full">
+                          <span className="text-[10px] font-normal">{symbol}</span>
+                          <span>{numStr}</span>
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       {/* Pagination */}
