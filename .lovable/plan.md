@@ -1,87 +1,107 @@
 
+Objetivo
 
-## Tela Financeiro — Plano de Implementação
+Sim, dá para fazer. O padrão mais aceito não é só “bloquear depois de 5 erros”, e sim combinar:
+- limite de tentativas por conta
+- limite por IP/dispositivo
+- bloqueio temporário curto
+- mensagem genérica no login
+- reset da contagem quando a pessoa acerta a senha
 
-A tela será criada em `src/pages/app/Financeiro.tsx` com rota dedicada no `App.tsx`, usando os mesmos componentes visuais (`DashboardCard`, `Dialog`, `Badge`, `Tabs`, `Table`) e padrões de interação já presentes no projeto.
+O que encontrei no projeto
 
-### Estrutura de Arquivos
+- Hoje a tela `src/pages/Login.tsx` ainda está em modo mock: ela faz `setTimeout` e entra em `/app` sem autenticação real.
+- Então essa trava de 5 tentativas precisa ser implementada junto com o login real no backend, senão ela não protege nada de verdade.
+- O projeto já usa autenticação no cadastro e já tem `profiles` com `username`, então o caminho natural é autenticar por usuário no frontend e validar/bloquear no backend.
 
-```text
-src/pages/app/Financeiro.tsx          ← Página principal (rota /app/financeiro)
-src/components/app/financeiro/
-  ├── BonusSummaryCard.tsx            ← Container "Saldo de Bônus"
-  ├── BancoTimolCard.tsx              ← Container "Banco Timol" + ações
-  ├── AddBalanceDialog.tsx            ← Popup "Adicionar Saldo" (PIX/Cartão)
-  ├── WithdrawDialog.tsx              ← Popup "Resgatar Saldo" (valor + taxa + PIN)
-  ├── BonusExtractTable.tsx           ← Tabela extrato Bônus e Pontos + filtros
-  ├── BancoTimolExtractTable.tsx      ← Tabela extrato Banco Timol
-  ├── PrizesSection.tsx               ← Seção Prêmios (qualificação + vitrine)
-  └── PrizeRedeemDialog.tsx           ← Popup resgate de prêmio + PIN
-```
+Padrão “universal” recomendado
 
-### Layout da Página
+Para este app, eu recomendaria este padrão:
+- até 5 tentativas erradas
+- ao errar a 5ª vez: bloquear por 10 minutos
+- aplicar a regra por `username` e também observar IP/origem
+- ao acertar a senha: zerar tentativas
+- sempre mostrar erro genérico como “Usuário ou senha inválidos” ou “Tente novamente mais tarde”
+- não informar se o bloqueio foi por usuário inexistente, senha errada ou conta bloqueada
+- opcional depois: CAPTCHA após muitas tentativas repetidas
 
-1. **Header**: "Financeiro" + subtítulo, mesmo padrão do Cadastro e Dashboard
-2. **Containers de resumo** (grid 2 colunas no desktop):
-   - **Saldo de Bônus**: "Previsto para próxima sexta" + "Aguardando liberação" + nota sobre pagamento às sextas (14 dias)
-   - **Banco Timol**: "Saldo Disponível" + "Resgate Solicitado" (condicional) + botões "Resgatar saldo" e "Adicionar saldo"
-3. **Extratos** (abas via `Tabs`): "Bônus e Pontos" | "Banco Timol"
-4. **Prêmios**: qualificação atual, pontos, aviso de expiração, vitrine de cards
+Esse é um padrão comum e equilibrado. Não existe um número único “universal” obrigatório, mas 5 tentativas + 10 a 15 minutos de bloqueio é bem aceitável.
 
-### Detalhes dos Componentes
+Plano de implementação
 
-**BonusSummaryCard**: Dois valores em mini-cards internos (mesmo estilo do Dashboard "Resumo Financeiro") + texto discreto explicativo.
+1. Trocar o login mock por login real
+- Substituir o `setTimeout` do `Login.tsx` por uma chamada a uma backend function própria de login.
+- Essa function receberá `username` e `password`.
 
-**BancoTimolCard**: Saldo em destaque, resgate solicitado em amarelo/warning quando existir, dois botões de ação (`Button` outline).
+2. Validar bloqueio antes de autenticar
+- A backend function verifica se o usuário está temporariamente bloqueado.
+- Se estiver, retorna resposta genérica com tempo restante.
 
-**AddBalanceDialog**: 
-- Input de valor
-- Seleção PIX/Cartão (condicional: PIX só se `isBrazilian && currency === BRL`)
-- Reutiliza o mesmo padrão visual de pagamento do `PaymentScreen` (QR Code para PIX, form de cartão)
-- Popup de confirmação "Saldo Adicionado" ao final
+3. Registrar tentativas falhas
+- Criar uma tabela específica de controle, separada de `profiles`, por exemplo:
+  - `login_security`
+  - ou `login_attempts`
+- Campos típicos:
+  - `username`
+  - `failed_attempts`
+  - `locked_until`
+  - `last_failed_at`
+  - `last_ip`
+  - `updated_at`
 
-**WithdrawDialog**:
-- Input de valor + exibição automática do valor líquido (após taxas)
-- Botão confirmar → fluxo PIN 6 dígitos (input-otp, mesmo padrão existente)
-- Popup "Resgate Confirmado" com previsão de depósito (próxima sexta)
+4. Fazer o fluxo de autenticação seguro
+- A function localiza o usuário pelo `username`.
+- Faz a autenticação real no backend.
+- Se falhar:
+  - incrementa contador
+  - se chegou ao limite, grava `locked_until = now + 10 min`
+- Se der certo:
+  - zera contador e remove bloqueio
 
-**BonusExtractTable** (usando componente `Table`):
-- Colunas: Data | ID | Qualificação (badge) | Tipo Movimentação | Pontos | Valor
-- Filtros acima: DateRange (dois inputs date), botões toggle por tipo (Unilevel, Binário, Fixo, Depósito, Pedido, Resgate), campo busca por ID
-- Qualificações com badges coloridos: Consultor, Distribuidor, Líder, Rubi, Esmeralda, Diamante
-- Valores negativos em vermelho
+5. Ajustar a UI do login
+- Mostrar mensagem amigável e genérica.
+- Se bloqueado, pode exibir algo como:
+  - “Muitas tentativas. Tente novamente em alguns minutos.”
+- Não mostrar detalhes que permitam adivinhar contas válidas.
 
-**BancoTimolExtractTable**: 
-- Colunas: Data | Descrição | Valor
-- Valores negativos em vermelho
+Recomendação de segurança
 
-**PrizesSection**:
-- Qualificação atual + total de pontos no topo
-- Aviso de expiração de pontos (condicional, em amarelo)
-- Grid de cards de prêmios com: nome, pontos necessários, descrição curta, botão "Quero esse"
+Eu não recomendo bloquear só por usuário.
+O ideal é:
+- regra principal por usuário
+- proteção extra por IP/origem
+Porque, se for só por usuário, alguém pode bloquear a conta de outra pessoa de propósito.
 
-**PrizeRedeemDialog**:
-- Descrição detalhada do prêmio
-- Confirmação → PIN por e-mail (mesmo fluxo do WithdrawDialog)
-- Popup "Resgate Confirmado" com mensagem de contato da equipe
+Detalhes técnicos
 
-### Moeda Dinâmica
+Arquivos que provavelmente entrarão nessa mudança:
+- `src/pages/Login.tsx`
+- uma nova backend function de login
+- uma migration para criar a tabela de tentativas/bloqueio
+- possivelmente proteção de rota em `src/App.tsx` / layout do app
 
-Todos os valores usarão helper de formatação baseado na franquia (mesmo padrão do `PaymentScreen`): `BRL → R$`, `EUR → €`, `USD → US$`. PIX condicional: só aparece se `currency === BRL && country === BR`.
+Decisões de produto que eu seguiria por padrão
+- Limite: 5 erros
+- Janela/bloqueio: 10 minutos
+- Reset ao sucesso: sim
+- Mensagem detalhada: não
+- CAPTCHA depois de abuso repetido: recomendado numa segunda etapa
 
-### Rota
+Resumo prático
 
-Registrar `Financeiro` no `App.tsx` como rota dedicada `/app/financeiro` (substituindo o `SectionPlaceholder` atual que já captura essa rota via `:section`).
+Sim, é totalmente viável.
+O melhor padrão para seu caso seria:
+- 5 senhas erradas
+- bloqueio temporário de 10 minutos
+- controle no backend
+- por usuário + sinal de IP/origem
+- mensagem genérica
+- zerar ao login bem-sucedido
 
-### Dados
+Observação importante
 
-Tudo com dados mock por enquanto (arrays estáticos de extratos, prêmios, saldos). A estrutura ficará pronta para substituição por chamadas reais à API.
+Como o login atual ainda não é real, eu trataria isso como uma implementação em duas partes:
+1. conectar o login de verdade ao backend
+2. acoplar o bloqueio temporário no mesmo fluxo
 
-### Tarefas
-
-1. Criar componentes de resumo (BonusSummaryCard + BancoTimolCard)
-2. Criar dialogs de ação (AddBalanceDialog + WithdrawDialog com PIN)
-3. Criar tabelas de extrato com filtros (BonusExtractTable + BancoTimolExtractTable)
-4. Criar seção de Prêmios (PrizesSection + PrizeRedeemDialog)
-5. Montar página Financeiro.tsx e registrar rota no App.tsx
-
+Assim a regra fica realmente segura e não só visual.
