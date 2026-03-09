@@ -18,12 +18,12 @@ export function BancoTimolCard({ available, pendingWithdrawal, currency, onAddBa
       <div className="flex-1">
         <div className="mt-3 flex flex-row sm:flex-col gap-3">
           <div className="rounded-md border border-app-card-border p-3 text-center flex-1 flex flex-col justify-center min-w-0">
-            <p className="text-xs text-muted-foreground">Saldo<br className="sm:hidden" /> Disponível</p>
+            <p className="text-xs text-muted-foreground">Saldo<br className="lg:hidden" /> Disponível</p>
             <p className="text-lg font-bold text-primary truncate">{formatCurrency(available, currency)}</p>
           </div>
           {pendingWithdrawal > 0 && (
             <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-center flex-1 flex flex-col justify-center">
-              <p className="text-xs text-muted-foreground">Resgate<br className="sm:hidden" /> Solicitado</p>
+              <p className="text-xs text-muted-foreground">Resgate<br className="lg:hidden" /> Solicitado</p>
               <p className="text-sm font-medium text-destructive">{formatCurrency(pendingWithdrawal, currency)}</p>
             </div>
           )}
