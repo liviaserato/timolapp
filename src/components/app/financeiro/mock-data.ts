@@ -47,6 +47,10 @@ export const mockBancoTimol = {
   pendingWithdrawal: 200.0,
 };
 
+export const mockFranchiseStatus = {
+  activeUntil: "2026-04-15",
+};
+
 export const mockBonusExtract: BonusExtractRow[] = [
   { date: "2026-03-06", orderNumber: "#4521", id: "100231", qualification: "lider", type: "Pedido", points: 45, value: 89.9 },
   { date: "2026-03-05", orderNumber: "#4520", id: "200587", qualification: "distribuidor", type: "Unilevel", points: 12, value: 24.0 },
