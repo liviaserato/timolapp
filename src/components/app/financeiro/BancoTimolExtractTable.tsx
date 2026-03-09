@@ -175,8 +175,8 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
             <TableHeader className="sticky top-0 z-10">
               <TableRow className="bg-app-table-header">
                  <TableHead className="text-xs px-2 py-1.5 text-center w-[72px]">Data</TableHead>
-                 <TableHead className="text-xs pl-2 pr-2 py-1.5 text-left">Descrição</TableHead>
-                <TableHead className="text-xs px-2 py-1.5 text-right">Valor</TableHead>
+                 <TableHead className="text-xs px-2 py-1.5 text-left w-auto">Descrição</TableHead>
+                 <TableHead className="text-xs px-2 py-1.5 text-right w-[88px]">Valor</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
