@@ -82,9 +82,10 @@ export function BonusExtractTable({ data, currency }: Props) {
     <div className="space-y-3">
       <h3 className="text-base font-bold text-primary">📊 Extrato de Bônus e Pontos</h3>
 
-      {/* Filter row 1: mode toggle + month/period — aligned to bonus card width on desktop */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-2 max-w-full sm:max-w-[calc(33.333%-0.5rem)] md:max-w-[calc(66.666%-0.25rem)]">
-        <div className="flex items-center gap-2 w-full">
+      {/* Filter row: mode toggle + month/period + search — all in one line */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+        {/* Left group: Mês|Período + selector — aligns to bonus card width */}
+        <div className="flex items-center gap-2 w-full sm:w-[calc(33.333%-0.5rem)] sm:shrink-0">
           <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
             <button
               type="button"
@@ -126,11 +127,9 @@ export function BonusExtractTable({ data, currency }: Props) {
             </div>
           )}
         </div>
-      </div>
 
-      {/* Search field — desktop: banco timol card width, tablet: pontos width right-aligned, mobile: full */}
-      <div className="flex justify-end">
-        <div className="relative w-full sm:w-[calc(33.333%-0.5rem)]">
+        {/* Right: search field */}
+        <div className="relative w-full sm:w-[calc(33.333%-0.5rem)] sm:ml-auto">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
             ref={searchRef}
