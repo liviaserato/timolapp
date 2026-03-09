@@ -220,14 +220,14 @@ export function BonusExtractTable({ data, currency }: Props) {
           </div>
         </div>
 
-        {/* Line 3 (mobile only): Type chips */}
-        <div className="flex sm:hidden flex-wrap gap-1.5">
+        {/* Line 3 (mobile only): Type chips - distributed full width */}
+        <div className="flex sm:hidden flex-wrap gap-1.5 justify-between">
           {movementTypes.map((type) => (
             <button
               key={type}
               type="button"
               onClick={() => toggleType(type)}
-              className={`rounded-full px-2.5 py-1 text-[11px] font-medium border transition-colors ${
+              className={`rounded-full px-2.5 py-1 text-[11px] font-medium border transition-colors flex-1 min-w-0 text-center ${
                 selectedTypes.has(type)
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-app-card-border text-muted-foreground hover:border-primary/40"
