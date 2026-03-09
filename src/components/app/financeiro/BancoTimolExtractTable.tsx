@@ -139,9 +139,9 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
             </div>
           ) : (
             <div className="flex gap-2 items-center shrink-0">
-              <Input type="date" className="h-8 w-[148px] text-xs" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+              <Input type="date" className="h-8 w-[148px] text-xs" max={todayStr} value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
               <span className="text-xs text-muted-foreground">até</span>
-              <Input type="date" className="h-8 w-[148px] text-xs" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+              <Input type="date" className="h-8 w-[148px] text-xs" max={todayStr} value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
             </div>
           )}
 
