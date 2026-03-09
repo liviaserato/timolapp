@@ -174,9 +174,9 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
           <Table>
             <TableHeader className="sticky top-0 z-10">
               <TableRow className="bg-app-table-header">
-                 <TableHead className="text-xs px-2 py-1.5 text-center w-[100px]">Data</TableHead>
-                 <TableHead className="text-xs px-2 py-1.5 text-left w-auto">Descrição</TableHead>
-                 <TableHead className="text-xs px-2 py-1.5 text-right w-[150px]">Valor</TableHead>
+                 <TableHead className="text-xs px-3 py-1.5 text-center" style={{ width: 100 }}>Data</TableHead>
+                 <TableHead className="text-xs px-3 py-1.5 text-left">Descrição</TableHead>
+                 <TableHead className="text-xs px-3 py-1.5 text-right" style={{ width: 150 }}>Valor</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -191,11 +191,11 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
                   const { symbol, number: numStr } = formatCurrencySplit(row.value, currency);
                   return (
                     <TableRow key={i}>
-                      <TableCell className="text-xs whitespace-nowrap px-2 py-1 text-center">
+                      <TableCell className="text-xs whitespace-nowrap px-3 py-1 text-center">
                         {formatShortDate(row.date)}
                       </TableCell>
-                      <TableCell className="text-xs pl-2 pr-2 py-1 text-left">{row.description}</TableCell>
-                      <TableCell className={`text-xs text-right font-medium px-2 py-1 ${row.value < 0 ? "text-negative" : ""}`}>
+                      <TableCell className="text-xs px-3 py-1 text-left">{row.description}</TableCell>
+                      <TableCell className={`text-xs text-right font-medium px-3 py-1 ${row.value < 0 ? "text-negative" : ""}`}>
                         <span className="inline-flex items-baseline justify-end gap-0.5 w-full">
                           <span className="text-[10px] font-normal">{symbol}</span>
                           <span>{numStr}</span>
