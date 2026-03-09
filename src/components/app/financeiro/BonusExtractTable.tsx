@@ -242,7 +242,7 @@ export function BonusExtractTable({ data, currency }: Props) {
       </div>
 
       {/* Legend */}
-      <div className="space-y-1">
+      <div className="space-y-3 -mt-1">
         <p className="text-[10px] text-muted-foreground leading-tight">
           *O cálculo dos ganhos do Unilevel é baseado na sua qualificação atual. O ícone corresponde à sua qualificação no momento do pedido.
         </p>
