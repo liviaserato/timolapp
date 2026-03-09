@@ -108,11 +108,11 @@ export function BonusExtractTable({ data, currency }: Props) {
           </div>
 
           {filterMode === "month" ? (
-            <div className="flex items-center gap-1 flex-1 justify-center">
+            <div className="flex items-center gap-0 flex-1 justify-center">
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={prevMonth}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-xs font-medium min-w-[130px] text-center">
+              <span className="text-xs font-medium min-w-[120px] text-center">
                 {getMonthLabel(monthRef)}
               </span>
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth}>
