@@ -92,7 +92,7 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
             </button>
             <button
               type="button"
-              onClick={() => setFilterMode("custom")}
+              onClick={() => { setFilterMode("custom"); setDateTo(todayStr); }}
               className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
                 filterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
               }`}
