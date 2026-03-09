@@ -40,6 +40,7 @@ export default function Financeiro() {
           nextFriday={mockBonusSummary.nextFriday}
           awaitingRelease={mockBonusSummary.awaitingRelease}
           currency={currency}
+          franchiseStatus={mockFranchiseStatus}
         />
         <BancoTimolCard
           available={mockBancoTimol.available}
