@@ -335,7 +335,7 @@ export function BonusExtractTable({ data, currency }: Props) {
       )}
 
       {/* Legend */}
-      <div className="space-y-3 -mt-1">
+      <div className="space-y-1.5 -mt-1">
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
           {Object.entries(qualificationLabels).map(([key, q]) => (
             <span key={key} className="flex items-center gap-1">
