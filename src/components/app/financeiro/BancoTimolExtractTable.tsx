@@ -112,42 +112,44 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
       </div>
 
       <div className="rounded-md border border-app-card-border overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-app-table-header">
-              <TableHead className="text-xs px-2 py-1.5">Data</TableHead>
-              <TableHead className="text-xs px-2 py-1.5 text-left">Descrição</TableHead>
-              <TableHead className="text-xs px-2 py-1.5 text-right">Valor</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filtered.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={3} className="text-center text-xs text-muted-foreground py-8">
-                  Nenhuma movimentação encontrada.
-                </TableCell>
+        <div className="max-h-[480px] overflow-y-auto">
+          <Table>
+            <TableHeader className="sticky top-0 z-10">
+              <TableRow className="bg-app-table-header">
+                <TableHead className="text-xs px-2 py-1.5">Data</TableHead>
+                <TableHead className="text-xs px-2 py-1.5 text-left">Descrição</TableHead>
+                <TableHead className="text-xs px-2 py-1.5 text-right">Valor</TableHead>
               </TableRow>
-            ) : (
-              filtered.map((row, i) => {
-                const { symbol, number: numStr } = formatCurrencySplit(row.value, currency);
-                return (
-                  <TableRow key={i}>
-                    <TableCell className="text-xs whitespace-nowrap px-2 py-1">
-                      {formatShortDate(row.date)}
-                    </TableCell>
-                    <TableCell className="text-xs px-2 py-1 text-left">{row.description}</TableCell>
-                    <TableCell className={`text-xs text-right font-medium px-2 py-1 ${row.value < 0 ? "text-negative" : ""}`}>
-                      <span className="inline-flex items-baseline justify-end gap-0.5 w-full">
-                        <span className="text-[10px] font-normal">{symbol}</span>
-                        <span>{numStr}</span>
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filtered.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center text-xs text-muted-foreground py-8">
+                    Nenhuma movimentação encontrada.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filtered.map((row, i) => {
+                  const { symbol, number: numStr } = formatCurrencySplit(row.value, currency);
+                  return (
+                    <TableRow key={i}>
+                      <TableCell className="text-xs whitespace-nowrap px-2 py-1">
+                        {formatShortDate(row.date)}
+                      </TableCell>
+                      <TableCell className="text-xs px-2 py-1 text-left">{row.description}</TableCell>
+                      <TableCell className={`text-xs text-right font-medium px-2 py-1 ${row.value < 0 ? "text-negative" : ""}`}>
+                        <span className="inline-flex items-baseline justify-end gap-0.5 w-full">
+                          <span className="text-[10px] font-normal">{symbol}</span>
+                          <span>{numStr}</span>
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );
