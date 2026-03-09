@@ -61,7 +61,7 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, franch
       title="Saldo de Bônus"
       tooltip="Os bônus são pagos às sextas-feiras, 14 dias após o pagamento do pedido."
     >
-      <div className="mt-3 flex flex-row md:flex-col gap-3">
+      <div className="mt-3 flex flex-row sm:flex-col gap-3">
         <div className="rounded-md border border-success/30 bg-success/5 p-3 text-center flex-1">
           <p className="text-xs text-muted-foreground">Programado para pagamento</p>
           <p className="text-lg font-bold text-success">{formatCurrency(nextFriday, currency)}</p>

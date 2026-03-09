@@ -14,7 +14,7 @@ interface Props {
 export function BancoTimolCard({ available, pendingWithdrawal, currency, onAddBalance, onWithdraw }: Props) {
   return (
     <DashboardCard icon={Landmark} title="Banco Timol">
-      <div className="mt-3 flex flex-row md:flex-col gap-3">
+      <div className="mt-3 flex flex-row sm:flex-col gap-3">
         <div className="rounded-md border border-app-card-border p-3 text-center flex-1">
           <p className="text-xs text-muted-foreground">Saldo Disponível</p>
           <p className="text-lg font-bold text-primary">{formatCurrency(available, currency)}</p>

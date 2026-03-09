@@ -28,7 +28,7 @@ export function PontosCard({ currentQualification, totalPoints, expiringPoints, 
       title="Pontos"
       tooltip="Soma dos pontos Unilevel das suas compras e da sua rede nos últimos 6 meses, conforme qualificação."
     >
-      <div className="mt-3 flex flex-row md:flex-col gap-3">
+      <div className="mt-3 flex flex-row sm:flex-col gap-3">
         {/* Points first, with more visual prominence */}
         <div className="rounded-md border border-app-card-border p-3 text-center flex-1">
           <p className="text-xs text-muted-foreground">Saldo de Pontos Unilevel</p>
