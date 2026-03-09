@@ -26,12 +26,12 @@ export function BancoTimolCard({ available, pendingWithdrawal, currency, onAddBa
           </div>
         )}
       </div>
-      <div className="mt-3 flex flex-col sm:flex-row gap-2">
-        <Button variant="ghost" size="default" className="flex-1 text-xs text-muted-foreground hover:text-foreground min-w-0 sm:h-9" onClick={onWithdraw}>
-          Resgatar saldo
-        </Button>
-        <Button variant="outline" size="default" className="flex-1 text-xs min-w-0 sm:h-9" onClick={onAddBalance}>
+      <div className="mt-3 flex flex-col gap-2">
+        <Button variant="outline" size="default" className="w-full text-xs min-w-0 sm:h-9" onClick={onAddBalance}>
           Adicionar saldo
+        </Button>
+        <Button variant="ghost" size="default" className="w-full text-xs text-muted-foreground hover:text-foreground min-w-0 sm:h-9" onClick={onWithdraw}>
+          Resgatar saldo
         </Button>
       </div>
     </DashboardCard>
