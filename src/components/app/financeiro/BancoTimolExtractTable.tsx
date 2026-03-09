@@ -99,7 +99,7 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
           <div className="relative flex-1 min-w-0 sm:hidden">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
-              placeholder="Buscar movimentação"
+              placeholder="Buscar..."
               className="h-8 pl-7 pr-7 text-xs"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
