@@ -31,12 +31,12 @@ export function PontosCard({ currentQualification, totalPoints, expiringPoints, 
       {/* Body */}
       <div className="flex-1">
         <div className="mt-3 flex flex-row sm:flex-col gap-3">
-          <div className="rounded-md border border-app-card-border p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center">
-            <p className="text-xs text-muted-foreground">Pontos Unilevel</p>
+          <div className="rounded-md border border-app-card-border p-3 text-center flex-1 flex flex-col justify-center">
+            <p className="text-xs text-muted-foreground">Pontos<br className="sm:hidden" /> Unilevel</p>
             <p className="text-lg font-bold text-primary">{totalPoints.toLocaleString("pt-BR")}</p>
           </div>
-          <div className="rounded-md border border-app-card-border p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center">
-            <p className="text-xs text-muted-foreground">Qualificação Atual</p>
+          <div className="rounded-md border border-app-card-border p-3 text-center flex-1 flex flex-col justify-center">
+            <p className="text-xs text-muted-foreground">Qualificação<br className="sm:hidden" /> Atual</p>
             {q && (
               <p className="mt-1 text-sm font-semibold text-primary flex items-center justify-center gap-1.5">
                 <span className="text-base">{q.icon}</span>
