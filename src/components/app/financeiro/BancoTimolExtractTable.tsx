@@ -1,8 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { CurrencyConfig, formatCurrencySplit } from "./currency-helpers";
 import { BancoTimolExtractRow } from "./mock-data";
 
@@ -39,6 +39,8 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
   const [monthRef, setMonthRef] = useState(new Date());
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
 
   function prevMonth() {
     setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
@@ -61,15 +63,16 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
     return data.filter((row) => {
       if (from && row.date < from) return false;
       if (to && row.date > to) return false;
+      if (searchTerm && !row.description.toLowerCase().includes(searchTerm.toLowerCase())) return false;
       return true;
     });
-  }, [data, filterMode, monthRef, dateFrom, dateTo]);
+  }, [data, filterMode, monthRef, dateFrom, dateTo, searchTerm]);
 
   return (
     <div className="space-y-3">
       {/* Filters */}
       <div className="flex flex-col gap-2">
-        {/* Line 1: Mode toggle */}
+        {/* Line 1: Mode toggle + search (mobile) */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
             <button
@@ -91,9 +94,30 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
               Período
             </button>
           </div>
+
+          {/* Search - mobile: fills remaining space on line 1 */}
+          <div className="relative flex-1 min-w-0 sm:hidden">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Buscar movimentação"
+              className="h-8 pl-7 pr-7 text-xs"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Limpar busca"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Line 2: Date controls */}
+        {/* Line 2: Date controls + search (desktop) */}
         <div className="flex items-center gap-2">
           {filterMode === "month" ? (
             <div className="flex items-center gap-0 shrink-0">
@@ -114,6 +138,28 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
               <Input type="date" className="h-8 w-[148px] text-xs" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
             </div>
           )}
+
+          {/* Search - desktop/tablet */}
+          <div className="relative hidden sm:block ml-auto w-48 shrink-0">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              ref={searchRef}
+              placeholder="Buscar movimentação"
+              className="h-8 pl-7 pr-7 text-xs"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => { setSearchTerm(""); searchRef.current?.focus(); }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Limpar busca"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

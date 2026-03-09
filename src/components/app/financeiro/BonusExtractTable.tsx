@@ -133,26 +133,8 @@ export function BonusExtractTable({ data, currency }: Props) {
             </button>
           </div>
 
-          {/* Type chips - hidden on mobile, pushed right on sm+ */}
-          <div className="hidden sm:flex flex-wrap gap-1.5 ml-auto">
-            {movementTypes.map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => toggleType(type)}
-                className={`rounded-full px-2.5 py-1 text-[11px] font-medium border transition-colors ${
-                  selectedTypes.has(type)
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-app-card-border text-muted-foreground hover:border-primary/40"
-                }`}
-              >
-                {type}
-              </button>
-            ))}
-          </div>
-
-          {/* Search - visible on mobile in line 1 */}
-          <div className="relative w-full sm:hidden">
+          {/* Search - mobile: fills remaining space on line 1 */}
+          <div className="relative flex-1 min-w-0 sm:hidden">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               placeholder="Buscar pelo ID ou Pedido"
@@ -171,6 +153,24 @@ export function BonusExtractTable({ data, currency }: Props) {
                 <X className="h-3.5 w-3.5" />
               </button>
             )}
+          </div>
+
+          {/* Type chips - hidden on mobile, pushed right on sm+ */}
+          <div className="hidden sm:flex flex-wrap gap-1.5 ml-auto">
+            {movementTypes.map((type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => toggleType(type)}
+                className={`rounded-full px-2.5 py-1 text-[11px] font-medium border transition-colors ${
+                  selectedTypes.has(type)
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-app-card-border text-muted-foreground hover:border-primary/40"
+                }`}
+              >
+                {type}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -220,14 +220,14 @@ export function BonusExtractTable({ data, currency }: Props) {
           </div>
         </div>
 
-        {/* Line 3 (mobile only): Type chips */}
-        <div className="flex sm:hidden flex-wrap gap-1.5">
+        {/* Line 3 (mobile only): Type chips - distributed full width */}
+        <div className="flex sm:hidden flex-wrap gap-1.5 justify-between">
           {movementTypes.map((type) => (
             <button
               key={type}
               type="button"
               onClick={() => toggleType(type)}
-              className={`rounded-full px-2.5 py-1 text-[11px] font-medium border transition-colors ${
+              className={`rounded-full px-2.5 py-1 text-[11px] font-medium border transition-colors flex-1 min-w-0 text-center ${
                 selectedTypes.has(type)
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-app-card-border text-muted-foreground hover:border-primary/40"
