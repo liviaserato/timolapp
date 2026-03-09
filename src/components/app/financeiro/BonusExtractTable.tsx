@@ -130,7 +130,7 @@ export function BonusExtractTable({ data, currency }: Props) {
             </button>
             <button
               type="button"
-              onClick={() => { setFilterMode("custom"); setPage(0); }}
+              onClick={() => { setFilterMode("custom"); setDateTo(todayStr); setPage(0); }}
               className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
                 filterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
               }`}
