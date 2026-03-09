@@ -99,7 +99,7 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
           <div className="relative flex-1 min-w-0 sm:hidden">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
-              placeholder="Buscar movimentação"
+              placeholder="Buscar..."
               className="h-8 pl-7 pr-7 text-xs"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -120,7 +120,7 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
         {/* Line 2: Date controls + search (desktop) */}
         <div className="flex items-center gap-2">
           {filterMode === "month" ? (
-            <div className="flex items-center gap-0 shrink-0">
+            <div className="flex items-center gap-0 shrink-0 h-8">
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={prevMonth}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -144,7 +144,7 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               ref={searchRef}
-              placeholder="Buscar movimentação"
+              placeholder="Buscar..."
               className="h-8 pl-7 pr-7 text-xs"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
