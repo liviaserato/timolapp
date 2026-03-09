@@ -13,6 +13,7 @@ import PendingRegistrations from "./pages/PendingRegistrations";
 import AppLayout from "./pages/AppLayout";
 import Dashboard from "./pages/app/Dashboard";
 import Cadastro from "./pages/app/Cadastro";
+import Financeiro from "./pages/app/Financeiro";
 import SectionPlaceholder from "./pages/app/SectionPlaceholder";
 import NotFound from "./pages/NotFound";
 
