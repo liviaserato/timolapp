@@ -28,34 +28,37 @@ export function PontosCard({ currentQualification, totalPoints, expiringPoints, 
       title="Pontos"
       tooltip="Soma dos pontos Unilevel das suas compras e da sua rede nos últimos 6 meses, conforme qualificação."
     >
-      <div className="mt-3 flex flex-row sm:flex-col gap-3">
-        {/* Points first, with more visual prominence */}
-        <div className="rounded-md border border-app-card-border p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center">
-          <p className="text-xs text-muted-foreground">Pontos Unilevel</p>
-          <p className="text-lg font-bold text-primary">{totalPoints.toLocaleString("pt-BR")}</p>
+      {/* Body */}
+      <div className="flex-1">
+        <div className="mt-3 flex flex-row sm:flex-col gap-3">
+          <div className="rounded-md border border-app-card-border p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center">
+            <p className="text-xs text-muted-foreground">Pontos Unilevel</p>
+            <p className="text-lg font-bold text-primary">{totalPoints.toLocaleString("pt-BR")}</p>
+          </div>
+          <div className="rounded-md border border-app-card-border p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center">
+            <p className="text-xs text-muted-foreground">Qualificação Atual</p>
+            {q && (
+              <p className="mt-1 text-sm font-semibold text-primary flex items-center justify-center gap-1.5">
+                <span className="text-base">{q.icon}</span>
+                {q.label}
+              </p>
+            )}
+          </div>
         </div>
-        <div className="rounded-md border border-app-card-border p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center">
-          <p className="text-xs text-muted-foreground">Qualificação Atual</p>
-          {q && (
-            <p className="mt-1 text-sm font-semibold text-primary flex items-center justify-center gap-1.5">
-              <span className="text-base">{q.icon}</span>
-              {q.label}
+
+        {showExpirationAlert && expiringPoints && expirationDate && (
+          <div className="mt-3 flex items-start gap-2 rounded-md border border-warning/40 bg-warning/5 p-2.5">
+            <AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
+            <p className="text-[11px] text-muted-foreground">
+              <strong>{expiringPoints.toLocaleString("pt-BR")} pontos</strong> expiram em{" "}
+              <strong>{new Date(expirationDate).toLocaleDateString("pt-BR")}</strong>.{" "}
+              Aproveite para resgatar agora!
             </p>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
-      {showExpirationAlert && expiringPoints && expirationDate && (
-        <div className="mt-3 flex items-start gap-2 rounded-md border border-warning/40 bg-warning/5 p-2.5">
-          <AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
-          <p className="text-[11px] text-muted-foreground">
-            <strong>{expiringPoints.toLocaleString("pt-BR")} pontos</strong> expiram em{" "}
-            <strong>{new Date(expirationDate).toLocaleDateString("pt-BR")}</strong>.{" "}
-            Aproveite para resgatar agora!
-          </p>
-        </div>
-      )}
-
+      {/* Footer */}
       <div className="mt-3">
         <Button variant="outline" size="default" className="w-full gap-2 sm:h-9" asChild>
           <a href="/app/premios">
