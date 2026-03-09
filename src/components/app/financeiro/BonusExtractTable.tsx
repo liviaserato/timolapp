@@ -63,13 +63,19 @@ export function BonusExtractTable({ data, currency }: Props) {
     setPage(0);
   }
 
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10);
+  const isCurrentMonth = monthRef.getFullYear() === today.getFullYear() && monthRef.getMonth() === today.getMonth();
+
   function prevMonth() {
     setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
     setPage(0);
   }
   function nextMonth() {
-    setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
-    setPage(0);
+    if (!isCurrentMonth) {
+      setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+      setPage(0);
+    }
   }
 
   function handleSearchKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {

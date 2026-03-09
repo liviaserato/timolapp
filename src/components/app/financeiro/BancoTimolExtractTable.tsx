@@ -42,11 +42,17 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
 
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10);
+  const isCurrentMonth = monthRef.getFullYear() === today.getFullYear() && monthRef.getMonth() === today.getMonth();
+
   function prevMonth() {
     setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
   }
   function nextMonth() {
-    setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+    if (!isCurrentMonth) {
+      setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+    }
   }
 
   const filtered = useMemo(() => {
