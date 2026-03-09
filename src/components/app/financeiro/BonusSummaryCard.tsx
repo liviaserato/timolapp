@@ -4,7 +4,6 @@ import { CurrencyConfig, formatCurrency } from "./currency-helpers";
 import { cn } from "@/lib/utils";
 
 interface FranchiseStatus {
-  /** Date until which the franchise is active for receiving bonuses */
   activeUntil: string;
 }
 
@@ -19,7 +18,6 @@ function getFranchiseStatusInfo(activeUntil: string) {
       level: "expired" as const,
       icon: ShieldX,
       colorClass: "text-destructive",
-      bgClass: "border-destructive/40 bg-destructive/5",
       message: "Sua franquia está inativa. Bônus e pontos não são gerados durante esse período. Adquira produtos para reativá-la e voltar a ganhar!",
       label: `Inativa desde ${expDate.toLocaleDateString("pt-BR")}`,
     };
@@ -29,19 +27,17 @@ function getFranchiseStatusInfo(activeUntil: string) {
       level: "warning" as const,
       icon: ShieldAlert,
       colorClass: "text-warning",
-      bgClass: "border-warning/40 bg-warning/5",
       message: `Sua franquia vence em ${diffDays} dia${diffDays !== 1 ? "s" : ""}. Adquira produtos para renovar e continuar recebendo bônus!`,
       label: `Ativa até ${expDate.toLocaleDateString("pt-BR")}`,
     };
   }
-    return {
-      level: "active" as const,
-      icon: ShieldCheck,
-      colorClass: "text-success",
-      bgClass: "border-success/30 bg-success/5",
-      message: "Franquia ativa para recebimento de bônus.",
-      label: `Ativa até ${expDate.toLocaleDateString("pt-BR")}`,
-    };
+  return {
+    level: "active" as const,
+    icon: ShieldCheck,
+    colorClass: "text-success",
+    message: "Franquia ativa para recebimento de bônus.",
+    label: `Ativa até ${expDate.toLocaleDateString("pt-BR")}`,
+  };
 }
 
 interface Props {
@@ -58,7 +54,7 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, franch
   return (
     <DashboardCard
       icon={TrendingUp}
-      title="Saldo de Bônus"
+      title="Bônus"
       tooltip="Os bônus são pagos às sextas-feiras, 14 dias após o pagamento do pedido."
     >
       <div className="mt-3 flex flex-row sm:flex-col gap-3">
@@ -72,7 +68,6 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, franch
         </div>
       </div>
 
-      {/* Franchise active status */}
       <div className="mt-3 flex items-start gap-2 px-1">
         <StatusIcon className={cn("h-4 w-4 shrink-0 mt-0.5", status.colorClass)} />
         <div className="min-w-0">

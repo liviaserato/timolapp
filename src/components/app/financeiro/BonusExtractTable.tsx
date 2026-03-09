@@ -12,6 +12,8 @@ interface Props {
   currency: CurrencyConfig;
 }
 
+const PAGE_SIZE = 30;
+
 function getMonthLabel(date: Date): string {
   return date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
 }
@@ -35,6 +37,13 @@ function formatShortDate(dateStr: string): string {
   return `${dd}/${mm}/${yy}`;
 }
 
+function daysBetween(from: string, to: string): number {
+  if (!from || !to) return 0;
+  const a = new Date(from);
+  const b = new Date(to);
+  return Math.ceil(Math.abs(b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
+}
+
 export function BonusExtractTable({ data, currency }: Props) {
   const [filterMode, setFilterMode] = useState<"month" | "custom">("month");
   const [monthRef, setMonthRef] = useState(new Date());
@@ -42,6 +51,7 @@ export function BonusExtractTable({ data, currency }: Props) {
   const [dateTo, setDateTo] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [searchId, setSearchId] = useState("");
+  const [page, setPage] = useState(0);
   const searchRef = useRef<HTMLInputElement>(null);
 
   function toggleType(type: string) {
@@ -50,13 +60,16 @@ export function BonusExtractTable({ data, currency }: Props) {
       next.has(type) ? next.delete(type) : next.add(type);
       return next;
     });
+    setPage(0);
   }
 
   function prevMonth() {
     setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
+    setPage(0);
   }
   function nextMonth() {
     setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+    setPage(0);
   }
 
   function handleSearchKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -65,6 +78,9 @@ export function BonusExtractTable({ data, currency }: Props) {
       e.currentTarget.select();
     }
   }
+
+  // Check if pagination is needed (custom period > 31 days)
+  const needsPagination = filterMode === "custom" && dateFrom && dateTo && daysBetween(dateFrom, dateTo) > 31;
 
   const filtered = useMemo(() => {
     let from: string, to: string;
@@ -86,15 +102,20 @@ export function BonusExtractTable({ data, currency }: Props) {
     });
   }, [data, filterMode, monthRef, dateFrom, dateTo, selectedTypes, searchId]);
 
+  const totalPages = needsPagination ? Math.max(1, Math.ceil(filtered.length / PAGE_SIZE)) : 1;
+  const displayedRows = needsPagination ? filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE) : filtered;
+
   return (
     <div className="space-y-3">
-      {/* Filter row */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-        <div className="flex items-center gap-2 flex-1">
+      {/* Filters */}
+      {/* Line 1: Mode toggle + type chips (desktop/tablet) | Mode toggle + search (mobile) */}
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Mode toggle */}
           <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
             <button
               type="button"
-              onClick={() => setFilterMode("month")}
+              onClick={() => { setFilterMode("month"); setPage(0); }}
               className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
                 filterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
               }`}
@@ -103,7 +124,7 @@ export function BonusExtractTable({ data, currency }: Props) {
             </button>
             <button
               type="button"
-              onClick={() => setFilterMode("custom")}
+              onClick={() => { setFilterMode("custom"); setPage(0); }}
               className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
                 filterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
               }`}
@@ -112,8 +133,51 @@ export function BonusExtractTable({ data, currency }: Props) {
             </button>
           </div>
 
+          {/* Type chips - hidden on mobile, shown on sm+ */}
+          <div className="hidden sm:flex flex-wrap gap-1.5">
+            {movementTypes.map((type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => toggleType(type)}
+                className={`rounded-full px-2.5 py-1 text-[11px] font-medium border transition-colors ${
+                  selectedTypes.has(type)
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-app-card-border text-muted-foreground hover:border-primary/40"
+                }`}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+
+          {/* Search - visible on mobile in line 1 */}
+          <div className="relative w-full sm:hidden">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Buscar pelo ID ou Pedido"
+              className="h-8 pl-7 pr-7 text-xs"
+              value={searchId}
+              onChange={(e) => { setSearchId(e.target.value); setPage(0); }}
+              onKeyDown={handleSearchKeyDown}
+            />
+            {searchId && (
+              <button
+                type="button"
+                onClick={() => { setSearchId(""); }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Limpar busca"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Line 2: Date controls + search (desktop/tablet) | Date controls (mobile) */}
+        <div className="flex items-center gap-2">
           {filterMode === "month" ? (
-            <div className="flex items-center gap-0">
+            <div className="flex items-center gap-0 shrink-0">
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={prevMonth}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -125,54 +189,54 @@ export function BonusExtractTable({ data, currency }: Props) {
               </Button>
             </div>
           ) : (
-            <div className="flex gap-2 items-center flex-1">
-              <Input type="date" className="h-8 flex-1 text-xs" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+            <div className="flex gap-2 items-center shrink-0">
+              <Input type="date" className="h-8 w-[130px] text-xs" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(0); }} />
               <span className="text-xs text-muted-foreground">até</span>
-              <Input type="date" className="h-8 flex-1 text-xs" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+              <Input type="date" className="h-8 w-[130px] text-xs" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(0); }} />
             </div>
           )}
+
+          {/* Search - hidden on mobile, shown on sm+ */}
+          <div className="relative hidden sm:block ml-auto w-48 shrink-0">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              ref={searchRef}
+              placeholder="Buscar pelo ID ou Pedido"
+              className="h-8 pl-7 pr-7 text-xs"
+              value={searchId}
+              onChange={(e) => { setSearchId(e.target.value); setPage(0); }}
+              onKeyDown={handleSearchKeyDown}
+            />
+            {searchId && (
+              <button
+                type="button"
+                onClick={() => { setSearchId(""); searchRef.current?.focus(); }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Limpar busca"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Search field */}
-        <div className="relative w-full sm:w-48 sm:shrink-0">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <Input
-            ref={searchRef}
-            placeholder="Buscar ID ou Pedido"
-            className="h-8 pl-7 pr-7 text-xs"
-            value={searchId}
-            onChange={(e) => setSearchId(e.target.value)}
-            onKeyDown={handleSearchKeyDown}
-          />
-          {searchId && (
+        {/* Line 3 (mobile only): Type chips */}
+        <div className="flex sm:hidden flex-wrap gap-1.5">
+          {movementTypes.map((type) => (
             <button
+              key={type}
               type="button"
-              onClick={() => { setSearchId(""); searchRef.current?.focus(); }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Limpar busca"
+              onClick={() => toggleType(type)}
+              className={`rounded-full px-2.5 py-1 text-[11px] font-medium border transition-colors ${
+                selectedTypes.has(type)
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-app-card-border text-muted-foreground hover:border-primary/40"
+              }`}
             >
-              <X className="h-3.5 w-3.5" />
+              {type}
             </button>
-          )}
+          ))}
         </div>
-      </div>
-
-      {/* Type filter chips */}
-      <div className="flex flex-wrap gap-1.5">
-        {movementTypes.map((type) => (
-          <button
-            key={type}
-            type="button"
-            onClick={() => toggleType(type)}
-            className={`rounded-full px-2.5 py-1 text-[11px] font-medium border transition-colors ${
-              selectedTypes.has(type)
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-app-card-border text-muted-foreground hover:border-primary/40"
-            }`}
-          >
-            {type}
-          </button>
-        ))}
       </div>
 
       {/* Table */}
@@ -180,7 +244,7 @@ export function BonusExtractTable({ data, currency }: Props) {
         <Table>
           <TableHeader>
             <TableRow className="bg-app-table-header">
-              <TableHead className="text-xs px-2 py-1.5 hidden sm:table-cell">Data</TableHead>
+              <TableHead className="text-xs px-2 pr-4 py-1.5 hidden sm:table-cell">Data</TableHead>
               <TableHead className="text-xs px-2 py-1.5 text-left">Pedido</TableHead>
               <TableHead className="text-xs px-2 py-1.5 text-right">ID</TableHead>
               <TableHead className="text-xs px-2 py-1.5 text-center">Tipo</TableHead>
@@ -189,23 +253,21 @@ export function BonusExtractTable({ data, currency }: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.length === 0 ? (
+            {displayedRows.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-8">
                   Nenhuma movimentação encontrada.
                 </TableCell>
               </TableRow>
             ) : (
-              filtered.map((row, i) => {
+              displayedRows.map((row, i) => {
                 const q = qualificationLabels[row.qualification];
                 const { symbol, number: numStr } = formatCurrencySplit(row.value, currency);
                 return (
                   <TableRow key={i}>
-                    {/* Desktop: separate date cell */}
-                    <TableCell className="text-xs whitespace-nowrap px-2 py-1 hidden sm:table-cell">
+                    <TableCell className="text-xs whitespace-nowrap px-2 pr-4 py-1 hidden sm:table-cell">
                       {formatShortDate(row.date)}
                     </TableCell>
-                    {/* Order + date on mobile, icon before order */}
                     <TableCell className="text-xs font-mono px-2 py-1 text-left">
                       <span className="flex items-center gap-1">
                         {q && (
@@ -240,6 +302,35 @@ export function BonusExtractTable({ data, currency }: Props) {
           </TableBody>
         </Table>
       </div>
+
+      {/* Pagination */}
+      {needsPagination && totalPages > 1 && (
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>
+            Página {page + 1} de {totalPages} ({filtered.length} registros)
+          </span>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              disabled={page === 0}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              disabled={page >= totalPages - 1}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Legend */}
       <div className="space-y-3 -mt-1">

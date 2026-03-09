@@ -7,7 +7,7 @@ export const qualificationLabels: Record<string, { label: string; icon: string }
   diamante: { label: "Diamante", icon: "◇" },
 };
 
-export const movementTypes = ["Unilevel", "Binário", "Fixo", "Depósito", "Pedido", "Resgate"] as const;
+export const movementTypes = ["Unilevel", "Binário", "Fixo", "Depósito", "Pedido"] as const;
 export type MovementType = (typeof movementTypes)[number];
 
 export interface BonusExtractRow {
@@ -55,8 +55,8 @@ export const mockBonusExtract: BonusExtractRow[] = [
   { date: "2026-03-04", orderNumber: "#4519", id: "300142", qualification: "consultor", type: "Binário", points: 8, value: 16.0 },
   { date: "2026-03-03", orderNumber: "#4518", id: "100231", qualification: "lider", type: "Fixo", points: null, value: 50.0 },
   { date: "2026-03-02", orderNumber: "#4517", id: "400321", qualification: "rubi", type: "Unilevel", points: 20, value: 40.0 },
-  { date: "2026-03-01", orderNumber: "#4516", id: "100231", qualification: "lider", type: "Resgate", points: null, value: -200.0 },
-  { date: "2026-02-28", orderNumber: "#4515", id: "500110", qualification: "esmeralda", type: "Depósito", points: null, value: 500.0 },
+  { date: "2026-03-01", orderNumber: "#4516", id: "100231", qualification: "lider", type: "Depósito", points: null, value: 500.0 },
+  { date: "2026-02-28", orderNumber: "#4515", id: "500110", qualification: "esmeralda", type: "Depósito", points: null, value: 300.0 },
   { date: "2026-02-27", orderNumber: "#4514", id: "100231", qualification: "lider", type: "Pedido", points: 30, value: 59.9 },
 ];
 
