@@ -30,11 +30,11 @@ export function PontosCard({ currentQualification, totalPoints, expiringPoints, 
     >
       <div className="mt-3 flex flex-row sm:flex-col gap-3">
         {/* Points first, with more visual prominence */}
-        <div className="rounded-md border border-app-card-border p-3 text-center flex-1">
+        <div className="rounded-md border border-app-card-border p-3 text-center flex-1 sm:min-h-[76px] flex flex-col justify-center">
           <p className="text-xs text-muted-foreground">Saldo de Pontos Unilevel</p>
           <p className="text-lg font-bold text-primary">{totalPoints.toLocaleString("pt-BR")}</p>
         </div>
-        <div className="rounded-md border border-app-card-border p-3 text-center flex-1">
+        <div className="rounded-md border border-app-card-border p-3 text-center flex-1 sm:min-h-[68px] flex flex-col justify-center">
           <p className="text-xs text-muted-foreground">Qualificação Atual</p>
           {q && (
             <p className="mt-1 text-sm font-semibold text-primary flex items-center justify-center gap-1.5">
