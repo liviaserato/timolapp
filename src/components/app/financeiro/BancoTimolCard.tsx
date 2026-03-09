@@ -13,7 +13,7 @@ interface Props {
 
 export function BancoTimolCard({ available, pendingWithdrawal, currency, onAddBalance, onWithdraw }: Props) {
   return (
-    <DashboardCard icon={Landmark} title="Banco Timol">
+    <DashboardCard icon={Landmark} title="Banco">
       <div className="mt-3 flex flex-row sm:flex-col gap-3">
         <div className="rounded-md border border-app-card-border p-3 text-center flex-1 sm:min-h-[76px] flex flex-col justify-center min-w-0">
           <p className="text-xs text-muted-foreground truncate">Saldo Disponível</p>
@@ -26,7 +26,7 @@ export function BancoTimolCard({ available, pendingWithdrawal, currency, onAddBa
           </div>
         )}
       </div>
-      <div className="mt-3 flex flex-col sm:flex-row gap-2">
+      <div className="mt-3 flex flex-col lg:flex-row gap-2">
         <Button variant="outline" size="default" className="w-full text-xs min-w-0 sm:h-9" onClick={onAddBalance}>
           Adicionar saldo
         </Button>

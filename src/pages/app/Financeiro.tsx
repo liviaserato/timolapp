@@ -65,7 +65,10 @@ export default function Financeiro() {
       <div className="mt-6 mb-4 border-t border-app-card-border" />
 
       {/* Extract title */}
-      <h2 className="text-lg font-bold text-primary mb-3">Extrato</h2>
+      <h2 className="text-xl font-bold text-primary">Extrato</h2>
+      <p className="text-sm text-muted-foreground mt-1 mb-3">
+        Acompanhe as movimentações financeiras e de pontos geradas pelos pedidos e operações da sua rede
+      </p>
 
       {/* Extract selector cards */}
       <div className="grid grid-cols-2 gap-3">
