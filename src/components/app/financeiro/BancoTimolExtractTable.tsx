@@ -75,7 +75,7 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
   }, [data, filterMode, monthRef, dateFrom, dateTo, searchTerm]);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 min-h-[480px]">
       {/* Filters */}
       <div className="flex flex-col gap-2">
         {/* Line 1: Mode toggle + search (mobile) */}
