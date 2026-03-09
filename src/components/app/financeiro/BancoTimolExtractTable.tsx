@@ -42,11 +42,17 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
 
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10);
+  const isCurrentMonth = monthRef.getFullYear() === today.getFullYear() && monthRef.getMonth() === today.getMonth();
+
   function prevMonth() {
     setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
   }
   function nextMonth() {
-    setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+    if (!isCurrentMonth) {
+      setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+    }
   }
 
   const filtered = useMemo(() => {
@@ -127,15 +133,15 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
               <span className="text-xs font-medium min-w-[120px] text-center">
                 {getMonthLabel(monthRef)}
               </span>
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth}>
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth} disabled={isCurrentMonth}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           ) : (
             <div className="flex gap-2 items-center shrink-0">
-              <Input type="date" className="h-8 w-[148px] text-xs" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+              <Input type="date" className="h-8 w-[148px] text-xs" max={todayStr} value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
               <span className="text-xs text-muted-foreground">até</span>
-              <Input type="date" className="h-8 w-[148px] text-xs" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+              <Input type="date" className="h-8 w-[148px] text-xs" max={todayStr} value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
             </div>
           )}
 
