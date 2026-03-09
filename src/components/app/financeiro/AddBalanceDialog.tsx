@@ -134,10 +134,10 @@ export function AddBalanceDialog({ open, onOpenChange, currency }: Props) {
                 </button>
                 {method === "pix" ? "Pagamento via PIX" : "Pagamento via Cartão"}
               </DialogTitle>
-              <DialogDescription>
-                Valor: <strong>{formatCurrency(numAmount, currency)}</strong>
-              </DialogDescription>
             </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              Valor: <strong>{formatCurrency(numAmount, currency)}</strong>
+            </p>
             <div className="mt-4">
               {method === "pix" ? (
                 <div className="flex flex-col items-center gap-3">
