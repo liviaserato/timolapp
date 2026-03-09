@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import { CurrencyConfig, formatCurrency } from "./currency-helpers";
+import { CurrencyConfig, formatCurrencySplit } from "./currency-helpers";
 import { BonusExtractRow, movementTypes, qualificationLabels } from "./mock-data";
 
 interface Props {
@@ -133,7 +133,7 @@ export function BonusExtractTable({ data, currency }: Props) {
           )}
         </div>
 
-        {/* Search field — aligned right with table */}
+        {/* Search field */}
         <div className="relative w-full sm:w-48 sm:shrink-0">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
@@ -179,13 +179,13 @@ export function BonusExtractTable({ data, currency }: Props) {
       <div className="rounded-md border border-app-card-border overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="text-[11px] px-1.5 py-1.5 hidden sm:table-cell">Data</TableHead>
-              <TableHead className="text-[11px] px-1.5 py-1.5">Pedido</TableHead>
-              <TableHead className="text-[11px] px-1.5 py-1.5">ID</TableHead>
-              <TableHead className="text-[11px] px-1.5 py-1.5">Tipo</TableHead>
-              <TableHead className="text-[11px] px-1.5 py-1.5 text-right">Pts</TableHead>
-              <TableHead className="text-[11px] px-1.5 py-1.5 text-right">Valor</TableHead>
+            <TableRow className="bg-app-table-header">
+              <TableHead className="text-xs px-2 py-1.5 hidden sm:table-cell">Data</TableHead>
+              <TableHead className="text-xs px-2 py-1.5 text-left">Pedido</TableHead>
+              <TableHead className="text-xs px-2 py-1.5 text-right">ID</TableHead>
+              <TableHead className="text-xs px-2 py-1.5 text-center">Tipo</TableHead>
+              <TableHead className="text-xs px-2 py-1.5 text-right">Pts</TableHead>
+              <TableHead className="text-xs px-2 py-1.5 text-right">Valor</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -198,19 +198,20 @@ export function BonusExtractTable({ data, currency }: Props) {
             ) : (
               filtered.map((row, i) => {
                 const q = qualificationLabels[row.qualification];
+                const { symbol, number: numStr } = formatCurrencySplit(row.value, currency);
                 return (
                   <TableRow key={i}>
                     {/* Desktop: separate date cell */}
-                    <TableCell className="text-[11px] whitespace-nowrap px-1.5 py-1 hidden sm:table-cell">
+                    <TableCell className="text-xs whitespace-nowrap px-2 py-1 hidden sm:table-cell">
                       {formatShortDate(row.date)}
                     </TableCell>
-                    {/* Order + date on mobile */}
-                    <TableCell className="text-[11px] font-mono px-1.5 py-1">
+                    {/* Order + date on mobile, icon before order */}
+                    <TableCell className="text-xs font-mono px-2 py-1 text-left">
                       <span className="flex items-center gap-1">
                         {q && (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <span className="cursor-default text-[11px] leading-none" aria-label={q.label}>{q.icon}</span>
+                              <span className="cursor-default text-xs leading-none" aria-label={q.label}>{q.icon}</span>
                             </TooltipTrigger>
                             <TooltipContent side="top" className="text-xs">{q.label}</TooltipContent>
                           </Tooltip>
@@ -223,11 +224,14 @@ export function BonusExtractTable({ data, currency }: Props) {
                         </span>
                       </span>
                     </TableCell>
-                    <TableCell className="text-[11px] font-mono px-1.5 py-1">{row.id}</TableCell>
-                    <TableCell className="text-[11px] px-1.5 py-1">{row.type}</TableCell>
-                    <TableCell className="text-[11px] text-right px-1.5 py-1">{row.points ?? "—"}</TableCell>
-                    <TableCell className={`text-[11px] text-right font-medium px-1.5 py-1 ${row.value < 0 ? "text-[hsl(var(--negative))]" : ""}`}>
-                      {formatCurrency(row.value, currency)}
+                    <TableCell className="text-xs font-mono px-2 py-1 text-right">{row.id}</TableCell>
+                    <TableCell className="text-xs px-2 py-1 text-center">{row.type}</TableCell>
+                    <TableCell className="text-xs text-right px-2 py-1">{row.points ?? "—"}</TableCell>
+                    <TableCell className={`text-xs text-right font-medium px-2 py-1 ${row.value < 0 ? "text-negative" : ""}`}>
+                      <span className="inline-flex items-baseline justify-end gap-0.5 w-full">
+                        <span className="text-[10px] font-normal">{symbol}</span>
+                        <span>{numStr}</span>
+                      </span>
                     </TableCell>
                   </TableRow>
                 );
@@ -238,12 +242,17 @@ export function BonusExtractTable({ data, currency }: Props) {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
-        {Object.entries(qualificationLabels).map(([key, q]) => (
-          <span key={key} className="flex items-center gap-1">
-            <span className="text-[11px]">{q.icon}</span> {q.label}
-          </span>
-        ))}
+      <div className="space-y-1">
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
+          {Object.entries(qualificationLabels).map(([key, q]) => (
+            <span key={key} className="flex items-center gap-1">
+              <span className="text-[11px]">{q.icon}</span> {q.label}
+            </span>
+          ))}
+        </div>
+        <p className="text-[10px] text-muted-foreground leading-tight">
+          *O cálculo dos ganhos do Unilevel é baseado na sua qualificação atual. O ícone corresponde à sua qualificação no momento do pedido.
+        </p>
       </div>
     </div>
   );

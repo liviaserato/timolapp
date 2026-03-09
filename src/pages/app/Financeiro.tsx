@@ -39,7 +39,7 @@ export default function Financeiro() {
       </header>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
         <BonusSummaryCard
           nextFriday={mockBonusSummary.nextFriday}
           awaitingRelease={mockBonusSummary.awaitingRelease}
@@ -68,7 +68,7 @@ export default function Financeiro() {
       <h2 className="text-lg font-bold text-primary mb-3">Extrato</h2>
 
       {/* Extract selector cards */}
-      <div className="grid grid-cols-2 gap-3 max-w-md">
+      <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
           onClick={() => setActiveExtract("bonus")}

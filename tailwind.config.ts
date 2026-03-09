@@ -74,6 +74,7 @@ export default {
           footer: "hsl(var(--app-footer))",
           "page-bg": "hsl(var(--app-page-bg))",
           "card-border": "hsl(var(--app-card-border))",
+          "table-header": "hsl(var(--table-header))",
         },
       },
       borderRadius: {
