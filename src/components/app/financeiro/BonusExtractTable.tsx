@@ -112,7 +112,7 @@ export function BonusExtractTable({ data, currency }: Props) {
   const displayedRows = needsPagination ? filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE) : filtered;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 min-h-[480px]">
       {/* Filters */}
       {/* Line 1: Mode toggle + type chips (desktop/tablet) | Mode toggle + search (mobile) */}
       <div className="flex flex-col gap-2">
@@ -247,7 +247,7 @@ export function BonusExtractTable({ data, currency }: Props) {
 
       {/* Table */}
       <div className="rounded-md border border-app-card-border overflow-hidden">
-        <div className="max-h-[480px] min-h-[320px] overflow-y-auto">
+        <div className="max-h-[480px] overflow-y-auto">
           <Table>
              <TableHeader className="sticky top-0 z-10">
               <TableRow className="bg-app-table-header">

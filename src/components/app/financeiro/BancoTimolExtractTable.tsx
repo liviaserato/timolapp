@@ -75,7 +75,7 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
   }, [data, filterMode, monthRef, dateFrom, dateTo, searchTerm]);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 min-h-[480px]">
       {/* Filters */}
       <div className="flex flex-col gap-2">
         {/* Line 1: Mode toggle + search (mobile) */}
@@ -170,7 +170,7 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
       </div>
 
       <div className="rounded-md border border-app-card-border overflow-hidden">
-        <div className="max-h-[480px] min-h-[320px] overflow-y-auto">
+        <div className="max-h-[480px] overflow-y-auto">
           <Table>
             <TableHeader className="sticky top-0 z-10">
               <TableRow className="bg-app-table-header">
