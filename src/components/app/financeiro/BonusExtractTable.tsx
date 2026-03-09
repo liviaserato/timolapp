@@ -130,7 +130,7 @@ export function BonusExtractTable({ data, currency }: Props) {
             </button>
             <button
               type="button"
-              onClick={() => { setFilterMode("custom"); setPage(0); }}
+              onClick={() => { setFilterMode("custom"); setDateTo(todayStr); setPage(0); }}
               className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
                 filterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
               }`}
@@ -254,7 +254,7 @@ export function BonusExtractTable({ data, currency }: Props) {
                 <TableHead className="text-xs px-2 py-1.5 text-center hidden sm:table-cell">Data</TableHead>
                 <TableHead className="text-xs px-2 py-1.5 text-left">Pedido</TableHead>
                 <TableHead className="text-xs px-2 py-1.5 text-left hidden lg:table-cell">Qualificação</TableHead>
-                <TableHead className="text-xs px-2 py-1.5 text-left">ID</TableHead>
+                <TableHead className="text-xs px-2 py-1.5 text-center">ID</TableHead>
                 <TableHead className="text-xs px-2 py-1.5 text-center">Tipo</TableHead>
                 <TableHead className="text-xs px-2 py-1.5 text-right">Pts</TableHead>
                 <TableHead className="text-xs px-2 py-1.5 text-right">Valor</TableHead>
@@ -300,7 +300,7 @@ export function BonusExtractTable({ data, currency }: Props) {
                       <TableCell className="text-xs px-2 py-1 text-left hidden lg:table-cell">
                         {q ? q.label : row.qualification}
                       </TableCell>
-                      <TableCell className="text-xs font-mono px-2 py-1 text-left">{row.id}</TableCell>
+                      <TableCell className="text-xs font-mono px-2 py-1 text-center">{row.id}</TableCell>
                       <TableCell className="text-xs px-2 py-1 text-center">{row.type}</TableCell>
                       <TableCell className="text-xs text-right px-2 py-1">{row.points ?? "-"}</TableCell>
                       <TableCell className={`text-xs text-right font-medium px-2 py-1 ${row.value < 0 ? "text-negative" : ""}`}>
