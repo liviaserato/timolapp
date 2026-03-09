@@ -30,6 +30,9 @@ export default {
         warning: {
           DEFAULT: "hsl(var(--warning))",
         },
+        negative: {
+          DEFAULT: "hsl(var(--negative))",
+        },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
