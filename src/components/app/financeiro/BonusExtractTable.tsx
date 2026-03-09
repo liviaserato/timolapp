@@ -133,8 +133,8 @@ export function BonusExtractTable({ data, currency }: Props) {
             </button>
           </div>
 
-          {/* Type chips - hidden on mobile, shown on sm+ */}
-          <div className="hidden sm:flex flex-wrap gap-1.5">
+          {/* Type chips - hidden on mobile, pushed right on sm+ */}
+          <div className="hidden sm:flex flex-wrap gap-1.5 ml-auto">
             {movementTypes.map((type) => (
               <button
                 key={type}
