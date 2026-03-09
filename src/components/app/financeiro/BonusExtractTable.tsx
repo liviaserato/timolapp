@@ -257,7 +257,7 @@ export function BonusExtractTable({ data, currency }: Props) {
                 <TableHead className="text-xs px-3 py-1.5 text-center">ID</TableHead>
                 <TableHead className="text-xs px-3 py-1.5 text-center">Tipo</TableHead>
                 <TableHead className="text-xs px-3 py-1.5 text-right">Pts</TableHead>
-                <TableHead className="text-xs px-3 py-1.5 text-right lg:w-[150px]">Valor</TableHead>
+                <TableHead className="text-xs px-3 py-1.5 text-right">Valor</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
