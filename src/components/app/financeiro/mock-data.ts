@@ -5,8 +5,6 @@ export const qualificationLabels: Record<string, { label: string; icon: string }
   rubi: { label: "Rubi", icon: "◆" },
   esmeralda: { label: "Esmeralda", icon: "◈" },
   diamante: { label: "Diamante", icon: "◇" },
-  "diamante-1": { label: "Diamante ⭐", icon: "◇⭐" },
-  "diamante-2": { label: "Diamante ⭐⭐", icon: "◇⭐⭐" },
 };
 
 export const movementTypes = ["Unilevel", "Binário", "Fixo", "Depósito", "Pedido", "Resgate"] as const;

@@ -31,7 +31,7 @@ export default function Financeiro() {
 
   return (
     <div>
-      <header className="text-center mb-4">
+      <header className="mb-4">
         <h1 className="text-2xl font-bold text-primary">Financeiro</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Acompanhe seus ganhos e tenha controle total do seu dinheiro
@@ -61,8 +61,14 @@ export default function Financeiro() {
         />
       </div>
 
+      {/* Separator */}
+      <div className="mt-6 mb-4 border-t border-app-card-border" />
+
+      {/* Extract title */}
+      <h2 className="text-lg font-bold text-primary mb-3">Extrato</h2>
+
       {/* Extract selector cards */}
-      <div className="mt-6 grid grid-cols-2 gap-3 max-w-3xl">
+      <div className="grid grid-cols-2 gap-3 max-w-md">
         <button
           type="button"
           onClick={() => setActiveExtract("bonus")}
