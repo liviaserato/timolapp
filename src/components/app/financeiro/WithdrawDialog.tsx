@@ -17,18 +17,34 @@ interface Props {
   availableBalance: number;
 }
 
+function formatCurrencyInput(raw: string): string {
+  // Remove tudo que não for dígito
+  const digits = raw.replace(/\D/g, "");
+  // Converte para centavos
+  const cents = parseInt(digits || "0", 10);
+  const intPart = Math.floor(cents / 100);
+  const decPart = (cents % 100).toString().padStart(2, "0");
+  return `${intPart.toLocaleString("pt-BR")},${decPart}`;
+}
+
+function parseCurrencyInput(formatted: string): number {
+  const digits = formatted.replace(/\D/g, "");
+  return parseInt(digits || "0", 10) / 100;
+}
+
 export function WithdrawDialog({ open, onOpenChange, currency, availableBalance }: Props) {
   const [step, setStep] = useState<Step>("amount");
-  const [amount, setAmount] = useState("");
+  const [rawAmount, setRawAmount] = useState("");
   const [pin, setPin] = useState("");
 
-  const numAmount = parseFloat(amount.replace(",", ".")) || 0;
+  const displayAmount = rawAmount ? formatCurrencyInput(rawAmount) : "0,00";
+  const numAmount = parseCurrencyInput(rawAmount);
   const fee = numAmount * (WITHDRAW_FEE_PERCENT / 100);
   const netAmount = numAmount - fee;
 
   function reset() {
     setStep("amount");
-    setAmount("");
+    setRawAmount("");
     setPin("");
   }
 
@@ -37,11 +53,23 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
     onOpenChange(v);
   }
 
+  function handleAmountChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const digits = e.target.value.replace(/\D/g, "");
+    setRawAmount(digits);
+  }
+
+  function handleSubmitAmount(e?: React.FormEvent) {
+    e?.preventDefault();
+    if (numAmount > 0 && numAmount <= availableBalance) {
+      setStep("pin");
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-sm">
         {step === "amount" && (
-          <>
+          <form onSubmit={handleSubmitAmount}>
             <DialogHeader>
               <DialogTitle>Resgatar Saldo</DialogTitle>
               <DialogDescription>
@@ -53,11 +81,12 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
                 <Label>Valor do resgate ({currency.symbol})</Label>
                 <Input
                   type="text"
-                  inputMode="decimal"
+                  inputMode="numeric"
                   placeholder="0,00"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  value={displayAmount}
+                  onChange={handleAmountChange}
                   className="mt-1"
+                  autoFocus
                 />
               </div>
               {numAmount > 0 && (
@@ -77,23 +106,23 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
                 </div>
               )}
               <Button
+                type="submit"
                 className="w-full"
                 disabled={numAmount <= 0 || numAmount > availableBalance}
-                onClick={() => setStep("pin")}
               >
                 Solicitar resgate
               </Button>
             </div>
-          </>
+          </form>
         )}
 
         {step === "pin" && (
           <>
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
+            <DialogHeader className="text-center">
+              <DialogTitle className="flex items-center justify-center gap-2">
                 <ShieldCheck className="h-5 w-5" /> Verificação de Segurança
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-center">
                 Enviamos um PIN de 6 dígitos para o seu e-mail.
                 <br />
                 Digite abaixo para confirmar o resgate.
@@ -110,7 +139,7 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
                   <InputOTPSlot index={5} />
                 </InputOTPGroup>
               </InputOTP>
-              <p className="text-xs text-muted-foreground">Ninguém da Timol solicitará este código.</p>
+              <p className="text-xs text-muted-foreground text-center">Ninguém da Timol solicitará este código.</p>
               <Button className="w-full" disabled={pin.length < 6} onClick={() => setStep("success")}>
                 Confirmar
               </Button>
