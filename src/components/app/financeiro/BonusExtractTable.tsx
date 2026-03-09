@@ -1,8 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { CurrencyConfig, formatCurrency } from "./currency-helpers";
 import { BonusExtractRow, movementTypes, qualificationLabels } from "./mock-data";
@@ -34,6 +34,7 @@ export function BonusExtractTable({ data, currency }: Props) {
   const [dateTo, setDateTo] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [searchId, setSearchId] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
 
   function toggleType(type: string) {
     setSelectedTypes((prev) => {
@@ -48,6 +49,13 @@ export function BonusExtractTable({ data, currency }: Props) {
   }
   function nextMonth() {
     setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+  }
+
+  function handleSearchKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      e.currentTarget.select();
+    }
   }
 
   const filtered = useMemo(() => {
@@ -72,59 +80,76 @@ export function BonusExtractTable({ data, currency }: Props) {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-bold text-primary">Extrato de Bônus e Pontos</h3>
+      <h3 className="text-base font-bold text-primary">📊 Extrato de Bônus e Pontos</h3>
 
-      {/* Filter mode toggle + filters */}
-      <div className="flex flex-wrap gap-2 items-center">
-        <div className="flex rounded-md border border-app-card-border overflow-hidden">
-          <button
-            type="button"
-            onClick={() => setFilterMode("month")}
-            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-              filterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-            }`}
-          >
-            Mês
-          </button>
-          <button
-            type="button"
-            onClick={() => setFilterMode("custom")}
-            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-              filterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-            }`}
-          >
-            Período
-          </button>
+      {/* Filter row 1: mode toggle + month/period — aligned to bonus card width on desktop */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2 max-w-full sm:max-w-[calc(33.333%-0.5rem)] md:max-w-[calc(66.666%-0.25rem)]">
+        <div className="flex items-center gap-2 w-full">
+          <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
+            <button
+              type="button"
+              onClick={() => setFilterMode("month")}
+              className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
+                filterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              Mês
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterMode("custom")}
+              className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
+                filterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              Período
+            </button>
+          </div>
+
+          {filterMode === "month" ? (
+            <div className="flex items-center gap-1 flex-1 justify-center">
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={prevMonth}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-xs font-medium min-w-[130px] text-center">
+                {getMonthLabel(monthRef)}
+              </span>
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth}>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <div className="flex gap-2 items-center flex-1">
+              <Input type="date" className="h-8 flex-1 text-xs" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+              <span className="text-xs text-muted-foreground">até</span>
+              <Input type="date" className="h-8 flex-1 text-xs" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+            </div>
+          )}
         </div>
+      </div>
 
-        {filterMode === "month" ? (
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={prevMonth}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="text-xs font-medium min-w-[130px] text-center capitalize">
-              {getMonthLabel(monthRef)}
-            </span>
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        ) : (
-          <div className="flex gap-2 items-center">
-            <Input type="date" className="h-8 w-36 text-xs" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-            <span className="text-xs text-muted-foreground">até</span>
-            <Input type="date" className="h-8 w-36 text-xs" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
-          </div>
-        )}
-
-        <div className="relative flex-1 min-w-[160px]">
+      {/* Search field — desktop: banco timol card width, tablet: pontos width right-aligned, mobile: full */}
+      <div className="flex justify-end">
+        <div className="relative w-full sm:w-[calc(33.333%-0.5rem)]">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
+            ref={searchRef}
             placeholder="Buscar pelo ID ou Pedido"
-            className="h-8 pl-7 text-xs"
+            className="h-8 pl-7 pr-7 text-xs"
             value={searchId}
             onChange={(e) => setSearchId(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
           />
+          {searchId && (
+            <button
+              type="button"
+              onClick={() => { setSearchId(""); searchRef.current?.focus(); }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Limpar busca"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -151,12 +176,12 @@ export function BonusExtractTable({ data, currency }: Props) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-xs">Data</TableHead>
-              <TableHead className="text-xs">Pedido</TableHead>
-              <TableHead className="text-xs">ID</TableHead>
-              <TableHead className="text-xs">Tipo</TableHead>
-              <TableHead className="text-xs text-right">Pontos</TableHead>
-              <TableHead className="text-xs text-right">Valor</TableHead>
+              <TableHead className="text-xs px-2 py-2">Data</TableHead>
+              <TableHead className="text-xs px-2 py-2">Pedido</TableHead>
+              <TableHead className="text-xs px-2 py-2">ID</TableHead>
+              <TableHead className="text-xs px-2 py-2">Tipo</TableHead>
+              <TableHead className="text-xs px-2 py-2 text-right">Pontos</TableHead>
+              <TableHead className="text-xs px-2 py-2 text-right">Valor</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -171,10 +196,10 @@ export function BonusExtractTable({ data, currency }: Props) {
                 const q = qualificationLabels[row.qualification];
                 return (
                   <TableRow key={i}>
-                    <TableCell className="text-xs whitespace-nowrap">
+                    <TableCell className="text-xs whitespace-nowrap px-2 py-1.5">
                       {new Date(row.date).toLocaleDateString("pt-BR")}
                     </TableCell>
-                    <TableCell className="text-xs font-mono">
+                    <TableCell className="text-xs font-mono px-2 py-1.5">
                       <span className="flex items-center gap-1">
                         {q && (
                           <Tooltip>
@@ -187,10 +212,10 @@ export function BonusExtractTable({ data, currency }: Props) {
                         {row.orderNumber}
                       </span>
                     </TableCell>
-                    <TableCell className="text-xs font-mono">{row.id}</TableCell>
-                    <TableCell className="text-xs">{row.type}</TableCell>
-                    <TableCell className="text-xs text-right">{row.points ?? "—"}</TableCell>
-                    <TableCell className={`text-xs text-right font-medium ${row.value < 0 ? "text-destructive" : ""}`}>
+                    <TableCell className="text-xs font-mono px-2 py-1.5">{row.id}</TableCell>
+                    <TableCell className="text-xs px-2 py-1.5">{row.type}</TableCell>
+                    <TableCell className="text-xs text-right px-2 py-1.5">{row.points ?? "—"}</TableCell>
+                    <TableCell className={`text-xs text-right font-medium px-2 py-1.5 ${row.value < 0 ? "text-destructive" : ""}`}>
                       {formatCurrency(row.value, currency)}
                     </TableCell>
                   </TableRow>
