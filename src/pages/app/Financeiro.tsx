@@ -14,6 +14,7 @@ import {
   mockBonusExtract,
   mockBancoTimolExtract,
   mockUserQualification,
+  mockFranchiseStatus,
 } from "@/components/app/financeiro/mock-data";
 
 const FRANCHISE_COUNTRY = "BR";
