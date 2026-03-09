@@ -256,7 +256,7 @@ export function BonusExtractTable({ data, currency }: Props) {
                 <TableHead className="text-xs px-3 py-1.5 text-left hidden lg:table-cell">Qualificação</TableHead>
                 <TableHead className="text-xs px-3 py-1.5 text-center">ID</TableHead>
                 <TableHead className="text-xs px-3 py-1.5 text-center">Tipo</TableHead>
-                <TableHead className="text-xs px-3 py-1.5 text-right">Pts</TableHead>
+                <TableHead className="text-xs px-3 py-1.5 text-right">Pontos</TableHead>
                 <TableHead className="text-xs px-3 py-1.5 text-right">Valor</TableHead>
               </TableRow>
             </TableHeader>
