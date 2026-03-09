@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { BonusSummaryCard } from "@/components/app/financeiro/BonusSummaryCard";
 import { BancoTimolCard } from "@/components/app/financeiro/BancoTimolCard";
 import { PontosCard } from "@/components/app/financeiro/PontosCard";
@@ -8,6 +7,8 @@ import { WithdrawDialog } from "@/components/app/financeiro/WithdrawDialog";
 import { BonusExtractTable } from "@/components/app/financeiro/BonusExtractTable";
 import { BancoTimolExtractTable } from "@/components/app/financeiro/BancoTimolExtractTable";
 import { getCurrencyConfig } from "@/components/app/financeiro/currency-helpers";
+import { TrendingUp, Landmark } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   mockBonusSummary,
   mockBancoTimol,
@@ -20,10 +21,13 @@ import {
 const FRANCHISE_COUNTRY = "BR";
 const FRANCHISE_CURRENCY = "BRL";
 
+type ExtractView = "bonus" | "banco";
+
 export default function Financeiro() {
   const currency = getCurrencyConfig(FRANCHISE_COUNTRY, FRANCHISE_CURRENCY);
   const [addBalanceOpen, setAddBalanceOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [activeExtract, setActiveExtract] = useState<ExtractView>("bonus");
 
   return (
     <div>
@@ -57,20 +61,63 @@ export default function Financeiro() {
         />
       </div>
 
-      {/* Extract Tabs */}
-      <div className="mt-6">
-        <Tabs defaultValue="bonus" className="w-full">
-          <TabsList className="w-full grid grid-cols-2 max-w-3xl">
-            <TabsTrigger value="bonus">Bônus e Pontos</TabsTrigger>
-            <TabsTrigger value="banco">Banco Timol</TabsTrigger>
-          </TabsList>
-          <TabsContent value="bonus" className="mt-3">
-            <BonusExtractTable data={mockBonusExtract} currency={currency} />
-          </TabsContent>
-          <TabsContent value="banco" className="mt-3">
-            <BancoTimolExtractTable data={mockBancoTimolExtract} currency={currency} />
-          </TabsContent>
-        </Tabs>
+      {/* Extract selector cards */}
+      <div className="mt-6 grid grid-cols-2 gap-3 max-w-3xl">
+        <button
+          type="button"
+          onClick={() => setActiveExtract("bonus")}
+          className={cn(
+            "flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
+            activeExtract === "bonus"
+              ? "border-primary bg-primary/5 shadow-sm"
+              : "border-app-card-border bg-card hover:border-primary/30"
+          )}
+        >
+          <div className={cn(
+            "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
+            activeExtract === "bonus" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+          )}>
+            <TrendingUp className="h-4 w-4" />
+          </div>
+          <div className="min-w-0">
+            <p className={cn("text-sm font-bold", activeExtract === "bonus" ? "text-primary" : "text-foreground")}>
+              Bônus e Pontos
+            </p>
+            <p className="text-[11px] text-muted-foreground hidden sm:block">Comissões, pedidos e resgates</p>
+          </div>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveExtract("banco")}
+          className={cn(
+            "flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
+            activeExtract === "banco"
+              ? "border-primary bg-primary/5 shadow-sm"
+              : "border-app-card-border bg-card hover:border-primary/30"
+          )}
+        >
+          <div className={cn(
+            "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
+            activeExtract === "banco" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+          )}>
+            <Landmark className="h-4 w-4" />
+          </div>
+          <div className="min-w-0">
+            <p className={cn("text-sm font-bold", activeExtract === "banco" ? "text-primary" : "text-foreground")}>
+              Banco Timol
+            </p>
+            <p className="text-[11px] text-muted-foreground hidden sm:block">Depósitos, compras e resgates</p>
+          </div>
+        </button>
+      </div>
+
+      {/* Active extract */}
+      <div className="mt-4">
+        {activeExtract === "bonus" ? (
+          <BonusExtractTable data={mockBonusExtract} currency={currency} />
+        ) : (
+          <BancoTimolExtractTable data={mockBancoTimolExtract} currency={currency} />
+        )}
       </div>
 
       {/* Dialogs */}
