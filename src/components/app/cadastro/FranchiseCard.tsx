@@ -141,13 +141,13 @@ export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 flex-wrap justify-center">
               {franchises.map((f, i) => (
                 <button
                   key={f.id}
                   onClick={() => setTabIndex(i)}
                   className={cn(
-                    "px-2 py-1 rounded text-xs font-medium transition-colors",
+                    "px-2 py-1 rounded text-xs font-medium transition-colors whitespace-nowrap",
                     i === tabIndex
                       ? "bg-primary text-primary-foreground"
                       : i === currentIdx
