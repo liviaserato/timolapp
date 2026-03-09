@@ -20,12 +20,12 @@ import iconConfiguracoes from "@/assets/icon-sidebar-configuracoes.svg";
 const navItems = [
   { label: "Painel Inicial", path: "/app", icon: iconPainelInicial },
   { label: "Cadastro", path: "/app/cadastro", icon: iconCadastro },
+  { label: "Financeiro", path: "/app/financeiro", icon: iconFinanceiro },
   { label: "Rede", path: "/app/rede", icon: iconRede },
   { label: "Clientes", path: "/app/clientes", icon: iconClientes },
   { label: "Treinamentos", path: "/app/treinamentos", icon: iconTreinamentos },
   { label: "Produtos", path: "/app/produtos", icon: iconProdutos },
   { label: "Pedidos", path: "/app/pedidos", icon: iconPedidos },
-  { label: "Financeiro", path: "/app/financeiro", icon: iconFinanceiro },
   { label: "Comercial", path: "/app/comercial", icon: iconComercial },
   { label: "Relatórios", path: "/app/relatorios", icon: iconRelatorios },
   { label: "Suporte", path: "/app/suporte", icon: iconSuporte },
