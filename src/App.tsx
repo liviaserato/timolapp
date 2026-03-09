@@ -36,6 +36,7 @@ const App = () => (
             <Route path="/app" element={<AuthGate mode="protected"><AppLayout /></AuthGate>}>
               <Route index element={<Dashboard />} />
               <Route path="cadastro" element={<Cadastro />} />
+              <Route path="financeiro" element={<Financeiro />} />
               <Route path=":section" element={<SectionPlaceholder />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
