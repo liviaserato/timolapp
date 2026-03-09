@@ -263,7 +263,7 @@ export function BonusExtractTable({ data, currency }: Props) {
             <TableBody>
               {displayedRows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-8">
+                  <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-8">
                     Nenhuma movimentação encontrada.
                   </TableCell>
                 </TableRow>
@@ -273,18 +273,21 @@ export function BonusExtractTable({ data, currency }: Props) {
                   const { symbol, number: numStr } = formatCurrencySplit(row.value, currency);
                   return (
                     <TableRow key={i}>
-                      <TableCell className="text-xs whitespace-nowrap px-2 pr-4 py-1 hidden sm:table-cell">
+                      <TableCell className="text-xs whitespace-nowrap px-2 py-1 text-center hidden sm:table-cell">
                         {formatShortDate(row.date)}
                       </TableCell>
                       <TableCell className="text-xs font-mono px-2 py-1 text-left">
                         <span className="flex items-center gap-1">
+                          {/* Icons only on tablet/mobile */}
                           {q && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="cursor-default text-xs leading-none" aria-label={q.label}>{q.icon}</span>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="text-xs">{q.label}</TooltipContent>
-                            </Tooltip>
+                            <span className="lg:hidden">
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="cursor-default text-xs leading-none" aria-label={q.label}>{q.icon}</span>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="text-xs">{q.label}</TooltipContent>
+                              </Tooltip>
+                            </span>
                           )}
                           <span>
                             {row.orderNumber}
@@ -294,7 +297,10 @@ export function BonusExtractTable({ data, currency }: Props) {
                           </span>
                         </span>
                       </TableCell>
-                      <TableCell className="text-xs font-mono pl-3 pr-2 py-1 text-left">{row.id}</TableCell>
+                      <TableCell className="text-xs px-2 py-1 text-left hidden lg:table-cell">
+                        {q ? q.label : row.qualification}
+                      </TableCell>
+                      <TableCell className="text-xs font-mono px-2 py-1 text-left">{row.id}</TableCell>
                       <TableCell className="text-xs px-2 py-1 text-center">{row.type}</TableCell>
                       <TableCell className="text-xs text-right px-2 py-1">{row.points ?? "-"}</TableCell>
                       <TableCell className={`text-xs text-right font-medium px-2 py-1 ${row.value < 0 ? "text-negative" : ""}`}>
