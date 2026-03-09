@@ -35,7 +35,7 @@ export default function Financeiro() {
       </header>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <BonusSummaryCard
           nextFriday={mockBonusSummary.nextFriday}
           awaitingRelease={mockBonusSummary.awaitingRelease}
