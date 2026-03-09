@@ -190,7 +190,7 @@ export function BonusExtractTable({ data, currency }: Props) {
               <span className="text-xs font-medium min-w-[120px] text-center">
                 {getMonthLabel(monthRef)}
               </span>
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth}>
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth} disabled={isCurrentMonth}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
