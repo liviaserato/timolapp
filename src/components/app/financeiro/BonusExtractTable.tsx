@@ -249,11 +249,12 @@ export function BonusExtractTable({ data, currency }: Props) {
       <div className="rounded-md border border-app-card-border overflow-hidden">
         <div className="max-h-[480px] overflow-y-auto">
           <Table>
-            <TableHeader className="sticky top-0 z-10">
+             <TableHeader className="sticky top-0 z-10">
               <TableRow className="bg-app-table-header">
-                <TableHead className="text-xs px-2 pr-4 py-1.5 hidden sm:table-cell">Data</TableHead>
+                <TableHead className="text-xs px-2 py-1.5 text-center hidden sm:table-cell">Data</TableHead>
                 <TableHead className="text-xs px-2 py-1.5 text-left">Pedido</TableHead>
-                <TableHead className="text-xs pl-3 pr-2 py-1.5 text-left">ID</TableHead>
+                <TableHead className="text-xs px-2 py-1.5 text-left hidden lg:table-cell">Qualificação</TableHead>
+                <TableHead className="text-xs px-2 py-1.5 text-left">ID</TableHead>
                 <TableHead className="text-xs px-2 py-1.5 text-center">Tipo</TableHead>
                 <TableHead className="text-xs px-2 py-1.5 text-right">Pts</TableHead>
                 <TableHead className="text-xs px-2 py-1.5 text-right">Valor</TableHead>
