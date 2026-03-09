@@ -201,7 +201,7 @@ export function BonusExtractTable({ data, currency }: Props) {
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               ref={searchRef}
-              placeholder="Buscar pelo ID ou Pedido"
+              placeholder="ID ou Pedido"
               className="h-8 pl-7 pr-7 text-xs"
               value={searchId}
               onChange={(e) => { setSearchId(e.target.value); setPage(0); }}
