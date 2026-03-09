@@ -39,6 +39,8 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
   const [monthRef, setMonthRef] = useState(new Date());
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
 
   function prevMonth() {
     setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
