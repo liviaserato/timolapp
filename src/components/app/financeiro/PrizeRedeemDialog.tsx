@@ -55,7 +55,9 @@ export function PrizeRedeemDialog({ open, onOpenChange, prize }: Props) {
                 <ShieldCheck className="h-5 w-5" /> Verificação de Segurança
               </DialogTitle>
               <DialogDescription>
-                Enviamos um PIN de 6 dígitos para o seu e-mail. Digite abaixo para confirmar.
+                Enviamos um PIN de 6 dígitos para o seu e-mail.
+                <br />
+                Digite abaixo para confirmar.
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col items-center gap-4 mt-4">

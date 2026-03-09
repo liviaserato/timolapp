@@ -2,22 +2,20 @@ import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { BonusSummaryCard } from "@/components/app/financeiro/BonusSummaryCard";
 import { BancoTimolCard } from "@/components/app/financeiro/BancoTimolCard";
+import { PontosCard } from "@/components/app/financeiro/PontosCard";
 import { AddBalanceDialog } from "@/components/app/financeiro/AddBalanceDialog";
 import { WithdrawDialog } from "@/components/app/financeiro/WithdrawDialog";
 import { BonusExtractTable } from "@/components/app/financeiro/BonusExtractTable";
 import { BancoTimolExtractTable } from "@/components/app/financeiro/BancoTimolExtractTable";
-import { PrizesSection } from "@/components/app/financeiro/PrizesSection";
 import { getCurrencyConfig } from "@/components/app/financeiro/currency-helpers";
 import {
   mockBonusSummary,
   mockBancoTimol,
   mockBonusExtract,
   mockBancoTimolExtract,
-  mockPrizes,
   mockUserQualification,
 } from "@/components/app/financeiro/mock-data";
 
-// Mock franchise config — will come from FranchiseContext later
 const FRANCHISE_COUNTRY = "BR";
 const FRANCHISE_CURRENCY = "BRL";
 
@@ -31,12 +29,12 @@ export default function Financeiro() {
       <header className="text-center mb-4">
         <h1 className="text-2xl font-bold text-primary">Financeiro</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Bônus, saldos, extratos e prêmios da sua franquia
+          Acompanhe seus ganhos e tenha controle total do seu dinheiro
         </p>
       </header>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <BonusSummaryCard
           nextFriday={mockBonusSummary.nextFriday}
           awaitingRelease={mockBonusSummary.awaitingRelease}
@@ -49,33 +47,28 @@ export default function Financeiro() {
           onAddBalance={() => setAddBalanceOpen(true)}
           onWithdraw={() => setWithdrawOpen(true)}
         />
+        <PontosCard
+          currentQualification={mockUserQualification.current}
+          totalPoints={mockUserQualification.totalPoints}
+          expiringPoints={mockUserQualification.expiringPoints}
+          expirationDate={mockUserQualification.expirationDate}
+        />
       </div>
 
       {/* Extract Tabs */}
       <div className="mt-6">
         <Tabs defaultValue="bonus" className="w-full">
-          <TabsList className="w-full grid grid-cols-2">
+          <TabsList className="w-full grid grid-cols-2 max-w-3xl">
             <TabsTrigger value="bonus">Bônus e Pontos</TabsTrigger>
             <TabsTrigger value="banco">Banco Timol</TabsTrigger>
           </TabsList>
-          <TabsContent value="bonus">
+          <TabsContent value="bonus" className="mt-3">
             <BonusExtractTable data={mockBonusExtract} currency={currency} />
           </TabsContent>
-          <TabsContent value="banco">
+          <TabsContent value="banco" className="mt-3">
             <BancoTimolExtractTable data={mockBancoTimolExtract} currency={currency} />
           </TabsContent>
         </Tabs>
-      </div>
-
-      {/* Prizes */}
-      <div className="mt-6">
-        <PrizesSection
-          currentQualification={mockUserQualification.current}
-          totalPoints={mockUserQualification.totalPoints}
-          expiringPoints={mockUserQualification.expiringPoints}
-          expirationDate={mockUserQualification.expirationDate}
-          prizes={mockPrizes}
-        />
       </div>
 
       {/* Dialogs */}
