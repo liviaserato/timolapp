@@ -1,28 +1,83 @@
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { CurrencyConfig, formatCurrency } from "./currency-helpers";
+import { cn } from "@/lib/utils";
+
+interface FranchiseStatus {
+  /** Date until which the franchise is active for receiving bonuses */
+  activeUntil: string;
+}
+
+function getFranchiseStatusInfo(activeUntil: string) {
+  const now = new Date();
+  const expDate = new Date(activeUntil);
+  const diffMs = expDate.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) {
+    return {
+      level: "expired" as const,
+      icon: ShieldX,
+      colorClass: "text-destructive",
+      bgClass: "border-destructive/40 bg-destructive/5",
+      message: "Sua franquia está inativa. Bônus e pontos não são gerados durante esse período. Adquira produtos para reativá-la e voltar a ganhar!",
+      label: `Inativa desde ${expDate.toLocaleDateString("pt-BR")}`,
+    };
+  }
+  if (diffDays <= 10) {
+    return {
+      level: "warning" as const,
+      icon: ShieldAlert,
+      colorClass: "text-warning",
+      bgClass: "border-warning/40 bg-warning/5",
+      message: `Sua franquia vence em ${diffDays} dia${diffDays !== 1 ? "s" : ""}. Adquira produtos para renovar e continuar recebendo bônus!`,
+      label: `Ativa até ${expDate.toLocaleDateString("pt-BR")}`,
+    };
+  }
+    return {
+      level: "active" as const,
+      icon: ShieldCheck,
+      colorClass: "text-success",
+      bgClass: "border-success/30 bg-success/5",
+      message: "Franquia ativa para recebimento de bônus.",
+      label: `Ativa até ${expDate.toLocaleDateString("pt-BR")}`,
+    };
+}
 
 interface Props {
   nextFriday: number;
   awaitingRelease: number;
   currency: CurrencyConfig;
+  franchiseStatus: FranchiseStatus;
 }
 
-export function BonusSummaryCard({ nextFriday, awaitingRelease, currency }: Props) {
+export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, franchiseStatus }: Props) {
+  const status = getFranchiseStatusInfo(franchiseStatus.activeUntil);
+  const StatusIcon = status.icon;
+
   return (
     <DashboardCard
       icon={TrendingUp}
       title="Saldo de Bônus"
       tooltip="Os bônus são pagos às sextas-feiras, 14 dias após o pagamento do pedido."
     >
-      <div className="mt-3 flex flex-row md:flex-col gap-3">
-        <div className="rounded-md border border-app-card-border p-3 text-center flex-1 bg-primary/5">
-          <p className="text-xs text-muted-foreground">Previsto para próxima sexta</p>
-          <p className="text-lg font-bold text-primary">{formatCurrency(nextFriday, currency)}</p>
+      <div className="mt-3 flex flex-row sm:flex-col gap-3">
+        <div className="rounded-md border border-success/30 bg-success/5 p-3 text-center flex-1">
+          <p className="text-xs text-muted-foreground">Programado para pagamento</p>
+          <p className="text-lg font-bold text-success">{formatCurrency(nextFriday, currency)}</p>
         </div>
         <div className="rounded-md border border-app-card-border p-3 text-center flex-1">
-          <p className="text-xs text-muted-foreground">Aguardando liberação</p>
+          <p className="text-xs text-muted-foreground">Valores em processamento</p>
           <p className="text-sm font-medium text-muted-foreground">{formatCurrency(awaitingRelease, currency)}</p>
+        </div>
+      </div>
+
+      {/* Franchise active status */}
+      <div className={cn("mt-3 flex items-start gap-2 rounded-md border p-2.5", status.bgClass)}>
+        <StatusIcon className={cn("h-4 w-4 shrink-0 mt-0.5", status.colorClass)} />
+        <div className="min-w-0">
+          <p className={cn("text-xs font-semibold", status.colorClass)}>{status.label}</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">{status.message}</p>
         </div>
       </div>
     </DashboardCard>

@@ -20,9 +20,9 @@ export function DashboardCard({ icon: Icon, title, children, className, tooltip 
         <Icon className="h-5 w-5" />
         {title}
         {tooltip && (
-          <Tooltip>
+          <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <button type="button" className="inline-flex" aria-label={tooltip}>
+              <button type="button" className="inline-flex cursor-help" aria-label={tooltip}>
                 <Info className="h-3.5 w-3.5 text-muted-foreground" />
               </button>
             </TooltipTrigger>
