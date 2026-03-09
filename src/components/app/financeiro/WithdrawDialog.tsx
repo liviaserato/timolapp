@@ -37,13 +37,6 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
     onOpenChange(v);
   }
 
-  // Next friday helper
-  const today = new Date();
-  const daysUntilFriday = (5 - today.getDay() + 7) % 7 || 7;
-  const nextFriday = new Date(today);
-  nextFriday.setDate(today.getDate() + daysUntilFriday);
-  const nextFridayStr = nextFriday.toLocaleDateString("pt-BR");
-
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
@@ -101,7 +94,9 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
                 <ShieldCheck className="h-5 w-5" /> Verificação de Segurança
               </DialogTitle>
               <DialogDescription>
-                Enviamos um PIN de 6 dígitos para o seu e-mail. Digite abaixo para confirmar o resgate.
+                Enviamos um PIN de 6 dígitos para o seu e-mail.
+                <br />
+                Digite abaixo para confirmar o resgate.
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col items-center gap-4 mt-4">
@@ -131,7 +126,7 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
               Seu resgate de <strong>{formatCurrency(netAmount, currency)}</strong> foi solicitado com sucesso.
             </p>
             <p className="text-sm text-muted-foreground">
-              Previsão de depósito: <strong>{nextFridayStr}</strong>
+              O valor pode cair na sua conta em até 5 dias úteis.
             </p>
             <Button className="mt-2 w-full" onClick={() => handleClose(false)}>
               Fechar

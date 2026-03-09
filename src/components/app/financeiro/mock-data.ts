@@ -1,12 +1,12 @@
-export const qualificationLabels: Record<string, { label: string; color: string }> = {
-  consultor: { label: "Consultor", color: "bg-slate-400 text-white" },
-  distribuidor: { label: "Distribuidor", color: "bg-blue-500 text-white" },
-  lider: { label: "Líder", color: "bg-green-500 text-white" },
-  rubi: { label: "Rubi", color: "bg-red-500 text-white" },
-  esmeralda: { label: "Esmeralda", color: "bg-emerald-600 text-white" },
-  diamante: { label: "Diamante", color: "bg-purple-600 text-white" },
-  "diamante-1": { label: "Diamante ⭐", color: "bg-purple-700 text-white" },
-  "diamante-2": { label: "Diamante ⭐⭐", color: "bg-purple-800 text-white" },
+export const qualificationLabels: Record<string, { label: string; icon: string }> = {
+  consultor: { label: "Consultor", icon: "○" },
+  distribuidor: { label: "Distribuidor", icon: "◐" },
+  lider: { label: "Líder", icon: "●" },
+  rubi: { label: "Rubi", icon: "◆" },
+  esmeralda: { label: "Esmeralda", icon: "◈" },
+  diamante: { label: "Diamante", icon: "◇" },
+  "diamante-1": { label: "Diamante ⭐", icon: "◇⭐" },
+  "diamante-2": { label: "Diamante ⭐⭐", icon: "◇⭐⭐" },
 };
 
 export const movementTypes = ["Unilevel", "Binário", "Fixo", "Depósito", "Pedido", "Resgate"] as const;
@@ -14,6 +14,7 @@ export type MovementType = (typeof movementTypes)[number];
 
 export interface BonusExtractRow {
   date: string;
+  orderNumber: string;
   id: string;
   qualification: string;
   type: MovementType;
@@ -47,14 +48,14 @@ export const mockBancoTimol = {
 };
 
 export const mockBonusExtract: BonusExtractRow[] = [
-  { date: "2026-03-06", id: "100231", qualification: "lider", type: "Pedido", points: 45, value: 89.9 },
-  { date: "2026-03-05", id: "200587", qualification: "distribuidor", type: "Unilevel", points: 12, value: 24.0 },
-  { date: "2026-03-04", id: "300142", qualification: "consultor", type: "Binário", points: 8, value: 16.0 },
-  { date: "2026-03-03", id: "100231", qualification: "lider", type: "Fixo", points: null, value: 50.0 },
-  { date: "2026-03-02", id: "400321", qualification: "rubi", type: "Unilevel", points: 20, value: 40.0 },
-  { date: "2026-03-01", id: "100231", qualification: "lider", type: "Resgate", points: null, value: -200.0 },
-  { date: "2026-02-28", id: "500110", qualification: "esmeralda", type: "Depósito", points: null, value: 500.0 },
-  { date: "2026-02-27", id: "100231", qualification: "lider", type: "Pedido", points: 30, value: 59.9 },
+  { date: "2026-03-06", orderNumber: "#4521", id: "100231", qualification: "lider", type: "Pedido", points: 45, value: 89.9 },
+  { date: "2026-03-05", orderNumber: "#4520", id: "200587", qualification: "distribuidor", type: "Unilevel", points: 12, value: 24.0 },
+  { date: "2026-03-04", orderNumber: "#4519", id: "300142", qualification: "consultor", type: "Binário", points: 8, value: 16.0 },
+  { date: "2026-03-03", orderNumber: "#4518", id: "100231", qualification: "lider", type: "Fixo", points: null, value: 50.0 },
+  { date: "2026-03-02", orderNumber: "#4517", id: "400321", qualification: "rubi", type: "Unilevel", points: 20, value: 40.0 },
+  { date: "2026-03-01", orderNumber: "#4516", id: "100231", qualification: "lider", type: "Resgate", points: null, value: -200.0 },
+  { date: "2026-02-28", orderNumber: "#4515", id: "500110", qualification: "esmeralda", type: "Depósito", points: null, value: 500.0 },
+  { date: "2026-02-27", orderNumber: "#4514", id: "100231", qualification: "lider", type: "Pedido", points: 30, value: 59.9 },
 ];
 
 export const mockBancoTimolExtract: BancoTimolExtractRow[] = [
