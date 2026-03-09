@@ -148,19 +148,21 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
         )}
 
         {step === "success" && (
-          <div className="flex flex-col items-center gap-3 py-4 text-center">
-            <CheckCircle className="h-14 w-14 text-[hsl(var(--success))]" />
-            <h3 className="text-lg font-bold text-primary">Resgate Confirmado!</h3>
-            <p className="text-sm text-muted-foreground">
-              Seu resgate de <strong>{formatCurrency(netAmount, currency)}</strong> foi solicitado com sucesso.
-            </p>
-            <p className="text-sm text-muted-foreground">
-              O valor pode cair na sua conta em até 5 dias úteis.
-            </p>
-            <Button className="mt-2 w-full" onClick={() => handleClose(false)}>
-              Fechar
-            </Button>
-          </div>
+          <form onSubmit={(e) => { e.preventDefault(); handleClose(false); }}>
+            <div className="flex flex-col items-center gap-3 py-4 text-center">
+              <CheckCircle className="h-14 w-14 text-[hsl(var(--success))]" />
+              <h3 className="text-lg font-bold text-primary">Resgate Confirmado!</h3>
+              <p className="text-sm text-muted-foreground">
+                Seu resgate de <strong>{formatCurrency(netAmount, currency)}</strong> foi solicitado com sucesso.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                O valor pode cair na sua conta em até 5 dias úteis.
+              </p>
+              <Button type="submit" className="mt-2 w-full" autoFocus>
+                Fechar
+              </Button>
+            </div>
+          </form>
         )}
       </DialogContent>
     </Dialog>

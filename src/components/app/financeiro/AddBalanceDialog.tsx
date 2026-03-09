@@ -134,10 +134,10 @@ export function AddBalanceDialog({ open, onOpenChange, currency }: Props) {
                 </button>
                 {method === "pix" ? "Pagamento via PIX" : "Pagamento via Cartão"}
               </DialogTitle>
-              <DialogDescription>
-                Valor: <strong>{formatCurrency(numAmount, currency)}</strong>
-              </DialogDescription>
             </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              Valor: <strong>{formatCurrency(numAmount, currency)}</strong>
+            </p>
             <div className="mt-4">
               {method === "pix" ? (
                 <div className="flex flex-col items-center gap-3">
@@ -185,16 +185,18 @@ export function AddBalanceDialog({ open, onOpenChange, currency }: Props) {
         )}
 
         {step === "success" && (
-          <div className="flex flex-col items-center gap-3 py-4 text-center">
-            <CheckCircle className="h-14 w-14 text-[hsl(var(--success))]" />
-            <h3 className="text-lg font-bold text-primary">Saldo Adicionado!</h3>
-            <p className="text-sm text-muted-foreground">
-              O valor de <strong>{formatCurrency(numAmount, currency)}</strong> foi adicionado com sucesso ao seu Banco Timol.
-            </p>
-            <Button className="mt-2 w-full" onClick={() => handleClose(false)}>
-              Fechar
-            </Button>
-          </div>
+          <form onSubmit={(e) => { e.preventDefault(); handleClose(false); }}>
+            <div className="flex flex-col items-center gap-3 py-4 text-center">
+              <CheckCircle className="h-14 w-14 text-[hsl(var(--success))]" />
+              <h3 className="text-lg font-bold text-primary">Saldo Adicionado!</h3>
+              <p className="text-sm text-muted-foreground">
+                O valor de <strong>{formatCurrency(numAmount, currency)}</strong> foi adicionado com sucesso ao seu Banco Timol.
+              </p>
+              <Button type="submit" className="mt-2 w-full" autoFocus>
+                Fechar
+              </Button>
+            </div>
+          </form>
         )}
       </DialogContent>
     </Dialog>
