@@ -293,7 +293,7 @@ export function BonusExtractTable({ data, currency }: Props) {
                           </span>
                         </span>
                       </TableCell>
-                      <TableCell className="text-xs font-mono px-2 py-1 text-right">{row.id}</TableCell>
+                      <TableCell className="text-xs font-mono pl-3 pr-2 py-1 text-left">{row.id}</TableCell>
                       <TableCell className="text-xs px-2 py-1 text-center">{row.type}</TableCell>
                       <TableCell className="text-xs text-right px-2 py-1">{row.points ?? "-"}</TableCell>
                       <TableCell className={`text-xs text-right font-medium px-2 py-1 ${row.value < 0 ? "text-negative" : ""}`}>
