@@ -31,9 +31,10 @@ export function PrizesSection({ currentQualification, totalPoints, expiringPoint
         <div className="rounded-md border border-app-card-border p-3 text-center flex-1 min-w-[120px]">
           <p className="text-xs text-muted-foreground">Qualificação Atual</p>
           {q && (
-            <span className={`mt-1 inline-block rounded-full px-3 py-1 text-xs font-semibold ${q.color}`}>
+            <p className="mt-1 text-sm font-semibold text-primary flex items-center justify-center gap-1.5">
+              <span className="text-base">{q.icon}</span>
               {q.label}
-            </span>
+            </p>
           )}
         </div>
         <div className="rounded-md border border-app-card-border p-3 text-center flex-1 min-w-[120px]">
