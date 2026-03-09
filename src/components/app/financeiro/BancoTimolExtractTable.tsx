@@ -66,7 +66,7 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
       if (searchTerm && !row.description.toLowerCase().includes(searchTerm.toLowerCase())) return false;
       return true;
     });
-  }, [data, filterMode, monthRef, dateFrom, dateTo]);
+  }, [data, filterMode, monthRef, dateFrom, dateTo, searchTerm]);
 
   return (
     <div className="space-y-3">
