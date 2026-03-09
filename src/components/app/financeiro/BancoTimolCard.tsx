@@ -15,9 +15,9 @@ export function BancoTimolCard({ available, pendingWithdrawal, currency, onAddBa
   return (
     <DashboardCard icon={Landmark} title="Banco Timol">
       <div className="mt-3 flex flex-row sm:flex-col gap-3">
-        <div className="rounded-md border border-app-card-border p-3 text-center flex-1 sm:min-h-[76px] flex flex-col justify-center">
-          <p className="text-xs text-muted-foreground">Saldo Disponível</p>
-          <p className="text-lg font-bold text-primary">{formatCurrency(available, currency)}</p>
+        <div className="rounded-md border border-app-card-border p-3 text-center flex-1 sm:min-h-[76px] flex flex-col justify-center min-w-0">
+          <p className="text-xs text-muted-foreground truncate">Saldo Disponível</p>
+          <p className="text-lg font-bold text-primary truncate">{formatCurrency(available, currency)}</p>
         </div>
         {pendingWithdrawal > 0 && (
           <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-center flex-1 sm:min-h-[68px] flex flex-col justify-center">

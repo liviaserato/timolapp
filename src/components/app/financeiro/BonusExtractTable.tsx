@@ -27,6 +27,14 @@ function getMonthRange(date: Date): { from: string; to: string } {
   };
 }
 
+function formatShortDate(dateStr: string): string {
+  const d = new Date(dateStr);
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yy = String(d.getFullYear()).slice(-2);
+  return `${dd}/${mm}/${yy}`;
+}
+
 export function BonusExtractTable({ data, currency }: Props) {
   const [filterMode, setFilterMode] = useState<"month" | "custom">("month");
   const [monthRef, setMonthRef] = useState(new Date());
@@ -80,12 +88,9 @@ export function BonusExtractTable({ data, currency }: Props) {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-base font-bold text-primary">📊 Extrato de Bônus e Pontos</h3>
-
-      {/* Filter row: mode toggle + month/period + search — all in one line */}
+      {/* Filter row */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-        {/* Left group: Mês|Período + selector — aligns to bonus card width */}
-        <div className="flex items-center gap-2 w-full sm:w-[calc(33.333%-0.5rem)] sm:shrink-0">
+        <div className="flex items-center gap-2 flex-1">
           <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
             <button
               type="button"
@@ -108,7 +113,7 @@ export function BonusExtractTable({ data, currency }: Props) {
           </div>
 
           {filterMode === "month" ? (
-            <div className="flex items-center gap-0 flex-1 justify-center">
+            <div className="flex items-center gap-0">
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={prevMonth}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -128,12 +133,12 @@ export function BonusExtractTable({ data, currency }: Props) {
           )}
         </div>
 
-        {/* Right: search field */}
-        <div className="relative w-full sm:w-[calc(33.333%-0.5rem)] sm:ml-auto">
+        {/* Search field — aligned right with table */}
+        <div className="relative w-full sm:w-48 sm:shrink-0">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
             ref={searchRef}
-            placeholder="Buscar pelo ID ou Pedido"
+            placeholder="Buscar ID ou Pedido"
             className="h-8 pl-7 pr-7 text-xs"
             value={searchId}
             onChange={(e) => setSearchId(e.target.value)}
@@ -171,22 +176,22 @@ export function BonusExtractTable({ data, currency }: Props) {
       </div>
 
       {/* Table */}
-      <div className="rounded-md border border-app-card-border overflow-x-auto max-w-3xl">
+      <div className="rounded-md border border-app-card-border overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-xs px-2 py-2">Data</TableHead>
-              <TableHead className="text-xs px-2 py-2">Pedido</TableHead>
-              <TableHead className="text-xs px-2 py-2">ID</TableHead>
-              <TableHead className="text-xs px-2 py-2">Tipo</TableHead>
-              <TableHead className="text-xs px-2 py-2 text-right">Pontos</TableHead>
-              <TableHead className="text-xs px-2 py-2 text-right">Valor</TableHead>
+              <TableHead className="text-[11px] px-1.5 py-1.5 hidden sm:table-cell">Data</TableHead>
+              <TableHead className="text-[11px] px-1.5 py-1.5">Pedido</TableHead>
+              <TableHead className="text-[11px] px-1.5 py-1.5">ID</TableHead>
+              <TableHead className="text-[11px] px-1.5 py-1.5">Tipo</TableHead>
+              <TableHead className="text-[11px] px-1.5 py-1.5 text-right">Pts</TableHead>
+              <TableHead className="text-[11px] px-1.5 py-1.5 text-right">Valor</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">
+                <TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-8">
                   Nenhuma movimentação encontrada.
                 </TableCell>
               </TableRow>
@@ -195,26 +200,33 @@ export function BonusExtractTable({ data, currency }: Props) {
                 const q = qualificationLabels[row.qualification];
                 return (
                   <TableRow key={i}>
-                    <TableCell className="text-xs whitespace-nowrap px-2 py-1.5">
-                      {new Date(row.date).toLocaleDateString("pt-BR")}
+                    {/* Desktop: separate date cell */}
+                    <TableCell className="text-[11px] whitespace-nowrap px-1.5 py-1 hidden sm:table-cell">
+                      {formatShortDate(row.date)}
                     </TableCell>
-                    <TableCell className="text-xs font-mono px-2 py-1.5">
+                    {/* Order + date on mobile */}
+                    <TableCell className="text-[11px] font-mono px-1.5 py-1">
                       <span className="flex items-center gap-1">
                         {q && (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <span className="cursor-default text-sm" aria-label={q.label}>{q.icon}</span>
+                              <span className="cursor-default text-[11px] leading-none" aria-label={q.label}>{q.icon}</span>
                             </TooltipTrigger>
                             <TooltipContent side="top" className="text-xs">{q.label}</TooltipContent>
                           </Tooltip>
                         )}
-                        {row.orderNumber}
+                        <span>
+                          {row.orderNumber}
+                          <span className="block sm:hidden text-[10px] text-muted-foreground font-normal">
+                            {formatShortDate(row.date)}
+                          </span>
+                        </span>
                       </span>
                     </TableCell>
-                    <TableCell className="text-xs font-mono px-2 py-1.5">{row.id}</TableCell>
-                    <TableCell className="text-xs px-2 py-1.5">{row.type}</TableCell>
-                    <TableCell className="text-xs text-right px-2 py-1.5">{row.points ?? "—"}</TableCell>
-                    <TableCell className={`text-xs text-right font-medium px-2 py-1.5 ${row.value < 0 ? "text-destructive" : ""}`}>
+                    <TableCell className="text-[11px] font-mono px-1.5 py-1">{row.id}</TableCell>
+                    <TableCell className="text-[11px] px-1.5 py-1">{row.type}</TableCell>
+                    <TableCell className="text-[11px] text-right px-1.5 py-1">{row.points ?? "—"}</TableCell>
+                    <TableCell className={`text-[11px] text-right font-medium px-1.5 py-1 ${row.value < 0 ? "text-[hsl(var(--negative))]" : ""}`}>
                       {formatCurrency(row.value, currency)}
                     </TableCell>
                   </TableRow>
@@ -229,7 +241,7 @@ export function BonusExtractTable({ data, currency }: Props) {
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
         {Object.entries(qualificationLabels).map(([key, q]) => (
           <span key={key} className="flex items-center gap-1">
-            <span className="text-sm">{q.icon}</span> {q.label}
+            <span className="text-[11px]">{q.icon}</span> {q.label}
           </span>
         ))}
       </div>
