@@ -73,7 +73,7 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, franch
       </div>
 
       {/* Franchise active status */}
-      <div className={cn("mt-3 flex items-start gap-2 rounded-md border p-2.5", status.bgClass)}>
+      <div className="mt-3 flex items-start gap-2 px-1">
         <StatusIcon className={cn("h-4 w-4 shrink-0 mt-0.5", status.colorClass)} />
         <div className="min-w-0">
           <p className={cn("text-xs font-semibold", status.colorClass)}>{status.label}</p>
