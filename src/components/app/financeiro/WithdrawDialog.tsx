@@ -117,7 +117,7 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
         )}
 
         {step === "pin" && (
-          <>
+          <form onSubmit={(e) => { e.preventDefault(); if (pin.length >= 6) setStep("success"); }}>
             <DialogHeader className="text-center">
               <DialogTitle className="flex items-center justify-center gap-2">
                 <ShieldCheck className="h-5 w-5" /> Verificação de Segurança
@@ -129,7 +129,7 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col items-center gap-4 mt-4">
-              <InputOTP maxLength={6} value={pin} onChange={setPin}>
+              <InputOTP maxLength={6} value={pin} onChange={setPin} autoFocus>
                 <InputOTPGroup>
                   <InputOTPSlot index={0} />
                   <InputOTPSlot index={1} />
@@ -140,11 +140,11 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
                 </InputOTPGroup>
               </InputOTP>
               <p className="text-xs text-muted-foreground text-center">Ninguém da Timol solicitará este código.</p>
-              <Button className="w-full" disabled={pin.length < 6} onClick={() => setStep("success")}>
+              <Button type="submit" className="w-full" disabled={pin.length < 6}>
                 Confirmar
               </Button>
             </div>
-          </>
+          </form>
         )}
 
         {step === "success" && (
