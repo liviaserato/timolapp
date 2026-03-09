@@ -61,11 +61,11 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, franch
       <div className="flex-1">
         <div className="mt-3 flex flex-row sm:flex-col gap-3">
           <div className="rounded-md border border-success/30 bg-success/5 p-3 text-center flex-1 flex flex-col justify-center">
-            <p className="text-xs text-muted-foreground">Próximo<br className="sm:hidden" /> pagamento</p>
+            <p className="text-xs text-muted-foreground">Próximo<br className="lg:hidden" /> pagamento</p>
             <p className="text-lg font-bold text-success">{formatCurrency(nextFriday, currency)}</p>
           </div>
           <div className="rounded-md border border-app-card-border p-3 text-center flex-1 flex flex-col justify-center">
-            <p className="text-xs text-muted-foreground">Valores em<br className="sm:hidden" /> processamento</p>
+            <p className="text-xs text-muted-foreground">Valores em<br className="lg:hidden" /> processamento</p>
             <p className="text-sm font-medium text-muted-foreground">{formatCurrency(awaitingRelease, currency)}</p>
           </div>
         </div>
