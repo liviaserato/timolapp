@@ -177,7 +177,7 @@ export function BonusExtractTable({ data, currency }: Props) {
         {/* Line 2: Date controls + search (desktop/tablet) | Date controls (mobile) */}
         <div className="flex items-center gap-2">
           {filterMode === "month" ? (
-            <div className="flex items-center gap-0 shrink-0">
+            <div className="flex items-center gap-0 shrink-0 h-8">
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={prevMonth}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
