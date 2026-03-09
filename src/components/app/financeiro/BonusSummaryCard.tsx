@@ -34,14 +34,14 @@ function getFranchiseStatusInfo(activeUntil: string) {
       label: `Ativa até ${expDate.toLocaleDateString("pt-BR")}`,
     };
   }
-  return {
-    level: "active" as const,
-    icon: ShieldCheck,
-    colorClass: "text-emerald-600",
-    bgClass: "border-emerald-500/30 bg-emerald-50",
-    message: "Franquia ativa para recebimento de bônus.",
-    label: `Ativa até ${expDate.toLocaleDateString("pt-BR")}`,
-  };
+    return {
+      level: "active" as const,
+      icon: ShieldCheck,
+      colorClass: "text-success",
+      bgClass: "border-success/30 bg-success/5",
+      message: "Franquia ativa para recebimento de bônus.",
+      label: `Ativa até ${expDate.toLocaleDateString("pt-BR")}`,
+    };
 }
 
 interface Props {
