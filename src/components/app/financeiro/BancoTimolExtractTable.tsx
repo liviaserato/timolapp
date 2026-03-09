@@ -67,48 +67,54 @@ export function BancoTimolExtractTable({ data, currency }: Props) {
 
   return (
     <div className="space-y-3">
-      {/* Filter row */}
-      <div className="flex items-center gap-2">
-        <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
-          <button
-            type="button"
-            onClick={() => setFilterMode("month")}
-            className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
-              filterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-            }`}
-          >
-            Mês
-          </button>
-          <button
-            type="button"
-            onClick={() => setFilterMode("custom")}
-            className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
-              filterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-            }`}
-          >
-            Período
-          </button>
+      {/* Filters */}
+      <div className="flex flex-col gap-2">
+        {/* Line 1: Mode toggle */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
+            <button
+              type="button"
+              onClick={() => setFilterMode("month")}
+              className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
+                filterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              Mês
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterMode("custom")}
+              className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
+                filterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              Período
+            </button>
+          </div>
         </div>
 
-        {filterMode === "month" ? (
-          <div className="flex items-center gap-0">
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={prevMonth}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="text-xs font-medium min-w-[120px] text-center">
-              {getMonthLabel(monthRef)}
-            </span>
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        ) : (
-          <div className="flex gap-2 items-center flex-1">
-            <Input type="date" className="h-8 flex-1 text-xs" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-            <span className="text-xs text-muted-foreground">até</span>
-            <Input type="date" className="h-8 flex-1 text-xs" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
-          </div>
-        )}
+        {/* Line 2: Date controls */}
+        <div className="flex items-center gap-2">
+          {filterMode === "month" ? (
+            <div className="flex items-center gap-0 shrink-0">
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={prevMonth}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-xs font-medium min-w-[120px] text-center">
+                {getMonthLabel(monthRef)}
+              </span>
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth}>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <div className="flex gap-2 items-center shrink-0">
+              <Input type="date" className="h-8 w-[148px] text-xs" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+              <span className="text-xs text-muted-foreground">até</span>
+              <Input type="date" className="h-8 w-[148px] text-xs" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="rounded-md border border-app-card-border overflow-hidden">

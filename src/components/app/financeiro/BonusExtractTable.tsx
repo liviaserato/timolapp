@@ -133,8 +133,8 @@ export function BonusExtractTable({ data, currency }: Props) {
             </button>
           </div>
 
-          {/* Type chips - hidden on mobile, shown on sm+ */}
-          <div className="hidden sm:flex flex-wrap gap-1.5">
+          {/* Type chips - hidden on mobile, pushed right on sm+ */}
+          <div className="hidden sm:flex flex-wrap gap-1.5 ml-auto">
             {movementTypes.map((type) => (
               <button
                 key={type}
@@ -190,9 +190,9 @@ export function BonusExtractTable({ data, currency }: Props) {
             </div>
           ) : (
             <div className="flex gap-2 items-center shrink-0">
-              <Input type="date" className="h-8 w-[130px] text-xs" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(0); }} />
+              <Input type="date" className="h-8 w-[148px] text-xs" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(0); }} />
               <span className="text-xs text-muted-foreground">até</span>
-              <Input type="date" className="h-8 w-[130px] text-xs" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(0); }} />
+              <Input type="date" className="h-8 w-[148px] text-xs" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(0); }} />
             </div>
           )}
 
