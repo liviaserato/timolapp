@@ -27,7 +27,7 @@ export default function AppLayout() {
           <div className="flex flex-1 min-h-0">
             <AppSidebar />
             <main className="flex-1 overflow-y-auto p-6 pb-24 md:pb-6">
-              <div className="w-full max-w-[900px]">
+              <div className="w-full max-w-[900px] mx-auto">
                 <Outlet />
               </div>
             </main>
