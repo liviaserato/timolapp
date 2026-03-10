@@ -333,11 +333,21 @@ export function FinancialManager({ accounts, onChange }: Props) {
               </Button>
             )}
             {deleteMode && (
-              <div className="flex gap-2 w-full">
-                <Button variant="outline" size="sm" className="flex-1" onClick={() => { setDeleteMode(false); setSelectedForDelete(new Set()); }}>Cancelar</Button>
-                <Button variant="destructive" size="sm" className="flex-1" disabled={selectedForDelete.size === 0} onClick={() => setConfirmDeleteOpen(true)}>
-                  Excluir ({selectedForDelete.size})
-                </Button>
+              <div className="flex flex-col gap-2 w-full">
+                {allSelectedForDelete && (
+                  <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/5 p-3">
+                    <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-warning leading-relaxed">
+                      Não é possível excluir todas as contas. É necessário manter pelo menos uma cadastrada. Para substituir a atual, adicione uma nova conta primeiro e depois exclua a anterior.
+                    </p>
+                  </div>
+                )}
+                <div className="flex gap-2 w-full">
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => { setDeleteMode(false); setSelectedForDelete(new Set()); }}>Cancelar</Button>
+                  <Button variant="destructive" size="sm" className="flex-1" disabled={selectedForDelete.size === 0 || allSelectedForDelete} onClick={() => setConfirmDeleteOpen(true)}>
+                    Excluir ({selectedForDelete.size})
+                  </Button>
+                </div>
               </div>
             )}
           </DialogFooter>

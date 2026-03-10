@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { MapPin, Plus, Trash2, Loader2, X, Pencil, AlertTriangle } from "lucide-react";
+import { MapPin, Plus, Trash2, Loader2, X, Pencil, AlertTriangle, Info } from "lucide-react";
 
 /* ── types ── */
 
