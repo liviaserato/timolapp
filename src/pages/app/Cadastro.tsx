@@ -271,7 +271,10 @@ export default function Cadastro() {
             <Row
               label="Senha"
               value={
-                <button className="text-primary text-xs underline underline-offset-2 hover:text-primary/80">
+                <button
+                  className="text-primary text-xs underline underline-offset-2 hover:text-primary/80"
+                  onClick={() => setPasswordDialogOpen(true)}
+                >
                   Alterar senha
                 </button>
               }
