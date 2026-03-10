@@ -3,14 +3,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { CurrencyConfig, formatCurrency } from "./currency-helpers";
 import { WITHDRAW_FEE_PERCENT } from "./mock-data";
-import { CheckCircle, ShieldCheck, ArrowLeft, Landmark, Send, Loader2, AlertTriangle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { CheckCircle, ArrowLeft, Landmark, Send, Loader2, AlertTriangle } from "lucide-react";
+import { PinStepContent } from "./PinStepContent";
 
 type Mode = "withdraw" | "transfer";
-type Step = "amount" | "choose" | "transfer-id" | "pin" | "success";
+type Step = "amount-choose" | "transfer-id" | "pin" | "success";
 
 interface Props {
   open: boolean;
@@ -38,20 +37,18 @@ function parseCurrencyInput(formatted: string): number {
   return parseInt(digits || "0", 10) / 100;
 }
 
-// Mock: simulate API lookup for a franchise ID
 async function lookupFranchiseId(id: string): Promise<TransferTarget | null> {
   await new Promise((r) => setTimeout(r, 1000));
-  // Simulated responses
-  if (id === "000000") return null; // not found
+  if (id === "000000") return null;
   if (id === "999999") return { id, name: "João Silva (Inativo)", active: false };
   return { id, name: "Maria Oliveira", active: true };
 }
 
 export function WithdrawDialog({ open, onOpenChange, currency, availableBalance }: Props) {
-  const [step, setStep] = useState<Step>("amount");
+  const [step, setStep] = useState<Step>("amount-choose");
   const [mode, setMode] = useState<Mode>("withdraw");
   const [rawAmount, setRawAmount] = useState("");
-  const [pin, setPin] = useState("");
+  const [selectedMode, setSelectedMode] = useState<Mode | null>(null);
 
   // Transfer state
   const [transferId, setTransferId] = useState("");
@@ -64,11 +61,13 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
   const fee = numAmount * (WITHDRAW_FEE_PERCENT / 100);
   const netAmount = numAmount - fee;
 
+  const canContinue = numAmount > 0 && numAmount <= availableBalance && selectedMode !== null;
+
   function reset() {
-    setStep("amount");
+    setStep("amount-choose");
     setMode("withdraw");
     setRawAmount("");
-    setPin("");
+    setSelectedMode(null);
     setTransferId("");
     setTransferTarget(null);
     setLookupError(null);
@@ -84,16 +83,10 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
     setRawAmount(e.target.value.replace(/\D/g, ""));
   }
 
-  function handleSubmitAmount(e?: React.FormEvent) {
-    e?.preventDefault();
-    if (numAmount > 0 && numAmount <= availableBalance) {
-      setStep("choose");
-    }
-  }
-
-  function handleChoose(m: Mode) {
-    setMode(m);
-    if (m === "withdraw") {
+  function handleContinue() {
+    if (!canContinue || !selectedMode) return;
+    setMode(selectedMode);
+    if (selectedMode === "withdraw") {
       setStep("pin");
     } else {
       setStep("transfer-id");
@@ -128,16 +121,16 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-sm">
-        {/* Step 1: Amount */}
-        {step === "amount" && (
-          <form onSubmit={handleSubmitAmount}>
+        {/* Step 1: Amount + Choose mode */}
+        {step === "amount-choose" && (
+          <div>
             <DialogHeader>
               <DialogTitle>Resgatar / Transferir</DialogTitle>
               <DialogDescription>
                 Saldo disponível: <strong>{formatCurrency(availableBalance, currency)}</strong>
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 mt-2">
+            <div className="space-y-4 mt-3">
               <div>
                 <Label>Valor ({currency.symbol})</Label>
                 <Input
@@ -150,75 +143,67 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
                   autoFocus
                 />
               </div>
+
+              {/* Mode selection */}
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">O que deseja fazer?</Label>
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedMode("withdraw")}
+                    className={`flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all ${
+                      selectedMode === "withdraw"
+                        ? "border-primary bg-primary/5"
+                        : "border-app-card-border bg-card hover:border-primary/30"
+                    }`}
+                  >
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                      <Landmark className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-foreground">Resgatar para conta bancária</p>
+                      <p className="text-[11px] text-muted-foreground">Transferir para sua conta cadastrada</p>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedMode("transfer")}
+                    className={`flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all ${
+                      selectedMode === "transfer"
+                        ? "border-primary bg-primary/5"
+                        : "border-app-card-border bg-card hover:border-primary/30"
+                    }`}
+                  >
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
+                      <Send className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-foreground">Transferir para outro ID</p>
+                      <p className="text-[11px] text-muted-foreground">O ID recebedor precisa estar ativo</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
               <Button
-                type="submit"
                 className="w-full"
-                disabled={numAmount <= 0 || numAmount > availableBalance}
+                disabled={!canContinue}
+                onClick={handleContinue}
               >
                 Continuar
               </Button>
             </div>
-          </form>
-        )}
-
-        {/* Step 2: Choose mode */}
-        {step === "choose" && (
-          <div>
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setStep("amount")}
-                  className="inline-flex items-center justify-center rounded-sm p-1 text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label="Voltar"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                </button>
-                O que deseja fazer?
-              </DialogTitle>
-              <DialogDescription>
-                Valor: <strong>{formatCurrency(numAmount, currency)}</strong>
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex flex-col gap-3 mt-4">
-              <button
-                type="button"
-                onClick={() => handleChoose("withdraw")}
-                className="flex items-center gap-3 rounded-lg border-2 border-app-card-border bg-card p-4 text-left transition-all hover:border-primary/50 hover:bg-primary/5"
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                  <Landmark className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">Resgatar para conta bancária</p>
-                  <p className="text-xs text-muted-foreground">Transferir para sua conta cadastrada</p>
-                </div>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleChoose("transfer")}
-                className="flex items-center gap-3 rounded-lg border-2 border-app-card-border bg-card p-4 text-left transition-all hover:border-primary/50 hover:bg-primary/5"
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
-                  <Send className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">Transferir para outro ID</p>
-                  <p className="text-xs text-muted-foreground">O ID recebedor precisa estar ativo</p>
-                </div>
-              </button>
-            </div>
           </div>
         )}
 
-        {/* Step 3 (transfer only): Enter destination ID */}
+        {/* Step: Transfer ID lookup */}
         {step === "transfer-id" && (
           <form onSubmit={handleLookupId}>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => { setStep("choose"); setTransferTarget(null); setLookupError(null); setTransferId(""); }}
+                  onClick={() => { setStep("amount-choose"); setTransferTarget(null); setLookupError(null); setTransferId(""); }}
                   className="inline-flex items-center justify-center rounded-sm p-1 text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="Voltar"
                 >
@@ -245,7 +230,6 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
                 />
               </div>
 
-              {/* Lookup result: success */}
               {transferTarget && transferTarget.active && (
                 <div className="rounded-md border border-primary/30 bg-primary/5 p-3 text-sm">
                   <p className="font-medium text-primary">{transferTarget.name}</p>
@@ -253,7 +237,6 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
                 </div>
               )}
 
-              {/* Lookup result: inactive */}
               {transferTarget && !transferTarget.active && (
                 <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 flex items-start gap-2">
                   <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
@@ -266,7 +249,6 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
                 </div>
               )}
 
-              {/* Lookup error (not found / network) */}
               {lookupError && !transferTarget && (
                 <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 flex items-start gap-2">
                   <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
@@ -279,21 +261,11 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
               </p>
 
               {!transferTarget || !transferTarget.active ? (
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={!transferId.trim() || lookingUp}
-                >
-                  {lookingUp ? (
-                    <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Consultando...</>
-                  ) : "Consultar ID"}
+                <Button type="submit" className="w-full" disabled={!transferId.trim() || lookingUp}>
+                  {lookingUp ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Consultando...</> : "Consultar ID"}
                 </Button>
               ) : (
-                <Button
-                  type="button"
-                  className="w-full"
-                  onClick={() => setStep("pin")}
-                >
+                <Button type="button" className="w-full" onClick={() => setStep("pin")}>
                   Confirmar transferência
                 </Button>
               )}
@@ -301,36 +273,14 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
           </form>
         )}
 
-        {/* Step: PIN verification */}
+        {/* Step: PIN */}
         {step === "pin" && (
-          <form onSubmit={(e) => { e.preventDefault(); if (pin.length >= 6) setStep("success"); }}>
-            <DialogHeader className="text-center">
-              <DialogTitle className="flex items-center justify-center gap-2">
-                <ShieldCheck className="h-5 w-5" /> Verificação de Segurança
-              </DialogTitle>
-              <DialogDescription className="text-center">
-                Enviamos um PIN de 6 dígitos para o seu e-mail.
-                <br />
-                Digite abaixo para confirmar {mode === "withdraw" ? "o resgate" : "a transferência"}.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex flex-col items-center gap-4 mt-4">
-              <InputOTP maxLength={6} value={pin} onChange={setPin} autoFocus>
-                <InputOTPGroup>
-                  <InputOTPSlot index={0} />
-                  <InputOTPSlot index={1} />
-                  <InputOTPSlot index={2} />
-                  <InputOTPSlot index={3} />
-                  <InputOTPSlot index={4} />
-                  <InputOTPSlot index={5} />
-                </InputOTPGroup>
-              </InputOTP>
-              <p className="text-xs text-muted-foreground text-center">Ninguém da Timol solicitará este código.</p>
-              <Button type="submit" className="w-full" disabled={pin.length < 6}>
-                Confirmar
-              </Button>
-            </div>
-          </form>
+          <PinStepContent
+            description={`Enviamos um PIN de 6 dígitos para o seu e-mail. Digite abaixo para confirmar ${mode === "withdraw" ? "o resgate" : "a transferência"}.`}
+            onSubmit={() => setStep("success")}
+            onResend={() => { /* TODO: call send-pin endpoint */ }}
+            onBack={() => setStep(mode === "withdraw" ? "amount-choose" : "transfer-id")}
+          />
         )}
 
         {/* Step: Success */}

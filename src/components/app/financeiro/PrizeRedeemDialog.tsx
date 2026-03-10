@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Prize } from "./mock-data";
-import { CheckCircle, ShieldCheck } from "lucide-react";
+import { CheckCircle } from "lucide-react";
+import { PinStepContent } from "./PinStepContent";
 
 type Step = "confirm" | "pin" | "success";
 
@@ -15,11 +15,9 @@ interface Props {
 
 export function PrizeRedeemDialog({ open, onOpenChange, prize }: Props) {
   const [step, setStep] = useState<Step>("confirm");
-  const [pin, setPin] = useState("");
 
   function reset() {
     setStep("confirm");
-    setPin("");
   }
 
   function handleClose(v: boolean) {
@@ -49,34 +47,12 @@ export function PrizeRedeemDialog({ open, onOpenChange, prize }: Props) {
         )}
 
         {step === "pin" && (
-          <>
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5" /> Verificação de Segurança
-              </DialogTitle>
-              <DialogDescription>
-                Enviamos um PIN de 6 dígitos para o seu e-mail.
-                <br />
-                Digite abaixo para confirmar.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex flex-col items-center gap-4 mt-4">
-              <InputOTP maxLength={6} value={pin} onChange={setPin} autoFocus>
-                <InputOTPGroup>
-                  <InputOTPSlot index={0} />
-                  <InputOTPSlot index={1} />
-                  <InputOTPSlot index={2} />
-                  <InputOTPSlot index={3} />
-                  <InputOTPSlot index={4} />
-                  <InputOTPSlot index={5} />
-                </InputOTPGroup>
-              </InputOTP>
-              <p className="text-xs text-muted-foreground">Ninguém da Timol solicitará este código.</p>
-              <Button className="w-full" disabled={pin.length < 6} onClick={() => setStep("success")}>
-                Confirmar
-              </Button>
-            </div>
-          </>
+          <PinStepContent
+            description="Enviamos um PIN de 6 dígitos para o seu e-mail. Digite abaixo para confirmar o resgate."
+            onSubmit={() => setStep("success")}
+            onResend={() => { /* TODO: call send-pin endpoint */ }}
+            onBack={() => setStep("confirm")}
+          />
         )}
 
         {step === "success" && (
