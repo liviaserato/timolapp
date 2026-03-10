@@ -130,39 +130,98 @@ export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
     { franchiseId, planCode, sponsor, registrationDate: "10/01/2025", qualification: "esmeralda" },
     { franchiseId: "200587", planCode: "silver", sponsor: "Carlos Souza (ID 88002)", registrationDate: "15/06/2025", qualification: "distribuidor" },
     { franchiseId: "300145", planCode: "bronze", sponsor: "Ana Costa (ID 77003)", registrationDate: "20/09/2025", qualification: "consultor" },
+    { franchiseId: "400201", planCode: "gold", sponsor: "Roberto Lima (ID 66004)", registrationDate: "01/03/2025", qualification: "lider" },
+    { franchiseId: "500312", planCode: "platinum", sponsor: "Fernanda Dias (ID 55005)", registrationDate: "12/11/2024", qualification: "rubi" },
+    { franchiseId: "600789", planCode: "bronze", sponsor: "João Santos (ID 44006)", registrationDate: "05/07/2025", qualification: "consultor" },
   ];
 
-  const hasMultipleIds = userFranchises.length > 1;
+  // Sort so the active header ID is first
+  const sortedFranchises = [
+    ...userFranchises.filter((f) => f.franchiseId === franchiseId),
+    ...userFranchises.filter((f) => f.franchiseId !== franchiseId).sort((a, b) => a.franchiseId.localeCompare(b.franchiseId)),
+  ];
+
+  const hasMultipleIds = sortedFranchises.length > 1;
   const [selectedTabIdx, setSelectedTabIdx] = useState(0);
-  const viewing = userFranchises[selectedTabIdx];
+  const viewing = sortedFranchises[selectedTabIdx];
 
-  const currentPlanIdx = planOrder.indexOf(viewing.planCode);
-  const isMaxPlan = viewing.planCode === "platinum";
-  const upgradeOptions = franchisePlans.filter((_, i) => i > currentPlanIdx);
+  // Scrollable tabs
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
-  const qual = qualificationConfig[viewing.qualification];
+  const checkScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 1);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+  }, []);
+
+  useEffect(() => {
+    checkScroll();
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", checkScroll);
+    const ro = new ResizeObserver(checkScroll);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", checkScroll);
+      ro.disconnect();
+    };
+  }, [checkScroll]);
+
+  const scroll = (dir: "left" | "right") => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir === "left" ? -120 : 120, behavior: "smooth" });
+  };
 
   return (
     <>
       <DashboardCard icon={Gem} title="Franquia">
         <div className="mt-1">
-          {/* ID Tabs - only show if multiple IDs */}
+          {/* ID Tabs - scrollable single line */}
           {hasMultipleIds && (
-            <div className="flex flex-wrap gap-1 mb-3">
-              {userFranchises.map((uf, i) => (
+            <div className="flex items-center gap-0.5 mb-3">
+              {canScrollLeft && (
                 <button
-                  key={uf.franchiseId}
-                  onClick={() => setSelectedTabIdx(i)}
-                  className={cn(
-                    "px-2.5 py-1 rounded text-xs font-medium transition-colors whitespace-nowrap",
-                    i === selectedTabIdx
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted"
-                  )}
+                  type="button"
+                  onClick={() => scroll("left")}
+                  className="flex-shrink-0 p-0.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  aria-label="Anterior"
                 >
-                  ID {uf.franchiseId}
+                  <ChevronLeft className="h-4 w-4" />
                 </button>
-              ))}
+              )}
+              <div
+                ref={scrollRef}
+                className="flex gap-1 overflow-x-hidden flex-1 min-w-0"
+              >
+                {sortedFranchises.map((uf, i) => (
+                  <button
+                    key={uf.franchiseId}
+                    onClick={() => setSelectedTabIdx(i)}
+                    className={cn(
+                      "px-2.5 py-1 rounded text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0",
+                      i === selectedTabIdx
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-muted"
+                    )}
+                  >
+                    ID {uf.franchiseId}
+                  </button>
+                ))}
+              </div>
+              {canScrollRight && (
+                <button
+                  type="button"
+                  onClick={() => scroll("right")}
+                  className="flex-shrink-0 p-0.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  aria-label="Próximo"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              )}
             </div>
           )}
 
