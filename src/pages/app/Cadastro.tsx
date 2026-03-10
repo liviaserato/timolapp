@@ -320,12 +320,11 @@ export default function Cadastro() {
             Para alterar dados sensíveis, tirar dúvidas ou resolver qualquer questão sobre sua conta, estamos aqui para te ajudar!
           </p>
           <Button
-            variant="outline"
             size="sm"
-            className="mt-2 text-xs h-7 w-full gap-1.5"
+            className="mt-3 w-full gap-2 h-9 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg shadow-sm"
             onClick={() => {/* TODO: navigate to support */}}
           >
-            <MessageSquarePlus className="h-3 w-3" />
+            <MessageSquarePlus className="h-4 w-4" />
             Abrir chamado
           </Button>
         </DashboardCard>
