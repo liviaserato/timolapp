@@ -198,14 +198,7 @@ export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
 
           <div className="space-y-0">
             <Row label="ID" value={viewing.franchiseId} />
-            <Row label="Franquia" value={
-              <span className="flex items-center gap-1.5">
-                {planLabels[viewing.planCode] || viewing.planCode}
-                {viewing.franchiseId === franchiseId && (
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Ativa</Badge>
-                )}
-              </span>
-            } />
+            <Row label="Franquia" value={planLabels[viewing.planCode] || viewing.planCode} />
             <Row label="Patrocinador" value={viewing.sponsor} />
             <Row label="Cadastro" value={viewing.registrationDate} />
             <Row label="Qualificação" value={
