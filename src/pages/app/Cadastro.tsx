@@ -212,6 +212,7 @@ export default function Cadastro() {
   const [addresses, setAddresses] = useState<Address[]>(initialAddresses);
   const [accounts, setAccounts] = useState<FinancialAccount[]>(initialAccounts);
   const [phoneDialogOpen, setPhoneDialogOpen] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
 
   const docLabel = isBrazilian ? "CPF" : (
     <span className="flex items-center gap-1">
