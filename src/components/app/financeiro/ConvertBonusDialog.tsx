@@ -48,6 +48,7 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
   function reset() {
     setStep("amount");
     setRawAmount("");
+    setConfirmed(false);
   }
 
   function handleClose(v: boolean) {
