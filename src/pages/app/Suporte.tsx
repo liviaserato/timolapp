@@ -151,21 +151,12 @@ export default function Suporte() {
   const faqRef = useRef<HTMLDivElement>(null);
   const chamadosRef = useRef<HTMLDivElement>(null);
   const [newTicketOpen, setNewTicketOpen] = useState(false);
-  const [faleConoscoOpen, setFaleConoscoOpen] = useState(false);
   const [ticketCategory, setTicketCategory] = useState("");
   const [ticketSubject, setTicketSubject] = useState("");
   const [ticketDescription, setTicketDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const chamadosAtivos = mockChamados.filter((c) => c.status !== "fechado");
-
-  function scrollToFaq() {
-    faqRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
-
-  function scrollToChamados() {
-    chamadosRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
 
   function handleSubmitTicket() {
     if (!ticketCategory || !ticketSubject.trim() || !ticketDescription.trim()) {
