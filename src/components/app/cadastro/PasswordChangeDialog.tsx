@@ -3,7 +3,6 @@ import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import {
   Dialog,
   DialogContent,
@@ -13,14 +12,13 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { PinStepContent } from "@/components/app/financeiro/PinStepContent";
 
 interface PasswordChangeDialogProps {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   maskedEmail: string;
 }
-
-/* ── Password field with eye toggle ── */
 
 function PasswordField({
   label,
@@ -64,15 +62,13 @@ function PasswordField({
   );
 }
 
-/* ── Dialog ── */
-
 export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: PasswordChangeDialogProps) {
   const [step, setStep] = useState<"passwords" | "pin" | "success">("passwords");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [pin, setPin] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pinError, setPinError] = useState("");
 
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
@@ -100,9 +96,10 @@ export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: Passwo
     }, 1500);
   };
 
-  const handleVerifyPin = () => {
-    if (pin.length < 6 || loading) return;
+  const handleVerifyPin = (pinValue: string) => {
+    if (pinValue.length < 6 || loading) return;
     setLoading(true);
+    setPinError("");
     // TODO: call change-password edge function with action "change"
     setTimeout(() => {
       setLoading(false);
@@ -111,13 +108,18 @@ export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: Passwo
     }, 1500);
   };
 
+  const handleResendPin = () => {
+    // TODO: call change-password edge function with action "send-pin"
+    toast.info("Novo PIN enviado para o seu e-mail.");
+  };
+
   const handleClose = (v: boolean) => {
     if (!v) {
       setStep("passwords");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      setPin("");
+      setPinError("");
       setShowCurrent(false);
       setShowNew(false);
       setShowConfirm(false);
@@ -130,10 +132,9 @@ export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: Passwo
       <DialogContent
         className="max-w-sm"
         onKeyDown={(e) => {
-          if (e.key === "Enter") {
+          if (e.key === "Enter" && step === "passwords" && passwordsValid && !loading) {
             e.preventDefault();
-            if (step === "passwords" && passwordsValid && !loading) handleSendPin();
-            else if (step === "pin" && pin.length === 6 && !loading) handleVerifyPin();
+            handleSendPin();
           }
         }}
       >
@@ -152,94 +153,65 @@ export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: Passwo
               Fechar
             </Button>
           </div>
+        ) : step === "pin" ? (
+          <PinStepContent
+            description={`Digite o PIN de 6 dígitos enviado para ${maskedEmail}.`}
+            onSubmit={handleVerifyPin}
+            onResend={handleResendPin}
+            loading={loading}
+            error={pinError}
+            onBack={() => { setStep("passwords"); setPinError(""); }}
+          />
         ) : (
           <>
             <DialogHeader>
               <DialogTitle>Alterar Senha</DialogTitle>
               <DialogDescription>
-                {step === "passwords"
-                  ? "Informe sua senha atual e defina uma nova senha."
-                  : `Digite o PIN de 6 dígitos enviado para ${maskedEmail}.`}
+                Informe sua senha atual e defina uma nova senha.
               </DialogDescription>
             </DialogHeader>
 
-            {step === "passwords" ? (
-              <div className="space-y-3">
-                <PasswordField
-                  label="Senha atual"
-                  value={currentPassword}
-                  onChange={setCurrentPassword}
-                  show={showCurrent}
-                  onToggle={() => setShowCurrent(!showCurrent)}
-                  placeholder="Digite sua senha atual"
-                />
-                <PasswordField
-                  label="Nova senha"
-                  value={newPassword}
-                  onChange={setNewPassword}
-                  show={showNew}
-                  onToggle={() => setShowNew(!showNew)}
-                  placeholder="Mínimo 6 caracteres"
-                />
-                {newPasswordTooShort && (
-                  <p className="text-xs text-destructive">A senha deve ter no mínimo 6 caracteres.</p>
-                )}
-                {sameAsCurrentPassword && !newPasswordTooShort && (
-                  <p className="text-xs text-destructive">A nova senha não pode ser igual à senha atual.</p>
-                )}
-                <PasswordField
-                  label="Confirmar nova senha"
-                  value={confirmPassword}
-                  onChange={setConfirmPassword}
-                  show={showConfirm}
-                  onToggle={() => setShowConfirm(!showConfirm)}
-                  placeholder="Repita a nova senha"
-                  error={passwordsMismatch ? "As senhas não coincidem." : undefined}
-                />
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => handleClose(false)}>
-                    Cancelar
-                  </Button>
-                  <Button onClick={handleSendPin} disabled={!passwordsValid || loading}>
-                    {loading ? "Verificando..." : "Continuar"}
-                  </Button>
-                </DialogFooter>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  <Label className="text-center block">PIN de verificação</Label>
-                  <div className="flex justify-center">
-                    <InputOTP
-                      autoFocus
-                      maxLength={6}
-                      value={pin}
-                      onChange={(value) => setPin(value)}
-                      onComplete={() => {
-                        setTimeout(() => handleVerifyPin(), 0);
-                      }}
-                    >
-                      <InputOTPGroup>
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                        <InputOTPSlot index={3} />
-                        <InputOTPSlot index={4} />
-                        <InputOTPSlot index={5} />
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => { setStep("passwords"); setPin(""); }}>
-                    Voltar
-                  </Button>
-                  <Button onClick={handleVerifyPin} disabled={pin.length < 6 || loading}>
-                    {loading ? "Verificando..." : "Confirmar"}
-                  </Button>
-                </DialogFooter>
-              </div>
-            )}
+            <div className="space-y-3">
+              <PasswordField
+                label="Senha atual"
+                value={currentPassword}
+                onChange={setCurrentPassword}
+                show={showCurrent}
+                onToggle={() => setShowCurrent(!showCurrent)}
+                placeholder="Digite sua senha atual"
+              />
+              <PasswordField
+                label="Nova senha"
+                value={newPassword}
+                onChange={setNewPassword}
+                show={showNew}
+                onToggle={() => setShowNew(!showNew)}
+                placeholder="Mínimo 6 caracteres"
+              />
+              {newPasswordTooShort && (
+                <p className="text-xs text-destructive">A senha deve ter no mínimo 6 caracteres.</p>
+              )}
+              {sameAsCurrentPassword && !newPasswordTooShort && (
+                <p className="text-xs text-destructive">A nova senha não pode ser igual à senha atual.</p>
+              )}
+              <PasswordField
+                label="Confirmar nova senha"
+                value={confirmPassword}
+                onChange={setConfirmPassword}
+                show={showConfirm}
+                onToggle={() => setShowConfirm(!showConfirm)}
+                placeholder="Repita a nova senha"
+                error={passwordsMismatch ? "As senhas não coincidem." : undefined}
+              />
+              <DialogFooter>
+                <Button variant="outline" onClick={() => handleClose(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleSendPin} disabled={!passwordsValid || loading}>
+                  {loading ? "Verificando..." : "Continuar"}
+                </Button>
+              </DialogFooter>
+            </div>
           </>
         )}
       </DialogContent>
