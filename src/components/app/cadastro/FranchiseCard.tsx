@@ -72,6 +72,7 @@ interface UserFranchise {
   sponsor: string;
   registrationDate: string;
   qualification: string;
+  activeUntil: string;
 }
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
@@ -89,21 +90,19 @@ interface Props {
   franchiseId: string;
   planCode: string;
   sponsor: string;
-  activeUntil?: string;
 }
 
-export function FranchiseCard({ franchiseId, planCode, sponsor, activeUntil }: Props) {
+export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
   const [upgradeOpen, setUpgradeOpen] = useState(false);
-  const franchiseStatus = activeUntil ? getFranchiseStatusInfo(activeUntil) : null;
 
-  // Mock: user may have multiple IDs
+  // Mock: user may have multiple IDs with different activity dates
   const userFranchises: UserFranchise[] = [
-    { franchiseId, planCode, sponsor, registrationDate: "10/01/2025", qualification: "esmeralda" },
-    { franchiseId: "200587", planCode: "silver", sponsor: "Carlos Souza (ID 88002)", registrationDate: "15/06/2025", qualification: "distribuidor" },
-    { franchiseId: "300145", planCode: "bronze", sponsor: "Ana Costa (ID 77003)", registrationDate: "20/09/2025", qualification: "consultor" },
-    { franchiseId: "400201", planCode: "gold", sponsor: "Roberto Lima (ID 66004)", registrationDate: "01/03/2025", qualification: "lider" },
-    { franchiseId: "500312", planCode: "platinum", sponsor: "Fernanda Dias (ID 55005)", registrationDate: "12/11/2024", qualification: "rubi" },
-    { franchiseId: "600789", planCode: "bronze", sponsor: "João Santos (ID 44006)", registrationDate: "05/07/2025", qualification: "consultor" },
+    { franchiseId, planCode, sponsor, registrationDate: "10/01/2025", qualification: "esmeralda", activeUntil: "2026-07-20" },
+    { franchiseId: "200587", planCode: "silver", sponsor: "Carlos Souza (ID 88002)", registrationDate: "15/06/2025", qualification: "distribuidor", activeUntil: "2026-03-18" },
+    { franchiseId: "300145", planCode: "bronze", sponsor: "Ana Costa (ID 77003)", registrationDate: "20/09/2025", qualification: "consultor", activeUntil: "2026-02-01" },
+    { franchiseId: "400201", planCode: "gold", sponsor: "Roberto Lima (ID 66004)", registrationDate: "01/03/2025", qualification: "lider", activeUntil: "2026-09-15" },
+    { franchiseId: "500312", planCode: "platinum", sponsor: "Fernanda Dias (ID 55005)", registrationDate: "12/11/2024", qualification: "rubi", activeUntil: "2026-05-30" },
+    { franchiseId: "600789", planCode: "bronze", sponsor: "João Santos (ID 44006)", registrationDate: "05/07/2025", qualification: "consultor", activeUntil: "2025-12-10" },
   ];
 
   const sortedFranchises = [
@@ -219,6 +218,24 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, activeUntil }: P
             } />
           </div>
 
+          {/* Franchise status alert */}
+          {(() => {
+            const status = getFranchiseStatusInfo(viewing.activeUntil);
+            const StatusIcon = status.icon;
+            return (
+              <div className={cn(
+                "mt-3 flex items-start gap-2 rounded-md border p-2.5",
+                status.bgClass
+              )}>
+                <StatusIcon className={cn("h-4 w-4 shrink-0 mt-0.5", status.colorClass)} />
+                <div className="min-w-0">
+                  <p className={cn("text-xs font-semibold leading-tight", status.colorClass)}>{status.label}</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">{status.message}</p>
+                </div>
+              </div>
+            );
+          })()}
+
           {!isMaxPlan && (
             <Button
               variant="outline"
@@ -230,23 +247,6 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, activeUntil }: P
               Fazer upgrade
             </Button>
           )}
-
-          {/* Franchise status alert */}
-          {franchiseStatus && (() => {
-            const StatusIcon = franchiseStatus.icon;
-            return (
-              <div className={cn(
-                "mt-3 flex items-start gap-2 rounded-md border p-2.5",
-                franchiseStatus.bgClass
-              )}>
-                <StatusIcon className={cn("h-4 w-4 shrink-0 mt-0.5", franchiseStatus.colorClass)} />
-                <div className="min-w-0">
-                  <p className={cn("text-xs font-semibold leading-tight", franchiseStatus.colorClass)}>{franchiseStatus.label}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">{franchiseStatus.message}</p>
-                </div>
-              </div>
-            );
-          })()}
         </div>
       </DashboardCard>
 

@@ -262,7 +262,6 @@ export default function Cadastro() {
           franchiseId={franchiseData.id}
           planCode={franchiseData.planCode}
           sponsor={franchiseData.sponsor}
-          activeUntil="2025-08-15"
         />
 
         {/* Contato */}
