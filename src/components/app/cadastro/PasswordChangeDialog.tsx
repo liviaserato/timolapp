@@ -167,6 +167,9 @@ export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: Passwo
             {newPasswordTooShort && (
               <p className="text-xs text-destructive">A senha deve ter no mínimo 6 caracteres.</p>
             )}
+            {sameAsCurrentPassword && !newPasswordTooShort && (
+              <p className="text-xs text-destructive">A nova senha não pode ser igual à senha atual.</p>
+            )}
             <PasswordField
               label="Confirmar nova senha"
               value={confirmPassword}
