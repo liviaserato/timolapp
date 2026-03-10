@@ -334,10 +334,19 @@ export function FinancialManager({ accounts, onChange }: Props) {
 
           <DialogFooter className="flex-col gap-2 sm:flex-col">
             {!deleteMode && (
-              <Button variant="outline" size="sm" className="w-full gap-1.5" onClick={openAddDialog}>
-                <Plus className="h-4 w-4" />
-                Adicionar conta
-              </Button>
+              accounts.length >= MAX_ACCOUNTS ? (
+                <div className="flex items-start gap-2 rounded-md border border-muted bg-muted/30 p-3">
+                  <Info className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Você atingiu o limite de {MAX_ACCOUNTS} contas. Para adicionar uma nova, exclua uma conta existente.
+                  </p>
+                </div>
+              ) : (
+                <Button variant="outline" size="sm" className="w-full gap-1.5" onClick={openAddDialog}>
+                  <Plus className="h-4 w-4" />
+                  Adicionar conta
+                </Button>
+              )
             )}
             {accounts.length > 1 && !deleteMode && (
               <Button variant="outline" size="sm" className="w-full gap-1.5 text-destructive hover:text-destructive" onClick={() => setDeleteMode(true)}>
