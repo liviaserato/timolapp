@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User, Phone, MapPin, KeyRound, HelpCircle, ShieldCheck } from "lucide-react";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { AddressManager, type Address } from "@/components/app/cadastro/AddressManager";
 import { FranchiseCard } from "@/components/app/cadastro/FranchiseCard";
 import { FinancialManager, type FinancialAccount } from "@/components/app/cadastro/FinancialManager";
@@ -116,7 +117,7 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean
   };
 
   const handleVerifyPin = () => {
-    if (pin.length < 4) return;
+    if (pin.length < 6) return;
     setSending(true);
     setTimeout(() => {
       setSending(false);
@@ -170,13 +171,26 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean
           <div className="space-y-3">
             <div className="space-y-2">
               <Label>PIN de verificação</Label>
-              <Input
-                placeholder="000000"
-                value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                maxLength={6}
-                onKeyDown={(e) => { if (e.key === "Enter") handleVerifyPin(); }}
-              />
+              <div className="flex justify-center">
+                <InputOTP
+                  maxLength={6}
+                  value={pin}
+                  onChange={(value) => setPin(value)}
+                  onComplete={() => {
+                    setTimeout(() => handleVerifyPin(), 0);
+                  }}
+                  onKeyDown={(e) => { if (e.key === "Enter" && pin.length === 6 && !sending) { e.preventDefault(); handleVerifyPin(); } }}
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setStep("phone")}>Voltar</Button>
