@@ -311,19 +311,29 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR" 
               </Button>
             )}
             {deleteMode && (
-              <div className="flex gap-2 w-full">
-                <Button variant="outline" size="sm" className="flex-1" onClick={() => { setDeleteMode(false); setSelectedForDelete(new Set()); }}>
-                  Cancelar
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  className="flex-1"
-                  disabled={selectedForDelete.size === 0}
-                  onClick={() => setConfirmDeleteOpen(true)}
-                >
-                  Excluir selecionados ({selectedForDelete.size})
-                </Button>
+              <div className="flex flex-col gap-2 w-full">
+                {allSelectedForDelete && (
+                  <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/5 p-3">
+                    <Info className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-warning leading-relaxed">
+                      Não é possível excluir todos os endereços. É necessário manter pelo menos um cadastrado. Para substituir o atual, adicione um novo endereço primeiro e depois exclua o anterior.
+                    </p>
+                  </div>
+                )}
+                <div className="flex gap-2 w-full">
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => { setDeleteMode(false); setSelectedForDelete(new Set()); }}>
+                    Cancelar
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="flex-1"
+                    disabled={selectedForDelete.size === 0 || allSelectedForDelete}
+                    onClick={() => setConfirmDeleteOpen(true)}
+                  >
+                    Excluir selecionados ({selectedForDelete.size})
+                  </Button>
+                </div>
               </div>
             )}
           </DialogFooter>
