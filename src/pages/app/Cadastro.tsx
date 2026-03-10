@@ -188,6 +188,7 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean
                   <Label className="text-center block">PIN de verificação</Label>
                   <div className="flex justify-center">
                     <InputOTP
+                      autoFocus
                       maxLength={6}
                       value={pin}
                       onChange={(value) => setPin(value)}
