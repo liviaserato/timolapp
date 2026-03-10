@@ -540,37 +540,36 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
                 {t("forgotPw.verifyPin")}
               </Button>
 
-              {showExpiryHint && !error && (
-                <p className="text-xs text-muted-foreground text-center">
-                  {t("forgotPw.pinExpiry")}
-                </p>
-              )}
+              {/* PIN duration info */}
+              <p className="text-[11px] text-muted-foreground text-center">
+                O PIN é válido por <strong>5 minutos</strong>. A Timol nunca solicitará este código — não informe a ninguém.
+              </p>
 
               {error && (
                 <p className="text-xs text-destructive text-center">{error}</p>
               )}
 
               {pinSent && (
-                <button
-                  type="button"
-                  className={`flex items-center justify-center gap-1 w-full text-xs transition-colors ${
-                    resendCooldown > 0 || loading
-                      ? "text-muted-foreground/50 cursor-not-allowed"
-                      : "text-muted-foreground hover:text-primary"
-                  }`}
-                  onClick={() => void handleResendPin()}
-                  disabled={resendCooldown > 0 || loading}
-                  aria-label={t("forgotPw.resendPinAria")}
-                >
-                  {t("forgotPw.resendPin")}
-                  {resendCooldown > 0 && ` (${resendCooldown}s)`}
-                </button>
-              )}
-
-              {resendHint && (
-                <p className="text-xs text-success text-center">
-                  {t("forgotPw.resendSuccess")}
-                </p>
+                <div className="text-center w-full">
+                  {resendCooldown > 0 ? (
+                    <p className="text-xs text-muted-foreground">
+                      Reenviar PIN em <strong>{resendCooldown}s</strong>
+                    </p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      Não recebeu? Verifique sua caixa de spam e, se necessário,{" "}
+                      <button
+                        type="button"
+                        onClick={() => void handleResendPin()}
+                        disabled={loading}
+                        className="text-primary hover:underline font-medium disabled:opacity-50"
+                      >
+                        clique para reenviar um novo PIN
+                      </button>
+                      .
+                    </p>
+                  )}
+                </div>
               )}
             </>
           )}
