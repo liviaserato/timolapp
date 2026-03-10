@@ -81,26 +81,27 @@ export function PinStepContent({
 
   return (
     <form onSubmit={handleSubmitForm}>
-      {/* Back arrow top-left */}
-      {onBack && (
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mb-2"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Voltar
-        </button>
-      )}
+      <div className="relative">
+        {/* Back arrow top-left */}
+        {onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="absolute left-0 top-1 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+        )}
 
-      <DialogHeader className="text-center">
-        <DialogTitle className="flex items-center justify-center gap-2">
-          <ShieldCheck className="h-5 w-5" /> Verificação de Segurança
-        </DialogTitle>
-        <DialogDescription className="text-center">
-          {description || "Enviamos um PIN de 6 dígitos para o seu e-mail. Digite abaixo para confirmar."}
-        </DialogDescription>
-      </DialogHeader>
+        <DialogHeader className="text-center">
+          <DialogTitle className="flex items-center justify-center gap-2">
+            <ShieldCheck className="h-5 w-5" /> Verificação de Segurança
+          </DialogTitle>
+          <DialogDescription className="text-center">
+            {description || "Enviamos um PIN de 6 dígitos para o seu e-mail. Digite abaixo para confirmar."}
+          </DialogDescription>
+        </DialogHeader>
+      </div>
 
       <div className="flex flex-col items-center gap-3 mt-4">
         <InputOTP
