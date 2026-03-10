@@ -246,9 +246,89 @@ export default function Cadastro() {
         </p>
       </header>
 
-      <div className="flex flex-col gap-3">
+      {/* Desktop: grouped rows. Mobile: flat column with custom order */}
+      <div className="flex flex-col gap-3 sm:hidden">
+        {/* Mobile order: Franquia, Acesso, Dados Pessoais, Contato, Endereço, Financeiro, Documentos, Ajuda */}
+        <FranchiseCard
+          franchiseId={franchiseData.id}
+          planCode={franchiseData.planCode}
+          sponsor={franchiseData.sponsor}
+        />
+
+        <DashboardCard icon={KeyRound} title="Acesso">
+          <div className="mt-1">
+            <Row label="Usuário" value={loginData.username} />
+            <Row
+              label="Senha"
+              value={
+                <button
+                  className="text-primary text-xs underline underline-offset-2 hover:text-primary/80"
+                  onClick={() => setPasswordDialogOpen(true)}
+                >
+                  Alterar senha
+                </button>
+              }
+            />
+          </div>
+        </DashboardCard>
+
+        <DashboardCard icon={User} title="Dados Pessoais">
+          <div className="mt-1">
+            <Row label="Nome Completo" value={personalData.fullName} />
+            <Row label={docLabel as any} value={personalData.document} />
+            <Row label="Nascimento" value={personalData.birthDate} />
+            <Row label="Gênero" value={personalData.gender} />
+          </div>
+        </DashboardCard>
+
+        <DashboardCard icon={Phone} title="Contato">
+          <div className="mt-1 flex-1">
+            <Row label="E-mail" value={contactData.email} />
+            <Row label="Telefone" value={contactData.phone} />
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2 text-xs h-7 w-full gap-1.5"
+            onClick={() => setPhoneDialogOpen(true)}
+          >
+            <ShieldCheck className="h-3 w-3" />
+            Alterar telefone
+          </Button>
+        </DashboardCard>
+
+        <DashboardCard icon={MapPin} title="Endereço">
+          <AddressManager
+            addresses={addresses}
+            onChange={setAddresses}
+            currentCountryIso2="BR"
+            franchiseCurrency="BRL"
+          />
+        </DashboardCard>
+
+        <FinancialManager accounts={accounts} onChange={setAccounts} />
+
+        <DocumentsCard />
+
+        <DashboardCard icon={HelpCircle} title="Precisa de ajuda?" id="help-card">
+          <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+            Para alterar dados sensíveis, tirar dúvidas ou resolver qualquer questão sobre sua conta, estamos aqui para te ajudar!
+          </p>
+          <Button
+            size="sm"
+            className="mt-3 w-full gap-2 h-9 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg shadow-sm"
+            onClick={() => {/* TODO: navigate to support */}}
+          >
+            <MessageSquarePlus className="h-4 w-4" />
+            Abrir chamado
+          </Button>
+        </DashboardCard>
+      </div>
+
+      {/* Desktop layout (sm+) */}
+      <div className="hidden sm:flex flex-col gap-3">
         {/* Row 1: Dados Pessoais + Contato | Franquia */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-3">
             <DashboardCard icon={User} title="Dados Pessoais">
               <div className="mt-1">
@@ -285,7 +365,7 @@ export default function Cadastro() {
         </div>
 
         {/* Row 2: Endereço | Acesso */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <DashboardCard icon={MapPin} title="Endereço">
             <AddressManager
               addresses={addresses}
@@ -314,7 +394,7 @@ export default function Cadastro() {
         </div>
 
         {/* Row 3: Financeiro + Ajuda | Documentos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-3">
             <FinancialManager accounts={accounts} onChange={setAccounts} />
 
