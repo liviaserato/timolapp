@@ -82,10 +82,12 @@ export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: Passwo
   const passwordsMatch = newPassword === confirmPassword;
   const passwordsMismatch = confirmPassword.length > 0 && !passwordsMatch;
   const newPasswordTooShort = newPassword.length > 0 && newPassword.length < MIN_PASSWORD_LENGTH;
+  const sameAsCurrentPassword = newPassword.length > 0 && newPassword === currentPassword;
   const passwordsValid =
     currentPassword.length >= MIN_PASSWORD_LENGTH &&
     newPassword.length >= MIN_PASSWORD_LENGTH &&
-    passwordsMatch;
+    passwordsMatch &&
+    !sameAsCurrentPassword;
 
   const handleSendPin = () => {
     if (!passwordsValid || loading) return;
@@ -104,7 +106,7 @@ export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: Passwo
     // TODO: call change-password edge function with action "change"
     setTimeout(() => {
       setLoading(false);
-      toast.success("Senha alterada com sucesso! Um e-mail de confirmação foi enviado.");
+      toast.success("Senha alterada com sucesso.");
       handleClose(false);
     }, 1500);
   };
@@ -164,6 +166,9 @@ export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: Passwo
             />
             {newPasswordTooShort && (
               <p className="text-xs text-destructive">A senha deve ter no mínimo 6 caracteres.</p>
+            )}
+            {sameAsCurrentPassword && !newPasswordTooShort && (
+              <p className="text-xs text-destructive">A nova senha não pode ser igual à senha atual.</p>
             )}
             <PasswordField
               label="Confirmar nova senha"
