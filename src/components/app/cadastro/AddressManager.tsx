@@ -98,8 +98,10 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
 
   const isBrazil = form.countryIso2 === "BR";
 
-  // Show warning when country differs from current profile country
-  const isDifferentCountry = form.countryIso2 && form.countryIso2 !== currentCountryIso2;
+  // Currency validation
+  const selectedCurrency = form.countryIso2 ? getCountryCurrency(form.countryIso2) : null;
+  const isSameCurrency = selectedCurrency === franchiseCurrency;
+  const isDifferentCurrency = form.countryIso2 && !isSameCurrency;
 
   const fetchCep = async (cep: string) => {
     const clean = cep.replace(/\D/g, "");
