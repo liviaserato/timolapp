@@ -216,14 +216,13 @@ export function FinancialManager({ accounts, onChange }: Props) {
               <div className="space-y-2"><Label>Agência</Label><Input value={form.agency || ""} onChange={(e) => setForm((p) => ({ ...p, agency: e.target.value }))} /></div>
               <div className="space-y-2"><Label>Conta</Label><Input value={form.account || ""} onChange={(e) => setForm((p) => ({ ...p, account: e.target.value }))} /></div>
             </div>
-            <div className="space-y-2"><Label>Tipo</Label><Input placeholder="Corrente / Poupança" value={form.accountType || ""} onChange={(e) => setForm((p) => ({ ...p, accountType: e.target.value }))} /></div>
+            <div className="space-y-2"><Label>Tipo (opcional)</Label><Input placeholder="Corrente / Poupança" value={form.accountType || ""} onChange={(e) => setForm((p) => ({ ...p, accountType: e.target.value }))} /></div>
           </>
         );
       case "pix":
         return (
           <>
-            <div className="space-y-2"><Label>Tipo de chave</Label><Input placeholder="CPF, E-mail, Telefone, Aleatória" value={form.pixKeyType || ""} onChange={(e) => setForm((p) => ({ ...p, pixKeyType: e.target.value }))} /></div>
-            <div className="space-y-2"><Label>Chave PIX</Label><Input value={form.pixKey || ""} onChange={(e) => setForm((p) => ({ ...p, pixKey: e.target.value }))} /></div>
+            <div className="space-y-2"><Label>Chave PIX</Label><Input placeholder="CPF, e-mail, telefone ou chave aleatória" value={form.pixKey || ""} onChange={(e) => setForm((p) => ({ ...p, pixKey: e.target.value }))} /></div>
           </>
         );
       case "international":
