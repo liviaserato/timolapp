@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Landmark, Plus, Trash2, Settings, Pencil, Info } from "lucide-react";
+import { Landmark, Plus, Trash2, Settings, Pencil, Info, AlertTriangle } from "lucide-react";
 
 /* ── types ── */
 
