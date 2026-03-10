@@ -127,10 +127,21 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
                 </div>
               )}
 
-              {/* Confirmation message */}
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Você está convertendo bônus em saldo do Banco Timol. Essa operação é imediata e não poderá ser desfeita. Deseja continuar?
-              </p>
+              {/* Confirmation checkbox */}
+              {numAmount > 0 && !exceedsBalance && (
+                <div className="flex items-start gap-2.5">
+                  <Checkbox
+                    id="confirm-convert"
+                    checked={confirmed}
+                    onCheckedChange={(v) => setConfirmed(v === true)}
+                    className="mt-0.5"
+                  />
+                  <label htmlFor="confirm-convert" className="text-xs text-muted-foreground leading-relaxed cursor-pointer select-none">
+                    Confirmo que quero converter meus bônus para saldo no Banco Timol. Sei que essa operação é imediata e{" "}
+                    <strong className="text-destructive font-semibold">não pode ser desfeita</strong>.
+                  </label>
+                </div>
+              )}
 
               <Button type="submit" className="w-full" disabled={!canContinue}>
                 Continuar
