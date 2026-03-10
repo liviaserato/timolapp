@@ -1,6 +1,7 @@
-import { TrendingUp, ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
+import { TrendingUp, ShieldCheck, ShieldAlert, ShieldX, ArrowRightLeft } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { CurrencyConfig, formatCurrency } from "./currency-helpers";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface FranchiseStatus {
@@ -45,11 +46,13 @@ interface Props {
   awaitingRelease: number;
   currency: CurrencyConfig;
   franchiseStatus: FranchiseStatus;
+  onConvertBonus?: () => void;
 }
 
-export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, franchiseStatus }: Props) {
+export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, franchiseStatus, onConvertBonus }: Props) {
   const status = getFranchiseStatusInfo(franchiseStatus.activeUntil);
   const StatusIcon = status.icon;
+  const hasBonus = nextFriday > 0 || awaitingRelease > 0;
 
   return (
     <DashboardCard
@@ -69,6 +72,24 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, franch
             <p className="text-sm font-medium text-muted-foreground">{formatCurrency(awaitingRelease, currency)}</p>
           </div>
         </div>
+
+        {/* Convert bonus button */}
+        {hasBonus && onConvertBonus && (
+          <div className="mt-3 space-y-1">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full h-8 text-xs gap-1.5"
+              onClick={onConvertBonus}
+            >
+              <ArrowRightLeft className="h-3.5 w-3.5" />
+              Converter bônus em saldo
+            </Button>
+            <p className="text-[10px] text-muted-foreground text-center leading-tight">
+              Ganhe +5% ao converter seu bônus em saldo para novos pedidos.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Footer */}
