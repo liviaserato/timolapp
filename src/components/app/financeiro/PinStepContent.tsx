@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, Loader2 } from "lucide-react";
+import { ShieldCheck, Loader2, ArrowLeft } from "lucide-react";
 import { DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const RESEND_COOLDOWN_SECONDS = 60;
@@ -34,7 +34,7 @@ export function PinStepContent({
 }: PinStepContentProps) {
   const [pin, setPin] = useState("");
   const [cooldown, setCooldown] = useState(startCooldown ? RESEND_COOLDOWN_SECONDS : 0);
-  const [cooldownFinished, setCooldownFinished] = useState(false);
+  const [cooldownFinished, setCooldownFinished] = useState(!startCooldown);
   const [resending, setResending] = useState(false);
 
   // Countdown timer
@@ -81,6 +81,18 @@ export function PinStepContent({
 
   return (
     <form onSubmit={handleSubmitForm}>
+      {/* Back arrow top-left */}
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mb-2"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Voltar
+        </button>
+      )}
+
       <DialogHeader className="text-center">
         <DialogTitle className="flex items-center justify-center gap-2">
           <ShieldCheck className="h-5 w-5" /> Verificação de Segurança
@@ -110,9 +122,11 @@ export function PinStepContent({
           </InputOTPGroup>
         </InputOTP>
 
-        {/* PIN duration info */}
+        {/* PIN duration info — line break after period */}
         <p className="text-[11px] text-muted-foreground text-center">
-          O PIN é válido por <strong>5 minutos</strong>. A Timol nunca solicitará este código — não informe a ninguém.
+          O PIN é válido por <strong>5 minutos</strong>.
+          <br />
+          A Timol nunca solicitará este código — não informe a ninguém.
         </p>
 
         {error && <p className="text-xs text-destructive text-center">{error}</p>}
@@ -126,7 +140,7 @@ export function PinStepContent({
           <div className="text-center w-full">
             {cooldown > 0 ? (
               <p className="text-xs text-muted-foreground">
-                Reenviar PIN em <strong>{cooldown}s</strong>
+                Seu PIN já foi enviado, você pode solicitar um novo em <strong>{cooldown}s</strong>
               </p>
             ) : cooldownFinished ? (
               <p className="text-xs text-muted-foreground">
@@ -143,12 +157,6 @@ export function PinStepContent({
               </p>
             ) : null}
           </div>
-        )}
-
-        {onBack && (
-          <Button type="button" variant="ghost" size="sm" onClick={onBack} className="text-xs text-muted-foreground">
-            Voltar
-          </Button>
         )}
       </div>
     </form>
