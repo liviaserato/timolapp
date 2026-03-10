@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CurrencyConfig, formatCurrency } from "./currency-helpers";
 import { CheckCircle, ArrowLeft, ArrowRightLeft, AlertTriangle } from "lucide-react";
 import { PinStepContent } from "./PinStepContent";
@@ -35,17 +36,19 @@ function parseCurrencyInput(formatted: string): number {
 export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonus, onConvert }: Props) {
   const [step, setStep] = useState<Step>("amount");
   const [rawAmount, setRawAmount] = useState("");
+  const [confirmed, setConfirmed] = useState(false);
 
   const displayAmount = rawAmount ? formatCurrencyInput(rawAmount) : "0,00";
   const numAmount = parseCurrencyInput(rawAmount);
   const extraAmount = numAmount * (BONUS_PERCENT / 100);
   const totalCredit = numAmount + extraAmount;
   const exceedsBalance = numAmount > availableBonus;
-  const canContinue = numAmount > 0 && !exceedsBalance;
+  const canContinue = numAmount > 0 && !exceedsBalance && confirmed;
 
   function reset() {
     setStep("amount");
     setRawAmount("");
+    setConfirmed(false);
   }
 
   function handleClose(v: boolean) {
@@ -124,10 +127,21 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
                 </div>
               )}
 
-              {/* Confirmation message */}
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Você está convertendo bônus em saldo do Banco Timol. Essa operação é imediata e não poderá ser desfeita. Deseja continuar?
-              </p>
+              {/* Confirmation checkbox */}
+              {numAmount > 0 && !exceedsBalance && (
+                <div className="flex items-start gap-2.5">
+                  <Checkbox
+                    id="confirm-convert"
+                    checked={confirmed}
+                    onCheckedChange={(v) => setConfirmed(v === true)}
+                    className="mt-0.5"
+                  />
+                  <label htmlFor="confirm-convert" className="text-xs text-muted-foreground leading-relaxed cursor-pointer select-none">
+                    Confirmo que quero converter meus bônus para saldo no Banco Timol. Sei que essa operação é imediata e{" "}
+                    <strong className="text-destructive font-semibold">não pode ser desfeita</strong>.
+                  </label>
+                </div>
+              )}
 
               <Button type="submit" className="w-full" disabled={!canContinue}>
                 Continuar
