@@ -151,21 +151,12 @@ export default function Suporte() {
   const faqRef = useRef<HTMLDivElement>(null);
   const chamadosRef = useRef<HTMLDivElement>(null);
   const [newTicketOpen, setNewTicketOpen] = useState(false);
-  const [faleConoscoOpen, setFaleConoscoOpen] = useState(false);
   const [ticketCategory, setTicketCategory] = useState("");
   const [ticketSubject, setTicketSubject] = useState("");
   const [ticketDescription, setTicketDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const chamadosAtivos = mockChamados.filter((c) => c.status !== "fechado");
-
-  function scrollToFaq() {
-    faqRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
-
-  function scrollToChamados() {
-    chamadosRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
 
   function handleSubmitTicket() {
     if (!ticketCategory || !ticketSubject.trim() || !ticketDescription.trim()) {
@@ -193,31 +184,8 @@ export default function Suporte() {
         </p>
       </header>
 
-      {/* ── Quick-access cards ── */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <QuickCard
-          icon={<Ticket className="h-6 w-6 text-primary-foreground" />}
-          iconBg="bg-primary"
-          title="Chamados"
-          description="Abra, acompanhe e gerencie seus chamados com a equipe Timol."
-          badge={chamadosAtivos.length > 0 ? `${chamadosAtivos.length} ativos` : undefined}
-          onClick={scrollToChamados}
-        />
-        <QuickCard
-          icon={<Phone className="h-6 w-6 text-primary-foreground" />}
-          iconBg="bg-success"
-          title="Fale Conosco"
-          description="Telefones, redes sociais e endereços de todos os nossos escritórios."
-          onClick={() => setFaleConoscoOpen(true)}
-        />
-        <QuickCard
-          icon={<HelpCircle className="h-6 w-6 text-primary-foreground" />}
-          iconBg="bg-success"
-          title="FAQ"
-          description="Perguntas frequentes com respostas rápidas para as dúvidas mais comuns."
-          onClick={scrollToFaq}
-        />
-      </section>
+
+
 
       {/* ── Meus Chamados ── */}
       <section ref={chamadosRef}>
@@ -397,25 +365,10 @@ export default function Suporte() {
         </DialogContent>
       </Dialog>
 
-      {/* ── Dialog: Fale Conosco ── */}
-      <Dialog open={faleConoscoOpen} onOpenChange={setFaleConoscoOpen}>
-        <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
-          <DialogHeader className="text-center">
-            <button
-              onClick={() => setFaleConoscoOpen(false)}
-              className="absolute left-4 top-4 text-muted-foreground hover:text-foreground"
-              aria-label="Voltar"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <DialogTitle className="text-lg">Fale Conosco</DialogTitle>
-            <DialogDescription>
-              Entre em contato pelos canais abaixo ou visite um de nossos escritórios.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex flex-col gap-4 mt-2">
-            {/* Contact channels */}
+      {/* ── Fale Conosco ── */}
+      <section>
+        <DashboardCard icon={Phone} title="Fale Conosco">
+          <div className="mt-2 flex flex-col gap-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <button
                 onClick={() => openWhatsAppLink("Olá! Preciso de ajuda.")}
@@ -440,8 +393,6 @@ export default function Suporte() {
                 </div>
               </a>
             </div>
-
-            {/* Offices */}
             <div>
               <h3 className="text-sm font-bold text-primary mb-2 flex items-center gap-1.5">
                 <MapPin className="h-4 w-4" />
@@ -467,51 +418,11 @@ export default function Suporte() {
               </div>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </DashboardCard>
+      </section>
     </div>
   );
 }
 
-/* ── Quick Card sub-component ── */
 
-function QuickCard({
-  icon,
-  iconBg,
-  title,
-  description,
-  badge,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  iconBg: string;
-  title: string;
-  description: string;
-  badge?: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex flex-col items-start gap-3 rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm text-left hover:shadow-md transition-shadow group"
-    >
-      <div className="flex items-start justify-between w-full">
-        <div className={`h-10 w-10 rounded-lg ${iconBg} flex items-center justify-center`}>
-          {icon}
-        </div>
-        {badge && (
-          <Badge variant="secondary" className="text-[10px] bg-amber-100 text-amber-700">
-            {badge}
-          </Badge>
-        )}
-      </div>
-      <div>
-        <p className="text-sm font-bold text-foreground">{title}</p>
-        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{description}</p>
-      </div>
-      <div className="flex items-center justify-end w-full">
-        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-      </div>
-    </button>
-  );
-}
+
