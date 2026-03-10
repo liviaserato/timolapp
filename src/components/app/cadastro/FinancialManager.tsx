@@ -162,7 +162,21 @@ export function FinancialManager({ accounts, onChange }: Props) {
     setAddOpen(true);
   };
 
+  const MAX_ACCOUNTS = 5;
+  const isAtLimit = !editingId && accounts.length >= MAX_ACCOUNTS;
+
+  const isFormValid = (): boolean => {
+    switch (formType) {
+      case "pix": return !!(form.pixKey?.trim());
+      case "bank": return !!(form.bank?.trim() && form.agency?.trim() && form.account?.trim());
+      case "international": return !!(form.iban?.trim() || form.swift?.trim());
+      case "digital": return !!(form.provider?.trim() && form.email?.trim());
+      default: return false;
+    }
+  };
+
   const handleSave = () => {
+    if (!isFormValid()) return;
     if (editingId) {
       onChange(accounts.map((a) => a.id === editingId ? {
         ...a,
@@ -202,14 +216,13 @@ export function FinancialManager({ accounts, onChange }: Props) {
               <div className="space-y-2"><Label>Agência</Label><Input value={form.agency || ""} onChange={(e) => setForm((p) => ({ ...p, agency: e.target.value }))} /></div>
               <div className="space-y-2"><Label>Conta</Label><Input value={form.account || ""} onChange={(e) => setForm((p) => ({ ...p, account: e.target.value }))} /></div>
             </div>
-            <div className="space-y-2"><Label>Tipo</Label><Input placeholder="Corrente / Poupança" value={form.accountType || ""} onChange={(e) => setForm((p) => ({ ...p, accountType: e.target.value }))} /></div>
+            <div className="space-y-2"><Label>Tipo (opcional)</Label><Input placeholder="Corrente / Poupança" value={form.accountType || ""} onChange={(e) => setForm((p) => ({ ...p, accountType: e.target.value }))} /></div>
           </>
         );
       case "pix":
         return (
           <>
-            <div className="space-y-2"><Label>Tipo de chave</Label><Input placeholder="CPF, E-mail, Telefone, Aleatória" value={form.pixKeyType || ""} onChange={(e) => setForm((p) => ({ ...p, pixKeyType: e.target.value }))} /></div>
-            <div className="space-y-2"><Label>Chave PIX</Label><Input value={form.pixKey || ""} onChange={(e) => setForm((p) => ({ ...p, pixKey: e.target.value }))} /></div>
+            <div className="space-y-2"><Label>Chave PIX</Label><Input placeholder="CPF, e-mail, telefone ou chave aleatória" value={form.pixKey || ""} onChange={(e) => setForm((p) => ({ ...p, pixKey: e.target.value }))} /></div>
           </>
         );
       case "international":
@@ -321,10 +334,19 @@ export function FinancialManager({ accounts, onChange }: Props) {
 
           <DialogFooter className="flex-col gap-2 sm:flex-col">
             {!deleteMode && (
-              <Button variant="outline" size="sm" className="w-full gap-1.5" onClick={openAddDialog}>
-                <Plus className="h-4 w-4" />
-                Adicionar conta
-              </Button>
+              accounts.length >= MAX_ACCOUNTS ? (
+                <div className="flex items-start gap-2 rounded-md border border-muted bg-muted/30 p-3">
+                  <Info className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Você atingiu o limite de {MAX_ACCOUNTS} contas. Para adicionar uma nova, exclua uma conta existente.
+                  </p>
+                </div>
+              ) : (
+                <Button variant="outline" size="sm" className="w-full gap-1.5" onClick={openAddDialog}>
+                  <Plus className="h-4 w-4" />
+                  Adicionar conta
+                </Button>
+              )
             )}
             {accounts.length > 1 && !deleteMode && (
               <Button variant="outline" size="sm" className="w-full gap-1.5 text-destructive hover:text-destructive" onClick={() => setDeleteMode(true)}>
@@ -395,7 +417,7 @@ export function FinancialManager({ accounts, onChange }: Props) {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSave}>Salvar</Button>
+            <Button onClick={handleSave} disabled={!isFormValid()}>Salvar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
