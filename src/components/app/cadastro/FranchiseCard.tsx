@@ -90,7 +90,6 @@ interface Props {
   franchiseId: string;
   planCode: string;
   sponsor: string;
-  activeUntil?: string;
 }
 
 export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
