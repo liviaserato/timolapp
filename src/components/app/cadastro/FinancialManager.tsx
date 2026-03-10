@@ -417,7 +417,7 @@ export function FinancialManager({ accounts, onChange }: Props) {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSave}>Salvar</Button>
+            <Button onClick={handleSave} disabled={!isFormValid()}>Salvar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
