@@ -2,22 +2,9 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Gem, Shield, TrendingUp, Crown, Check, ArrowUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { Gem, ArrowUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-import franquiaBronze from "@/assets/franquia-bronze.svg";
-import franquiaPrata from "@/assets/franquia-prata.svg";
-import franquiaOuro from "@/assets/franquia-ouro.svg";
-import franquiaPlatina from "@/assets/franquia-platina.svg";
+import { UpgradeDialog } from "./UpgradeDialog";
 
 /* ── qualification icons ── */
 
@@ -35,62 +22,6 @@ const qualificationConfig: Record<string, { label: string; icon: string }> = {
   "diamante-5": { label: "Diamante ★★★★★", icon: "◇★★★★★" },
   "diamante-black": { label: "Diamante Black", icon: "◆◆" },
 };
-
-/* ── franchise plan data ── */
-
-interface FranchisePlan {
-  id: string;
-  name: string;
-  icon: typeof Shield;
-  image: string;
-  binaryBonus: string;
-  benefits: string[];
-  installmentPrice: number;
-  installments: number;
-}
-
-const franchisePlans: FranchisePlan[] = [
-  {
-    id: "bronze", name: "Bronze", icon: Shield, image: franquiaBronze, binaryBonus: "8%",
-    installmentPrice: 160, installments: 12,
-    benefits: [
-      "Entrada ideal para começar com baixo risco",
-      "Bônus Binário de 8%",
-      "Acesso ao escritório digital e treinamentos",
-      "Permissão para vender como consultor",
-    ],
-  },
-  {
-    id: "silver", name: "Prata", icon: TrendingUp, image: franquiaPrata, binaryBonus: "16%",
-    installmentPrice: 260, installments: 12,
-    benefits: [
-      "Tudo do Bronze + mais crescimento",
-      "Bônus Binário de 16%",
-      "Qualificação como distribuidor e líder",
-      "Descontos maiores em produtos",
-    ],
-  },
-  {
-    id: "gold", name: "Ouro", icon: Crown, image: franquiaOuro, binaryBonus: "24%",
-    installmentPrice: 380, installments: 12,
-    benefits: [
-      "Tudo do Prata",
-      "Bônus Binário de 24%",
-      "Qualificações Rubi e Esmeralda",
-      "Premiações e viagens",
-    ],
-  },
-  {
-    id: "platinum", name: "Platina", icon: Gem, image: franquiaPlatina, binaryBonus: "32% a 60%",
-    installmentPrice: 675, installments: 12,
-    benefits: [
-      "Tudo do Ouro",
-      "Bônus Binário de 32% a 60%",
-      "Único nível que permite chegar a Diamante",
-      "Maior potencial de ganhos recorrentes",
-    ],
-  },
-];
 
 const planOrder = ["bronze", "silver", "gold", "platinum"];
 const planLabels: Record<string, string> = { bronze: "Bronze", silver: "Prata", gold: "Ouro", platinum: "Platina" };
@@ -135,7 +66,6 @@ export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
     { franchiseId: "600789", planCode: "bronze", sponsor: "João Santos (ID 44006)", registrationDate: "05/07/2025", qualification: "consultor" },
   ];
 
-  // Sort so the active header ID is first
   const sortedFranchises = [
     ...userFranchises.filter((f) => f.franchiseId === franchiseId),
     ...userFranchises.filter((f) => f.franchiseId !== franchiseId).sort((a, b) => a.franchiseId.localeCompare(b.franchiseId)),
@@ -145,7 +75,6 @@ export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
   const [selectedTabIdx, setSelectedTabIdx] = useState(0);
   const viewing = sortedFranchises[selectedTabIdx];
 
-  // Scrollable tabs
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -175,16 +104,15 @@ export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
     if (!el) return;
     el.scrollBy({ left: dir === "left" ? -120 : 120, behavior: "smooth" });
   };
+
   const currentPlanIdx = planOrder.indexOf(viewing.planCode);
   const isMaxPlan = viewing.planCode === "platinum";
-  const upgradeOptions = franchisePlans.filter((_, i) => i > currentPlanIdx);
   const qual = qualificationConfig[viewing.qualification];
 
   return (
     <>
       <DashboardCard icon={Gem} title="Franquia">
         <div className="mt-1">
-          {/* ID Tabs - scrollable single line */}
           {hasMultipleIds && (
             <div className="flex items-center gap-0.5 mb-3">
               {canScrollLeft && (
@@ -229,13 +157,11 @@ export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
             </div>
           )}
 
-          {/* Franchise data */}
           <div className="space-y-0">
             <Row label="ID" value={viewing.franchiseId} />
             <Row label="Franquia" value={
               <span className="flex items-center gap-1.5">
                 {planLabels[viewing.planCode] || viewing.planCode}
-                {/* Emphasize the franchise selected in header */}
                 {viewing.franchiseId === franchiseId && (
                   <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Ativa</Badge>
                 )}
@@ -253,7 +179,6 @@ export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
             } />
           </div>
 
-          {/* Upgrade button */}
           {!isMaxPlan && (
             <Button
               variant="outline"
@@ -268,54 +193,15 @@ export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
         </div>
       </DashboardCard>
 
-      {/* Upgrade dialog */}
-      <Dialog open={upgradeOpen} onOpenChange={setUpgradeOpen}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Upgrade de Franquia</DialogTitle>
-            <DialogDescription>
-              Sua franquia atual (ID {viewing.franchiseId}) é {planLabels[viewing.planCode] || viewing.planCode}. Escolha um plano superior:
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {upgradeOptions.map((f) => {
-              const Icon = f.icon;
-              const total = f.installmentPrice * f.installments;
-              return (
-                <div key={f.id} className="rounded-lg border-2 border-border hover:border-primary/50 hover:shadow-md transition-all p-4 flex flex-col">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Icon className="h-6 w-6 text-primary/60" />
-                    <h3 className="text-lg font-bold">{f.name}</h3>
-                  </div>
-                  <Separator className="mb-2" />
-                  <div className="space-y-1 flex-1">
-                    {f.benefits.map((b, i) => (
-                      <div key={i} className="flex items-start gap-1.5 text-sm text-muted-foreground">
-                        <Check className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-primary/60" />
-                        <span>{b}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <Separator className="my-2" />
-                  <div className="text-center">
-                    <p className="text-xs text-muted-foreground">12x de</p>
-                    <p className="text-2xl font-extrabold text-foreground">R$ {f.installmentPrice},00</p>
-                    <p className="text-xs text-muted-foreground">Total: R$ {total.toLocaleString("pt-BR")},00</p>
-                  </div>
-                  <Button className="mt-3 w-full" size="sm">
-                    Escolher {f.name}
-                  </Button>
-                </div>
-              );
-            })}
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setUpgradeOpen(false)}>Cancelar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <UpgradeDialog
+        open={upgradeOpen}
+        onOpenChange={setUpgradeOpen}
+        currentPlanCode={viewing.planCode}
+        franchiseId={viewing.franchiseId}
+        isBrazilian={true}
+        userName="Lívia Serato"
+        userEmail="livia.serato@email.com"
+      />
     </>
   );
 }
