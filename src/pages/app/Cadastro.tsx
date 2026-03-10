@@ -316,7 +316,7 @@ export default function Cadastro() {
         <DocumentsCard />
 
         {/* Card de Ajuda */}
-        <DashboardCard icon={HelpCircle} title="Precisa de ajuda?">
+        <DashboardCard icon={HelpCircle} title="Precisa de ajuda?" id="help-card">
           <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
             Para alterar dados sensíveis, tirar dúvidas ou resolver qualquer questão sobre sua conta, estamos aqui para te ajudar!
           </p>

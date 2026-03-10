@@ -473,7 +473,7 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSaveAddress} disabled={!form.street || !form.city || !form.country}>Salvar</Button>
+            <Button onClick={handleSaveAddress} disabled={!form.street || !form.city || !form.country || !!isDifferentCurrency}>Salvar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
