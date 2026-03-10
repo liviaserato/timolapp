@@ -175,6 +175,10 @@ export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
     if (!el) return;
     el.scrollBy({ left: dir === "left" ? -120 : 120, behavior: "smooth" });
   };
+  const currentPlanIdx = planOrder.indexOf(viewing.planCode);
+  const isMaxPlan = viewing.planCode === "platinum";
+  const upgradeOptions = franchisePlans.filter((_, i) => i > currentPlanIdx);
+  const qual = qualificationConfig[viewing.qualification];
 
   return (
     <>
