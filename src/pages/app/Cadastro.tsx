@@ -313,6 +313,12 @@ export default function Cadastro() {
         onOpenChange={setPhoneDialogOpen}
         currentPhone={contactData.phone}
       />
+
+      <PasswordChangeDialog
+        open={passwordDialogOpen}
+        onOpenChange={setPasswordDialogOpen}
+        maskedEmail="li****@email.com"
+      />
     </div>
   );
 }
