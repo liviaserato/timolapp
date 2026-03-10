@@ -186,25 +186,26 @@ export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: Passwo
         ) : (
           <div className="space-y-3">
             <div className="space-y-2">
-              <Label>PIN de verificação</Label>
-              <InputOTP
+              <Label className="text-center block">PIN de verificação</Label>
+              <div className="flex justify-center">
+                <InputOTP
                   maxLength={6}
                   value={pin}
                   onChange={(value) => setPin(value)}
                   onComplete={() => {
                     setTimeout(() => handleVerifyPin(), 0);
                   }}
-                  className="w-full"
                 >
-                  <InputOTPGroup className="w-full">
-                    <InputOTPSlot index={0} className="flex-1 h-11" />
-                    <InputOTPSlot index={1} className="flex-1 h-11" />
-                    <InputOTPSlot index={2} className="flex-1 h-11" />
-                    <InputOTPSlot index={3} className="flex-1 h-11" />
-                    <InputOTPSlot index={4} className="flex-1 h-11" />
-                    <InputOTPSlot index={5} className="flex-1 h-11" />
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
                   </InputOTPGroup>
                 </InputOTP>
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => { setStep("passwords"); setPin(""); }}>
