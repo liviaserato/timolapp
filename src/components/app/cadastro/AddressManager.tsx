@@ -150,7 +150,6 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
   const clearCountry = () => {
     setForm((prev) => ({ ...prev, country: "", countryIso2: "" }));
     setCountrySearch("");
-    setShowCountryWarning(false);
   };
 
   const openAddDialog = () => {
