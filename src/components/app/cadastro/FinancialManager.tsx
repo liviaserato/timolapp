@@ -74,7 +74,7 @@ function formatAccountSummary(acc: FinancialAccount): string {
     case "bank":
       return [acc.bank, `Ag ${acc.agency}`, `Cc ${acc.account}`, acc.accountType].filter(Boolean).join(" · ");
     case "pix":
-      return `PIX: ${acc.pixKey || "—"}`;
+      return acc.pixKey || "—";
     case "international":
       return [acc.bankName, acc.iban, acc.swift].filter(Boolean).join(" · ");
     case "digital":
