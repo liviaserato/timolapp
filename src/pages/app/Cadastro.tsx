@@ -172,8 +172,7 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean
           <div className="space-y-3">
             <div className="space-y-2">
               <Label>PIN de verificação</Label>
-              <div className="flex justify-center">
-                <InputOTP
+              <InputOTP
                   maxLength={6}
                   value={pin}
                   onChange={(value) => setPin(value)}
@@ -181,17 +180,17 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean
                     setTimeout(() => handleVerifyPin(), 0);
                   }}
                   onKeyDown={(e) => { if (e.key === "Enter" && pin.length === 6 && !sending) { e.preventDefault(); handleVerifyPin(); } }}
+                  className="w-full"
                 >
-                  <InputOTPGroup>
-                    <InputOTPSlot index={0} />
-                    <InputOTPSlot index={1} />
-                    <InputOTPSlot index={2} />
-                    <InputOTPSlot index={3} />
-                    <InputOTPSlot index={4} />
-                    <InputOTPSlot index={5} />
+                  <InputOTPGroup className="w-full">
+                    <InputOTPSlot index={0} className="flex-1 h-11" />
+                    <InputOTPSlot index={1} className="flex-1 h-11" />
+                    <InputOTPSlot index={2} className="flex-1 h-11" />
+                    <InputOTPSlot index={3} className="flex-1 h-11" />
+                    <InputOTPSlot index={4} className="flex-1 h-11" />
+                    <InputOTPSlot index={5} className="flex-1 h-11" />
                   </InputOTPGroup>
                 </InputOTP>
-              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setStep("phone")}>Voltar</Button>
