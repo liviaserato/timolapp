@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { MapPin, Plus, Trash2, Loader2, X } from "lucide-react";
+import { MapPin, Plus, Trash2, Loader2, X, Pencil, AlertTriangle } from "lucide-react";
 
 /* ── types ── */
 
@@ -44,6 +44,7 @@ export interface Address {
 interface Props {
   addresses: Address[];
   onChange: (addresses: Address[]) => void;
+  currentCountryIso2?: string;
 }
 
 /* ── helpers ── */
@@ -68,9 +69,10 @@ function formatAddress(a: Address): string {
 
 /* ── component ── */
 
-export function AddressManager({ addresses, onChange }: Props) {
+export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR" }: Props) {
   const [listOpen, setListOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteMode, setDeleteMode] = useState(false);
   const [selectedForDelete, setSelectedForDelete] = useState<Set<string>>(new Set());
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
@@ -79,6 +81,7 @@ export function AddressManager({ addresses, onChange }: Props) {
   const [cepError, setCepError] = useState("");
   const [countrySearch, setCountrySearch] = useState("");
   const [showCountryList, setShowCountryList] = useState(false);
+  const [showCountryWarning, setShowCountryWarning] = useState(false);
   const countryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -92,6 +95,9 @@ export function AddressManager({ addresses, onChange }: Props) {
   }, []);
 
   const isBrazil = form.countryIso2 === "BR";
+
+  // Show warning when country differs from current profile country
+  const isDifferentCountry = form.countryIso2 && form.countryIso2 !== currentCountryIso2;
 
   const fetchCep = async (cep: string) => {
     const clean = cep.replace(/\D/g, "");
@@ -131,7 +137,11 @@ export function AddressManager({ addresses, onChange }: Props) {
 
   const selectCountry = (iso2: string) => {
     const c = countries.find((x) => x.iso2 === iso2);
-    if (c) setForm((prev) => ({ ...prev, country: getCountryName(c, "pt"), countryIso2: iso2 }));
+    if (c) {
+      setForm((prev) => ({ ...prev, country: getCountryName(c, "pt"), countryIso2: iso2 }));
+      if (iso2 !== currentCountryIso2) setShowCountryWarning(true);
+      else setShowCountryWarning(false);
+    }
     setShowCountryList(false);
     setCountrySearch("");
   };
@@ -139,17 +149,48 @@ export function AddressManager({ addresses, onChange }: Props) {
   const clearCountry = () => {
     setForm((prev) => ({ ...prev, country: "", countryIso2: "" }));
     setCountrySearch("");
+    setShowCountryWarning(false);
   };
 
-  const handleAddAddress = () => {
-    if (!form.street || !form.city || !form.country) return;
-    const newAddr: Address = {
-      ...form,
-      id: crypto.randomUUID(),
-      isDefault: addresses.length === 0,
-    };
-    onChange([...addresses, newAddr]);
+  const openAddDialog = () => {
+    setEditingId(null);
     setForm(emptyAddress());
+    setShowCountryWarning(false);
+    setAddOpen(true);
+  };
+
+  const openEditDialog = (addr: Address) => {
+    setEditingId(addr.id);
+    setForm({
+      label: addr.label,
+      country: addr.country,
+      countryIso2: addr.countryIso2,
+      zipCode: addr.zipCode,
+      street: addr.street,
+      number: addr.number,
+      complement: addr.complement,
+      neighborhood: addr.neighborhood,
+      city: addr.city,
+      state: addr.state,
+    });
+    setShowCountryWarning(false);
+    setAddOpen(true);
+  };
+
+  const handleSaveAddress = () => {
+    if (!form.street || !form.city || !form.country) return;
+    if (editingId) {
+      onChange(addresses.map((a) => a.id === editingId ? { ...a, ...form } : a));
+    } else {
+      const newAddr: Address = {
+        ...form,
+        id: crypto.randomUUID(),
+        isDefault: addresses.length === 0,
+      };
+      onChange([...addresses, newAddr]);
+    }
+    setForm(emptyAddress());
+    setEditingId(null);
     setAddOpen(false);
   };
 
@@ -182,8 +223,10 @@ export function AddressManager({ addresses, onChange }: Props) {
   return (
     <>
       {/* Summary in card */}
-      {defaultAddr && <p className="mt-1 text-sm">{formatAddress(defaultAddr)}</p>}
-      {!defaultAddr && <p className="mt-1 text-sm text-muted-foreground">Nenhum endereço cadastrado.</p>}
+      <div className="mt-1 flex-1">
+        {defaultAddr && <p className="text-sm">{formatAddress(defaultAddr)}</p>}
+        {!defaultAddr && <p className="text-sm text-muted-foreground">Nenhum endereço cadastrado.</p>}
+      </div>
       <Button
         variant="outline"
         size="sm"
@@ -207,9 +250,15 @@ export function AddressManager({ addresses, onChange }: Props) {
               <div
                 key={addr.id}
                 className={`rounded-md border p-3 cursor-pointer transition-colors ${
-                  addr.isDefault ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"
+                  !deleteMode && addr.isDefault ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"
                 }`}
-                onClick={() => !deleteMode && handleSetDefault(addr.id)}
+                onClick={() => {
+                  if (deleteMode) {
+                    toggleDeleteSelection(addr.id);
+                  } else {
+                    handleSetDefault(addr.id);
+                  }
+                }}
               >
                 <div className="flex items-start gap-3">
                   {deleteMode ? (
@@ -217,7 +266,6 @@ export function AddressManager({ addresses, onChange }: Props) {
                       checked={selectedForDelete.has(addr.id)}
                       onCheckedChange={() => toggleDeleteSelection(addr.id)}
                       className="mt-0.5"
-                      disabled={addr.isDefault}
                     />
                   ) : (
                     <div className={`mt-1 h-4 w-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
@@ -230,16 +278,31 @@ export function AddressManager({ addresses, onChange }: Props) {
                     {addr.label && <p className="text-sm font-semibold">{addr.label}</p>}
                     <p className="text-sm text-muted-foreground">{formatAddress(addr)}</p>
                   </div>
+                  {!deleteMode && (
+                    <button
+                      type="button"
+                      className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openEditDialog(addr);
+                      }}
+                      aria-label="Editar endereço"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
           </div>
 
           <DialogFooter className="flex-col gap-2 sm:flex-col">
-            <Button variant="outline" size="sm" className="w-full gap-1.5" onClick={() => { setAddOpen(true); }}>
-              <Plus className="h-4 w-4" />
-              Adicionar endereço
-            </Button>
+            {!deleteMode && (
+              <Button variant="outline" size="sm" className="w-full gap-1.5" onClick={openAddDialog}>
+                <Plus className="h-4 w-4" />
+                Adicionar endereço
+              </Button>
+            )}
             {addresses.length > 1 && !deleteMode && (
               <Button variant="outline" size="sm" className="w-full gap-1.5 text-destructive hover:text-destructive" onClick={() => setDeleteMode(true)}>
                 <Trash2 className="h-4 w-4" />
@@ -266,12 +329,14 @@ export function AddressManager({ addresses, onChange }: Props) {
         </DialogContent>
       </Dialog>
 
-      {/* Add address popup */}
+      {/* Add/Edit address popup */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Novo Endereço</DialogTitle>
-            <DialogDescription>Preencha os dados do novo endereço.</DialogDescription>
+            <DialogTitle>{editingId ? "Editar Endereço" : "Novo Endereço"}</DialogTitle>
+            <DialogDescription>
+              {editingId ? "Atualize os dados do endereço." : "Preencha os dados do novo endereço."}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -309,6 +374,17 @@ export function AddressManager({ addresses, onChange }: Props) {
                 </div>
               )}
             </div>
+
+            {/* Country change warning */}
+            {isDifferentCountry && (
+              <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/5 p-3">
+                <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+                <div className="text-xs text-warning leading-relaxed">
+                  <p className="font-semibold">Atenção</p>
+                  <p>Ao alterar para um país diferente do seu cadastro atual, a moeda poderá ser alterada. Após a confirmação, você não poderá trocar o endereço novamente pelos próximos 60 dias.</p>
+                </div>
+              </div>
+            )}
 
             {/* CEP */}
             <div className="space-y-2">
@@ -351,7 +427,7 @@ export function AddressManager({ addresses, onChange }: Props) {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddOpen(false)}>Cancelar</Button>
-            <Button onClick={handleAddAddress} disabled={!form.street || !form.city || !form.country}>Salvar</Button>
+            <Button onClick={handleSaveAddress} disabled={!form.street || !form.city || !form.country}>Salvar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

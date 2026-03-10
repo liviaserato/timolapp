@@ -30,32 +30,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Landmark, Plus, Trash2, Star, Settings } from "lucide-react";
+import { Landmark, Plus, Trash2, Settings, Pencil, Info } from "lucide-react";
 
 /* ── types ── */
 
 export type AccountType = "bank" | "pix" | "international" | "digital";
+export type AccountStatus = "pending" | "verified" | "rejected";
 
 export interface FinancialAccount {
   id: string;
   type: AccountType;
   label: string;
-  // Bank fields
   bank?: string;
   agency?: string;
   account?: string;
   accountType?: string;
-  // PIX
   pixKey?: string;
   pixKeyType?: string;
-  // International
   iban?: string;
   swift?: string;
   bankName?: string;
-  // Digital wallet
   provider?: string;
   email?: string;
   isDefault: boolean;
+  status: AccountStatus;
 }
 
 const accountTypeLabels: Record<AccountType, string> = {
@@ -63,6 +61,12 @@ const accountTypeLabels: Record<AccountType, string> = {
   pix: "PIX",
   international: "Conta Internacional",
   digital: "Carteira Digital",
+};
+
+const statusConfig: Record<AccountStatus, { label: string; className: string }> = {
+  pending: { label: "Pendente", className: "border-warning/40 text-warning bg-warning/10" },
+  verified: { label: "Verificada", className: "border-emerald-500/40 text-emerald-600 bg-emerald-50" },
+  rejected: { label: "Rejeitada", className: "border-destructive/40 text-destructive bg-destructive/10" },
 };
 
 function formatAccountSummary(acc: FinancialAccount): string {
@@ -99,6 +103,7 @@ interface Props {
 export function FinancialManager({ accounts, onChange }: Props) {
   const [listOpen, setListOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteMode, setDeleteMode] = useState(false);
   const [selectedForDelete, setSelectedForDelete] = useState<Set<string>>(new Set());
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
@@ -129,26 +134,60 @@ export function FinancialManager({ accounts, onChange }: Props) {
     setConfirmDeleteOpen(false);
   };
 
-  const handleAdd = () => {
-    const newAcc: FinancialAccount = {
-      id: crypto.randomUUID(),
-      type: formType,
-      label: form.label || accountTypeLabels[formType],
-      bank: form.bank,
-      agency: form.agency,
-      account: form.account,
-      accountType: form.accountType,
-      pixKey: form.pixKey,
-      pixKeyType: form.pixKeyType,
-      iban: form.iban,
-      swift: form.swift,
-      bankName: form.bankName,
-      provider: form.provider,
-      email: form.email,
-      isDefault: accounts.length === 0,
-    };
-    onChange([...accounts, newAcc]);
+  const openAddDialog = () => {
+    setEditingId(null);
     setForm({});
+    setFormType("bank");
+    setAddOpen(true);
+  };
+
+  const openEditDialog = (acc: FinancialAccount) => {
+    setEditingId(acc.id);
+    setFormType(acc.type);
+    setForm({
+      label: acc.label || "",
+      bank: acc.bank || "",
+      agency: acc.agency || "",
+      account: acc.account || "",
+      accountType: acc.accountType || "",
+      pixKey: acc.pixKey || "",
+      pixKeyType: acc.pixKeyType || "",
+      iban: acc.iban || "",
+      swift: acc.swift || "",
+      bankName: acc.bankName || "",
+      provider: acc.provider || "",
+      email: acc.email || "",
+    });
+    setAddOpen(true);
+  };
+
+  const handleSave = () => {
+    if (editingId) {
+      onChange(accounts.map((a) => a.id === editingId ? {
+        ...a,
+        type: formType,
+        label: form.label || accountTypeLabels[formType],
+        bank: form.bank, agency: form.agency, account: form.account, accountType: form.accountType,
+        pixKey: form.pixKey, pixKeyType: form.pixKeyType,
+        iban: form.iban, swift: form.swift, bankName: form.bankName,
+        provider: form.provider, email: form.email,
+      } : a));
+    } else {
+      const newAcc: FinancialAccount = {
+        id: crypto.randomUUID(),
+        type: formType,
+        label: form.label || accountTypeLabels[formType],
+        bank: form.bank, agency: form.agency, account: form.account, accountType: form.accountType,
+        pixKey: form.pixKey, pixKeyType: form.pixKeyType,
+        iban: form.iban, swift: form.swift, bankName: form.bankName,
+        provider: form.provider, email: form.email,
+        isDefault: accounts.length === 0,
+        status: "pending",
+      };
+      onChange([...accounts, newAcc]);
+    }
+    setForm({});
+    setEditingId(null);
     setAddOpen(false);
   };
 
@@ -193,27 +232,22 @@ export function FinancialManager({ accounts, onChange }: Props) {
   return (
     <>
       <DashboardCard icon={Landmark} title="Dados Financeiros">
-        <div className="mt-1">
+        <div className="mt-1 flex-1">
           {defaultAcc ? (
-            <>
-              <Row label={accountTypeLabels[defaultAcc.type]} value={formatAccountSummary(defaultAcc)} />
-              {defaultAcc.type === "bank" && defaultAcc.pixKey && (
-                <Row label="Chave PIX" value={defaultAcc.pixKey} />
-              )}
-            </>
+            <Row label={accountTypeLabels[defaultAcc.type]} value={formatAccountSummary(defaultAcc)} />
           ) : (
             <p className="text-sm text-muted-foreground">Nenhuma conta cadastrada.</p>
           )}
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-2 text-xs h-7 w-full gap-1.5"
-            onClick={() => { setListOpen(true); setDeleteMode(false); setSelectedForDelete(new Set()); }}
-          >
-            <Settings className="h-3 w-3" />
-            Gerenciar contas
-          </Button>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-2 text-xs h-7 w-full gap-1.5"
+          onClick={() => { setListOpen(true); setDeleteMode(false); setSelectedForDelete(new Set()); }}
+        >
+          <Settings className="h-3 w-3" />
+          Gerenciar contas
+        </Button>
       </DashboardCard>
 
       {/* Account list dialog */}
@@ -225,52 +259,72 @@ export function FinancialManager({ accounts, onChange }: Props) {
           </DialogHeader>
 
           <div className="space-y-3">
-            {accounts.map((acc) => (
-              <div
-                key={acc.id}
-                className={`rounded-md border p-3 cursor-pointer transition-colors ${
-                  acc.isDefault ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"
-                }`}
-                onClick={() => !deleteMode && handleSetDefault(acc.id)}
-              >
-                <div className="flex items-start gap-3">
-                  {deleteMode ? (
-                    <Checkbox
-                      checked={selectedForDelete.has(acc.id)}
-                      onCheckedChange={() => toggleDeleteSelection(acc.id)}
-                      className="mt-0.5"
-                      disabled={acc.isDefault}
-                    />
-                  ) : (
-                    <div className={`mt-1 h-4 w-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
-                      acc.isDefault ? "border-primary" : "border-muted-foreground/40"
-                    }`}>
-                      {acc.isDefault && <div className="h-2 w-2 rounded-full bg-primary" />}
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold">{acc.label}</p>
-                      <Badge variant="outline" className="text-[10px] px-1.5 py-0">{accountTypeLabels[acc.type]}</Badge>
-                      {acc.isDefault && (
-                        <Badge variant="secondary" className="text-[10px] gap-1 px-1.5 py-0">
-                          <Star className="h-3 w-3 fill-warning text-warning" />
-                          Padrão
+            {accounts.map((acc) => {
+              const st = statusConfig[acc.status];
+              return (
+                <div
+                  key={acc.id}
+                  className={`rounded-md border p-3 cursor-pointer transition-colors ${
+                    !deleteMode && acc.isDefault ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"
+                  }`}
+                  onClick={() => {
+                    if (deleteMode) {
+                      toggleDeleteSelection(acc.id);
+                    } else {
+                      handleSetDefault(acc.id);
+                    }
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    {deleteMode ? (
+                      <Checkbox
+                        checked={selectedForDelete.has(acc.id)}
+                        onCheckedChange={() => toggleDeleteSelection(acc.id)}
+                        className="mt-0.5"
+                      />
+                    ) : (
+                      <div className={`mt-1 h-4 w-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
+                        acc.isDefault ? "border-primary" : "border-muted-foreground/40"
+                      }`}>
+                        {acc.isDefault && <div className="h-2 w-2 rounded-full bg-primary" />}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-sm font-semibold">{acc.label}</p>
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">{accountTypeLabels[acc.type]}</Badge>
+                        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${st.className}`}>
+                          {st.label}
                         </Badge>
-                      )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{formatAccountSummary(acc)}</p>
                     </div>
-                    <p className="text-sm text-muted-foreground">{formatAccountSummary(acc)}</p>
+                    {!deleteMode && (
+                      <button
+                        type="button"
+                        className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openEditDialog(acc);
+                        }}
+                        aria-label="Editar conta"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                    )}
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <DialogFooter className="flex-col gap-2 sm:flex-col">
-            <Button variant="outline" size="sm" className="w-full gap-1.5" onClick={() => { setAddOpen(true); setForm({}); setFormType("bank"); }}>
-              <Plus className="h-4 w-4" />
-              Adicionar conta
-            </Button>
+            {!deleteMode && (
+              <Button variant="outline" size="sm" className="w-full gap-1.5" onClick={openAddDialog}>
+                <Plus className="h-4 w-4" />
+                Adicionar conta
+              </Button>
+            )}
             {accounts.length > 1 && !deleteMode && (
               <Button variant="outline" size="sm" className="w-full gap-1.5 text-destructive hover:text-destructive" onClick={() => setDeleteMode(true)}>
                 <Trash2 className="h-4 w-4" />
@@ -289,18 +343,29 @@ export function FinancialManager({ accounts, onChange }: Props) {
         </DialogContent>
       </Dialog>
 
-      {/* Add account dialog */}
+      {/* Add/Edit account dialog */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Nova Conta</DialogTitle>
-            <DialogDescription>Escolha o tipo e preencha os dados.</DialogDescription>
+            <DialogTitle>{editingId ? "Editar Conta" : "Nova Conta"}</DialogTitle>
+            <DialogDescription>
+              {editingId ? "Atualize os dados da conta." : "Escolha o tipo e preencha os dados."}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
+            {!editingId && (
+              <div className="flex items-start gap-2 rounded-md border border-primary/20 bg-primary/5 p-3">
+                <Info className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  A conta informada deve estar no nome do titular da franquia.
+                </p>
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label>Tipo de conta</Label>
-              <Select value={formType} onValueChange={(v) => { setFormType(v as AccountType); setForm({}); }}>
+              <Select value={formType} onValueChange={(v) => { setFormType(v as AccountType); if (!editingId) setForm({}); }}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="bank">Dados Bancários</SelectItem>
@@ -319,7 +384,7 @@ export function FinancialManager({ accounts, onChange }: Props) {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddOpen(false)}>Cancelar</Button>
-            <Button onClick={handleAdd}>Salvar</Button>
+            <Button onClick={handleSave}>Salvar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -1,11 +1,22 @@
 import { useState } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
-import { User, Phone, MapPin, KeyRound } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { User, Phone, MapPin, KeyRound, HelpCircle, ShieldCheck } from "lucide-react";
 import { AddressManager, type Address } from "@/components/app/cadastro/AddressManager";
 import { FranchiseCard } from "@/components/app/cadastro/FranchiseCard";
 import { FinancialManager, type FinancialAccount } from "@/components/app/cadastro/FinancialManager";
 import { DocumentsCard } from "@/components/app/cadastro/DocumentsCard";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 /* ── mock data ── */
 
@@ -61,8 +72,8 @@ const initialAccounts: FinancialAccount[] = [
     agency: "1234-5",
     account: "12345-6",
     accountType: "Corrente",
-    pixKey: "livia.serato@email.com",
     isDefault: true,
+    status: "verified",
   },
   {
     id: "2",
@@ -71,6 +82,7 @@ const initialAccounts: FinancialAccount[] = [
     pixKey: "123.456.789-00",
     pixKeyType: "CPF",
     isDefault: false,
+    status: "pending",
   },
 ];
 
@@ -85,11 +97,105 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
+/* ── Phone Change Dialog ── */
+
+function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean; onOpenChange: (v: boolean) => void; currentPhone: string }) {
+  const [step, setStep] = useState<"phone" | "pin">("phone");
+  const [newPhone, setNewPhone] = useState("");
+  const [pin, setPin] = useState("");
+  const [sending, setSending] = useState(false);
+
+  const handleSendPin = () => {
+    if (!newPhone.trim()) return;
+    setSending(true);
+    setTimeout(() => {
+      setSending(false);
+      setStep("pin");
+      toast.info("PIN enviado por SMS para o novo número.");
+    }, 1500);
+  };
+
+  const handleVerifyPin = () => {
+    if (pin.length < 4) return;
+    setSending(true);
+    setTimeout(() => {
+      setSending(false);
+      toast.success("Telefone alterado com sucesso!");
+      onOpenChange(false);
+      setStep("phone");
+      setNewPhone("");
+      setPin("");
+    }, 1200);
+  };
+
+  const handleClose = (v: boolean) => {
+    if (!v) {
+      setStep("phone");
+      setNewPhone("");
+      setPin("");
+    }
+    onOpenChange(v);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Alterar Telefone</DialogTitle>
+          <DialogDescription>
+            {step === "phone"
+              ? `Seu telefone atual é ${currentPhone}. Informe o novo número.`
+              : "Digite o PIN de 6 dígitos enviado por SMS para o novo número."}
+          </DialogDescription>
+        </DialogHeader>
+        {step === "phone" ? (
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <Label>Novo telefone</Label>
+              <Input
+                placeholder="+55 11 99999-0000"
+                value={newPhone}
+                onChange={(e) => setNewPhone(e.target.value)}
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => handleClose(false)}>Cancelar</Button>
+              <Button onClick={handleSendPin} disabled={!newPhone.trim() || sending}>
+                {sending ? "Enviando..." : "Enviar PIN"}
+              </Button>
+            </DialogFooter>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <Label>PIN de verificação</Label>
+              <Input
+                placeholder="000000"
+                value={pin}
+                onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                maxLength={6}
+                onKeyDown={(e) => { if (e.key === "Enter") handleVerifyPin(); }}
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setStep("phone")}>Voltar</Button>
+              <Button onClick={handleVerifyPin} disabled={pin.length < 6 || sending}>
+                {sending ? "Verificando..." : "Confirmar"}
+              </Button>
+            </DialogFooter>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 /* ── component ── */
 
 export default function Cadastro() {
   const [addresses, setAddresses] = useState<Address[]>(initialAddresses);
   const [accounts, setAccounts] = useState<FinancialAccount[]>(initialAccounts);
+  const [phoneDialogOpen, setPhoneDialogOpen] = useState(false);
 
   const docLabel = isBrazilian ? "CPF" : (
     <span className="flex items-center gap-1">
@@ -100,15 +206,13 @@ export default function Cadastro() {
   return (
     <div>
       <header className="text-center mb-4">
-        <h1 className="text-2xl font-bold text-primary">Cadastro</h1>
+        <h1 className="text-2xl font-bold text-primary">Meus Dados</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Seus dados pessoais e financeiros
+          Gerencie suas informações pessoais, financeiras e de franquia
         </p>
       </header>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {/* ═══ LEFT COLUMN ═══ */}
-
         {/* Dados Pessoais */}
         <DashboardCard icon={User} title="Dados Pessoais">
           <div className="mt-1">
@@ -119,9 +223,7 @@ export default function Cadastro() {
           </div>
         </DashboardCard>
 
-        {/* ═══ RIGHT COLUMN ═══ */}
-
-        {/* Franquia — with tabs */}
+        {/* Franquia */}
         <FranchiseCard
           franchiseId={franchiseData.id}
           planCode={franchiseData.planCode}
@@ -130,10 +232,19 @@ export default function Cadastro() {
 
         {/* Contato */}
         <DashboardCard icon={Phone} title="Contato">
-          <div className="mt-1">
+          <div className="mt-1 flex-1">
             <Row label="E-mail" value={contactData.email} />
             <Row label="Telefone" value={contactData.phone} />
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2 text-xs h-7 w-full gap-1.5"
+            onClick={() => setPhoneDialogOpen(true)}
+          >
+            <ShieldCheck className="h-3 w-3" />
+            Alterar telefone
+          </Button>
         </DashboardCard>
 
         {/* Acesso */}
@@ -153,7 +264,11 @@ export default function Cadastro() {
 
         {/* Endereço */}
         <DashboardCard icon={MapPin} title="Endereço">
-          <AddressManager addresses={addresses} onChange={setAddresses} />
+          <AddressManager
+            addresses={addresses}
+            onChange={setAddresses}
+            currentCountryIso2="BR"
+          />
         </DashboardCard>
 
         {/* Dados Financeiros */}
@@ -161,7 +276,23 @@ export default function Cadastro() {
 
         {/* Documentos */}
         <DocumentsCard />
+
+        {/* Card de Ajuda */}
+        <DashboardCard icon={HelpCircle} title="Precisa de ajuda?">
+          <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+            Caso queira alterar dados sensíveis, tirar dúvidas ou tratar de qualquer outro assunto relacionado aos seus dados, abra um chamado{" "}
+            <button className="text-primary underline underline-offset-2 hover:text-primary/80 font-medium">
+              clicando aqui
+            </button>.
+          </p>
+        </DashboardCard>
       </div>
+
+      <PhoneChangeDialog
+        open={phoneDialogOpen}
+        onOpenChange={setPhoneDialogOpen}
+        currentPhone={contactData.phone}
+      />
     </div>
   );
 }
