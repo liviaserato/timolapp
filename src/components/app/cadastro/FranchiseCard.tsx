@@ -151,7 +151,7 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
 
   return (
     <>
-      <DashboardCard icon={Gem} title="Franquia">
+      <DashboardCard icon={Gem} title="Franquia" className={className}>
         <div className="mt-1">
           {hasMultipleIds && (
             <div className="flex items-center gap-0.5 mb-3">
