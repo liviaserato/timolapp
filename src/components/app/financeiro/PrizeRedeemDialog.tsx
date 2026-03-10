@@ -61,7 +61,7 @@ export function PrizeRedeemDialog({ open, onOpenChange, prize }: Props) {
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col items-center gap-4 mt-4">
-              <InputOTP maxLength={6} value={pin} onChange={setPin}>
+              <InputOTP maxLength={6} value={pin} onChange={setPin} autoFocus>
                 <InputOTPGroup>
                   <InputOTPSlot index={0} />
                   <InputOTPSlot index={1} />

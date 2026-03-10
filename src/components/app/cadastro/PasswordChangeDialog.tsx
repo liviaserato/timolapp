@@ -211,6 +211,7 @@ export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: Passwo
                   <Label className="text-center block">PIN de verificação</Label>
                   <div className="flex justify-center">
                     <InputOTP
+                      autoFocus
                       maxLength={6}
                       value={pin}
                       onChange={(value) => setPin(value)}
