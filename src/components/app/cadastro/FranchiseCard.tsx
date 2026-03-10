@@ -11,7 +11,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Gem, Shield, TrendingUp, Crown, Check, ArrowUp } from "lucide-react";
+import { Gem, Shield, TrendingUp, Crown, Check, ArrowUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import franquiaBronze from "@/assets/franquia-bronze.svg";
