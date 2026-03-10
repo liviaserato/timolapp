@@ -374,25 +374,10 @@ export default function Suporte() {
         </DialogContent>
       </Dialog>
 
-      {/* ── Dialog: Fale Conosco ── */}
-      <Dialog open={faleConoscoOpen} onOpenChange={setFaleConoscoOpen}>
-        <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
-          <DialogHeader className="text-center">
-            <button
-              onClick={() => setFaleConoscoOpen(false)}
-              className="absolute left-4 top-4 text-muted-foreground hover:text-foreground"
-              aria-label="Voltar"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <DialogTitle className="text-lg">Fale Conosco</DialogTitle>
-            <DialogDescription>
-              Entre em contato pelos canais abaixo ou visite um de nossos escritórios.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex flex-col gap-4 mt-2">
-            {/* Contact channels */}
+      {/* ── Fale Conosco ── */}
+      <section>
+        <DashboardCard icon={Phone} title="Fale Conosco">
+          <div className="mt-2 flex flex-col gap-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <button
                 onClick={() => openWhatsAppLink("Olá! Preciso de ajuda.")}
@@ -417,8 +402,6 @@ export default function Suporte() {
                 </div>
               </a>
             </div>
-
-            {/* Offices */}
             <div>
               <h3 className="text-sm font-bold text-primary mb-2 flex items-center gap-1.5">
                 <MapPin className="h-4 w-4" />
@@ -444,8 +427,8 @@ export default function Suporte() {
               </div>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </DashboardCard>
+      </section>
     </div>
   );
 }
