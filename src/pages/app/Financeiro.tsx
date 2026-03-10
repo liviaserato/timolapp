@@ -4,6 +4,7 @@ import { BancoTimolCard } from "@/components/app/financeiro/BancoTimolCard";
 import { PontosCard } from "@/components/app/financeiro/PontosCard";
 import { AddBalanceDialog } from "@/components/app/financeiro/AddBalanceDialog";
 import { WithdrawDialog } from "@/components/app/financeiro/WithdrawDialog";
+import { ConvertBonusDialog } from "@/components/app/financeiro/ConvertBonusDialog";
 import { BonusExtractTable } from "@/components/app/financeiro/BonusExtractTable";
 import { BancoTimolExtractTable } from "@/components/app/financeiro/BancoTimolExtractTable";
 import { getCurrencyConfig } from "@/components/app/financeiro/currency-helpers";
@@ -16,6 +17,8 @@ import {
   mockBancoTimolExtract,
   mockUserQualification,
   mockFranchiseStatus,
+  type BonusExtractRow,
+  type BancoTimolExtractRow,
 } from "@/components/app/financeiro/mock-data";
 
 const FRANCHISE_COUNTRY = "BR";
@@ -27,7 +30,53 @@ export default function Financeiro() {
   const currency = getCurrencyConfig(FRANCHISE_COUNTRY, FRANCHISE_CURRENCY);
   const [addBalanceOpen, setAddBalanceOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [convertBonusOpen, setConvertBonusOpen] = useState(false);
   const [activeExtract, setActiveExtract] = useState<ExtractView>("bonus");
+
+  // Local state for mutable data (will be replaced by real API later)
+  const [bonusSummary, setBonusSummary] = useState(mockBonusSummary);
+  const [bancoTimol, setBancoTimol] = useState(mockBancoTimol);
+  const [bonusExtract, setBonusExtract] = useState<BonusExtractRow[]>(mockBonusExtract);
+  const [bancoExtract, setBancoExtract] = useState<BancoTimolExtractRow[]>(mockBancoTimolExtract);
+
+  const availableBonus = bonusSummary.nextFriday;
+
+  function handleConvert(amount: number, bonus: number, total: number) {
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    // Update bonus summary
+    setBonusSummary((prev) => ({
+      ...prev,
+      nextFriday: Math.max(0, prev.nextFriday - amount),
+    }));
+
+    // Update banco timol balance
+    setBancoTimol((prev) => ({
+      ...prev,
+      available: prev.available + total,
+    }));
+
+    // Add entry to bonus extract (negative)
+    setBonusExtract((prev) => [
+      {
+        date: todayStr,
+        orderNumber: "—",
+        id: "—",
+        qualification: "lider",
+        type: "Depósito" as const,
+        points: null,
+        value: -amount,
+      },
+      ...prev,
+    ]);
+
+    // Add two entries to banco extract (positive)
+    setBancoExtract((prev) => [
+      { date: todayStr, description: "Conversão de bônus", value: amount },
+      { date: todayStr, description: "Extra de conversão", value: bonus },
+      ...prev,
+    ]);
+  }
 
   return (
     <div>
@@ -41,14 +90,15 @@ export default function Financeiro() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
         <BonusSummaryCard
-          nextFriday={mockBonusSummary.nextFriday}
-          awaitingRelease={mockBonusSummary.awaitingRelease}
+          nextFriday={bonusSummary.nextFriday}
+          awaitingRelease={bonusSummary.awaitingRelease}
           currency={currency}
           franchiseStatus={mockFranchiseStatus}
+          onConvertBonus={() => setConvertBonusOpen(true)}
         />
         <BancoTimolCard
-          available={mockBancoTimol.available}
-          pendingWithdrawal={mockBancoTimol.pendingWithdrawal}
+          available={bancoTimol.available}
+          pendingWithdrawal={bancoTimol.pendingWithdrawal}
           currency={currency}
           onAddBalance={() => setAddBalanceOpen(true)}
           onWithdraw={() => setWithdrawOpen(true)}
@@ -123,9 +173,9 @@ export default function Financeiro() {
       {/* Active extract */}
       <div className="mt-4">
         {activeExtract === "bonus" ? (
-          <BonusExtractTable data={mockBonusExtract} currency={currency} />
+          <BonusExtractTable data={bonusExtract} currency={currency} />
         ) : (
-          <BancoTimolExtractTable data={mockBancoTimolExtract} currency={currency} />
+          <BancoTimolExtractTable data={bancoExtract} currency={currency} />
         )}
       </div>
 
@@ -135,7 +185,14 @@ export default function Financeiro() {
         open={withdrawOpen}
         onOpenChange={setWithdrawOpen}
         currency={currency}
-        availableBalance={mockBancoTimol.available}
+        availableBalance={bancoTimol.available}
+      />
+      <ConvertBonusDialog
+        open={convertBonusOpen}
+        onOpenChange={setConvertBonusOpen}
+        currency={currency}
+        availableBonus={availableBonus}
+        onConvert={handleConvert}
       />
     </div>
   );
