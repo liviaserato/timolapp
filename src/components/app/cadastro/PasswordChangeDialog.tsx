@@ -82,10 +82,12 @@ export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: Passwo
   const passwordsMatch = newPassword === confirmPassword;
   const passwordsMismatch = confirmPassword.length > 0 && !passwordsMatch;
   const newPasswordTooShort = newPassword.length > 0 && newPassword.length < MIN_PASSWORD_LENGTH;
+  const sameAsCurrentPassword = newPassword.length > 0 && newPassword === currentPassword;
   const passwordsValid =
     currentPassword.length >= MIN_PASSWORD_LENGTH &&
     newPassword.length >= MIN_PASSWORD_LENGTH &&
-    passwordsMatch;
+    passwordsMatch &&
+    !sameAsCurrentPassword;
 
   const handleSendPin = () => {
     if (!passwordsValid || loading) return;
