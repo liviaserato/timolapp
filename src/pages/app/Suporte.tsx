@@ -1,0 +1,517 @@
+import { useRef, useState } from "react";
+import {
+  Ticket,
+  Phone,
+  HelpCircle,
+  ChevronRight,
+  Plus,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  Search,
+  Paperclip,
+  MapPin,
+  MessageSquare,
+  Send,
+  ArrowLeft,
+} from "lucide-react";
+import { DashboardCard } from "@/components/app/DashboardCard";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { openWhatsAppLink } from "@/lib/whatsapp";
+import iconWhatsapp from "@/assets/icon-logo-whatsapp.svg";
+
+/* ── Mock data ── */
+
+interface Chamado {
+  id: string;
+  numero: string;
+  assunto: string;
+  status: "aberto" | "em_andamento" | "respondido" | "fechado";
+  ultimaAtualizacao: string;
+}
+
+const mockChamados: Chamado[] = [
+  {
+    id: "1",
+    numero: "#00142",
+    assunto: "Dúvida sobre pontos acumulados",
+    status: "em_andamento",
+    ultimaAtualizacao: "08/03/2026",
+  },
+  {
+    id: "2",
+    numero: "#00138",
+    assunto: "Erro no pagamento do pedido",
+    status: "respondido",
+    ultimaAtualizacao: "05/03/2026",
+  },
+];
+
+const statusMap: Record<Chamado["status"], { label: string; color: string; icon: typeof Clock }> = {
+  aberto: { label: "Aberto", color: "bg-blue-100 text-blue-700", icon: AlertCircle },
+  em_andamento: { label: "Em andamento", color: "bg-amber-100 text-amber-700", icon: Clock },
+  respondido: { label: "Respondido", color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
+  fechado: { label: "Fechado", color: "bg-muted text-muted-foreground", icon: CheckCircle2 },
+};
+
+const faqData: Record<string, { pergunta: string; resposta: string }[]> = {
+  cadastro: [
+    { pergunta: "Como altero meus dados pessoais?", resposta: "Acesse o menu Meus Dados no Escritório Digital. Lá você pode atualizar nome, telefone, endereço e demais informações. Alterações de documento exigem envio de comprovante via chamado." },
+    { pergunta: "Esqueci minha senha, o que faço?", resposta: "Na tela de login, clique em 'Esqueci minha senha'. Você receberá um PIN por e-mail para redefinir sua senha. Caso não receba, verifique a caixa de spam ou entre em contato pelo suporte." },
+    { pergunta: "Como altero meu e-mail de acesso?", resposta: "Acesse Meus Dados > Contato e clique no ícone de edição ao lado do e-mail. Um código de verificação será enviado ao novo endereço para confirmar a alteração." },
+  ],
+  pedidos: [
+    { pergunta: "Como faço um novo pedido?", resposta: "Acesse o menu Pedidos, selecione os produtos desejados, escolha a forma de pagamento e confirme. O pedido será processado e você receberá atualizações por e-mail." },
+    { pergunta: "Posso cancelar um pedido?", resposta: "Pedidos podem ser cancelados enquanto estiverem com o status 'Aguardando Pagamento'. Após a confirmação do pagamento, entre em contato com o suporte para verificar a possibilidade." },
+    { pergunta: "Qual o prazo de entrega?", resposta: "O prazo varia conforme a região, geralmente entre 5 a 15 dias úteis após a confirmação do pagamento. Você pode acompanhar o status pelo menu Pedidos." },
+  ],
+  financeiro: [
+    { pergunta: "Como funciona o Banco Timol?", resposta: "O Banco Timol é sua carteira digital dentro do sistema. Você pode adicionar saldo, utilizar para pagamentos de pedidos e também realizar transferências para sua conta bancária." },
+    { pergunta: "Quando recebo meu bônus?", resposta: "Os bônus são calculados semanalmente e disponibilizados às terças-feiras. O valor pode ser convertido em saldo no Banco Timol ou resgatado para conta bancária." },
+    { pergunta: "Como resgato meu saldo?", resposta: "Acesse Financeiro > Banco Timol e clique em 'Resgatar / Transferir'. Informe o valor e confirme com seu PIN de segurança. O prazo para crédito é de até 3 dias úteis." },
+  ],
+  bonus: [
+    { pergunta: "Como são calculados os pontos?", resposta: "Os pontos são acumulados com base nas compras realizadas pela sua rede e pelas suas próprias compras. Cada R$1,00 em produtos equivale a 1 ponto." },
+    { pergunta: "Posso trocar pontos por produtos?", resposta: "Sim! Acesse Financeiro > Pontos e veja os prêmios disponíveis. Você pode resgatar prêmios diretamente com seus pontos acumulados." },
+    { pergunta: "Os pontos expiram?", resposta: "Sim, os pontos possuem validade de 12 meses a partir da data de acumulação. Fique atento ao extrato para aproveitar antes do vencimento." },
+  ],
+  franquia: [
+    { pergunta: "Como faço upgrade da minha franquia?", resposta: "Acesse Meus Dados > Franquia e clique em 'Upgrade'. Escolha o plano desejado e realize o pagamento. O upgrade é ativado imediatamente após a confirmação." },
+    { pergunta: "Quais são os planos disponíveis?", resposta: "A Timol oferece os planos Bronze, Prata, Ouro e Platina. Cada plano possui benefícios e limites diferentes. Consulte os detalhes na seção Franquia." },
+    { pergunta: "Posso transferir minha franquia?", resposta: "A transferência de franquia deve ser solicitada via chamado de suporte. Nossa equipe analisará o pedido e orientará sobre o processo e documentação necessária." },
+  ],
+  conta: [
+    { pergunta: "Como ativo a autenticação em dois fatores?", resposta: "Acesse Meus Dados > Acesso. A funcionalidade de autenticação em dois fatores será disponibilizada em breve para aumentar a segurança da sua conta." },
+    { pergunta: "Posso alterar meu nome de usuário?", resposta: "O nome de usuário é definido no momento do cadastro e não pode ser alterado. Caso precise de ajuda, abra um chamado para nossa equipe avaliar." },
+    { pergunta: "Como funciona o PIN de segurança?", resposta: "O PIN de 6 dígitos é utilizado para confirmar operações financeiras como resgates e transferências. Você pode alterá-lo a qualquer momento em Meus Dados > Acesso." },
+  ],
+};
+
+const faqTabs = [
+  { value: "cadastro", label: "Cadastro" },
+  { value: "pedidos", label: "Pedidos" },
+  { value: "financeiro", label: "Financeiro" },
+  { value: "bonus", label: "Bônus e Pontos" },
+  { value: "franquia", label: "Franquia" },
+  { value: "conta", label: "Conta / Acesso" },
+];
+
+const escritorios = [
+  { uf: "PA", cidade: "Altamira", estado: "PA", endereco: "Av. Popular, 1816 Sudam II" },
+  { uf: "PR", cidade: "Cascavel", estado: "PR", endereco: "R. São Luís, 2137 Recanto Tropical" },
+  { uf: "RS", cidade: "Caxias do Sul", estado: "RS", endereco: "Av. Itália, 288 – Sala 65 São Pelegrino" },
+  { uf: "RO", cidade: "Ji-Paraná", estado: "RO", endereco: "Av. Aracajú, 2368 Sala 07 Nova Brasília" },
+  { uf: "SP", cidade: "São Paulo", estado: "SP", endereco: "Rua Vergueiro, 1855 4º andar, Sala ..." },
+  { uf: "PB", cidade: "João Pessoa", estado: "PB", endereco: "R. Cândida Maria da Silva, 340 João..." },
+  { uf: "BA", cidade: "Salvador", estado: "BA", endereco: "R. Cel. Almerindo Rehem, 126 Sala ..." },
+  { uf: "PR", cidade: "Londrina", estado: "PR", endereco: "R. Sergipe, 476 Sala 1206 Centro" },
+  { uf: "MG", cidade: "Uberlândia", estado: "MG", endereco: "Av. Rondon Pacheco, 4600 Sala 1010" },
+];
+
+const categorias = [
+  "Cadastro",
+  "Pedidos",
+  "Financeiro",
+  "Bônus e Pontos",
+  "Franquia",
+  "Conta / Acesso",
+  "Outro",
+];
+
+/* ── Component ── */
+
+export default function Suporte() {
+  const faqRef = useRef<HTMLDivElement>(null);
+  const chamadosRef = useRef<HTMLDivElement>(null);
+  const [newTicketOpen, setNewTicketOpen] = useState(false);
+  const [faleConoscoOpen, setFaleConoscoOpen] = useState(false);
+  const [ticketCategory, setTicketCategory] = useState("");
+  const [ticketSubject, setTicketSubject] = useState("");
+  const [ticketDescription, setTicketDescription] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const chamadosAtivos = mockChamados.filter((c) => c.status !== "fechado");
+
+  function scrollToFaq() {
+    faqRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
+
+  function scrollToChamados() {
+    chamadosRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
+
+  function handleSubmitTicket() {
+    if (!ticketCategory || !ticketSubject.trim() || !ticketDescription.trim()) {
+      toast.error("Preencha todos os campos obrigatórios.");
+      return;
+    }
+    setSubmitting(true);
+    setTimeout(() => {
+      setSubmitting(false);
+      setNewTicketOpen(false);
+      setTicketCategory("");
+      setTicketSubject("");
+      setTicketDescription("");
+      toast.success("Chamado enviado com sucesso! Nossa equipe responderá em breve.");
+    }, 1200);
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* ── Header ── */}
+      <header className="text-center mb-1">
+        <h1 className="text-2xl font-bold text-primary">Suporte</h1>
+        <p className="text-sm text-muted-foreground mt-1 max-w-lg mx-auto">
+          Encontre respostas rápidas, fale com a equipe Timol ou acompanhe seus chamados de atendimento.
+        </p>
+      </header>
+
+      {/* ── Quick-access cards ── */}
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <QuickCard
+          icon={<Ticket className="h-6 w-6 text-primary-foreground" />}
+          iconBg="bg-primary"
+          title="Chamados"
+          description="Abra, acompanhe e gerencie seus chamados com a equipe Timol."
+          badge={chamadosAtivos.length > 0 ? `${chamadosAtivos.length} ativos` : undefined}
+          onClick={scrollToChamados}
+        />
+        <QuickCard
+          icon={<Phone className="h-6 w-6 text-primary-foreground" />}
+          iconBg="bg-success"
+          title="Fale Conosco"
+          description="Telefones, redes sociais e endereços de todos os nossos escritórios."
+          onClick={() => setFaleConoscoOpen(true)}
+        />
+        <QuickCard
+          icon={<HelpCircle className="h-6 w-6 text-primary-foreground" />}
+          iconBg="bg-success"
+          title="FAQ"
+          description="Perguntas frequentes com respostas rápidas para as dúvidas mais comuns."
+          onClick={scrollToFaq}
+        />
+      </section>
+
+      {/* ── Meus Chamados ── */}
+      <section ref={chamadosRef}>
+        <DashboardCard icon={Ticket} title="Meus Chamados">
+          <div className="mt-2">
+            {chamadosAtivos.length === 0 ? (
+              <div className="text-center py-8">
+                <MessageSquare className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">Você não possui chamados ativos no momento.</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-border">
+                {chamadosAtivos.map((c) => {
+                  const st = statusMap[c.status];
+                  const StIcon = st.icon;
+                  return (
+                    <button
+                      key={c.id}
+                      className="w-full flex items-center gap-3 py-3 px-1 text-left hover:bg-muted/50 rounded transition-colors"
+                    >
+                      <StIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          <span className="text-muted-foreground">{c.numero}</span>{" "}
+                          {c.assunto}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Atualizado em {c.ultimaAtualizacao}</p>
+                      </div>
+                      <Badge variant="secondary" className={`text-[10px] shrink-0 ${st.color}`}>
+                        {st.label}
+                      </Badge>
+                      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            <div className="mt-3 flex justify-center">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs gap-1.5"
+                onClick={() => setNewTicketOpen(true)}
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Abrir novo chamado
+              </Button>
+            </div>
+          </div>
+        </DashboardCard>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section ref={faqRef}>
+        <DashboardCard icon={HelpCircle} title="Perguntas Frequentes (FAQ)">
+          <Tabs defaultValue="cadastro" className="mt-3">
+            <TabsList className="flex flex-wrap h-auto gap-1 bg-transparent p-0">
+              {faqTabs.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-3 py-1.5 border border-border data-[state=active]:border-primary"
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            {faqTabs.map((tab) => (
+              <TabsContent key={tab.value} value={tab.value} className="mt-3">
+                <Accordion type="single" collapsible className="w-full">
+                  {faqData[tab.value]?.map((item, idx) => (
+                    <AccordionItem key={idx} value={`${tab.value}-${idx}`} className="border-b border-border">
+                      <AccordionTrigger className="text-sm text-left py-3 hover:no-underline">
+                        {item.pergunta}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                        {item.resposta}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </TabsContent>
+            ))}
+          </Tabs>
+        </DashboardCard>
+      </section>
+
+      {/* ── CTA Banner ── */}
+      <section className="rounded-[10px] overflow-hidden bg-gradient-to-r from-[hsl(var(--app-header))] to-[hsl(var(--app-header-gradient))] p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="text-primary-foreground text-center sm:text-left">
+          <p className="font-bold text-sm">Não encontrou o que precisava?</p>
+          <p className="text-xs opacity-90 mt-0.5">
+            Abra um chamado e nossa equipe responderá em até 24h úteis.
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 border-0 gap-1.5 text-xs shrink-0"
+          onClick={() => setNewTicketOpen(true)}
+        >
+          <Ticket className="h-4 w-4" />
+          Abrir Chamado
+        </Button>
+      </section>
+
+      {/* ── Dialog: Novo Chamado ── */}
+      <Dialog open={newTicketOpen} onOpenChange={setNewTicketOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="text-center">
+            <button
+              onClick={() => setNewTicketOpen(false)}
+              className="absolute left-4 top-4 text-muted-foreground hover:text-foreground"
+              aria-label="Voltar"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <DialogTitle className="text-lg">Novo Chamado</DialogTitle>
+            <DialogDescription>
+              Descreva sua dúvida ou problema. Nossa equipe responderá em breve.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 mt-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Categoria *</Label>
+              <Select value={ticketCategory} onValueChange={setTicketCategory}>
+                <SelectTrigger className="text-sm">
+                  <SelectValue placeholder="Selecione uma categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categorias.map((c) => (
+                    <SelectItem key={c} value={c} className="text-sm">
+                      {c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Assunto *</Label>
+              <Input
+                placeholder="Ex: Dúvida sobre bônus"
+                className="text-sm"
+                value={ticketSubject}
+                onChange={(e) => setTicketSubject(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Descrição *</Label>
+              <Textarea
+                placeholder="Descreva detalhadamente sua dúvida ou problema..."
+                className="text-sm min-h-[100px] resize-none"
+                value={ticketDescription}
+                onChange={(e) => setTicketDescription(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Anexo (opcional)</Label>
+              <label className="flex items-center gap-2 cursor-pointer border border-dashed border-border rounded-md p-3 text-sm text-muted-foreground hover:border-primary/40 transition-colors">
+                <Paperclip className="h-4 w-4" />
+                <span>Clique para anexar um arquivo</span>
+                <input type="file" className="hidden" />
+              </label>
+            </div>
+          </div>
+          <DialogFooter className="mt-2">
+            <Button
+              className="w-full gap-1.5 text-sm"
+              disabled={submitting}
+              onClick={handleSubmitTicket}
+            >
+              <Send className="h-4 w-4" />
+              {submitting ? "Enviando..." : "Enviar Chamado"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Dialog: Fale Conosco ── */}
+      <Dialog open={faleConoscoOpen} onOpenChange={setFaleConoscoOpen}>
+        <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader className="text-center">
+            <button
+              onClick={() => setFaleConoscoOpen(false)}
+              className="absolute left-4 top-4 text-muted-foreground hover:text-foreground"
+              aria-label="Voltar"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <DialogTitle className="text-lg">Fale Conosco</DialogTitle>
+            <DialogDescription>
+              Entre em contato pelos canais abaixo ou visite um de nossos escritórios.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-4 mt-2">
+            {/* Contact channels */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                onClick={() => openWhatsAppLink("Olá! Preciso de ajuda.")}
+                className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors text-left"
+              >
+                <img src={iconWhatsapp} alt="WhatsApp" className="h-8 w-8" />
+                <div>
+                  <p className="text-sm font-medium">WhatsApp</p>
+                  <p className="text-xs text-muted-foreground">(34) 99125-8000</p>
+                </div>
+              </button>
+              <a
+                href="mailto:suporte@timol.com.br"
+                className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors text-left"
+              >
+                <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+                  <Send className="h-4 w-4 text-primary-foreground" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">E-mail</p>
+                  <p className="text-xs text-muted-foreground">suporte@timol.com.br</p>
+                </div>
+              </a>
+            </div>
+
+            {/* Offices */}
+            <div>
+              <h3 className="text-sm font-bold text-primary mb-2 flex items-center gap-1.5">
+                <MapPin className="h-4 w-4" />
+                Nossos Escritórios
+              </h3>
+              <div className="space-y-1 max-h-[300px] overflow-y-auto pr-1">
+                {escritorios.map((e, i) => (
+                  <div
+                    key={i}
+                    className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <span className="shrink-0 mt-0.5 h-7 w-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold">
+                      {e.uf}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium">
+                        {e.cidade} – {e.estado}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">{e.endereco}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+/* ── Quick Card sub-component ── */
+
+function QuickCard({
+  icon,
+  iconBg,
+  title,
+  description,
+  badge,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  iconBg: string;
+  title: string;
+  description: string;
+  badge?: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex flex-col items-start gap-3 rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm text-left hover:shadow-md transition-shadow group"
+    >
+      <div className="flex items-start justify-between w-full">
+        <div className={`h-10 w-10 rounded-lg ${iconBg} flex items-center justify-center`}>
+          {icon}
+        </div>
+        {badge && (
+          <Badge variant="secondary" className="text-[10px] bg-amber-100 text-amber-700">
+            {badge}
+          </Badge>
+        )}
+      </div>
+      <div>
+        <p className="text-sm font-bold text-foreground">{title}</p>
+        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{description}</p>
+      </div>
+      <div className="flex items-center justify-end w-full">
+        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+      </div>
+    </button>
+  );
+}

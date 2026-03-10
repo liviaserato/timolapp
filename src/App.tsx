@@ -14,6 +14,7 @@ import AppLayout from "./pages/AppLayout";
 import Dashboard from "./pages/app/Dashboard";
 import Cadastro from "./pages/app/Cadastro";
 import Financeiro from "./pages/app/Financeiro";
+import Suporte from "./pages/app/Suporte";
 import SectionPlaceholder from "./pages/app/SectionPlaceholder";
 import NotFound from "./pages/NotFound";
 
@@ -37,6 +38,7 @@ const App = () => (
               <Route index element={<Dashboard />} />
               <Route path="cadastro" element={<Cadastro />} />
               <Route path="financeiro" element={<Financeiro />} />
+              <Route path="suporte" element={<Suporte />} />
               <Route path=":section" element={<SectionPlaceholder />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
