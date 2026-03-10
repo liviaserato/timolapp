@@ -117,7 +117,7 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean
   };
 
   const handleVerifyPin = () => {
-    if (pin.length < 4) return;
+    if (pin.length < 6) return;
     setSending(true);
     setTimeout(() => {
       setSending(false);
