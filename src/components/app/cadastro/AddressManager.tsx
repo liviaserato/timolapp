@@ -172,7 +172,7 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
       city: addr.city,
       state: addr.state,
     });
-    setShowCountryWarning(false);
+    
     setAddOpen(true);
   };
 
