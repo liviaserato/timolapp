@@ -193,31 +193,8 @@ export default function Suporte() {
         </p>
       </header>
 
-      {/* ── Quick-access cards ── */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <QuickCard
-          icon={<Ticket className="h-6 w-6 text-primary-foreground" />}
-          iconBg="bg-primary"
-          title="Chamados"
-          description="Abra, acompanhe e gerencie seus chamados com a equipe Timol."
-          badge={chamadosAtivos.length > 0 ? `${chamadosAtivos.length} ativos` : undefined}
-          onClick={scrollToChamados}
-        />
-        <QuickCard
-          icon={<Phone className="h-6 w-6 text-primary-foreground" />}
-          iconBg="bg-success"
-          title="Fale Conosco"
-          description="Telefones, redes sociais e endereços de todos os nossos escritórios."
-          onClick={() => setFaleConoscoOpen(true)}
-        />
-        <QuickCard
-          icon={<HelpCircle className="h-6 w-6 text-primary-foreground" />}
-          iconBg="bg-success"
-          title="FAQ"
-          description="Perguntas frequentes com respostas rápidas para as dúvidas mais comuns."
-          onClick={scrollToFaq}
-        />
-      </section>
+
+
 
       {/* ── Meus Chamados ── */}
       <section ref={chamadosRef}>
