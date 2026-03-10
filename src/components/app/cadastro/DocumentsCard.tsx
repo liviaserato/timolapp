@@ -16,9 +16,9 @@ const documents: DocumentItem[] = [
   { id: "policies", name: "Políticas e Procedimentos", description: "Regras gerais da rede Timol", available: false },
 ];
 
-export function DocumentsCard() {
+export function DocumentsCard({ className }: { className?: string }) {
   return (
-    <DashboardCard icon={FileText} title="Documentos">
+    <DashboardCard icon={FileText} title="Documentos" className={className}>
       <div className="mt-2 space-y-2">
         {documents.map((doc) => (
           <div

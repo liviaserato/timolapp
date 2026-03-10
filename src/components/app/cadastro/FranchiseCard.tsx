@@ -90,9 +90,10 @@ interface Props {
   franchiseId: string;
   planCode: string;
   sponsor: string;
+  className?: string;
 }
 
-export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
+export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Props) {
   const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   // Mock: user may have multiple IDs with different activity dates
