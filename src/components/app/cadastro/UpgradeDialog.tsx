@@ -480,16 +480,16 @@ export function UpgradeDialog({
           {/* ── STEP 2: Payment ── */}
           {step === "payment" && selectedFranchise && (
             <>
-              <div className="relative">
+              <div className="relative pt-1">
                 <button
                   type="button"
                   onClick={() => setStep("select")}
-                  className="absolute left-0 top-1 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute left-0 top-1 z-10 text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="Voltar"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
-                <DialogHeader className="text-center">
+                <DialogHeader className="text-center px-8">
                   <DialogTitle className="text-xl">Pagamento do Upgrade</DialogTitle>
                   <DialogDescription className="text-center">
                     Upgrade para {selectedFranchise.name} — ID {franchiseId}
