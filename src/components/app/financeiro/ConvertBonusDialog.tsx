@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CurrencyConfig, formatCurrency } from "./currency-helpers";
 import { CheckCircle, ArrowLeft, ArrowRightLeft, AlertTriangle } from "lucide-react";
 import { PinStepContent } from "./PinStepContent";
