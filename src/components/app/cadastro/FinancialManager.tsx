@@ -162,7 +162,21 @@ export function FinancialManager({ accounts, onChange }: Props) {
     setAddOpen(true);
   };
 
+  const MAX_ACCOUNTS = 5;
+  const isAtLimit = !editingId && accounts.length >= MAX_ACCOUNTS;
+
+  const isFormValid = (): boolean => {
+    switch (formType) {
+      case "pix": return !!(form.pixKey?.trim());
+      case "bank": return !!(form.bank?.trim() && form.agency?.trim() && form.account?.trim());
+      case "international": return !!(form.iban?.trim() || form.swift?.trim());
+      case "digital": return !!(form.provider?.trim() && form.email?.trim());
+      default: return false;
+    }
+  };
+
   const handleSave = () => {
+    if (!isFormValid()) return;
     if (editingId) {
       onChange(accounts.map((a) => a.id === editingId ? {
         ...a,
