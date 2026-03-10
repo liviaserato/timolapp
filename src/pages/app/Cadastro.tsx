@@ -9,6 +9,7 @@ import { AddressManager, type Address } from "@/components/app/cadastro/AddressM
 import { FranchiseCard } from "@/components/app/cadastro/FranchiseCard";
 import { FinancialManager, type FinancialAccount } from "@/components/app/cadastro/FinancialManager";
 import { DocumentsCard } from "@/components/app/cadastro/DocumentsCard";
+import { PasswordChangeDialog } from "@/components/app/cadastro/PasswordChangeDialog";
 import {
   Dialog,
   DialogContent,
@@ -211,6 +212,7 @@ export default function Cadastro() {
   const [addresses, setAddresses] = useState<Address[]>(initialAddresses);
   const [accounts, setAccounts] = useState<FinancialAccount[]>(initialAccounts);
   const [phoneDialogOpen, setPhoneDialogOpen] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
 
   const docLabel = isBrazilian ? "CPF" : (
     <span className="flex items-center gap-1">
@@ -269,7 +271,10 @@ export default function Cadastro() {
             <Row
               label="Senha"
               value={
-                <button className="text-primary text-xs underline underline-offset-2 hover:text-primary/80">
+                <button
+                  className="text-primary text-xs underline underline-offset-2 hover:text-primary/80"
+                  onClick={() => setPasswordDialogOpen(true)}
+                >
                   Alterar senha
                 </button>
               }
@@ -307,6 +312,12 @@ export default function Cadastro() {
         open={phoneDialogOpen}
         onOpenChange={setPhoneDialogOpen}
         currentPhone={contactData.phone}
+      />
+
+      <PasswordChangeDialog
+        open={passwordDialogOpen}
+        onOpenChange={setPasswordDialogOpen}
+        maskedEmail="li****@email.com"
       />
     </div>
   );
