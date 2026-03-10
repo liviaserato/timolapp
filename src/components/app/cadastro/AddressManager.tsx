@@ -71,7 +71,7 @@ function formatAddress(a: Address): string {
 
 /* ── component ── */
 
-export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR" }: Props) {
+export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR", franchiseCurrency = "BRL" }: Props) {
   const [listOpen, setListOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
