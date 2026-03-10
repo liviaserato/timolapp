@@ -38,7 +38,7 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, onConv
             <Button
               variant="outline"
               size="default"
-              className="w-full text-xs gap-1.5 h-8 lg:h-9"
+              className="w-full text-xs gap-1.5 h-auto min-h-[2rem] lg:min-h-[2.25rem] py-1.5 whitespace-normal leading-tight"
               onClick={onConvertBonus}
             >
               <ArrowRightLeft className="h-3.5 w-3.5" />
