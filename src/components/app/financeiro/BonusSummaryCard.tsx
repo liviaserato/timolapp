@@ -34,19 +34,16 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, onConv
 
         {/* Convert bonus button */}
         {hasBonus && onConvertBonus && (
-          <div className="mt-3 space-y-1">
+          <div className="mt-3">
             <Button
               variant="outline"
-              size="sm"
-              className="w-full h-8 text-xs gap-1.5"
+              size="default"
+              className="w-full text-xs gap-1.5 h-8 lg:h-9"
               onClick={onConvertBonus}
             >
               <ArrowRightLeft className="h-3.5 w-3.5" />
               Converter bônus em saldo
             </Button>
-            <p className="text-[10px] text-muted-foreground text-center leading-tight">
-              Ganhe +5% ao converter seu bônus em saldo para novos pedidos.
-            </p>
           </div>
         )}
       </div>
