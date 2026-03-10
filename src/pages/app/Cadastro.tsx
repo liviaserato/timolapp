@@ -102,7 +102,7 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 /* ── Phone Change Dialog ── */
 
 function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean; onOpenChange: (v: boolean) => void; currentPhone: string }) {
-  const [step, setStep] = useState<"phone" | "pin">("phone");
+  const [step, setStep] = useState<"phone" | "pin" | "success">("phone");
   const [newPhone, setNewPhone] = useState("");
   const [pin, setPin] = useState("");
   const [sending, setSending] = useState(false);
@@ -122,11 +122,8 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean
     setSending(true);
     setTimeout(() => {
       setSending(false);
+      setStep("success");
       toast.success("Telefone alterado com sucesso!");
-      onOpenChange(false);
-      setStep("phone");
-      setNewPhone("");
-      setPin("");
     }, 1200);
   };
 
@@ -142,64 +139,83 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-sm">
-        <DialogHeader>
-          <DialogTitle>Alterar Telefone</DialogTitle>
-          <DialogDescription>
-            {step === "phone"
-              ? `Seu telefone atual é ${currentPhone}. Informe o novo número.`
-              : "Digite o PIN de 6 dígitos enviado por SMS para o novo número."}
-          </DialogDescription>
-        </DialogHeader>
-        {step === "phone" ? (
-          <div className="space-y-3">
-            <div className="space-y-2">
-              <Label>Novo telefone</Label>
-              <Input
-                placeholder="+55 11 99999-0000"
-                value={newPhone}
-                onChange={(e) => setNewPhone(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && newPhone.trim() && !sending) handleSendPin(); }}
-              />
+        {step === "success" ? (
+          <div className="flex flex-col items-center py-6 gap-4">
+            <div className="h-14 w-14 rounded-full bg-green-100 flex items-center justify-center">
+              <ShieldCheck className="h-7 w-7 text-green-600" />
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => handleClose(false)}>Cancelar</Button>
-              <Button onClick={handleSendPin} disabled={!newPhone.trim() || sending}>
-                {sending ? "Enviando..." : "Enviar PIN"}
-              </Button>
-            </DialogFooter>
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-semibold text-foreground">Telefone alterado</h3>
+              <p className="text-sm text-muted-foreground">
+                Seu telefone foi atualizado com sucesso.
+              </p>
+            </div>
+            <Button onClick={() => handleClose(false)} className="mt-2 w-full max-w-[200px]">
+              Fechar
+            </Button>
           </div>
         ) : (
-          <div className="space-y-3">
-            <div className="space-y-2">
-              <Label className="text-center block">PIN de verificação</Label>
-              <div className="flex justify-center">
-                <InputOTP
-                  maxLength={6}
-                  value={pin}
-                  onChange={(value) => setPin(value)}
-                  onComplete={() => {
-                    setTimeout(() => handleVerifyPin(), 0);
-                  }}
-                  onKeyDown={(e) => { if (e.key === "Enter" && pin.length === 6 && !sending) { e.preventDefault(); handleVerifyPin(); } }}
-                >
-                  <InputOTPGroup>
-                    <InputOTPSlot index={0} />
-                    <InputOTPSlot index={1} />
-                    <InputOTPSlot index={2} />
-                    <InputOTPSlot index={3} />
-                    <InputOTPSlot index={4} />
-                    <InputOTPSlot index={5} />
-                  </InputOTPGroup>
-                </InputOTP>
+          <>
+            <DialogHeader>
+              <DialogTitle>Alterar Telefone</DialogTitle>
+              <DialogDescription>
+                {step === "phone"
+                  ? `Seu telefone atual é ${currentPhone}. Informe o novo número.`
+                  : "Digite o PIN de 6 dígitos enviado por SMS para o novo número."}
+              </DialogDescription>
+            </DialogHeader>
+            {step === "phone" ? (
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Label>Novo telefone</Label>
+                  <Input
+                    placeholder="+55 11 99999-0000"
+                    value={newPhone}
+                    onChange={(e) => setNewPhone(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter" && newPhone.trim() && !sending) handleSendPin(); }}
+                  />
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => handleClose(false)}>Cancelar</Button>
+                  <Button onClick={handleSendPin} disabled={!newPhone.trim() || sending}>
+                    {sending ? "Enviando..." : "Enviar PIN"}
+                  </Button>
+                </DialogFooter>
               </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setStep("phone")}>Voltar</Button>
-              <Button onClick={handleVerifyPin} disabled={pin.length < 6 || sending}>
-                {sending ? "Verificando..." : "Confirmar"}
-              </Button>
-            </DialogFooter>
-          </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Label className="text-center block">PIN de verificação</Label>
+                  <div className="flex justify-center">
+                    <InputOTP
+                      maxLength={6}
+                      value={pin}
+                      onChange={(value) => setPin(value)}
+                      onComplete={() => {
+                        setTimeout(() => handleVerifyPin(), 0);
+                      }}
+                      onKeyDown={(e) => { if (e.key === "Enter" && pin.length === 6 && !sending) { e.preventDefault(); handleVerifyPin(); } }}
+                    >
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setStep("phone")}>Voltar</Button>
+                  <Button onClick={handleVerifyPin} disabled={pin.length < 6 || sending}>
+                    {sending ? "Verificando..." : "Confirmar"}
+                  </Button>
+                </DialogFooter>
+              </div>
+            )}
+          </>
         )}
       </DialogContent>
     </Dialog>
