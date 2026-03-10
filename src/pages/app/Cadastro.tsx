@@ -156,6 +156,7 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean
                 placeholder="+55 11 99999-0000"
                 value={newPhone}
                 onChange={(e) => setNewPhone(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && newPhone.trim() && !sending) handleSendPin(); }}
               />
             </div>
             <DialogFooter>
