@@ -11,7 +11,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Gem, Shield, TrendingUp, Crown, Check, ArrowUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { Gem, Shield, TrendingUp, Crown, Check, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import franquiaBronze from "@/assets/franquia-bronze.svg";
@@ -19,9 +19,26 @@ import franquiaPrata from "@/assets/franquia-prata.svg";
 import franquiaOuro from "@/assets/franquia-ouro.svg";
 import franquiaPlatina from "@/assets/franquia-platina.svg";
 
-/* ── franchise data ── */
+/* ── qualification icons ── */
 
-interface FranchiseInfo {
+const qualificationConfig: Record<string, { label: string; icon: string }> = {
+  consultor: { label: "Consultor", icon: "○" },
+  distribuidor: { label: "Distribuidor", icon: "◐" },
+  lider: { label: "Líder", icon: "●" },
+  rubi: { label: "Rubi", icon: "◆" },
+  esmeralda: { label: "Esmeralda", icon: "◈" },
+  diamante: { label: "Diamante", icon: "◇" },
+  "diamante-1": { label: "Diamante ★", icon: "◇★" },
+  "diamante-2": { label: "Diamante ★★", icon: "◇★★" },
+  "diamante-3": { label: "Diamante ★★★", icon: "◇★★★" },
+  "diamante-4": { label: "Diamante ★★★★", icon: "◇★★★★" },
+  "diamante-5": { label: "Diamante ★★★★★", icon: "◇★★★★★" },
+  "diamante-black": { label: "Diamante Black", icon: "◆◆" },
+};
+
+/* ── franchise plan data ── */
+
+interface FranchisePlan {
   id: string;
   name: string;
   icon: typeof Shield;
@@ -32,15 +49,10 @@ interface FranchiseInfo {
   installments: number;
 }
 
-const franchises: FranchiseInfo[] = [
+const franchisePlans: FranchisePlan[] = [
   {
-    id: "bronze",
-    name: "Bronze",
-    icon: Shield,
-    image: franquiaBronze,
-    binaryBonus: "8%",
-    installmentPrice: 160,
-    installments: 12,
+    id: "bronze", name: "Bronze", icon: Shield, image: franquiaBronze, binaryBonus: "8%",
+    installmentPrice: 160, installments: 12,
     benefits: [
       "Entrada ideal para começar com baixo risco",
       "Bônus Binário de 8%",
@@ -49,13 +61,8 @@ const franchises: FranchiseInfo[] = [
     ],
   },
   {
-    id: "silver",
-    name: "Prata",
-    icon: TrendingUp,
-    image: franquiaPrata,
-    binaryBonus: "16%",
-    installmentPrice: 260,
-    installments: 12,
+    id: "silver", name: "Prata", icon: TrendingUp, image: franquiaPrata, binaryBonus: "16%",
+    installmentPrice: 260, installments: 12,
     benefits: [
       "Tudo do Bronze + mais crescimento",
       "Bônus Binário de 16%",
@@ -64,13 +71,8 @@ const franchises: FranchiseInfo[] = [
     ],
   },
   {
-    id: "gold",
-    name: "Ouro",
-    icon: Crown,
-    image: franquiaOuro,
-    binaryBonus: "24%",
-    installmentPrice: 380,
-    installments: 12,
+    id: "gold", name: "Ouro", icon: Crown, image: franquiaOuro, binaryBonus: "24%",
+    installmentPrice: 380, installments: 12,
     benefits: [
       "Tudo do Prata",
       "Bônus Binário de 24%",
@@ -79,13 +81,8 @@ const franchises: FranchiseInfo[] = [
     ],
   },
   {
-    id: "platinum",
-    name: "Platina",
-    icon: Gem,
-    image: franquiaPlatina,
-    binaryBonus: "32% a 60%",
-    installmentPrice: 675,
-    installments: 12,
+    id: "platinum", name: "Platina", icon: Gem, image: franquiaPlatina, binaryBonus: "32% a 60%",
+    installmentPrice: 675, installments: 12,
     benefits: [
       "Tudo do Ouro",
       "Bônus Binário de 32% a 60%",
@@ -95,7 +92,18 @@ const franchises: FranchiseInfo[] = [
   },
 ];
 
-const franchiseOrder = ["bronze", "silver", "gold", "platinum"];
+const planOrder = ["bronze", "silver", "gold", "platinum"];
+const planLabels: Record<string, string> = { bronze: "Bronze", silver: "Prata", gold: "Ouro", platinum: "Platina" };
+
+/* ── mock user IDs data ── */
+
+interface UserFranchise {
+  franchiseId: string;
+  planCode: string;
+  sponsor: string;
+  registrationDate: string;
+  qualification: string;
+}
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -115,95 +123,75 @@ interface Props {
 }
 
 export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
-  const [tabIndex, setTabIndex] = useState(() => franchiseOrder.indexOf(planCode));
   const [upgradeOpen, setUpgradeOpen] = useState(false);
 
-  const currentFranchise = franchises.find((f) => f.id === planCode) || franchises[0];
-  const viewingFranchise = franchises[tabIndex] || currentFranchise;
-  const isCurrentPlan = viewingFranchise.id === planCode;
-  const currentIdx = franchiseOrder.indexOf(planCode);
-  const isMaxPlan = planCode === "platinum";
-  const upgradeOptions = franchises.filter((_, i) => i > currentIdx);
+  // Mock: user may have multiple IDs
+  const userFranchises: UserFranchise[] = [
+    { franchiseId, planCode, sponsor, registrationDate: "10/01/2025", qualification: "esmeralda" },
+    { franchiseId: "200587", planCode: "silver", sponsor: "Carlos Souza (ID 88002)", registrationDate: "15/06/2025", qualification: "distribuidor" },
+    { franchiseId: "300145", planCode: "bronze", sponsor: "Ana Costa (ID 77003)", registrationDate: "20/09/2025", qualification: "consultor" },
+  ];
 
-  const handlePrev = () => setTabIndex((i) => Math.max(0, i - 1));
-  const handleNext = () => setTabIndex((i) => Math.min(franchises.length - 1, i + 1));
+  const hasMultipleIds = userFranchises.length > 1;
+  const [selectedTabIdx, setSelectedTabIdx] = useState(0);
+  const viewing = userFranchises[selectedTabIdx];
+
+  const currentPlanIdx = planOrder.indexOf(viewing.planCode);
+  const isMaxPlan = viewing.planCode === "platinum";
+  const upgradeOptions = franchisePlans.filter((_, i) => i > currentPlanIdx);
+
+  const qual = qualificationConfig[viewing.qualification];
 
   return (
     <>
       <DashboardCard icon={Gem} title="Franquia">
         <div className="mt-1">
-          {/* Tabs navigation */}
-          <div className="flex items-center justify-between mb-3">
-            <button
-              onClick={handlePrev}
-              disabled={tabIndex === 0}
-              className="p-1 rounded hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <div className="flex items-center gap-1 flex-wrap justify-center">
-              {franchises.map((f, i) => (
+          {/* ID Tabs - only show if multiple IDs */}
+          {hasMultipleIds && (
+            <div className="flex flex-wrap gap-1 mb-3">
+              {userFranchises.map((uf, i) => (
                 <button
-                  key={f.id}
-                  onClick={() => setTabIndex(i)}
+                  key={uf.franchiseId}
+                  onClick={() => setSelectedTabIdx(i)}
                   className={cn(
-                    "px-2 py-1 rounded text-xs font-medium transition-colors whitespace-nowrap",
-                    i === tabIndex
+                    "px-2.5 py-1 rounded text-xs font-medium transition-colors whitespace-nowrap",
+                    i === selectedTabIdx
                       ? "bg-primary text-primary-foreground"
-                      : i === currentIdx
-                        ? "bg-primary/10 text-primary hover:bg-primary/20"
-                        : "text-muted-foreground hover:bg-muted"
+                      : "text-muted-foreground hover:bg-muted"
                   )}
                 >
-                  {f.name}
+                  ID {uf.franchiseId}
                 </button>
               ))}
             </div>
-            <button
-              onClick={handleNext}
-              disabled={tabIndex === franchises.length - 1}
-              className="p-1 rounded hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
+          )}
 
-          {/* Franchise details */}
-          <div className="space-y-1">
-            {isCurrentPlan && <Row label="ID" value={franchiseId} />}
+          {/* Franchise data */}
+          <div className="space-y-0">
+            <Row label="ID" value={viewing.franchiseId} />
             <Row label="Franquia" value={
               <span className="flex items-center gap-1.5">
-                {viewingFranchise.name}
-                {isCurrentPlan && (
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Atual</Badge>
+                {planLabels[viewing.planCode] || viewing.planCode}
+                {/* Emphasize the franchise selected in header */}
+                {viewing.franchiseId === franchiseId && (
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Ativa</Badge>
                 )}
               </span>
             } />
-            <Row label="Bônus Binário" value={viewingFranchise.binaryBonus} />
-            {isCurrentPlan && <Row label="Patrocinador" value={sponsor} />}
-            {!isCurrentPlan && (
-              <Row label="Parcela" value={`12x R$ ${viewingFranchise.installmentPrice},00`} />
-            )}
-          </div>
-
-          {/* Benefits preview */}
-          <div className="mt-2">
-            <p className="text-xs font-semibold text-foreground mb-1">Benefícios</p>
-            {viewingFranchise.benefits.slice(0, 3).map((b, i) => (
-              <div key={i} className="flex items-start gap-1.5 text-xs text-muted-foreground">
-                <Check className="h-3 w-3 mt-0.5 flex-shrink-0 text-primary/60" />
-                <span>{b}</span>
-              </div>
-            ))}
-            {viewingFranchise.benefits.length > 3 && (
-              <p className="text-xs text-muted-foreground mt-0.5 ml-4.5">
-                +{viewingFranchise.benefits.length - 3} mais...
-              </p>
-            )}
+            <Row label="Patrocinador" value={viewing.sponsor} />
+            <Row label="Cadastro" value={viewing.registrationDate} />
+            <Row label="Qualificação" value={
+              qual ? (
+                <span className="flex items-center gap-1.5">
+                  <span className="text-sm">{qual.icon}</span>
+                  {qual.label}
+                </span>
+              ) : viewing.qualification
+            } />
           </div>
 
           {/* Upgrade button */}
-          {!isMaxPlan && isCurrentPlan && (
+          {!isMaxPlan && (
             <Button
               variant="outline"
               size="sm"
@@ -223,7 +211,7 @@ export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
           <DialogHeader>
             <DialogTitle>Upgrade de Franquia</DialogTitle>
             <DialogDescription>
-              Sua franquia atual é {currentFranchise.name}. Escolha um plano superior:
+              Sua franquia atual (ID {viewing.franchiseId}) é {planLabels[viewing.planCode] || viewing.planCode}. Escolha um plano superior:
             </DialogDescription>
           </DialogHeader>
 
