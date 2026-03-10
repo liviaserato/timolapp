@@ -378,7 +378,7 @@ export function FinancialManager({ accounts, onChange }: Props) {
 
       {/* Add/Edit account dialog */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto" onKeyDown={(e) => { if (e.key === "Enter" && isFormValid()) { e.preventDefault(); handleSave(); } }}>
           <DialogHeader>
             <DialogTitle>{editingId ? "Editar Conta" : "Nova Conta"}</DialogTitle>
             <DialogDescription>

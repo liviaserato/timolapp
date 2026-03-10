@@ -352,7 +352,7 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR" 
 
       {/* Add/Edit address popup */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto" onKeyDown={(e) => { if (e.key === "Enter" && form.street && form.city && form.country) { e.preventDefault(); handleSaveAddress(); } }}>
           <DialogHeader>
             <DialogTitle>{editingId ? "Editar Endereço" : "Novo Endereço"}</DialogTitle>
             <DialogDescription>
