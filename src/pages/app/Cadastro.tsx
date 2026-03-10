@@ -9,6 +9,7 @@ import { AddressManager, type Address } from "@/components/app/cadastro/AddressM
 import { FranchiseCard } from "@/components/app/cadastro/FranchiseCard";
 import { FinancialManager, type FinancialAccount } from "@/components/app/cadastro/FinancialManager";
 import { DocumentsCard } from "@/components/app/cadastro/DocumentsCard";
+import { PasswordChangeDialog } from "@/components/app/cadastro/PasswordChangeDialog";
 import {
   Dialog,
   DialogContent,
