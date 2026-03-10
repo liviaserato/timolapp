@@ -90,9 +90,10 @@ interface Props {
   franchiseId: string;
   planCode: string;
   sponsor: string;
+  className?: string;
 }
 
-export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
+export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Props) {
   const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   // Mock: user may have multiple IDs with different activity dates
@@ -150,7 +151,7 @@ export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
 
   return (
     <>
-      <DashboardCard icon={Gem} title="Franquia">
+      <DashboardCard icon={Gem} title="Franquia" className={className}>
         <div className="mt-1">
           {hasMultipleIds && (
             <div className="flex items-center gap-0.5 mb-3">
