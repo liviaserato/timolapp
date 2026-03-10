@@ -305,6 +305,7 @@ export default function Cadastro() {
             addresses={addresses}
             onChange={setAddresses}
             currentCountryIso2="BR"
+            franchiseCurrency="BRL"
           />
         </DashboardCard>
 

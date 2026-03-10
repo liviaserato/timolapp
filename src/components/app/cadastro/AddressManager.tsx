@@ -46,6 +46,7 @@ interface Props {
   addresses: Address[];
   onChange: (addresses: Address[]) => void;
   currentCountryIso2?: string;
+  franchiseCurrency?: string;
 }
 
 /* ── helpers ── */
