@@ -243,7 +243,7 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
         setResetToken("");
         setPinSent(true);
         setShowExpiryHint(true);
-        setResendCooldown(300);
+        setResendCooldown(60);
         setStep("pin");
 
         if (showResendMessage) {
