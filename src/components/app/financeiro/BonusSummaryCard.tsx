@@ -51,14 +51,6 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, onConv
         )}
       </div>
 
-      {/* Footer */}
-      <div className="mt-3 flex items-start gap-2 px-1">
-        <StatusIcon className={cn("h-4 w-4 shrink-0 mt-0.5", status.colorClass)} />
-        <div className="min-w-0">
-          <p className={cn("text-xs font-semibold", status.colorClass)}>{status.label}</p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">{status.message}</p>
-        </div>
-      </div>
     </DashboardCard>
   );
 }
