@@ -317,11 +317,17 @@ export default function Cadastro() {
         {/* Card de Ajuda */}
         <DashboardCard icon={HelpCircle} title="Precisa de ajuda?">
           <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
-            Caso queira alterar dados sensíveis, tirar dúvidas ou tratar de qualquer outro assunto relacionado aos seus dados, abra um chamado{" "}
-            <button className="text-primary underline underline-offset-2 hover:text-primary/80 font-medium">
-              clicando aqui
-            </button>.
+            Para alterar dados sensíveis, tirar dúvidas ou resolver qualquer questão sobre sua conta, estamos aqui para te ajudar!
           </p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2 text-xs h-7 w-full gap-1.5"
+            onClick={() => {/* TODO: navigate to support */}}
+          >
+            <MessageSquarePlus className="h-3 w-3" />
+            Abrir chamado
+          </Button>
         </DashboardCard>
       </div>
 
