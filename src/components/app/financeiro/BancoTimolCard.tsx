@@ -36,7 +36,7 @@ export function BancoTimolCard({ available, pendingWithdrawal, currency, onAddBa
           Adicionar saldo
         </Button>
         <Button variant="ghost" size="default" className="w-full text-xs text-muted-foreground hover:text-foreground min-w-0 h-8 lg:h-9" onClick={onWithdraw}>
-          Resgatar saldo
+          Resgatar / Transferir
         </Button>
       </div>
     </DashboardCard>
