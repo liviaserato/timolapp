@@ -106,8 +106,8 @@ export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: Passwo
     // TODO: call change-password edge function with action "change"
     setTimeout(() => {
       setLoading(false);
+      setStep("success");
       toast.success("Senha alterada com sucesso.");
-      handleClose(false);
     }, 1500);
   };
 
