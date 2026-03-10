@@ -424,45 +424,5 @@ export default function Suporte() {
   );
 }
 
-/* ── Quick Card sub-component ── */
 
-function QuickCard({
-  icon,
-  iconBg,
-  title,
-  description,
-  badge,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  iconBg: string;
-  title: string;
-  description: string;
-  badge?: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex flex-col items-start gap-3 rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm text-left hover:shadow-md transition-shadow group"
-    >
-      <div className="flex items-start justify-between w-full">
-        <div className={`h-10 w-10 rounded-lg ${iconBg} flex items-center justify-center`}>
-          {icon}
-        </div>
-        {badge && (
-          <Badge variant="secondary" className="text-[10px] bg-amber-100 text-amber-700">
-            {badge}
-          </Badge>
-        )}
-      </div>
-      <div>
-        <p className="text-sm font-bold text-foreground">{title}</p>
-        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{description}</p>
-      </div>
-      <div className="flex items-center justify-end w-full">
-        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-      </div>
-    </button>
-  );
-}
+
