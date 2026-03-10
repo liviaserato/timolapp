@@ -143,8 +143,6 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
     const c = countries.find((x) => x.iso2 === iso2);
     if (c) {
       setForm((prev) => ({ ...prev, country: getCountryName(c, "pt"), countryIso2: iso2 }));
-      if (iso2 !== currentCountryIso2) setShowCountryWarning(true);
-      else setShowCountryWarning(false);
     }
     setShowCountryList(false);
     setCountrySearch("");
