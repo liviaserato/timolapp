@@ -2,9 +2,47 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Gem, ArrowUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { Gem, ArrowUp, ChevronLeft, ChevronRight, ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UpgradeDialog } from "./UpgradeDialog";
+
+/* ── franchise status helper ── */
+
+function getFranchiseStatusInfo(activeUntil: string) {
+  const now = new Date();
+  const expDate = new Date(activeUntil);
+  const diffMs = expDate.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) {
+    return {
+      level: "expired" as const,
+      icon: ShieldX,
+      colorClass: "text-destructive",
+      bgClass: "bg-destructive/8 border-destructive/20",
+      message: "Franquia inativa. Bônus e pontos não são gerados. Adquira produtos para reativá-la!",
+      label: `Inativa desde ${expDate.toLocaleDateString("pt-BR")}`,
+    };
+  }
+  if (diffDays <= 10) {
+    return {
+      level: "warning" as const,
+      icon: ShieldAlert,
+      colorClass: "text-warning",
+      bgClass: "bg-warning/8 border-warning/20",
+      message: `Vence em ${diffDays} dia${diffDays !== 1 ? "s" : ""}. Adquira produtos para renovar!`,
+      label: `Ativa até ${expDate.toLocaleDateString("pt-BR")}`,
+    };
+  }
+  return {
+    level: "active" as const,
+    icon: ShieldCheck,
+    colorClass: "text-success",
+    bgClass: "bg-success/8 border-success/20",
+    message: "Franquia ativa para recebimento de bônus.",
+    label: `Ativa até ${expDate.toLocaleDateString("pt-BR")}`,
+  };
+}
 
 /* ── qualification icons ── */
 

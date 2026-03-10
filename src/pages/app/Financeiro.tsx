@@ -93,7 +93,6 @@ export default function Financeiro() {
           nextFriday={bonusSummary.nextFriday}
           awaitingRelease={bonusSummary.awaitingRelease}
           currency={currency}
-          franchiseStatus={mockFranchiseStatus}
           onConvertBonus={() => setConvertBonusOpen(true)}
         />
         <BancoTimolCard
