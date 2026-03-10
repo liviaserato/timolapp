@@ -673,12 +673,8 @@ export function UpgradeDialog({
                 </Card>
               )}
 
-              <div className="flex justify-between gap-3 mt-4">
-                <Button variant="outline" onClick={() => setStep("select")} disabled={loading} className="flex-1">
-                  <ChevronLeft className="h-4 w-4 mr-1" />
-                  Voltar
-                </Button>
-                <Button onClick={handlePayment} disabled={loading} className="flex-1">
+              <div className="mt-4">
+                <Button onClick={handlePayment} disabled={loading} className="w-full">
                   {method === "pix" ? "Confirmar PIX" : "Pagar"}
                 </Button>
               </div>
