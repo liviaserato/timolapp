@@ -247,17 +247,17 @@ export function BonusExtractTable({ data, currency }: Props) {
 
       {/* Table */}
       <div className="rounded-md border border-app-card-border overflow-hidden">
-        <div className="max-h-[480px] overflow-y-auto">
-          <Table>
+        <div className="max-h-[480px] overflow-y-auto overflow-x-hidden">
+          <Table className="table-fixed sm:table-auto">
              <TableHeader className="sticky top-0 z-10">
               <TableRow className="bg-app-table-header">
-                <TableHead className="text-xs px-3 py-1.5 text-center hidden sm:table-cell" style={{ width: 100 }}>Data</TableHead>
-                <TableHead className="text-xs px-3 py-1.5 text-left">Pedido</TableHead>
-                <TableHead className="text-xs px-3 py-1.5 text-left hidden lg:table-cell">Qualificação</TableHead>
-                <TableHead className="text-xs px-3 py-1.5 text-center">ID</TableHead>
-                <TableHead className="text-xs px-3 py-1.5 text-center">Tipo</TableHead>
-                <TableHead className="text-xs px-3 py-1.5 text-right">Pontos</TableHead>
-                <TableHead className="text-xs px-3 py-1.5 text-right">Valor</TableHead>
+                <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-center hidden sm:table-cell" style={{ width: 100 }}>Data</TableHead>
+                <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-left">Pedido</TableHead>
+                <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-left hidden lg:table-cell">Qualificação</TableHead>
+                <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-center">ID</TableHead>
+                <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-center">Tipo</TableHead>
+                <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-right">Pontos</TableHead>
+                <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-right">Valor</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
