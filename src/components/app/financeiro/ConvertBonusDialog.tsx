@@ -153,7 +153,7 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
               <CheckCircle className="h-14 w-14 text-[hsl(var(--success))]" />
               <h3 className="text-lg font-bold text-primary">Conversão Realizada!</h3>
               <p className="text-sm text-muted-foreground">
-                Seu bônus foi convertido com sucesso. O valor já está disponível no seu Banco Timol.
+                Seu bônus foi convertido com sucesso.<br />O valor já está disponível no seu Banco Timol.
               </p>
               <div className="rounded-md border border-app-card-border p-3 w-full space-y-1.5 text-sm">
                 <div className="flex justify-between">
