@@ -230,6 +230,23 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, activeUntil }: P
               Fazer upgrade
             </Button>
           )}
+
+          {/* Franchise status alert */}
+          {franchiseStatus && (() => {
+            const StatusIcon = franchiseStatus.icon;
+            return (
+              <div className={cn(
+                "mt-3 flex items-start gap-2 rounded-md border p-2.5",
+                franchiseStatus.bgClass
+              )}>
+                <StatusIcon className={cn("h-4 w-4 shrink-0 mt-0.5", franchiseStatus.colorClass)} />
+                <div className="min-w-0">
+                  <p className={cn("text-xs font-semibold leading-tight", franchiseStatus.colorClass)}>{franchiseStatus.label}</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">{franchiseStatus.message}</p>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </DashboardCard>
 
