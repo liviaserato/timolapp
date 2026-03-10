@@ -6,9 +6,11 @@ import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { CurrencyConfig, formatCurrency } from "./currency-helpers";
 import { WITHDRAW_FEE_PERCENT } from "./mock-data";
-import { CheckCircle, ShieldCheck } from "lucide-react";
+import { CheckCircle, ShieldCheck, ArrowLeft, Landmark, Send, Loader2, AlertTriangle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-type Step = "amount" | "pin" | "success";
+type Mode = "withdraw" | "transfer";
+type Step = "amount" | "choose" | "transfer-id" | "pin" | "success";
 
 interface Props {
   open: boolean;
@@ -17,10 +19,14 @@ interface Props {
   availableBalance: number;
 }
 
+interface TransferTarget {
+  id: string;
+  name: string;
+  active: boolean;
+}
+
 function formatCurrencyInput(raw: string): string {
-  // Remove tudo que não for dígito
   const digits = raw.replace(/\D/g, "");
-  // Converte para centavos
   const cents = parseInt(digits || "0", 10);
   const intPart = Math.floor(cents / 100);
   const decPart = (cents % 100).toString().padStart(2, "0");
@@ -32,10 +38,26 @@ function parseCurrencyInput(formatted: string): number {
   return parseInt(digits || "0", 10) / 100;
 }
 
+// Mock: simulate API lookup for a franchise ID
+async function lookupFranchiseId(id: string): Promise<TransferTarget | null> {
+  await new Promise((r) => setTimeout(r, 1000));
+  // Simulated responses
+  if (id === "000000") return null; // not found
+  if (id === "999999") return { id, name: "João Silva (Inativo)", active: false };
+  return { id, name: "Maria Oliveira", active: true };
+}
+
 export function WithdrawDialog({ open, onOpenChange, currency, availableBalance }: Props) {
   const [step, setStep] = useState<Step>("amount");
+  const [mode, setMode] = useState<Mode>("withdraw");
   const [rawAmount, setRawAmount] = useState("");
   const [pin, setPin] = useState("");
+
+  // Transfer state
+  const [transferId, setTransferId] = useState("");
+  const [lookingUp, setLookingUp] = useState(false);
+  const [transferTarget, setTransferTarget] = useState<TransferTarget | null>(null);
+  const [lookupError, setLookupError] = useState<string | null>(null);
 
   const displayAmount = rawAmount ? formatCurrencyInput(rawAmount) : "0,00";
   const numAmount = parseCurrencyInput(rawAmount);
@@ -44,8 +66,13 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
 
   function reset() {
     setStep("amount");
+    setMode("withdraw");
     setRawAmount("");
     setPin("");
+    setTransferId("");
+    setTransferTarget(null);
+    setLookupError(null);
+    setLookingUp(false);
   }
 
   function handleClose(v: boolean) {
@@ -54,31 +81,65 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
   }
 
   function handleAmountChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const digits = e.target.value.replace(/\D/g, "");
-    setRawAmount(digits);
+    setRawAmount(e.target.value.replace(/\D/g, ""));
   }
 
   function handleSubmitAmount(e?: React.FormEvent) {
     e?.preventDefault();
     if (numAmount > 0 && numAmount <= availableBalance) {
-      setStep("pin");
+      setStep("choose");
     }
   }
+
+  function handleChoose(m: Mode) {
+    setMode(m);
+    if (m === "withdraw") {
+      setStep("pin");
+    } else {
+      setStep("transfer-id");
+    }
+  }
+
+  async function handleLookupId(e?: React.FormEvent) {
+    e?.preventDefault();
+    if (!transferId.trim()) return;
+    setLookingUp(true);
+    setLookupError(null);
+    setTransferTarget(null);
+    try {
+      const result = await lookupFranchiseId(transferId.trim());
+      if (!result) {
+        setLookupError("ID não encontrado. Verifique o número e tente novamente.");
+      } else if (!result.active) {
+        setTransferTarget(result);
+        setLookupError("Este ID está inativo. Não é possível transferir saldo para um ID inativo.");
+      } else {
+        setTransferTarget(result);
+      }
+    } catch {
+      setLookupError("Erro ao consultar o ID. Tente novamente.");
+    } finally {
+      setLookingUp(false);
+    }
+  }
+
+  const canProceedTransfer = transferTarget && transferTarget.active && !lookupError;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-sm">
+        {/* Step 1: Amount */}
         {step === "amount" && (
           <form onSubmit={handleSubmitAmount}>
             <DialogHeader>
-              <DialogTitle>Resgatar Saldo</DialogTitle>
+              <DialogTitle>Resgatar / Transferir</DialogTitle>
               <DialogDescription>
                 Saldo disponível: <strong>{formatCurrency(availableBalance, currency)}</strong>
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 mt-2">
               <div>
-                <Label>Valor do resgate ({currency.symbol})</Label>
+                <Label>Valor ({currency.symbol})</Label>
                 <Input
                   type="text"
                   inputMode="numeric"
@@ -89,33 +150,158 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
                   autoFocus
                 />
               </div>
-              {numAmount > 0 && (
-                <div className="rounded-md border border-app-card-border p-3 space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Valor solicitado</span>
-                    <span>{formatCurrency(numAmount, currency)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Taxa ({WITHDRAW_FEE_PERCENT}%)</span>
-                    <span className="text-destructive">-{formatCurrency(fee, currency)}</span>
-                  </div>
-                  <div className="border-t border-border/40 pt-1 flex justify-between font-bold">
-                    <span>Você receberá</span>
-                    <span className="text-primary">{formatCurrency(netAmount, currency)}</span>
-                  </div>
-                </div>
-              )}
               <Button
                 type="submit"
                 className="w-full"
                 disabled={numAmount <= 0 || numAmount > availableBalance}
               >
-                Solicitar resgate
+                Continuar
               </Button>
             </div>
           </form>
         )}
 
+        {/* Step 2: Choose mode */}
+        {step === "choose" && (
+          <div>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setStep("amount")}
+                  className="inline-flex items-center justify-center rounded-sm p-1 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Voltar"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
+                O que deseja fazer?
+              </DialogTitle>
+              <DialogDescription>
+                Valor: <strong>{formatCurrency(numAmount, currency)}</strong>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-3 mt-4">
+              <button
+                type="button"
+                onClick={() => handleChoose("withdraw")}
+                className="flex items-center gap-3 rounded-lg border-2 border-app-card-border bg-card p-4 text-left transition-all hover:border-primary/50 hover:bg-primary/5"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <Landmark className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-foreground">Resgatar para conta bancária</p>
+                  <p className="text-xs text-muted-foreground">Transferir para sua conta cadastrada</p>
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleChoose("transfer")}
+                className="flex items-center gap-3 rounded-lg border-2 border-app-card-border bg-card p-4 text-left transition-all hover:border-primary/50 hover:bg-primary/5"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
+                  <Send className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-foreground">Transferir para outro ID</p>
+                  <p className="text-xs text-muted-foreground">O ID recebedor precisa estar ativo</p>
+                </div>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3 (transfer only): Enter destination ID */}
+        {step === "transfer-id" && (
+          <form onSubmit={handleLookupId}>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setStep("choose"); setTransferTarget(null); setLookupError(null); setTransferId(""); }}
+                  className="inline-flex items-center justify-center rounded-sm p-1 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Voltar"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
+                Transferir para outro ID
+              </DialogTitle>
+              <DialogDescription>
+                Valor: <strong>{formatCurrency(numAmount, currency)}</strong>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 mt-2">
+              <div>
+                <Label>ID de destino</Label>
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="000000"
+                  value={transferId}
+                  onChange={(e) => { setTransferId(e.target.value); setTransferTarget(null); setLookupError(null); }}
+                  className="mt-1"
+                  autoFocus
+                  maxLength={6}
+                />
+              </div>
+
+              {/* Lookup result: success */}
+              {transferTarget && transferTarget.active && (
+                <div className="rounded-md border border-primary/30 bg-primary/5 p-3 text-sm">
+                  <p className="font-medium text-primary">{transferTarget.name}</p>
+                  <p className="text-xs text-muted-foreground">ID {transferTarget.id} · Ativo</p>
+                </div>
+              )}
+
+              {/* Lookup result: inactive */}
+              {transferTarget && !transferTarget.active && (
+                <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-medium text-destructive">ID inativo</p>
+                    <p className="text-xs text-muted-foreground">
+                      Não é possível transferir saldo para este ID enquanto ele estiver inativo.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Lookup error (not found / network) */}
+              {lookupError && !transferTarget && (
+                <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                  <p className="text-sm text-destructive">{lookupError}</p>
+                </div>
+              )}
+
+              <p className="text-xs text-muted-foreground">
+                O ID recebedor precisa estar ativo para receber transferências.
+              </p>
+
+              {!transferTarget || !transferTarget.active ? (
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={!transferId.trim() || lookingUp}
+                >
+                  {lookingUp ? (
+                    <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Consultando...</>
+                  ) : "Consultar ID"}
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  className="w-full"
+                  onClick={() => setStep("pin")}
+                >
+                  Confirmar transferência
+                </Button>
+              )}
+            </div>
+          </form>
+        )}
+
+        {/* Step: PIN verification */}
         {step === "pin" && (
           <form onSubmit={(e) => { e.preventDefault(); if (pin.length >= 6) setStep("success"); }}>
             <DialogHeader className="text-center">
@@ -125,7 +311,7 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
               <DialogDescription className="text-center">
                 Enviamos um PIN de 6 dígitos para o seu e-mail.
                 <br />
-                Digite abaixo para confirmar o resgate.
+                Digite abaixo para confirmar {mode === "withdraw" ? "o resgate" : "a transferência"}.
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col items-center gap-4 mt-4">
@@ -147,17 +333,64 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
           </form>
         )}
 
+        {/* Step: Success */}
         {step === "success" && (
           <form onSubmit={(e) => { e.preventDefault(); handleClose(false); }}>
             <div className="flex flex-col items-center gap-3 py-4 text-center">
               <CheckCircle className="h-14 w-14 text-[hsl(var(--success))]" />
-              <h3 className="text-lg font-bold text-primary">Resgate Confirmado!</h3>
-              <p className="text-sm text-muted-foreground">
-                Seu resgate de <strong>{formatCurrency(netAmount, currency)}</strong> foi solicitado com sucesso.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                O valor pode cair na sua conta em até 5 dias úteis.
-              </p>
+
+              {mode === "withdraw" ? (
+                <>
+                  <h3 className="text-lg font-bold text-primary">Resgate Confirmado!</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Seu resgate de <strong>{formatCurrency(netAmount, currency)}</strong> foi solicitado com sucesso.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    O valor pode cair na sua conta em até 5 dias úteis.
+                  </p>
+                  <div className="rounded-md border border-app-card-border p-3 w-full space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Valor solicitado</span>
+                      <span>{formatCurrency(numAmount, currency)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Taxa ({WITHDRAW_FEE_PERCENT}%)</span>
+                      <span className="text-destructive">-{formatCurrency(fee, currency)}</span>
+                    </div>
+                    <div className="border-t border-border/40 pt-1 flex justify-between font-bold">
+                      <span>Você receberá</span>
+                      <span className="text-primary">{formatCurrency(netAmount, currency)}</span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-lg font-bold text-primary">Transferência Confirmada!</h3>
+                  <p className="text-sm text-muted-foreground">
+                    O valor de <strong>{formatCurrency(numAmount, currency)}</strong> foi transferido com sucesso.
+                  </p>
+                  {transferTarget && (
+                    <div className="rounded-md border border-app-card-border p-3 w-full space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Valor</span>
+                        <span className="font-bold text-primary">{formatCurrency(numAmount, currency)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Destinatário</span>
+                        <span className="font-medium">{transferTarget.name}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">ID</span>
+                        <span>{transferTarget.id}</span>
+                      </div>
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Um e-mail de confirmação foi enviado para você.
+                  </p>
+                </>
+              )}
+
               <Button type="submit" className="mt-2 w-full" autoFocus>
                 Fechar
               </Button>
