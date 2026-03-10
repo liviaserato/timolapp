@@ -218,6 +218,7 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR" 
     setConfirmDeleteOpen(false);
   };
 
+  const MAX_ADDRESSES = 5;
   const allSelectedForDelete = selectedForDelete.size > 0 && selectedForDelete.size >= addresses.length;
   const defaultAddr = addresses.find((a) => a.isDefault);
 
