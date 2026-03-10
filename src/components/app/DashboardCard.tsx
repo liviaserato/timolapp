@@ -13,7 +13,7 @@ export interface DashboardCardProps {
 
 export function DashboardCard({ icon: Icon, title, children, className, tooltip, id }: DashboardCardProps) {
   return (
-    <fieldset className={cn(
+    <fieldset id={id} className={cn(
       "rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm min-w-0 overflow-hidden flex flex-col",
       className
     )}>
