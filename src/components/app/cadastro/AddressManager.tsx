@@ -83,7 +83,6 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
   const [cepError, setCepError] = useState("");
   const [countrySearch, setCountrySearch] = useState("");
   const [showCountryList, setShowCountryList] = useState(false);
-  const [showCountryWarning, setShowCountryWarning] = useState(false);
   const countryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
