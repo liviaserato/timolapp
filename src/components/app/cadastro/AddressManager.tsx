@@ -155,7 +155,6 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
   const openAddDialog = () => {
     setEditingId(null);
     setForm(emptyAddress());
-    setShowCountryWarning(false);
     setAddOpen(true);
   };
 
