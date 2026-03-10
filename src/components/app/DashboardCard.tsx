@@ -2,17 +2,18 @@ import { type LucideIcon, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
-interface DashboardCardProps {
+export interface DashboardCardProps {
   icon: LucideIcon;
   title: string;
   children: React.ReactNode;
   className?: string;
   tooltip?: string;
+  id?: string;
 }
 
-export function DashboardCard({ icon: Icon, title, children, className, tooltip }: DashboardCardProps) {
+export function DashboardCard({ icon: Icon, title, children, className, tooltip, id }: DashboardCardProps) {
   return (
-    <fieldset className={cn(
+    <fieldset id={id} className={cn(
       "rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm min-w-0 overflow-hidden flex flex-col",
       className
     )}>

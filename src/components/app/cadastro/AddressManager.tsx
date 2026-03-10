@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { getCountryCurrency } from "@/data/country-currencies";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -45,6 +46,7 @@ interface Props {
   addresses: Address[];
   onChange: (addresses: Address[]) => void;
   currentCountryIso2?: string;
+  franchiseCurrency?: string;
 }
 
 /* ── helpers ── */
@@ -69,7 +71,7 @@ function formatAddress(a: Address): string {
 
 /* ── component ── */
 
-export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR" }: Props) {
+export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR", franchiseCurrency = "BRL" }: Props) {
   const [listOpen, setListOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -81,7 +83,6 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR" 
   const [cepError, setCepError] = useState("");
   const [countrySearch, setCountrySearch] = useState("");
   const [showCountryList, setShowCountryList] = useState(false);
-  const [showCountryWarning, setShowCountryWarning] = useState(false);
   const countryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -96,8 +97,10 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR" 
 
   const isBrazil = form.countryIso2 === "BR";
 
-  // Show warning when country differs from current profile country
-  const isDifferentCountry = form.countryIso2 && form.countryIso2 !== currentCountryIso2;
+  // Currency validation
+  const selectedCurrency = form.countryIso2 ? getCountryCurrency(form.countryIso2) : null;
+  const isSameCurrency = selectedCurrency === franchiseCurrency;
+  const isDifferentCurrency = form.countryIso2 && !isSameCurrency;
 
   const fetchCep = async (cep: string) => {
     const clean = cep.replace(/\D/g, "");
@@ -139,8 +142,6 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR" 
     const c = countries.find((x) => x.iso2 === iso2);
     if (c) {
       setForm((prev) => ({ ...prev, country: getCountryName(c, "pt"), countryIso2: iso2 }));
-      if (iso2 !== currentCountryIso2) setShowCountryWarning(true);
-      else setShowCountryWarning(false);
     }
     setShowCountryList(false);
     setCountrySearch("");
@@ -149,13 +150,11 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR" 
   const clearCountry = () => {
     setForm((prev) => ({ ...prev, country: "", countryIso2: "" }));
     setCountrySearch("");
-    setShowCountryWarning(false);
   };
 
   const openAddDialog = () => {
     setEditingId(null);
     setForm(emptyAddress());
-    setShowCountryWarning(false);
     setAddOpen(true);
   };
 
@@ -173,7 +172,7 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR" 
       city: addr.city,
       state: addr.state,
     });
-    setShowCountryWarning(false);
+    
     setAddOpen(true);
   };
 
@@ -396,14 +395,37 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR" 
               )}
             </div>
 
-            {/* Country change warning */}
-            {isDifferentCountry && (
-              <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/5 p-3">
-                <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
-                <div className="text-xs text-warning leading-relaxed">
-                  <p className="font-semibold">Atenção</p>
-                  <p>Ao alterar para um país diferente do seu cadastro atual, a moeda poderá ser alterada. Após a confirmação, você não poderá trocar o endereço novamente pelos próximos 60 dias.</p>
-                </div>
+            {/* Currency hint — same currency */}
+            {form.countryIso2 && isSameCurrency && form.countryIso2 !== currentCountryIso2 && (
+              <div className="flex items-start gap-2 rounded-md border border-primary/30 bg-primary/5 p-3">
+                <Info className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-primary leading-relaxed">
+                  Este país utiliza a mesma moeda da sua franquia. Custos de envio e possíveis tarifas de importação ou exportação podem variar de acordo com as políticas locais.
+                </p>
+              </div>
+            )}
+
+            {/* Currency hint — different currency (blocks save) */}
+            {isDifferentCurrency && (
+              <div className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/5 p-3">
+                <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-destructive leading-relaxed">
+                  Este país utiliza uma moeda diferente da configurada na sua franquia. Para alterar a moeda de cadastro, é necessário solicitar a análise da equipe da Timol abrindo um chamado na seção <em>Precisa de ajuda</em>,{" "}
+                  <button
+                    type="button"
+                    className="underline underline-offset-2 font-semibold hover:opacity-80"
+                    onClick={() => {
+                      setAddOpen(false);
+                      setListOpen(false);
+                      // Scroll to help card
+                      setTimeout(() => {
+                        document.getElementById("help-card")?.scrollIntoView({ behavior: "smooth" });
+                      }, 300);
+                    }}
+                  >
+                    clicando aqui
+                  </button>.
+                </p>
               </div>
             )}
 
@@ -448,7 +470,7 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR" 
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSaveAddress} disabled={!form.street || !form.city || !form.country}>Salvar</Button>
+            <Button onClick={handleSaveAddress} disabled={!form.street || !form.city || !form.country || !!isDifferentCurrency}>Salvar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
