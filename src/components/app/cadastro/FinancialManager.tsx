@@ -86,9 +86,9 @@ function formatAccountSummary(acc: FinancialAccount): string {
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex justify-between gap-3 py-1.5 border-b border-border/40 last:border-0">
+    <div className="flex flex-wrap gap-x-3 py-1.5 border-b border-border/40 last:border-0">
       <span className="text-muted-foreground text-sm shrink-0">{label}</span>
-      <span className="text-sm font-medium text-right break-words min-w-0">{value}</span>
+      <span className="text-sm font-medium whitespace-nowrap min-w-0">{value}</span>
     </div>
   );
 }
