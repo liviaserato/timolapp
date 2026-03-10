@@ -110,6 +110,7 @@ export function FinancialManager({ accounts, onChange }: Props) {
   const [formType, setFormType] = useState<AccountType>("bank");
   const [form, setForm] = useState<Record<string, string>>({});
 
+  const allSelectedForDelete = selectedForDelete.size > 0 && selectedForDelete.size >= accounts.length;
   const defaultAcc = accounts.find((a) => a.isDefault);
 
   const handleSetDefault = (id: string) => {
