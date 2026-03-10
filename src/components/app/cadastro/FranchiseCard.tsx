@@ -72,6 +72,7 @@ interface UserFranchise {
   sponsor: string;
   registrationDate: string;
   qualification: string;
+  activeUntil: string;
 }
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
