@@ -277,25 +277,24 @@ export function BonusExtractTable({ data, currency }: Props) {
                         {formatShortDate(row.date)}
                       </TableCell>
                       <TableCell className="text-xs font-mono px-1.5 sm:px-3 py-1 text-left">
-                        <span className="flex items-center gap-1">
-                          {/* Icons only on tablet/mobile */}
-                          {q && (
-                            <span className="lg:hidden">
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <span className="cursor-default text-xs leading-none" aria-label={q.label}>{q.icon}</span>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="text-xs">{q.label}</TooltipContent>
-                              </Tooltip>
-                            </span>
-                          )}
-                          <span className="truncate">
-                            {row.orderNumber}
-                            <span className="block sm:hidden text-[10px] text-muted-foreground font-normal">
-                              {formatShortDate(row.date)}
-                            </span>
+                        <div className="flex flex-col">
+                          <span className="flex items-center gap-1">
+                            {q && (
+                              <span className="lg:hidden">
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span className="cursor-default text-xs leading-none" aria-label={q.label}>{q.icon}</span>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="text-xs">{q.label}</TooltipContent>
+                                </Tooltip>
+                              </span>
+                            )}
+                            <span>{row.orderNumber}</span>
                           </span>
-                        </span>
+                          <span className="block sm:hidden text-[10px] text-muted-foreground font-normal">
+                            {formatShortDate(row.date)}
+                          </span>
+                        </div>
                       </TableCell>
                       <TableCell className="text-xs px-1.5 sm:px-3 py-1 text-left hidden lg:table-cell">
                         {q ? q.label : row.qualification}
