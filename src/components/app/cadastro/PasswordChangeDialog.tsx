@@ -67,7 +67,7 @@ function PasswordField({
 /* ── Dialog ── */
 
 export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: PasswordChangeDialogProps) {
-  const [step, setStep] = useState<"passwords" | "pin">("passwords");
+  const [step, setStep] = useState<"passwords" | "pin" | "success">("passwords");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
