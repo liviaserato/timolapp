@@ -18,7 +18,7 @@ const challenges = [
 export default function Dashboard() {
   return (
     <div>
-      <header className="text-center mb-4">
+      <header className="mb-4">
         <h1 className="text-2xl font-bold text-primary">Painel Inicial</h1>
         <p className="text-sm text-muted-foreground mt-1">Visão geral da sua franquia</p>
       </header>

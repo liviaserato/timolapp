@@ -177,9 +177,9 @@ export default function Suporte() {
   return (
     <div className="flex flex-col gap-4">
       {/* ── Header ── */}
-      <header className="text-center mb-1">
+      <header className="mb-1">
         <h1 className="text-2xl font-bold text-primary">Suporte</h1>
-        <p className="text-sm text-muted-foreground mt-1 max-w-lg mx-auto">
+        <p className="text-sm text-muted-foreground mt-1">
           Encontre respostas rápidas, fale com a equipe Timol ou acompanhe seus chamados de atendimento.
         </p>
       </header>
