@@ -36,13 +36,14 @@ function parseCurrencyInput(formatted: string): number {
 export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonus, onConvert }: Props) {
   const [step, setStep] = useState<Step>("amount");
   const [rawAmount, setRawAmount] = useState("");
+  const [confirmed, setConfirmed] = useState(false);
 
   const displayAmount = rawAmount ? formatCurrencyInput(rawAmount) : "0,00";
   const numAmount = parseCurrencyInput(rawAmount);
   const extraAmount = numAmount * (BONUS_PERCENT / 100);
   const totalCredit = numAmount + extraAmount;
   const exceedsBalance = numAmount > availableBonus;
-  const canContinue = numAmount > 0 && !exceedsBalance;
+  const canContinue = numAmount > 0 && !exceedsBalance && confirmed;
 
   function reset() {
     setStep("amount");
