@@ -137,90 +137,109 @@ export function PasswordChangeDialog({ open, onOpenChange, maskedEmail }: Passwo
           }
         }}
       >
-        <DialogHeader>
-          <DialogTitle>Alterar Senha</DialogTitle>
-          <DialogDescription>
-            {step === "passwords"
-              ? "Informe sua senha atual e defina uma nova senha."
-              : `Digite o PIN de 6 dígitos enviado para ${maskedEmail}.`}
-          </DialogDescription>
-        </DialogHeader>
-
-        {step === "passwords" ? (
-          <div className="space-y-3">
-            <PasswordField
-              label="Senha atual"
-              value={currentPassword}
-              onChange={setCurrentPassword}
-              show={showCurrent}
-              onToggle={() => setShowCurrent(!showCurrent)}
-              placeholder="Digite sua senha atual"
-            />
-            <PasswordField
-              label="Nova senha"
-              value={newPassword}
-              onChange={setNewPassword}
-              show={showNew}
-              onToggle={() => setShowNew(!showNew)}
-              placeholder="Mínimo 6 caracteres"
-            />
-            {newPasswordTooShort && (
-              <p className="text-xs text-destructive">A senha deve ter no mínimo 6 caracteres.</p>
-            )}
-            {sameAsCurrentPassword && !newPasswordTooShort && (
-              <p className="text-xs text-destructive">A nova senha não pode ser igual à senha atual.</p>
-            )}
-            <PasswordField
-              label="Confirmar nova senha"
-              value={confirmPassword}
-              onChange={setConfirmPassword}
-              show={showConfirm}
-              onToggle={() => setShowConfirm(!showConfirm)}
-              placeholder="Repita a nova senha"
-              error={passwordsMismatch ? "As senhas não coincidem." : undefined}
-            />
-            <DialogFooter>
-              <Button variant="outline" onClick={() => handleClose(false)}>
-                Cancelar
-              </Button>
-              <Button onClick={handleSendPin} disabled={!passwordsValid || loading}>
-                {loading ? "Verificando..." : "Continuar"}
-              </Button>
-            </DialogFooter>
+        {step === "success" ? (
+          <div className="flex flex-col items-center py-6 gap-4">
+            <div className="h-14 w-14 rounded-full bg-green-100 flex items-center justify-center">
+              <ShieldCheck className="h-7 w-7 text-green-600" />
+            </div>
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-semibold text-foreground">Senha alterada</h3>
+              <p className="text-sm text-muted-foreground">
+                Sua senha foi atualizada com sucesso.
+              </p>
+            </div>
+            <Button onClick={() => handleClose(false)} className="mt-2 w-full max-w-[200px]">
+              Fechar
+            </Button>
           </div>
         ) : (
-          <div className="space-y-3">
-            <div className="space-y-2">
-              <Label className="text-center block">PIN de verificação</Label>
-              <div className="flex justify-center">
-                <InputOTP
-                  maxLength={6}
-                  value={pin}
-                  onChange={(value) => setPin(value)}
-                  onComplete={() => {
-                    setTimeout(() => handleVerifyPin(), 0);
-                  }}
-                >
-                  <InputOTPGroup>
-                    <InputOTPSlot index={0} />
-                    <InputOTPSlot index={1} />
-                    <InputOTPSlot index={2} />
-                    <InputOTPSlot index={3} />
-                    <InputOTPSlot index={4} />
-                    <InputOTPSlot index={5} />
-                  </InputOTPGroup>
-                </InputOTP>
+          <>
+            <DialogHeader>
+              <DialogTitle>Alterar Senha</DialogTitle>
+              <DialogDescription>
+                {step === "passwords"
+                  ? "Informe sua senha atual e defina uma nova senha."
+                  : `Digite o PIN de 6 dígitos enviado para ${maskedEmail}.`}
+              </DialogDescription>
+            </DialogHeader>
+
+            {step === "passwords" ? (
+              <div className="space-y-3">
+                <PasswordField
+                  label="Senha atual"
+                  value={currentPassword}
+                  onChange={setCurrentPassword}
+                  show={showCurrent}
+                  onToggle={() => setShowCurrent(!showCurrent)}
+                  placeholder="Digite sua senha atual"
+                />
+                <PasswordField
+                  label="Nova senha"
+                  value={newPassword}
+                  onChange={setNewPassword}
+                  show={showNew}
+                  onToggle={() => setShowNew(!showNew)}
+                  placeholder="Mínimo 6 caracteres"
+                />
+                {newPasswordTooShort && (
+                  <p className="text-xs text-destructive">A senha deve ter no mínimo 6 caracteres.</p>
+                )}
+                {sameAsCurrentPassword && !newPasswordTooShort && (
+                  <p className="text-xs text-destructive">A nova senha não pode ser igual à senha atual.</p>
+                )}
+                <PasswordField
+                  label="Confirmar nova senha"
+                  value={confirmPassword}
+                  onChange={setConfirmPassword}
+                  show={showConfirm}
+                  onToggle={() => setShowConfirm(!showConfirm)}
+                  placeholder="Repita a nova senha"
+                  error={passwordsMismatch ? "As senhas não coincidem." : undefined}
+                />
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => handleClose(false)}>
+                    Cancelar
+                  </Button>
+                  <Button onClick={handleSendPin} disabled={!passwordsValid || loading}>
+                    {loading ? "Verificando..." : "Continuar"}
+                  </Button>
+                </DialogFooter>
               </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => { setStep("passwords"); setPin(""); }}>
-                Voltar
-              </Button>
-              <Button onClick={handleVerifyPin} disabled={pin.length < 6 || loading}>
-                {loading ? "Verificando..." : "Confirmar"}
-              </Button>
-            </DialogFooter>
-          </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Label className="text-center block">PIN de verificação</Label>
+                  <div className="flex justify-center">
+                    <InputOTP
+                      maxLength={6}
+                      value={pin}
+                      onChange={(value) => setPin(value)}
+                      onComplete={() => {
+                        setTimeout(() => handleVerifyPin(), 0);
+                      }}
+                    >
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => { setStep("passwords"); setPin(""); }}>
+                    Voltar
+                  </Button>
+                  <Button onClick={handleVerifyPin} disabled={pin.length < 6 || loading}>
+                    {loading ? "Verificando..." : "Confirmar"}
+                  </Button>
+                </DialogFooter>
+              </div>
+            )}
+          </>
         )}
       </DialogContent>
     </Dialog>
