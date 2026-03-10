@@ -480,23 +480,33 @@ export function UpgradeDialog({
           {/* ── STEP 2: Payment ── */}
           {step === "payment" && selectedFranchise && (
             <>
-              <DialogHeader className="text-center">
-                <DialogTitle className="text-xl">Pagamento do Upgrade</DialogTitle>
-                <DialogDescription>
-                  Upgrade para {selectedFranchise.name} — ID {franchiseId}
-                </DialogDescription>
-              </DialogHeader>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setStep("select")}
+                  className="absolute left-0 top-1 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Voltar"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <DialogHeader className="text-center">
+                  <DialogTitle className="text-xl">Pagamento do Upgrade</DialogTitle>
+                  <DialogDescription className="text-center">
+                    Upgrade para {selectedFranchise.name} — ID {franchiseId}
+                  </DialogDescription>
+                </DialogHeader>
+              </div>
 
               <div className="text-center space-y-1 mt-2">
-                <p className="text-3xl font-extrabold text-foreground tracking-tight">
-                  {formatPrice(discountedPrice)}
-                  {isPixDiscount && price !== discountedPrice && (
-                    <span className="ml-2 text-sm line-through text-muted-foreground font-normal">{formatPrice(price)}</span>
-                  )}
-                </p>
                 <p className="text-sm font-medium text-foreground">
                   Franquia {selectedFranchise.name}
                 </p>
+                <p className="text-3xl font-extrabold text-foreground tracking-tight">
+                  {formatPrice(discountedPrice)}
+                </p>
+                {isPixDiscount && price !== discountedPrice && (
+                  <p className="text-sm line-through text-muted-foreground">{formatPrice(price)}</p>
+                )}
               </div>
 
               {/* Method selection - only for Brazilians */}
@@ -663,12 +673,8 @@ export function UpgradeDialog({
                 </Card>
               )}
 
-              <div className="flex justify-between gap-3 mt-4">
-                <Button variant="outline" onClick={() => setStep("select")} disabled={loading} className="flex-1">
-                  <ChevronLeft className="h-4 w-4 mr-1" />
-                  Voltar
-                </Button>
-                <Button onClick={handlePayment} disabled={loading} className="flex-1">
+              <div className="mt-4">
+                <Button onClick={handlePayment} disabled={loading} className="w-full">
                   {method === "pix" ? "Confirmar PIX" : "Pagar"}
                 </Button>
               </div>
