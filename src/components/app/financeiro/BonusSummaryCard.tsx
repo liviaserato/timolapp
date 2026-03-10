@@ -1,57 +1,16 @@
-import { TrendingUp, ShieldCheck, ShieldAlert, ShieldX, ArrowRightLeft } from "lucide-react";
+import { TrendingUp, ArrowRightLeft } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { CurrencyConfig, formatCurrency } from "./currency-helpers";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-
-interface FranchiseStatus {
-  activeUntil: string;
-}
-
-function getFranchiseStatusInfo(activeUntil: string) {
-  const now = new Date();
-  const expDate = new Date(activeUntil);
-  const diffMs = expDate.getTime() - now.getTime();
-  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffDays < 0) {
-    return {
-      level: "expired" as const,
-      icon: ShieldX,
-      colorClass: "text-destructive",
-      message: "Sua franquia está inativa. Bônus e pontos não são gerados durante esse período. Adquira produtos para reativá-la e voltar a ganhar!",
-      label: `Inativa desde ${expDate.toLocaleDateString("pt-BR")}`,
-    };
-  }
-  if (diffDays <= 10) {
-    return {
-      level: "warning" as const,
-      icon: ShieldAlert,
-      colorClass: "text-warning",
-      message: `Sua franquia vence em ${diffDays} dia${diffDays !== 1 ? "s" : ""}. Adquira produtos para renovar e continuar recebendo bônus!`,
-      label: `Ativa até ${expDate.toLocaleDateString("pt-BR")}`,
-    };
-  }
-  return {
-    level: "active" as const,
-    icon: ShieldCheck,
-    colorClass: "text-success",
-    message: "Franquia ativa para recebimento de bônus.",
-    label: `Ativa até ${expDate.toLocaleDateString("pt-BR")}`,
-  };
-}
 
 interface Props {
   nextFriday: number;
   awaitingRelease: number;
   currency: CurrencyConfig;
-  franchiseStatus: FranchiseStatus;
   onConvertBonus?: () => void;
 }
 
-export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, franchiseStatus, onConvertBonus }: Props) {
-  const status = getFranchiseStatusInfo(franchiseStatus.activeUntil);
-  const StatusIcon = status.icon;
+export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, onConvertBonus }: Props) {
   const hasBonus = nextFriday > 0 || awaitingRelease > 0;
 
   return (
