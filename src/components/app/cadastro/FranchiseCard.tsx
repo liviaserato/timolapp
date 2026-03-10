@@ -89,10 +89,12 @@ interface Props {
   franchiseId: string;
   planCode: string;
   sponsor: string;
+  activeUntil?: string;
 }
 
-export function FranchiseCard({ franchiseId, planCode, sponsor }: Props) {
+export function FranchiseCard({ franchiseId, planCode, sponsor, activeUntil }: Props) {
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const franchiseStatus = activeUntil ? getFranchiseStatusInfo(activeUntil) : null;
 
   // Mock: user may have multiple IDs
   const userFranchises: UserFranchise[] = [
