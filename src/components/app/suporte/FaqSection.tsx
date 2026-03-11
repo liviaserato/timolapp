@@ -222,7 +222,7 @@ export default function FaqSection() {
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-3">
-        <TabsList className="flex flex-wrap justify-start h-auto gap-x-2 gap-y-1.5 bg-transparent p-0">
+        <TabsList className="block text-justify h-auto bg-transparent p-0 [&>*]:my-[3px]">
           {faqTabs.map((tab) => {
             const isOtherTabMatch =
               hasSearch && matchingTabs.has(tab.value) && tab.value !== activeTab;
