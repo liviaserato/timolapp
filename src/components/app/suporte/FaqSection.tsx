@@ -1,6 +1,7 @@
 import { useRef, useState, useMemo, useCallback } from "react";
 import { Search, X, HelpCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
