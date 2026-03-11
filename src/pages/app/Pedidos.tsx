@@ -248,13 +248,13 @@ export default function Pedidos() {
                   <TableHead className="text-xs font-semibold hidden md:table-cell px-2 md:px-4">Itens</TableHead>
                   <TableHead className="text-xs font-semibold text-right px-2 md:px-4">Total</TableHead>
                   <TableHead className="text-xs font-semibold text-center px-1.5 md:px-4">Status</TableHead>
-                  <TableHead className="text-xs font-semibold text-center w-8 md:w-10 px-1"></TableHead>
+                  
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">
+                    <TableCell colSpan={5} className="text-center text-sm text-muted-foreground py-8">
                       Nenhum pedido encontrado.
                     </TableCell>
                   </TableRow>
@@ -274,9 +274,6 @@ export default function Pedidos() {
                       <TableCell className="text-xs font-semibold text-right px-2 md:px-4">{formatCurrency(order.total)}</TableCell>
                       <TableCell className="text-center px-1.5 md:px-4">
                         <StatusBadge status={order.status} />
-                      </TableCell>
-                      <TableCell className="text-center px-1 md:px-4">
-                        <Eye className="h-3.5 w-3.5 text-muted-foreground" />
                       </TableCell>
                     </TableRow>
                   ))
