@@ -65,15 +65,7 @@ const escritorios = [
   { uf: "MG", cidade: "Uberlândia", estado: "MG", endereco: "Av. Rondon Pacheco, 4600 Sala 1010" },
 ];
 
-const categorias = [
-  "Cadastro",
-  "Pedidos",
-  "Financeiro",
-  "Bônus e Pontos",
-  "Franquia",
-  "Conta / Acesso",
-  "Outro",
-];
+const categoriasChamado = [...faqTabs.map((t) => t.label), "Outro"];
 
 /* ── Helper: check if ticket is older than 30 days ── */
 function isOlderThan30Days(dateStr: string) {
