@@ -114,7 +114,7 @@ export function AppHeader() {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/app/suporte" className="flex items-center gap-2">
-                    <img src={iconSuporte} alt="" className="h-4 w-4 invert-0 brightness-0" /> Fale Conosco
+                    <img src={iconSuporte} alt="" className="h-4 w-4 invert-0 brightness-0" /> Suporte
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
