@@ -78,6 +78,7 @@ export default function Suporte() {
   const [selectedTicket, setSelectedTicket] = useState<TicketDetail | null>(null);
   const [ticketDetailOpen, setTicketDetailOpen] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const [selectedOffice, setSelectedOffice] = useState<Office | null>(null);
   const MAX_FILES = 5;
 
   const visibleTickets = showOldTickets
