@@ -15,6 +15,7 @@ import Dashboard from "./pages/app/Dashboard";
 import Cadastro from "./pages/app/Cadastro";
 import Financeiro from "./pages/app/Financeiro";
 import Suporte from "./pages/app/Suporte";
+import Pedidos from "./pages/app/Pedidos";
 import SectionPlaceholder from "./pages/app/SectionPlaceholder";
 import EmailPreviews from "./pages/app/EmailPreviews";
 import NotFound from "./pages/NotFound";
