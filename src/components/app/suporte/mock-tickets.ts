@@ -43,7 +43,7 @@ export const mockTicketsDetalhados: TicketDetail[] = [
     numero: "#00138",
     assunto: "Erro no pagamento do pedido",
     categoria: "Financeiro",
-    status: "respondido",
+    status: "concluido",
     descricaoInicial:
       "Tentei efetuar o pagamento do pedido #4521 via cartão de crédito, mas a transação retornou um erro genérico. O valor não foi debitado, porém o pedido ficou travado no sistema.",
     dataAbertura: "02/03/2026",
@@ -87,7 +87,7 @@ export const mockTicketsDetalhados: TicketDetail[] = [
     numero: "#00105",
     assunto: "Alteração de endereço de entrega",
     categoria: "Cadastro",
-    status: "fechado",
+    status: "arquivado",
     descricaoInicial: "Preciso alterar meu endereço de entrega para um novo local.",
     dataAbertura: "10/01/2026",
     ultimaAtualizacao: "12/01/2026",

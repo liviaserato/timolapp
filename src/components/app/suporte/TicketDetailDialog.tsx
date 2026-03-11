@@ -9,7 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ThumbsUp, ThumbsDown, Clock, CheckCircle2, AlertCircle, User, Headphones, Send } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Clock, CheckCircle2, AlertCircle, XCircle, Archive, User, Headphones, Send, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import faviconTimol from "@/assets/favicon-timol-azul-escuro.svg";
@@ -27,7 +27,7 @@ export interface TicketDetail {
   numero: string;
   assunto: string;
   categoria: string;
-  status: "aberto" | "em_andamento" | "respondido" | "fechado";
+  status: "em_andamento" | "expirado" | "respondido" | "concluido" | "arquivado";
   descricaoInicial: string;
   dataAbertura: string;
   ultimaAtualizacao: string;
@@ -35,10 +35,11 @@ export interface TicketDetail {
 }
 
 const statusMap: Record<TicketDetail["status"], { label: string; color: string; icon: typeof Clock }> = {
-  aberto: { label: "Aberto", color: "bg-blue-100 text-blue-700", icon: AlertCircle },
   em_andamento: { label: "Em andamento", color: "bg-amber-100 text-amber-700", icon: Clock },
-  respondido: { label: "Respondido", color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
-  fechado: { label: "Fechado", color: "bg-muted text-muted-foreground", icon: CheckCircle2 },
+  expirado: { label: "Expirado", color: "bg-red-100 text-red-700", icon: XCircle },
+  respondido: { label: "Respondido", color: "bg-blue-100 text-blue-700", icon: MessageCircle },
+  concluido: { label: "Concluído", color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
+  arquivado: { label: "Arquivado", color: "bg-muted text-muted-foreground", icon: Archive },
 };
 
 interface TicketDetailDialogProps {
@@ -85,8 +86,8 @@ export default function TicketDetailDialog({ ticket, open, onOpenChange }: Ticke
   if (!ticket) return null;
 
   const st = statusMap[ticket.status];
-  const isResolved = ticket.status === "respondido" || ticket.status === "fechado";
-  const canReply = !isResolved;
+  const isResolved = ticket.status === "concluido" || ticket.status === "arquivado";
+  const canReply = !isResolved && ticket.status !== "expirado";
 
   function handleSendReply() {
     if (!replyText.trim()) return;
