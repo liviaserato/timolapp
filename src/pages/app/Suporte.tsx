@@ -4,6 +4,7 @@ import {
   Phone,
   ChevronRight,
   Clock,
+  X,
   CheckCircle2,
   AlertCircle,
   Paperclip,
