@@ -10,7 +10,6 @@ import {
   MapPin,
   MessageSquare,
   Send,
-  ArrowLeft,
   Eye,
   EyeOff,
 } from "lucide-react";
@@ -41,7 +40,8 @@ import iconWhatsapp from "@/assets/icon-logo-whatsapp.svg";
 import TicketDetailDialog from "@/components/app/suporte/TicketDetailDialog";
 import { mockTicketsDetalhados } from "@/components/app/suporte/mock-tickets";
 import type { TicketDetail } from "@/components/app/suporte/TicketDetailDialog";
-import FaqSection from "@/components/app/suporte/FaqSection";
+import FaqSection, { faqTabs } from "@/components/app/suporte/FaqSection";
+import faviconTimol from "@/assets/favicon-timol-azul-escuro.svg";
 
 /* ── Status map ── */
 
@@ -64,15 +64,7 @@ const escritorios = [
   { uf: "MG", cidade: "Uberlândia", estado: "MG", endereco: "Av. Rondon Pacheco, 4600 Sala 1010" },
 ];
 
-const categorias = [
-  "Cadastro",
-  "Pedidos",
-  "Financeiro",
-  "Bônus e Pontos",
-  "Franquia",
-  "Conta / Acesso",
-  "Outro",
-];
+const categoriasChamado = [...faqTabs.map((t) => t.label), "Outro"];
 
 /* ── Helper: check if ticket is older than 30 days ── */
 function isOlderThan30Days(dateStr: string) {
@@ -279,14 +271,10 @@ export default function Suporte() {
       <Dialog open={newTicketOpen} onOpenChange={setNewTicketOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader className="text-center">
-            <button
-              onClick={() => setNewTicketOpen(false)}
-              className="absolute left-4 top-4 text-muted-foreground hover:text-foreground"
-              aria-label="Voltar"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <DialogTitle className="text-lg">Novo Chamado</DialogTitle>
+            <DialogTitle className="text-lg flex items-center justify-center gap-2">
+              <img src={faviconTimol} alt="" className="h-5 w-5" />
+              Novo Chamado
+            </DialogTitle>
             <DialogDescription>
               Descreva sua dúvida ou problema. Nossa equipe responderá em breve.
             </DialogDescription>
@@ -299,7 +287,7 @@ export default function Suporte() {
                   <SelectValue placeholder="Selecione uma categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categorias.map((c) => (
+                  {categoriasChamado.map((c) => (
                     <SelectItem key={c} value={c} className="text-sm">
                       {c}
                     </SelectItem>
