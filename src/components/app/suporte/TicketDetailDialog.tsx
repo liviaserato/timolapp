@@ -73,21 +73,21 @@ export default function TicketDetailDialog({ ticket, open, onOpenChange }: Ticke
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
-        <DialogHeader className="text-center">
-          <DialogTitle className="text-lg flex items-center justify-center gap-2">
+        <DialogHeader>
+          <DialogTitle className="text-lg flex items-center gap-2">
             <img src={faviconTimol} alt="" className="h-5 w-5" />
             Chamado {ticket.numero}
           </DialogTitle>
-          <DialogDescription className="text-center">Detalhes e histórico de interações</DialogDescription>
-        </DialogHeader>
-
-        {/* ── Info principal ── */}
-        <div className="space-y-3 mt-2">
-          <div className="flex items-center justify-center">
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-xs text-muted-foreground font-medium">Status</span>
             <Badge variant="secondary" className={`text-[10px] ${st.color}`}>
               {st.label}
             </Badge>
           </div>
+        </DialogHeader>
+
+        {/* ── Info principal ── */}
+        <div className="space-y-3 mt-2">
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
               <p className="text-xs text-muted-foreground">Categoria</p>
