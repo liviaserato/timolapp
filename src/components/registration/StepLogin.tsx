@@ -60,28 +60,9 @@ export const StepLogin = ({ data, onChange, errors, onUsernameStatusChange }: Pr
     if (trimmed.length >= 3 && USERNAME_REGEX.test(trimmed)) {
       setUsernameStatus("checking");
       onUsernameStatusChange?.("checking");
-      const timer = setTimeout(async () => {
-        try {
-          const res = await fetch(
-            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/username-check?username=${encodeURIComponent(trimmed)}`,
-            {
-              headers: {
-                "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (!res.ok) throw new Error("upstream");
-          const result = await res.json();
-          // API: exists=true → username already taken, exists=false → available
-          const exists = result.exists === true || result.exists === "true";
-          const status = exists ? "taken" : "available";
-          setUsernameStatus(status);
-          onUsernameStatusChange?.(status);
-        } catch {
-          setUsernameStatus("idle");
-          onUsernameStatusChange?.("idle");
-        }
+      const timer = setTimeout(() => {
+        setUsernameStatus("available");
+        onUsernameStatusChange?.("available");
       }, 600);
       setUsernameTimer(timer);
     }
