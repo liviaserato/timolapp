@@ -1,43 +1,107 @@
 
+Objetivo
 
-## Página Administrativa — Preview de E-mails Transacionais
+Sim, dá para fazer. O padrão mais aceito não é só “bloquear depois de 5 erros”, e sim combinar:
+- limite de tentativas por conta
+- limite por IP/dispositivo
+- bloqueio temporário curto
+- mensagem genérica no login
+- reset da contagem quando a pessoa acerta a senha
 
-### Objetivo
-Criar uma página dentro do app (`/app/configuracoes/emails`) que renderiza preview de todos os 10 templates de e-mail transacionais com dados fictícios, permitindo ao admin visualizar como cada e-mail ficará.
+O que encontrei no projeto
 
-### Abordagem
-Como os templates originais usam imports Deno (`npm:react`, `npm:@react-email/components`), não é possível importá-los diretamente no frontend Vite. A solução é **recriar versões "espelho" dos templates** usando React Email com imports normais do npm (já que `@react-email/components` pode ser instalado como dependência do projeto), ou — mais simples e sem dependência extra — renderizar os templates como **HTML estático em iframes** gerados inline.
+- Hoje a tela `src/pages/Login.tsx` ainda está em modo mock: ela faz `setTimeout` e entra em `/app` sem autenticação real.
+- Então essa trava de 5 tentativas precisa ser implementada junto com o login real no backend, senão ela não protege nada de verdade.
+- O projeto já usa autenticação no cadastro e já tem `profiles` com `username`, então o caminho natural é autenticar por usuário no frontend e validar/bloquear no backend.
 
-A abordagem mais prática: criar componentes React puros que replicam a estrutura visual dos templates usando os mesmos inline styles, sem precisar de `@react-email/components`. Isso evita instalar pacotes extras e mantém fidelidade visual.
+Padrão “universal” recomendado
 
-### Estrutura
+Para este app, eu recomendaria este padrão:
+- até 5 tentativas erradas
+- ao errar a 5ª vez: bloquear por 10 minutos
+- aplicar a regra por `username` e também observar IP/origem
+- ao acertar a senha: zerar tentativas
+- sempre mostrar erro genérico como “Usuário ou senha inválidos” ou “Tente novamente mais tarde”
+- não informar se o bloqueio foi por usuário inexistente, senha errada ou conta bloqueada
+- opcional depois: CAPTCHA após muitas tentativas repetidas
 
-1. **Nova página**: `src/pages/app/EmailPreviews.tsx`
-   - Lista dos 10 templates em cards/tabs
-   - Cada template renderiza um preview com dados mock em um iframe (via `srcdoc`)
-   - Templates: Confirmação de E-mail, Recuperação de Senha, Magic Link, Convite, Alteração de E-mail, Reautenticação (PIN), Cadastro Pendente, Cadastro Concluído, Senha Alterada, Chamado Concluído
+Esse é um padrão comum e equilibrado. Não existe um número único “universal” obrigatório, mas 5 tentativas + 10 a 15 minutos de bloqueio é bem aceitável.
 
-2. **Arquivo de templates HTML**: `src/components/app/configuracoes/email-preview-templates.ts`
-   - Funções que retornam HTML string para cada template, usando os mesmos inline styles dos originais
-   - Dados mock pré-preenchidos (nomes, IDs, URLs fictícias)
+Plano de implementação
 
-3. **Rota**: Adicionar em `App.tsx` como rota filha de `/app`
-   - `<Route path="configuracoes/emails" element={<EmailPreviews />} />`
+1. Trocar o login mock por login real
+- Substituir o `setTimeout` do `Login.tsx` por uma chamada a uma backend function própria de login.
+- Essa function receberá `username` e `password`.
 
-### Layout da Página
-- Título "Templates de E-mail" no topo
-- Select ou tabs para escolher o template
-- Preview renderizado em iframe com largura fixa de 600px (largura padrão de e-mail), centralizado
-- Nome e descrição do template acima do preview
+2. Validar bloqueio antes de autenticar
+- A backend function verifica se o usuário está temporariamente bloqueado.
+- Se estiver, retorna resposta genérica com tempo restante.
 
-### Dados Mock por Template
-- **Signup**: João Silva, joao@email.com
-- **Recovery/Magic Link**: URLs fictícias
-- **Invite**: Timol, URL fictícia
-- **Email Change**: antigo@email.com → novo@email.com
-- **Reauthentication**: PIN 847291
-- **Cadastro Pendente**: ID TML-001234, Patrocinador Maria Santos
-- **Cadastro Concluído**: Franquia Ouro, username joaosilva
-- **Senha Alterada**: João Silva
-- **Chamado Concluído**: Chamado #SUP-0042, feedback URLs
+3. Registrar tentativas falhas
+- Criar uma tabela específica de controle, separada de `profiles`, por exemplo:
+  - `login_security`
+  - ou `login_attempts`
+- Campos típicos:
+  - `username`
+  - `failed_attempts`
+  - `locked_until`
+  - `last_failed_at`
+  - `last_ip`
+  - `updated_at`
 
+4. Fazer o fluxo de autenticação seguro
+- A function localiza o usuário pelo `username`.
+- Faz a autenticação real no backend.
+- Se falhar:
+  - incrementa contador
+  - se chegou ao limite, grava `locked_until = now + 10 min`
+- Se der certo:
+  - zera contador e remove bloqueio
+
+5. Ajustar a UI do login
+- Mostrar mensagem amigável e genérica.
+- Se bloqueado, pode exibir algo como:
+  - “Muitas tentativas. Tente novamente em alguns minutos.”
+- Não mostrar detalhes que permitam adivinhar contas válidas.
+
+Recomendação de segurança
+
+Eu não recomendo bloquear só por usuário.
+O ideal é:
+- regra principal por usuário
+- proteção extra por IP/origem
+Porque, se for só por usuário, alguém pode bloquear a conta de outra pessoa de propósito.
+
+Detalhes técnicos
+
+Arquivos que provavelmente entrarão nessa mudança:
+- `src/pages/Login.tsx`
+- uma nova backend function de login
+- uma migration para criar a tabela de tentativas/bloqueio
+- possivelmente proteção de rota em `src/App.tsx` / layout do app
+
+Decisões de produto que eu seguiria por padrão
+- Limite: 5 erros
+- Janela/bloqueio: 10 minutos
+- Reset ao sucesso: sim
+- Mensagem detalhada: não
+- CAPTCHA depois de abuso repetido: recomendado numa segunda etapa
+
+Resumo prático
+
+Sim, é totalmente viável.
+O melhor padrão para seu caso seria:
+- 5 senhas erradas
+- bloqueio temporário de 10 minutos
+- controle no backend
+- por usuário + sinal de IP/origem
+- mensagem genérica
+- zerar ao login bem-sucedido
+
+Observação importante
+
+Como o login atual ainda não é real, eu trataria isso como uma implementação em duas partes:
+1. conectar o login de verdade ao backend
+2. acoplar o bloqueio temporário no mesmo fluxo
+
+Assim a regra fica realmente segura e não só visual.

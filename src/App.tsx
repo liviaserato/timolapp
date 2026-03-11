@@ -16,6 +16,7 @@ import Cadastro from "./pages/app/Cadastro";
 import Financeiro from "./pages/app/Financeiro";
 import Suporte from "./pages/app/Suporte";
 import SectionPlaceholder from "./pages/app/SectionPlaceholder";
+import EmailPreviews from "./pages/app/EmailPreviews";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="cadastro" element={<Cadastro />} />
               <Route path="financeiro" element={<Financeiro />} />
               <Route path="suporte" element={<Suporte />} />
+              <Route path="configuracoes/emails" element={<EmailPreviews />} />
               <Route path=":section" element={<SectionPlaceholder />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
