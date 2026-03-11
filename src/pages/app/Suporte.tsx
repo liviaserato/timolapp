@@ -292,7 +292,9 @@ export default function Suporte() {
               Novo Chamado
             </DialogTitle>
             <DialogDescription className="text-center">
-              Descreva sua dúvida ou problema. Nossa equipe responderá em breve.
+              Descreva sua dúvida ou problema.
+              <br />
+              Nossa equipe responderá em breve.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 mt-2">
