@@ -52,6 +52,35 @@ export default function TicketDetailDialog({ ticket, open, onOpenChange }: Ticke
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
+  const [loadingFeedback, setLoadingFeedback] = useState(false);
+
+  // Fetch saved feedback from DB when ticket opens
+  useEffect(() => {
+    if (!ticket || !open) {
+      setRating(null);
+      return;
+    }
+    async function fetchFeedback() {
+      setLoadingFeedback(true);
+      try {
+        const { data } = await supabase
+          .from("ticket_feedback" as any)
+          .select("rating")
+          .eq("ticket_id", ticket!.id)
+          .maybeSingle();
+        if (data && (data as any).rating && (data as any).rating !== "pending") {
+          setRating((data as any).rating as "positive" | "negative");
+        } else {
+          setRating(null);
+        }
+      } catch {
+        setRating(null);
+      } finally {
+        setLoadingFeedback(false);
+      }
+    }
+    fetchFeedback();
+  }, [ticket?.id, open]);
 
   if (!ticket) return null;
 
