@@ -158,7 +158,7 @@ export default function Suporte() {
           <Button
             variant="outline"
             size="sm"
-            className="bg-[#25D366] text-white hover:bg-[#20bd5a] border-0 gap-1.5 text-xs shrink-0"
+            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 border-0 gap-1.5 text-xs shrink-0"
             onClick={() => openWhatsAppLink("Olá! Preciso de ajuda.")}
           >
             <img src={iconWhatsapp} alt="" className="h-4 w-4" />
