@@ -15,10 +15,10 @@ export interface DashboardCardProps {
 export function DashboardCard({ icon: Icon, title, children, className, tooltip, id, headerRight }: DashboardCardProps) {
   return (
     <fieldset id={id} className={cn(
-      "rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm min-w-0 overflow-hidden flex flex-col",
+      "relative rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm min-w-0 overflow-hidden flex flex-col",
       className
     )}>
-      <legend className={cn("flex items-center gap-2 px-1 text-base font-bold text-primary", headerRight && "w-full")}>
+      <legend className="flex items-center gap-2 px-1 text-base font-bold text-primary">
         <Icon className="h-5 w-5 shrink-0" />
         <span className="shrink-0">{title}</span>
         {tooltip && (
@@ -33,10 +33,12 @@ export function DashboardCard({ icon: Icon, title, children, className, tooltip,
             </TooltipContent>
           </Tooltip>
         )}
-        {headerRight && (
-          <span className="ml-auto">{headerRight}</span>
-        )}
       </legend>
+      {headerRight && (
+        <div className="absolute top-0 right-4 -translate-y-1/2">
+          {headerRight}
+        </div>
+      )}
       {children}
     </fieldset>
   );
