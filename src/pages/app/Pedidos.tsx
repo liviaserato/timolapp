@@ -246,15 +246,14 @@ export default function Pedidos() {
 
           {/* Tabela */}
           <div className="mt-3 rounded-md border border-app-card-border overflow-hidden overflow-x-hidden">
-            <Table className="md:table-auto table-fixed">
+            <Table className="w-full table-fixed">
               <TableHeader>
                 <TableRow className="bg-[hsl(var(--table-header))]">
-                  <TableHead className="text-xs font-semibold px-2 md:px-4">Pedido</TableHead>
-                  <TableHead className="text-xs font-semibold hidden sm:table-cell px-2 md:px-4">Data</TableHead>
-                  <TableHead className="text-xs font-semibold hidden md:table-cell px-2 md:px-4">Itens</TableHead>
-                  <TableHead className="text-xs font-semibold text-right px-2 md:px-4">Total</TableHead>
-                  <TableHead className="text-xs font-semibold text-center px-1.5 md:px-4">Status</TableHead>
-                  
+                  <TableHead className="w-[38%] text-xs font-semibold px-1.5 sm:px-2 md:px-3 lg:px-4">Pedido</TableHead>
+                  <TableHead className="w-[20%] text-xs font-semibold hidden sm:table-cell px-1.5 sm:px-2 md:px-3 lg:px-4">Data</TableHead>
+                  <TableHead className="w-[14%] text-xs font-semibold hidden lg:table-cell px-1.5 sm:px-2 md:px-3 lg:px-4">Itens</TableHead>
+                  <TableHead className="w-[20%] text-xs font-semibold text-right px-1.5 sm:px-2 md:px-3 lg:px-4">Total</TableHead>
+                  <TableHead className="w-[22%] sm:w-[18%] text-xs font-semibold text-center px-1 sm:px-2 md:px-3 lg:px-4">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -267,19 +266,22 @@ export default function Pedidos() {
                 ) : (
                   filtered.map((order) => (
                     <TableRow key={order.id} className="cursor-pointer hover:bg-muted/40" onClick={() => setDetailOrder(order)}>
-                      <TableCell className="text-xs font-medium px-2 md:px-4">
-                        <div className="flex flex-col">
+                      <TableCell className="text-xs font-medium px-1.5 sm:px-2 md:px-3 lg:px-4">
+                        <div className="flex flex-col leading-tight">
                           <span>{order.number}</span>
                           <span className="text-[10px] text-muted-foreground sm:hidden">{formatDate(order.date)}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground hidden sm:table-cell px-2 md:px-4">{formatDate(order.date)}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground hidden md:table-cell px-2 md:px-4">
+                      <TableCell className="text-xs text-muted-foreground hidden sm:table-cell px-1.5 sm:px-2 md:px-3 lg:px-4">{formatDate(order.date)}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground hidden lg:table-cell px-1.5 sm:px-2 md:px-3 lg:px-4">
                         {order.items.length} {order.items.length === 1 ? "item" : "itens"}
                       </TableCell>
-                      <TableCell className="text-xs font-semibold text-right px-2 md:px-4">{formatCurrency(order.total)}</TableCell>
-                      <TableCell className="text-center px-1.5 md:px-4">
-                        <StatusBadge status={order.status} />
+                      <TableCell className="text-xs font-semibold text-right whitespace-nowrap px-1.5 sm:px-2 md:px-3 lg:px-4">
+                        {formatCurrency(order.total)}
+                      </TableCell>
+                      <TableCell className="text-center px-1 sm:px-2 md:px-3 lg:px-4">
+                        <span className="sm:hidden inline-flex"><StatusBadge status={order.status} compact /></span>
+                        <span className="hidden sm:inline-flex"><StatusBadge status={order.status} /></span>
                       </TableCell>
                     </TableRow>
                   ))
