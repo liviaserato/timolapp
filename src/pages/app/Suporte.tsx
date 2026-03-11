@@ -318,6 +318,7 @@ export default function Suporte() {
                 value={ticketDescription}
                 onChange={(e) => { setTicketDescription(e.target.value); setFieldErrors((p) => ({ ...p, description: "" })); }}
               />
+              {fieldErrors.description && <p className="text-xs text-destructive">{fieldErrors.description}</p>}
             </div>
             <div className="space-y-2">
               <Label className="text-xs font-medium">Anexos (opcional)</Label>
