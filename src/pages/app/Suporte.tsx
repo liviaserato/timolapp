@@ -41,7 +41,8 @@ import iconWhatsapp from "@/assets/icon-logo-whatsapp.svg";
 import TicketDetailDialog from "@/components/app/suporte/TicketDetailDialog";
 import { mockTicketsDetalhados } from "@/components/app/suporte/mock-tickets";
 import type { TicketDetail } from "@/components/app/suporte/TicketDetailDialog";
-import FaqSection from "@/components/app/suporte/FaqSection";
+import FaqSection, { faqTabs } from "@/components/app/suporte/FaqSection";
+import faviconTimol from "@/assets/favicon-timol-azul-escuro.svg";
 
 /* ── Status map ── */
 
