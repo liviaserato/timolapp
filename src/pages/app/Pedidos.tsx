@@ -92,21 +92,29 @@ const mockOrders: Order[] = [
   },
 ];
 
-const statusConfig: Record<OrderStatus, { label: string; icon: React.ElementType; color: string }> = {
-  pendente: { label: "Pendente", icon: Clock, color: "bg-amber-100 text-amber-700 border-amber-200" },
-  confirmado: { label: "Confirmado", icon: CheckCircle2, color: "bg-blue-100 text-blue-700 border-blue-200" },
-  enviado: { label: "Enviado", icon: Truck, color: "bg-violet-100 text-violet-700 border-violet-200" },
-  entregue: { label: "Entregue", icon: CheckCircle2, color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
-  cancelado: { label: "Cancelado", icon: XCircle, color: "bg-red-100 text-red-700 border-red-200" },
+const statusConfig: Record<OrderStatus, { label: string; shortLabel: string; icon: React.ElementType; color: string }> = {
+  pendente: { label: "Pendente", shortLabel: "Pend.", icon: Clock, color: "bg-amber-100 text-amber-700 border-amber-200" },
+  confirmado: { label: "Confirmado", shortLabel: "Conf.", icon: CheckCircle2, color: "bg-blue-100 text-blue-700 border-blue-200" },
+  enviado: { label: "Enviado", shortLabel: "Env.", icon: Truck, color: "bg-violet-100 text-violet-700 border-violet-200" },
+  entregue: { label: "Entregue", shortLabel: "Entr.", icon: CheckCircle2, color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
+  cancelado: { label: "Cancelado", shortLabel: "Canc.", icon: XCircle, color: "bg-red-100 text-red-700 border-red-200" },
 };
 
-function StatusBadge({ status }: { status: OrderStatus }) {
+function StatusBadge({ status, compact = false }: { status: OrderStatus; compact?: boolean }) {
   const cfg = statusConfig[status];
   const Icon = cfg.icon;
+
   return (
-    <Badge variant="outline" className={cn("gap-1 text-[11px] font-medium border", cfg.color)}>
-      <Icon className="h-3 w-3" />
-      {cfg.label}
+    <Badge
+      variant="outline"
+      className={cn(
+        "font-medium border justify-center max-w-full",
+        compact ? "text-[10px] px-1.5 py-0" : "gap-1 text-[11px]",
+        cfg.color,
+      )}
+    >
+      {!compact && <Icon className="h-3 w-3" />}
+      {compact ? cfg.shortLabel : cfg.label}
     </Badge>
   );
 }
