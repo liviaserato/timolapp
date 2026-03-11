@@ -190,7 +190,7 @@ export default function Suporte() {
       <section>
         <DashboardCard icon={HelpCircle} title="Perguntas Frequentes (FAQ)">
           <Tabs defaultValue="cadastro" className="mt-3">
-            <TabsList className="flex flex-wrap h-auto gap-1 bg-transparent p-0">
+            <TabsList className="flex flex-wrap justify-start h-auto gap-1 bg-transparent p-0">
               {faqTabs.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
