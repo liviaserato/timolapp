@@ -329,13 +329,35 @@ export default function Suporte() {
                 onChange={(e) => setTicketDescription(e.target.value)}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Anexo (opcional)</Label>
-              <label className="flex items-center gap-2 cursor-pointer border border-dashed border-border rounded-md p-3 text-sm text-muted-foreground hover:border-primary/40 transition-colors">
-                <Paperclip className="h-4 w-4" />
-                <span>Clique para anexar um arquivo</span>
-                <input type="file" className="hidden" />
-              </label>
+            <div className="space-y-2">
+              <Label className="text-xs font-medium">Anexos (opcional)</Label>
+              {attachedFiles.map((file, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-2 border border-border rounded-md p-2.5 text-sm"
+                >
+                  <Paperclip className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                  <span className="truncate flex-1">{file.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveFile(i)}
+                    className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+              {attachedFiles.length < MAX_FILES ? (
+                <label className="flex items-center gap-2 cursor-pointer border border-dashed border-border rounded-md p-3 text-sm text-muted-foreground hover:border-primary/40 transition-colors">
+                  <Paperclip className="h-4 w-4" />
+                  <span>Clique para anexar um arquivo</span>
+                  <input type="file" className="hidden" onChange={handleFileAttach} />
+                </label>
+              ) : (
+                <p className="text-xs text-muted-foreground text-center">
+                  Limite máximo de {MAX_FILES} arquivos atingido
+                </p>
+              )}
             </div>
           </div>
           <DialogFooter className="mt-2">
