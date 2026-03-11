@@ -9,7 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ThumbsUp, ThumbsDown, Clock, CheckCircle2, AlertCircle, User, Headphones, Send } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Clock, CheckCircle2, AlertCircle, XCircle, Archive, User, Headphones, Send, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import faviconTimol from "@/assets/favicon-timol-azul-escuro.svg";
