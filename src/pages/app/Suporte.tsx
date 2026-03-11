@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import {
   Ticket,
   Phone,
-  HelpCircle,
   ChevronRight,
   Clock,
   CheckCircle2,
@@ -21,13 +20,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
 import {
   Dialog,
   DialogContent,
@@ -49,6 +41,7 @@ import iconWhatsapp from "@/assets/icon-logo-whatsapp.svg";
 import TicketDetailDialog from "@/components/app/suporte/TicketDetailDialog";
 import { mockTicketsDetalhados } from "@/components/app/suporte/mock-tickets";
 import type { TicketDetail } from "@/components/app/suporte/TicketDetailDialog";
+import FaqSection from "@/components/app/suporte/FaqSection";
 
 /* ── Status map ── */
 
@@ -58,50 +51,6 @@ const statusMap: Record<TicketDetail["status"], { label: string; color: string; 
   respondido: { label: "Respondido", color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
   fechado: { label: "Fechado", color: "bg-muted text-muted-foreground", icon: CheckCircle2 },
 };
-
-/* ── FAQ data ── */
-
-const faqData: Record<string, { pergunta: string; resposta: string }[]> = {
-  cadastro: [
-    { pergunta: "Como altero meus dados pessoais?", resposta: "Acesse o menu Meus Dados no Escritório Digital. Lá você pode atualizar nome, telefone, endereço e demais informações. Alterações de documento exigem envio de comprovante via chamado." },
-    { pergunta: "Esqueci minha senha, o que faço?", resposta: "Na tela de login, clique em 'Esqueci minha senha'. Você receberá um PIN por e-mail para redefinir sua senha. Caso não receba, verifique a caixa de spam ou entre em contato pelo suporte." },
-    { pergunta: "Como altero meu e-mail de acesso?", resposta: "Acesse Meus Dados > Contato e clique no ícone de edição ao lado do e-mail. Um código de verificação será enviado ao novo endereço para confirmar a alteração." },
-  ],
-  pedidos: [
-    { pergunta: "Como faço um novo pedido?", resposta: "Acesse o menu Pedidos, selecione os produtos desejados, escolha a forma de pagamento e confirme. O pedido será processado e você receberá atualizações por e-mail." },
-    { pergunta: "Posso cancelar um pedido?", resposta: "Pedidos podem ser cancelados enquanto estiverem com o status 'Aguardando Pagamento'. Após a confirmação do pagamento, entre em contato com o suporte para verificar a possibilidade." },
-    { pergunta: "Qual o prazo de entrega?", resposta: "O prazo varia conforme a região, geralmente entre 5 a 15 dias úteis após a confirmação do pagamento. Você pode acompanhar o status pelo menu Pedidos." },
-  ],
-  financeiro: [
-    { pergunta: "Como funciona o Banco Timol?", resposta: "O Banco Timol é sua carteira digital dentro do sistema. Você pode adicionar saldo, utilizar para pagamentos de pedidos e também realizar transferências para sua conta bancária." },
-    { pergunta: "Quando recebo meu bônus?", resposta: "Os bônus são calculados semanalmente e disponibilizados às terças-feiras. O valor pode ser convertido em saldo no Banco Timol ou resgatado para conta bancária." },
-    { pergunta: "Como resgato meu saldo?", resposta: "Acesse Financeiro > Banco Timol e clique em 'Resgatar / Transferir'. Informe o valor e confirme com seu PIN de segurança. O prazo para crédito é de até 3 dias úteis." },
-  ],
-  bonus: [
-    { pergunta: "Como são calculados os pontos?", resposta: "Os pontos são acumulados com base nas compras realizadas pela sua rede e pelas suas próprias compras. Cada R$1,00 em produtos equivale a 1 ponto." },
-    { pergunta: "Posso trocar pontos por produtos?", resposta: "Sim! Acesse Financeiro > Pontos e veja os prêmios disponíveis. Você pode resgatar prêmios diretamente com seus pontos acumulados." },
-    { pergunta: "Os pontos expiram?", resposta: "Sim, os pontos possuem validade de 12 meses a partir da data de acumulação. Fique atento ao extrato para aproveitar antes do vencimento." },
-  ],
-  franquia: [
-    { pergunta: "Como faço upgrade da minha franquia?", resposta: "Acesse Meus Dados > Franquia e clique em 'Upgrade'. Escolha o plano desejado e realize o pagamento. O upgrade é ativado imediatamente após a confirmação." },
-    { pergunta: "Quais são os planos disponíveis?", resposta: "A Timol oferece os planos Bronze, Prata, Ouro e Platina. Cada plano possui benefícios e limites diferentes. Consulte os detalhes na seção Franquia." },
-    { pergunta: "Posso transferir minha franquia?", resposta: "A transferência de franquia deve ser solicitada via chamado de suporte. Nossa equipe analisará o pedido e orientará sobre o processo e documentação necessária." },
-  ],
-  conta: [
-    { pergunta: "Como ativo a autenticação em dois fatores?", resposta: "Acesse Meus Dados > Acesso. A funcionalidade de autenticação em dois fatores será disponibilizada em breve para aumentar a segurança da sua conta." },
-    { pergunta: "Posso alterar meu nome de usuário?", resposta: "O nome de usuário é definido no momento do cadastro e não pode ser alterado. Caso precise de ajuda, abra um chamado para nossa equipe avaliar." },
-    { pergunta: "Como funciona o PIN de segurança?", resposta: "O PIN de 6 dígitos é utilizado para confirmar operações financeiras como resgates e transferências. Você pode alterá-lo a qualquer momento em Meus Dados > Acesso." },
-  ],
-};
-
-const faqTabs = [
-  { value: "cadastro", label: "Cadastro" },
-  { value: "pedidos", label: "Pedidos" },
-  { value: "financeiro", label: "Financeiro" },
-  { value: "bonus", label: "Bônus e Pontos" },
-  { value: "franquia", label: "Franquia" },
-  { value: "conta", label: "Conta / Acesso" },
-];
 
 const escritorios = [
   { uf: "PA", cidade: "Altamira", estado: "PA", endereco: "Av. Popular, 1816 Sudam II" },
