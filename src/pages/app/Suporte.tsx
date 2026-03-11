@@ -285,9 +285,9 @@ export default function Suporte() {
           </DialogHeader>
           <div className="flex flex-col gap-4 mt-2">
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Categoria *</Label>
-              <Select value={ticketCategory} onValueChange={setTicketCategory}>
-                <SelectTrigger className="text-sm">
+              <Label className="text-xs font-medium">Categoria</Label>
+              <Select value={ticketCategory} onValueChange={(v) => { setTicketCategory(v); setFieldErrors((p) => ({ ...p, category: "" })); }}>
+                <SelectTrigger className={`text-sm ${fieldErrors.category ? "border-destructive" : ""}`}>
                   <SelectValue placeholder="Selecione uma categoria" />
                 </SelectTrigger>
                 <SelectContent>
@@ -298,23 +298,25 @@ export default function Suporte() {
                   ))}
                 </SelectContent>
               </Select>
+              {fieldErrors.category && <p className="text-xs text-destructive">{fieldErrors.category}</p>}
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Assunto *</Label>
+              <Label className="text-xs font-medium">Assunto</Label>
               <Input
                 placeholder="Ex: Quero alterar meu e-mail do cadastro"
-                className="text-sm"
+                className={`text-sm ${fieldErrors.subject ? "border-destructive" : ""}`}
                 value={ticketSubject}
-                onChange={(e) => setTicketSubject(e.target.value)}
+                onChange={(e) => { setTicketSubject(e.target.value); setFieldErrors((p) => ({ ...p, subject: "" })); }}
               />
+              {fieldErrors.subject && <p className="text-xs text-destructive">{fieldErrors.subject}</p>}
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Descrição *</Label>
+              <Label className="text-xs font-medium">Descrição</Label>
               <Textarea
                 placeholder="Descreva detalhadamente sua dúvida ou problema..."
-                className="text-sm min-h-[100px] resize-none"
+                className={`text-sm min-h-[100px] resize-none ${fieldErrors.description ? "border-destructive" : ""}`}
                 value={ticketDescription}
-                onChange={(e) => setTicketDescription(e.target.value)}
+                onChange={(e) => { setTicketDescription(e.target.value); setFieldErrors((p) => ({ ...p, description: "" })); }}
               />
             </div>
             <div className="space-y-2">
