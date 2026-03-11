@@ -15,6 +15,7 @@ import Dashboard from "./pages/app/Dashboard";
 import Cadastro from "./pages/app/Cadastro";
 import Financeiro from "./pages/app/Financeiro";
 import Suporte from "./pages/app/Suporte";
+import Pedidos from "./pages/app/Pedidos";
 import SectionPlaceholder from "./pages/app/SectionPlaceholder";
 import EmailPreviews from "./pages/app/EmailPreviews";
 import NotFound from "./pages/NotFound";
@@ -39,6 +40,7 @@ const App = () => (
               <Route index element={<Dashboard />} />
               <Route path="cadastro" element={<Cadastro />} />
               <Route path="financeiro" element={<Financeiro />} />
+              <Route path="pedidos" element={<Pedidos />} />
               <Route path="suporte" element={<Suporte />} />
               <Route path="configuracoes/emails" element={<EmailPreviews />} />
               <Route path=":section" element={<SectionPlaceholder />} />
