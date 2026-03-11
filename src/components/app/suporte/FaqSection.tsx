@@ -87,8 +87,8 @@ function HighlightText({ text, query }: { text: string; query: string }) {
   let idx = normalizedText.indexOf(q, lastIndex);
   while (idx !== -1) {
     if (idx > lastIndex) parts.push(text.slice(lastIndex, idx));
-    parts.push(
-      <mark key={idx} className="bg-amber-200 dark:bg-amber-700/60 text-inherit rounded-sm px-[1px]">
+  parts.push(
+      <mark key={idx} className="bg-amber-200 dark:bg-amber-700/60 text-inherit" style={{ padding: 0, margin: 0 }}>
         {text.slice(idx, idx + q.length)}
       </mark>
     );
