@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

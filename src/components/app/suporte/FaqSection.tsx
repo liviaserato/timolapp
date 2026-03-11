@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo, useCallback } from "react";
+import { forwardRef, useRef, useState, useMemo, useCallback } from "react";
 import { Search, X, HelpCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useIsMobile } from "@/hooks/use-mobile";
