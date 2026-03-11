@@ -102,45 +102,44 @@ function HighlightText({ text, query }: { text: string; query: string }) {
 
 /* ── Component ── */
 
-const SearchField = ({
-  search,
-  setSearch,
-  inputRef,
-  handleKeyDown,
-  clearSearch,
-  className,
-}: {
+type SearchFieldProps = {
   search: string;
   setSearch: (v: string) => void;
-  inputRef: React.RefObject<HTMLInputElement>;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   clearSearch: () => void;
   className?: string;
-}) => {
-  const hasSearch = search.trim().length > 0;
-  return (
-    <div className={`relative ${className ?? ""}`}>
-      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-      <Input
-        ref={inputRef}
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Buscar pergunta..."
-        className="h-8 pl-8 pr-8 text-xs rounded-full bg-muted/50 border-border focus-visible:ring-1"
-      />
-      {hasSearch && (
-        <button
-          onClick={clearSearch}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-          aria-label="Limpar busca"
-        >
-          <X className="h-3.5 w-3.5" />
-        </button>
-      )}
-    </div>
-  );
 };
+
+const SearchField = forwardRef<HTMLInputElement, SearchFieldProps>(
+  ({ search, setSearch, handleKeyDown, clearSearch, className }, ref) => {
+    const hasSearch = search.trim().length > 0;
+
+    return (
+      <div className={`relative ${className ?? ""}`}>
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+        <Input
+          ref={ref}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Buscar pergunta..."
+          className="h-8 pl-8 pr-8 text-xs rounded-full bg-muted/50 border-border focus-visible:ring-1"
+        />
+        {hasSearch && (
+          <button
+            onClick={clearSearch}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Limpar busca"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
+    );
+  }
+);
+
+SearchField.displayName = "SearchField";
 
 export default function FaqSection() {
   const [activeTab, setActiveTab] = useState("conta");

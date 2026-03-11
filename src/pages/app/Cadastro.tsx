@@ -90,14 +90,18 @@ const initialAccounts: FinancialAccount[] = [
 
 /* ── helpers ── */
 
-function Row({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex justify-between gap-3 py-1.5 border-b border-border/40 last:border-0">
-      <span className="text-muted-foreground text-sm shrink-0">{label}</span>
-      <span className="text-sm font-medium text-right break-words min-w-0">{value}</span>
-    </div>
-  );
-}
+const Row = forwardRef<HTMLDivElement, { label: string; value: React.ReactNode }>(
+  ({ label, value }, ref) => {
+    return (
+      <div ref={ref} className="flex justify-between gap-3 py-1.5 border-b border-border/40 last:border-0">
+        <span className="text-muted-foreground text-sm shrink-0">{label}</span>
+        <span className="text-sm font-medium text-right break-words min-w-0">{value}</span>
+      </div>
+    );
+  }
+);
+
+Row.displayName = "Row";
 
 /* ── Phone Change Dialog ── */
 
