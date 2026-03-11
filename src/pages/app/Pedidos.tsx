@@ -275,9 +275,6 @@ export default function Pedidos() {
                       <TableCell className="text-center px-1.5 md:px-4">
                         <StatusBadge status={order.status} />
                       </TableCell>
-                      <TableCell className="text-center px-1 md:px-4">
-                        <Eye className="h-3.5 w-3.5 text-muted-foreground" />
-                      </TableCell>
                     </TableRow>
                   ))
                 )}
