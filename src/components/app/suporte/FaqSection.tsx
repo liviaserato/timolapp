@@ -268,10 +268,10 @@ export default function FaqSection() {
                     className="border-b border-border"
                   >
                     <AccordionTrigger className="text-sm text-left py-3 hover:no-underline">
-                      {item.pergunta}
+                      <HighlightText text={item.pergunta} query={search} />
                     </AccordionTrigger>
                     <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-                      {item.resposta}
+                      <HighlightText text={item.resposta} query={search} />
                     </AccordionContent>
                   </AccordionItem>
                 ))}
