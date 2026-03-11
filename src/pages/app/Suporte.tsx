@@ -270,7 +270,7 @@ export default function Suporte() {
       </section>
 
       {/* ── Dialog: Novo Chamado ── */}
-      <Dialog open={newTicketOpen} onOpenChange={setNewTicketOpen}>
+      <Dialog open={newTicketOpen} onOpenChange={(open) => { setNewTicketOpen(open); if (!open) setFieldErrors({}); }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader className="text-center">
             <DialogTitle className="text-lg flex items-center justify-center gap-2">
