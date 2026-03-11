@@ -298,7 +298,7 @@ export default function Suporte() {
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Assunto *</Label>
               <Input
-                placeholder="Ex: Dúvida sobre bônus"
+                placeholder="Ex: Quero alterar meu e-mail do cadastro"
                 className="text-sm"
                 value={ticketSubject}
                 onChange={(e) => setTicketSubject(e.target.value)}
