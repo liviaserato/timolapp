@@ -135,7 +135,7 @@ export default function Suporte() {
         <div className="text-primary-foreground text-center sm:text-left">
           <p className="font-bold text-base">Não encontrou o que precisava?</p>
           <p className="text-xs opacity-90 mt-0.5">
-            Abra um chamado e nossa equipe responderá em até 24h úteis.
+            Abra um chamado e nossa equipe responderá em até 24h úteis
           </p>
         </div>
         <Button
@@ -298,7 +298,7 @@ export default function Suporte() {
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Assunto *</Label>
               <Input
-                placeholder="Ex: Dúvida sobre bônus"
+                placeholder="Ex: Quero alterar meu e-mail do cadastro"
                 className="text-sm"
                 value={ticketSubject}
                 onChange={(e) => setTicketSubject(e.target.value)}
