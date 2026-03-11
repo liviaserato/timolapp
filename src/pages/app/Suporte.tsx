@@ -236,8 +236,8 @@ export default function Suporte() {
       {/* ── 4. Nossos Endereços ── */}
       <section>
         <DashboardCard icon={MapPin} title="Nossos Endereços">
-          <div className="mt-2 flex flex-col gap-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          <div className="mt-2 flex flex-col lg:flex-row gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[280px] lg:shrink-0 lg:max-h-[400px] lg:overflow-y-auto">
               {escritorios.map((e) => {
                 const isActive = selectedOffice?.cidade === e.cidade;
                 return (
@@ -264,7 +264,9 @@ export default function Suporte() {
               })}
             </div>
 
-            <OfficeMap selectedOffice={selectedOffice} onSelectOffice={setSelectedOffice} />
+            <div className="lg:flex-1 lg:min-w-0">
+              <OfficeMap selectedOffice={selectedOffice} onSelectOffice={setSelectedOffice} />
+            </div>
           </div>
         </DashboardCard>
       </section>
