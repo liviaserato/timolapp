@@ -248,7 +248,7 @@ export default function Pedidos() {
                   <TableHead className="text-xs font-semibold hidden md:table-cell px-2 md:px-4">Itens</TableHead>
                   <TableHead className="text-xs font-semibold text-right px-2 md:px-4">Total</TableHead>
                   <TableHead className="text-xs font-semibold text-center px-1.5 md:px-4">Status</TableHead>
-                  <TableHead className="text-xs font-semibold text-center w-8 md:w-10 px-1"></TableHead>
+                  
                 </TableRow>
               </TableHeader>
               <TableBody>
