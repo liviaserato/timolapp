@@ -78,13 +78,12 @@ export default function TicketDetailDialog({ ticket, open, onOpenChange }: Ticke
             <img src={faviconTimol} alt="" className="h-5 w-5" />
             Chamado {ticket.numero}
           </DialogTitle>
-          <DialogDescription>Detalhes e histórico de interações</DialogDescription>
+          <DialogDescription className="text-center">Detalhes e histórico de interações</DialogDescription>
         </DialogHeader>
 
         {/* ── Info principal ── */}
         <div className="space-y-3 mt-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground font-medium">Status</span>
+          <div className="flex items-center justify-center">
             <Badge variant="secondary" className={`text-[10px] ${st.color}`}>
               {st.label}
             </Badge>

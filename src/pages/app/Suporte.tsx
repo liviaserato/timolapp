@@ -291,7 +291,7 @@ export default function Suporte() {
               <img src={faviconTimol} alt="" className="h-5 w-5" />
               Novo Chamado
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-center">
               Descreva sua dúvida ou problema. Nossa equipe responderá em breve.
             </DialogDescription>
           </DialogHeader>
