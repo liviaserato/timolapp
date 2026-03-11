@@ -54,17 +54,7 @@ const statusMap: Record<TicketDetail["status"], { label: string; color: string; 
   arquivado: { label: "Arquivado", color: "bg-muted text-muted-foreground", icon: CheckCircle2 },
 };
 
-const escritorios = [
-  { uf: "PA", cidade: "Altamira", estado: "PA", endereco: "Av. Popular, 1816 Sudam II" },
-  { uf: "PR", cidade: "Cascavel", estado: "PR", endereco: "R. São Luís, 2137 Recanto Tropical" },
-  { uf: "RS", cidade: "Caxias do Sul", estado: "RS", endereco: "Av. Itália, 288 – Sala 65 São Pelegrino" },
-  { uf: "RO", cidade: "Ji-Paraná", estado: "RO", endereco: "Av. Aracajú, 2368 Sala 07 Nova Brasília" },
-  { uf: "SP", cidade: "São Paulo", estado: "SP", endereco: "Rua Vergueiro, 1855 4º andar, Sala ..." },
-  { uf: "PB", cidade: "João Pessoa", estado: "PB", endereco: "R. Cândida Maria da Silva, 340 João..." },
-  { uf: "BA", cidade: "Salvador", estado: "BA", endereco: "R. Cel. Almerindo Rehem, 126 Sala ..." },
-  { uf: "PR", cidade: "Londrina", estado: "PR", endereco: "R. Sergipe, 476 Sala 1206 Centro" },
-  { uf: "MG", cidade: "Uberlândia", estado: "MG", endereco: "Av. Rondon Pacheco, 4600 Sala 1010" },
-];
+import OfficeMap, { escritorios, type Office } from "@/components/app/suporte/OfficeMap";
 
 const categoriasChamado = [...faqTabs.map((t) => t.label), "Outro"];
 
@@ -88,6 +78,7 @@ export default function Suporte() {
   const [selectedTicket, setSelectedTicket] = useState<TicketDetail | null>(null);
   const [ticketDetailOpen, setTicketDetailOpen] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const [selectedOffice, setSelectedOffice] = useState<Office | null>(null);
   const MAX_FILES = 5;
 
   const visibleTickets = showOldTickets
@@ -228,56 +219,52 @@ export default function Suporte() {
         </DashboardCard>
       </section>
 
-      {/* ── 4. Fale Conosco ── */}
       <section>
         <DashboardCard icon={Phone} title="Fale Conosco">
           <div className="mt-2 flex flex-col gap-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <button
-                onClick={() => openWhatsAppLink("Olá! Preciso de ajuda.")}
-                className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors text-left"
-              >
-                <img src={iconWhatsapp} alt="WhatsApp" className="h-8 w-8" />
-                <div>
-                  <p className="text-sm font-medium">WhatsApp</p>
-                  <p className="text-xs text-muted-foreground">(34) 99125-8000</p>
-                </div>
-              </button>
-              <a
-                href="mailto:suporte@timol.com.br"
-                className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors text-left"
-              >
-                <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                  <Send className="h-4 w-4 text-primary-foreground" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">E-mail</p>
-                  <p className="text-xs text-muted-foreground">suporte@timol.com.br</p>
-                </div>
-              </a>
-            </div>
+            {/* WhatsApp CTA */}
+            <button
+              onClick={() => openWhatsAppLink("Olá! Preciso de ajuda.")}
+              className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors text-left w-fit"
+            >
+              <img src={iconWhatsapp} alt="WhatsApp" className="h-8 w-8" />
+              <p className="text-sm font-medium">Falar com atendente</p>
+            </button>
+
+            {/* Mapa + Lista de Escritórios */}
             <div>
-              <h3 className="text-sm font-bold text-primary mb-2 flex items-center gap-1.5">
+              <h3 className="text-sm font-bold text-primary mb-3 flex items-center gap-1.5">
                 <MapPin className="h-4 w-4" />
                 Nossos Escritórios
               </h3>
-              <div className="space-y-1 max-h-[300px] overflow-y-auto pr-1">
-                {escritorios.map((e, i) => (
-                  <div
-                    key={i}
-                    className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <span className="shrink-0 mt-0.5 h-7 w-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold">
-                      {e.uf}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium">
-                        {e.cidade} – {e.estado}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">{e.endereco}</p>
-                    </div>
-                  </div>
-                ))}
+
+              <OfficeMap selectedOffice={selectedOffice} onSelectOffice={setSelectedOffice} />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-3">
+                {escritorios.map((e) => {
+                  const isActive = selectedOffice?.cidade === e.cidade;
+                  return (
+                    <button
+                      key={e.cidade}
+                      onClick={() => setSelectedOffice(isActive ? null : e)}
+                      className={`flex items-start gap-2.5 p-2.5 rounded-lg transition-colors text-left ${
+                        isActive
+                          ? "bg-primary/10 border border-primary/30"
+                          : "hover:bg-muted/50 border border-transparent"
+                      }`}
+                    >
+                      <span className={`shrink-0 mt-0.5 h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                        isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                      }`}>
+                        {e.uf}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium">{e.cidade} – {e.uf}</p>
+                        <p className="text-xs text-muted-foreground leading-snug">{e.endereco}</p>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
