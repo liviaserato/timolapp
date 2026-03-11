@@ -222,7 +222,7 @@ export default function FaqSection() {
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-3">
-        <TabsList className="flex flex-wrap justify-start h-auto gap-x-2 gap-y-1.5 bg-transparent p-0">
+        <TabsList className="block text-justify h-auto bg-transparent p-0 [&>*]:my-[3px]">
           {faqTabs.map((tab) => {
             const isOtherTabMatch =
               hasSearch && matchingTabs.has(tab.value) && tab.value !== activeTab;
@@ -232,7 +232,7 @@ export default function FaqSection() {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className={`text-xs rounded-full px-4 py-1.5 border transition-all
+                className={`inline-flex text-xs rounded-full px-3 py-1.5 mx-[2px] border transition-all
                   data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary
                   ${
                     isOtherTabMatch
