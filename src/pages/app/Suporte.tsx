@@ -77,6 +77,7 @@ export default function Suporte() {
   const [selectedTicket, setSelectedTicket] = useState<TicketDetail | null>(null);
   const [ticketDetailOpen, setTicketDetailOpen] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [selectedOffice, setSelectedOffice] = useState<Office | null>(null);
   const MAX_FILES = 5;
 
@@ -91,10 +92,12 @@ export default function Suporte() {
   );
 
   function handleSubmitTicket() {
-    if (!ticketCategory || !ticketSubject.trim() || !ticketDescription.trim()) {
-      toast.error("Preencha todos os campos obrigatórios.");
-      return;
-    }
+    const errors: Record<string, string> = {};
+    if (!ticketCategory) errors.category = "Selecione uma categoria";
+    if (!ticketSubject.trim()) errors.subject = "Informe o assunto do chamado";
+    if (!ticketDescription.trim()) errors.description = "Descreva sua dúvida ou problema";
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
     setSubmitting(true);
     setTimeout(() => {
       setSubmitting(false);
@@ -103,6 +106,7 @@ export default function Suporte() {
       setTicketSubject("");
       setTicketDescription("");
       setAttachedFiles([]);
+      setFieldErrors({});
       toast.success("Chamado enviado com sucesso! Nossa equipe responderá em breve.");
     }, 1200);
   }
@@ -266,7 +270,7 @@ export default function Suporte() {
       </section>
 
       {/* ── Dialog: Novo Chamado ── */}
-      <Dialog open={newTicketOpen} onOpenChange={setNewTicketOpen}>
+      <Dialog open={newTicketOpen} onOpenChange={(open) => { setNewTicketOpen(open); if (!open) setFieldErrors({}); }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader className="text-center">
             <DialogTitle className="text-lg flex items-center justify-center gap-2">
@@ -281,9 +285,9 @@ export default function Suporte() {
           </DialogHeader>
           <div className="flex flex-col gap-4 mt-2">
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Categoria *</Label>
-              <Select value={ticketCategory} onValueChange={setTicketCategory}>
-                <SelectTrigger className="text-sm">
+              <Label className="text-xs font-medium">Categoria</Label>
+              <Select value={ticketCategory} onValueChange={(v) => { setTicketCategory(v); setFieldErrors((p) => ({ ...p, category: "" })); }}>
+                <SelectTrigger className={`text-sm ${fieldErrors.category ? "border-destructive" : ""}`}>
                   <SelectValue placeholder="Selecione uma categoria" />
                 </SelectTrigger>
                 <SelectContent>
@@ -294,24 +298,27 @@ export default function Suporte() {
                   ))}
                 </SelectContent>
               </Select>
+              {fieldErrors.category && <p className="text-xs text-destructive">{fieldErrors.category}</p>}
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Assunto *</Label>
+              <Label className="text-xs font-medium">Assunto</Label>
               <Input
                 placeholder="Ex: Quero alterar meu e-mail do cadastro"
-                className="text-sm"
+                className={`text-sm ${fieldErrors.subject ? "border-destructive" : ""}`}
                 value={ticketSubject}
-                onChange={(e) => setTicketSubject(e.target.value)}
+                onChange={(e) => { setTicketSubject(e.target.value); setFieldErrors((p) => ({ ...p, subject: "" })); }}
               />
+              {fieldErrors.subject && <p className="text-xs text-destructive">{fieldErrors.subject}</p>}
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Descrição *</Label>
+              <Label className="text-xs font-medium">Descrição</Label>
               <Textarea
                 placeholder="Descreva detalhadamente sua dúvida ou problema..."
-                className="text-sm min-h-[100px] resize-none"
+                className={`text-sm min-h-[100px] resize-none ${fieldErrors.description ? "border-destructive" : ""}`}
                 value={ticketDescription}
-                onChange={(e) => setTicketDescription(e.target.value)}
+                onChange={(e) => { setTicketDescription(e.target.value); setFieldErrors((p) => ({ ...p, description: "" })); }}
               />
+              {fieldErrors.description && <p className="text-xs text-destructive">{fieldErrors.description}</p>}
             </div>
             <div className="space-y-2">
               <Label className="text-xs font-medium">Anexos (opcional)</Label>
