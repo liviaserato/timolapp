@@ -111,8 +111,21 @@ export default function Suporte() {
       setTicketCategory("");
       setTicketSubject("");
       setTicketDescription("");
+      setAttachedFiles([]);
       toast.success("Chamado enviado com sucesso! Nossa equipe responderá em breve.");
     }, 1200);
+  }
+
+  function handleFileAttach(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file && attachedFiles.length < MAX_FILES) {
+      setAttachedFiles((prev) => [...prev, file]);
+    }
+    e.target.value = "";
+  }
+
+  function handleRemoveFile(index: number) {
+    setAttachedFiles((prev) => prev.filter((_, i) => i !== index));
   }
 
   function handleOpenTicket(ticket: TicketDetail) {
