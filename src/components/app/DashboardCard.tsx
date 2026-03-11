@@ -15,7 +15,8 @@ export interface DashboardCardProps {
 export function DashboardCard({ icon: Icon, title, children, className, tooltip, id, headerRight }: DashboardCardProps) {
   return (
     <fieldset id={id} className={cn(
-      "relative rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm min-w-0 overflow-hidden flex flex-col",
+      "relative rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm min-w-0 flex flex-col",
+      headerRight ? "overflow-visible" : "overflow-hidden",
       className
     )}>
       <legend className="flex items-center gap-2 px-1 text-base font-bold text-primary">
