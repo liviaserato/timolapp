@@ -77,6 +77,29 @@ function normalize(str: string) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+function HighlightText({ text, query }: { text: string; query: string }) {
+  if (!query.trim()) return <>{text}</>;
+  const q = normalize(query.trim());
+  const normalizedText = normalize(text);
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+
+  let idx = normalizedText.indexOf(q, lastIndex);
+  while (idx !== -1) {
+    if (idx > lastIndex) parts.push(text.slice(lastIndex, idx));
+    parts.push(
+      <mark key={idx} className="bg-amber-200 dark:bg-amber-700/60 text-inherit rounded-sm px-[1px]">
+        {text.slice(idx, idx + q.length)}
+      </mark>
+    );
+    lastIndex = idx + q.length;
+    idx = normalizedText.indexOf(q, lastIndex);
+  }
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+
+  return <>{parts}</>;
+}
+
 /* ── Component ── */
 
 const SearchField = ({
@@ -245,10 +268,10 @@ export default function FaqSection() {
                     className="border-b border-border"
                   >
                     <AccordionTrigger className="text-sm text-left py-3 hover:no-underline">
-                      {item.pergunta}
+                      <HighlightText text={item.pergunta} query={search} />
                     </AccordionTrigger>
                     <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-                      {item.resposta}
+                      <HighlightText text={item.resposta} query={search} />
                     </AccordionContent>
                   </AccordionItem>
                 ))}
