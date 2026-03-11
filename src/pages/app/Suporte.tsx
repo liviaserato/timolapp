@@ -54,17 +54,7 @@ const statusMap: Record<TicketDetail["status"], { label: string; color: string; 
   arquivado: { label: "Arquivado", color: "bg-muted text-muted-foreground", icon: CheckCircle2 },
 };
 
-const escritorios = [
-  { uf: "PA", cidade: "Altamira", estado: "PA", endereco: "Av. Popular, 1816 Sudam II" },
-  { uf: "PR", cidade: "Cascavel", estado: "PR", endereco: "R. São Luís, 2137 Recanto Tropical" },
-  { uf: "RS", cidade: "Caxias do Sul", estado: "RS", endereco: "Av. Itália, 288 – Sala 65 São Pelegrino" },
-  { uf: "RO", cidade: "Ji-Paraná", estado: "RO", endereco: "Av. Aracajú, 2368 Sala 07 Nova Brasília" },
-  { uf: "SP", cidade: "São Paulo", estado: "SP", endereco: "Rua Vergueiro, 1855 4º andar, Sala ..." },
-  { uf: "PB", cidade: "João Pessoa", estado: "PB", endereco: "R. Cândida Maria da Silva, 340 João..." },
-  { uf: "BA", cidade: "Salvador", estado: "BA", endereco: "R. Cel. Almerindo Rehem, 126 Sala ..." },
-  { uf: "PR", cidade: "Londrina", estado: "PR", endereco: "R. Sergipe, 476 Sala 1206 Centro" },
-  { uf: "MG", cidade: "Uberlândia", estado: "MG", endereco: "Av. Rondon Pacheco, 4600 Sala 1010" },
-];
+import OfficeMap, { escritorios, type Office } from "@/components/app/suporte/OfficeMap";
 
 const categoriasChamado = [...faqTabs.map((t) => t.label), "Outro"];
 
