@@ -86,6 +86,8 @@ export default function Suporte() {
   const [showOldTickets, setShowOldTickets] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<TicketDetail | null>(null);
   const [ticketDetailOpen, setTicketDetailOpen] = useState(false);
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const MAX_FILES = 5;
 
   const visibleTickets = showOldTickets
     ? mockTicketsDetalhados
