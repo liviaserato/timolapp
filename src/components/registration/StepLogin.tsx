@@ -2,7 +2,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
+import { checkUsername } from "@/lib/api/people";
 
 import { CheckCircle2, XCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 
