@@ -136,40 +136,7 @@ export default function Suporte() {
       </header>
 
       {/* ── 1. FAQ ── */}
-      <section>
-        <DashboardCard icon={HelpCircle} title="Perguntas Frequentes (FAQ)">
-          <Tabs defaultValue="cadastro" className="mt-3">
-            <TabsList className="flex flex-wrap justify-start h-auto gap-1 bg-transparent p-0">
-              {faqTabs.map((tab) => (
-                <TabsTrigger
-                  key={tab.value}
-                  value={tab.value}
-                  className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-3 py-1.5 border border-border data-[state=active]:border-primary"
-                >
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {faqTabs.map((tab) => (
-              <TabsContent key={tab.value} value={tab.value} className="mt-3">
-                <Accordion type="single" collapsible className="w-full">
-                  {faqData[tab.value]?.map((item, idx) => (
-                    <AccordionItem key={idx} value={`${tab.value}-${idx}`} className="border-b border-border">
-                      <AccordionTrigger className="text-sm text-left py-3 hover:no-underline">
-                        {item.pergunta}
-                      </AccordionTrigger>
-                      <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-                        {item.resposta}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              </TabsContent>
-            ))}
-          </Tabs>
-        </DashboardCard>
-      </section>
+      <FaqSection />
 
       {/* ── 2. CTA Banner ── */}
       <section className="rounded-[10px] overflow-hidden bg-gradient-to-r from-[hsl(var(--app-header))] to-[hsl(210,80%,45%)] p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
