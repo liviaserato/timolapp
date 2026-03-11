@@ -199,9 +199,9 @@ export default function FaqSection() {
       headerRight={
         !isMobile ? (
           <SearchField
+            ref={inputRef}
             search={search}
             setSearch={setSearch}
-            inputRef={inputRef}
             handleKeyDown={handleKeyDown}
             clearSearch={clearSearch}
             className="w-full max-w-[260px]"
@@ -211,9 +211,9 @@ export default function FaqSection() {
     >
       {isMobile && (
         <SearchField
+          ref={inputRef}
           search={search}
           setSearch={setSearch}
-          inputRef={inputRef}
           handleKeyDown={handleKeyDown}
           clearSearch={clearSearch}
           className="w-full mt-1 mb-2"
