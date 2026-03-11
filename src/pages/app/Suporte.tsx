@@ -225,7 +225,7 @@ export default function Suporte() {
       {/* ── 2. CTA Banner ── */}
       <section className="rounded-[10px] overflow-hidden bg-gradient-to-r from-[hsl(var(--app-header))] to-[hsl(210,80%,45%)] p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-primary-foreground text-center sm:text-left">
-          <p className="font-bold text-sm">Não encontrou o que precisava?</p>
+          <p className="font-bold text-base">Não encontrou o que precisava?</p>
           <p className="text-xs opacity-90 mt-0.5">
             Abra um chamado e nossa equipe responderá em até 24h úteis.
           </p>
