@@ -18,7 +18,7 @@ export function DashboardCard({ icon: Icon, title, children, className, tooltip,
       "rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm min-w-0 overflow-hidden flex flex-col",
       className
     )}>
-      <legend className="flex items-center gap-2 px-1 text-base font-bold text-primary">
+      <legend className={cn("flex items-center gap-2 px-1 text-base font-bold text-primary", headerRight && "w-full")}>
         <Icon className="h-5 w-5 shrink-0" />
         <span className="shrink-0">{title}</span>
         {tooltip && (
