@@ -290,6 +290,64 @@ export default function Pedidos() {
             </Table>
           </div>
         </DashboardCard>
+
+        {/* Cards de Pedidos (agrupados por mês) */}
+        <DashboardCard icon={Package} title="Pedidos (Cards)">
+          <div className="mt-2 space-y-4">
+            {Object.entries(
+              filtered.reduce<Record<string, Order[]>>((acc, order) => {
+                const d = new Date(order.date + "T00:00:00");
+                const key = d.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+                if (!acc[key]) acc[key] = [];
+                acc[key].push(order);
+                return acc;
+              }, {})
+            ).map(([month, orders]) => (
+              <div key={month}>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="text-xs font-semibold text-primary capitalize">{month}</span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
+                <div className="space-y-2">
+                  {orders.map((order) => (
+                    <div
+                      key={order.id}
+                      className="rounded-lg border border-app-card-border bg-card p-3 cursor-pointer hover:bg-muted/40 transition-colors"
+                      onClick={() => setDetailOrder(order)}
+                    >
+                      {/* Row 1: date + order number */}
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xs text-muted-foreground">{formatDate(order.date)}</span>
+                        <span className="text-xs font-bold text-primary">{order.number}</span>
+                      </div>
+                      {/* Row 2: items summary + total */}
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-sm text-foreground truncate mr-2">
+                          {order.items.map((i) => `${i.qty}x ${i.name}`).join(", ")}
+                        </span>
+                        <span className="text-sm font-bold whitespace-nowrap">{formatCurrency(order.total)}</span>
+                      </div>
+                      {/* Row 3: status + tracking */}
+                      <div className="flex items-center justify-between">
+                        <StatusBadge status={order.status} />
+                        {order.tracking && (
+                          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                            <Truck className="h-3 w-3" />
+                            <span className="font-mono">{order.tracking}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+            {filtered.length === 0 && (
+              <p className="text-center text-sm text-muted-foreground py-6">Nenhum pedido encontrado.</p>
+            )}
+          </div>
+        </DashboardCard>
       </section>
 
       {/* Dialog de detalhes do pedido */}
