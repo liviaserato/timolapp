@@ -35,10 +35,11 @@ export interface TicketDetail {
 }
 
 const statusMap: Record<TicketDetail["status"], { label: string; color: string; icon: typeof Clock }> = {
-  aberto: { label: "Aberto", color: "bg-blue-100 text-blue-700", icon: AlertCircle },
   em_andamento: { label: "Em andamento", color: "bg-amber-100 text-amber-700", icon: Clock },
-  respondido: { label: "Respondido", color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
-  fechado: { label: "Fechado", color: "bg-muted text-muted-foreground", icon: CheckCircle2 },
+  expirado: { label: "Expirado", color: "bg-red-100 text-red-700", icon: XCircle },
+  respondido: { label: "Respondido", color: "bg-blue-100 text-blue-700", icon: MessageCircle },
+  concluido: { label: "Concluído", color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
+  arquivado: { label: "Arquivado", color: "bg-muted text-muted-foreground", icon: Archive },
 };
 
 interface TicketDetailDialogProps {
