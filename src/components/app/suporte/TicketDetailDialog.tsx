@@ -27,7 +27,7 @@ export interface TicketDetail {
   numero: string;
   assunto: string;
   categoria: string;
-  status: "aberto" | "em_andamento" | "respondido" | "fechado";
+  status: "em_andamento" | "expirado" | "respondido" | "concluido" | "arquivado";
   descricaoInicial: string;
   dataAbertura: string;
   ultimaAtualizacao: string;
