@@ -80,8 +80,10 @@ serve(async (req) => {
     const data = await apiRes.json();
 
     // Only return exists boolean — don't leak extra data
+    // API returns exists as string "true"/"false", so compare explicitly
+    const exists = data.exists === true || data.exists === "true";
     return new Response(
-      JSON.stringify({ exists: !!data.exists }),
+      JSON.stringify({ exists }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
