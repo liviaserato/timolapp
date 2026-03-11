@@ -36,7 +36,7 @@ export function DashboardCard({ icon: Icon, title, children, className, tooltip,
         )}
       </legend>
       {headerRight && (
-        <div className="absolute top-0 right-4 -translate-y-[60%]">
+        <div className="absolute top-0 right-4 -translate-y-[90%]">
           {headerRight}
         </div>
       )}
