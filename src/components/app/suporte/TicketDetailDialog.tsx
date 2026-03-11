@@ -1,5 +1,5 @@
-import { useState } from "react";
-import {
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
   Dialog,
   DialogContent,
   DialogHeader,
