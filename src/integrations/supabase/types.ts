@@ -248,6 +248,112 @@ export type Database = {
         }
         Relationships: []
       }
+      support_tickets: {
+        Row: {
+          assunto: string
+          categoria: string
+          created_at: string
+          descricao_inicial: string
+          id: string
+          numero: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assunto: string
+          categoria: string
+          created_at?: string
+          descricao_inicial: string
+          id?: string
+          numero: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assunto?: string
+          categoria?: string
+          created_at?: string
+          descricao_inicial?: string
+          id?: string
+          numero?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ticket_feedback: {
+        Row: {
+          created_at: string
+          feedback_token: string
+          id: string
+          rating: string
+          ticket_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feedback_token?: string
+          id?: string
+          rating: string
+          ticket_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feedback_token?: string
+          id?: string
+          rating?: string
+          ticket_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_feedback_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: true
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_messages: {
+        Row: {
+          autor: string
+          created_at: string
+          id: string
+          mensagem: string
+          nome_autor: string
+          ticket_id: string
+        }
+        Insert: {
+          autor: string
+          created_at?: string
+          id?: string
+          mensagem: string
+          nome_autor: string
+          ticket_id: string
+        }
+        Update: {
+          autor?: string
+          created_at?: string
+          id?: string
+          mensagem?: string
+          nome_autor?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
