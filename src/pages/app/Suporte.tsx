@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   Ticket,
-  Phone,
   ChevronRight,
   Clock,
   X,
