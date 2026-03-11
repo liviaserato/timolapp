@@ -9,17 +9,18 @@ export interface DashboardCardProps {
   className?: string;
   tooltip?: string;
   id?: string;
+  headerRight?: React.ReactNode;
 }
 
-export function DashboardCard({ icon: Icon, title, children, className, tooltip, id }: DashboardCardProps) {
+export function DashboardCard({ icon: Icon, title, children, className, tooltip, id, headerRight }: DashboardCardProps) {
   return (
     <fieldset id={id} className={cn(
       "rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm min-w-0 overflow-hidden flex flex-col",
       className
     )}>
-      <legend className="flex items-center gap-2 px-1 text-base font-bold text-primary">
-        <Icon className="h-5 w-5" />
-        {title}
+      <legend className="flex items-center gap-2 px-1 text-base font-bold text-primary w-full">
+        <Icon className="h-5 w-5 shrink-0" />
+        <span className="shrink-0">{title}</span>
         {tooltip && (
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
@@ -31,6 +32,9 @@ export function DashboardCard({ icon: Icon, title, children, className, tooltip,
               {tooltip}
             </TooltipContent>
           </Tooltip>
+        )}
+        {headerRight && (
+          <span className="ml-auto">{headerRight}</span>
         )}
       </legend>
       {children}
