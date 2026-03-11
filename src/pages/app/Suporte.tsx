@@ -106,6 +106,7 @@ export default function Suporte() {
       setTicketSubject("");
       setTicketDescription("");
       setAttachedFiles([]);
+      setFieldErrors({});
       toast.success("Chamado enviado com sucesso! Nossa equipe responderá em breve.");
     }, 1200);
   }
