@@ -10,7 +10,6 @@ import {
   MapPin,
   MessageSquare,
   Send,
-  ArrowLeft,
   Eye,
   EyeOff,
 } from "lucide-react";
