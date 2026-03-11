@@ -92,10 +92,12 @@ export default function Suporte() {
   );
 
   function handleSubmitTicket() {
-    if (!ticketCategory || !ticketSubject.trim() || !ticketDescription.trim()) {
-      toast.error("Preencha todos os campos obrigatórios.");
-      return;
-    }
+    const errors: Record<string, string> = {};
+    if (!ticketCategory) errors.category = "Selecione uma categoria";
+    if (!ticketSubject.trim()) errors.subject = "Informe o assunto do chamado";
+    if (!ticketDescription.trim()) errors.description = "Descreva sua dúvida ou problema";
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
     setSubmitting(true);
     setTimeout(() => {
       setSubmitting(false);
