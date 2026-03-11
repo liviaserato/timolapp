@@ -79,12 +79,52 @@ function normalize(str: string) {
 
 /* ── Component ── */
 
+const SearchField = ({
+  search,
+  setSearch,
+  inputRef,
+  handleKeyDown,
+  clearSearch,
+  className,
+}: {
+  search: string;
+  setSearch: (v: string) => void;
+  inputRef: React.RefObject<HTMLInputElement>;
+  handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  clearSearch: () => void;
+  className?: string;
+}) => {
+  const hasSearch = search.trim().length > 0;
+  return (
+    <div className={`relative ${className ?? ""}`}>
+      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+      <Input
+        ref={inputRef}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Buscar pergunta..."
+        className="h-8 pl-8 pr-8 text-xs rounded-full bg-muted/50 border-border focus-visible:ring-1"
+      />
+      {hasSearch && (
+        <button
+          onClick={clearSearch}
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="Limpar busca"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      )}
+    </div>
+  );
+};
+
 export default function FaqSection() {
   const [activeTab, setActiveTab] = useState("conta");
   const [search, setSearch] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const isMobile = useIsMobile();
 
-  // Find which categories have matches for current search
   const { filteredByTab, matchingTabs } = useMemo(() => {
     const q = normalize(search.trim());
     if (!q) {
@@ -135,30 +175,31 @@ export default function FaqSection() {
       icon={HelpCircle}
       title="Perguntas Frequentes (FAQ)"
       headerRight={
-        <div className="relative w-full max-w-[220px] sm:max-w-[260px]">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-          <Input
-            ref={inputRef}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Buscar pergunta..."
-            className="h-8 pl-8 pr-8 text-xs rounded-full bg-muted/50 border-border focus-visible:ring-1"
+        !isMobile ? (
+          <SearchField
+            search={search}
+            setSearch={setSearch}
+            inputRef={inputRef}
+            handleKeyDown={handleKeyDown}
+            clearSearch={clearSearch}
+            className="w-full max-w-[260px]"
           />
-          {hasSearch && (
-            <button
-              onClick={clearSearch}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Limpar busca"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          )}
-        </div>
+        ) : undefined
       }
     >
+      {isMobile && (
+        <SearchField
+          search={search}
+          setSearch={setSearch}
+          inputRef={inputRef}
+          handleKeyDown={handleKeyDown}
+          clearSearch={clearSearch}
+          className="w-full mt-1 mb-2"
+        />
+      )}
+
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-3">
-        <TabsList className="flex flex-wrap justify-start h-auto gap-1 bg-transparent p-0">
+        <TabsList className="flex flex-wrap justify-start h-auto gap-x-2 gap-y-1.5 bg-transparent p-0">
           {faqTabs.map((tab) => {
             const isOtherTabMatch =
               hasSearch && matchingTabs.has(tab.value) && tab.value !== activeTab;
@@ -168,7 +209,7 @@ export default function FaqSection() {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className={`text-xs rounded-full px-3 py-1.5 border transition-all
+                className={`text-xs rounded-full px-4 py-1.5 border transition-all
                   data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary
                   ${
                     isOtherTabMatch
