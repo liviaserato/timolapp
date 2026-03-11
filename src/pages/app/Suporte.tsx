@@ -93,11 +93,11 @@ export default function Suporte() {
   const visibleTickets = showOldTickets
     ? mockTicketsDetalhados
     : mockTicketsDetalhados.filter(
-        (t) => !(t.status === "fechado" && isOlderThan30Days(t.ultimaAtualizacao))
+        (t) => !(t.status === "arquivado" && isOlderThan30Days(t.ultimaAtualizacao))
       );
 
   const hasHiddenOld = mockTicketsDetalhados.some(
-    (t) => t.status === "fechado" && isOlderThan30Days(t.ultimaAtualizacao)
+    (t) => t.status === "arquivado" && isOlderThan30Days(t.ultimaAtualizacao)
   );
 
   function handleSubmitTicket() {

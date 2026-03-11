@@ -87,7 +87,7 @@ export const mockTicketsDetalhados: TicketDetail[] = [
     numero: "#00105",
     assunto: "Alteração de endereço de entrega",
     categoria: "Cadastro",
-    status: "fechado",
+    status: "arquivado",
     descricaoInicial: "Preciso alterar meu endereço de entrega para um novo local.",
     dataAbertura: "10/01/2026",
     ultimaAtualizacao: "12/01/2026",

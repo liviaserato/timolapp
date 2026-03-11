@@ -86,8 +86,8 @@ export default function TicketDetailDialog({ ticket, open, onOpenChange }: Ticke
   if (!ticket) return null;
 
   const st = statusMap[ticket.status];
-  const isResolved = ticket.status === "respondido" || ticket.status === "fechado";
-  const canReply = !isResolved;
+  const isResolved = ticket.status === "concluido" || ticket.status === "arquivado";
+  const canReply = !isResolved && ticket.status !== "expirado";
 
   function handleSendReply() {
     if (!replyText.trim()) return;
