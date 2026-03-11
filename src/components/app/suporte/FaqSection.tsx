@@ -129,7 +129,7 @@ const SearchField = forwardRef<HTMLInputElement, SearchFieldProps>(
           onChange={(e) => setSearch(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Buscar pergunta..."
-          className="h-8 pl-8 pr-8 text-xs rounded-full bg-card border-app-card-border focus-visible:ring-1"
+          className="h-8 pl-8 pr-8 text-xs rounded-full bg-card border-primary focus-visible:ring-1"
         />
         {hasSearch && (
           <button
