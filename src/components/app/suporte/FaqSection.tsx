@@ -232,7 +232,7 @@ export default function FaqSection() {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className={`text-xs rounded-full px-4 py-1.5 border transition-all
+                className={`inline-flex text-xs rounded-full px-3 py-1.5 mx-[2px] border transition-all
                   data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary
                   ${
                     isOtherTabMatch
