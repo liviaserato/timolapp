@@ -6,10 +6,8 @@ import {
   CheckCircle2,
   XCircle,
   Truck,
-  Eye,
   Search,
   Filter,
-  ChevronDown,
   Megaphone,
 } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
@@ -94,21 +92,29 @@ const mockOrders: Order[] = [
   },
 ];
 
-const statusConfig: Record<OrderStatus, { label: string; icon: React.ElementType; color: string }> = {
-  pendente: { label: "Pendente", icon: Clock, color: "bg-amber-100 text-amber-700 border-amber-200" },
-  confirmado: { label: "Confirmado", icon: CheckCircle2, color: "bg-blue-100 text-blue-700 border-blue-200" },
-  enviado: { label: "Enviado", icon: Truck, color: "bg-violet-100 text-violet-700 border-violet-200" },
-  entregue: { label: "Entregue", icon: CheckCircle2, color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
-  cancelado: { label: "Cancelado", icon: XCircle, color: "bg-red-100 text-red-700 border-red-200" },
+const statusConfig: Record<OrderStatus, { label: string; shortLabel: string; icon: React.ElementType; color: string }> = {
+  pendente: { label: "Pendente", shortLabel: "Pend.", icon: Clock, color: "bg-amber-100 text-amber-700 border-amber-200" },
+  confirmado: { label: "Confirmado", shortLabel: "Conf.", icon: CheckCircle2, color: "bg-blue-100 text-blue-700 border-blue-200" },
+  enviado: { label: "Enviado", shortLabel: "Env.", icon: Truck, color: "bg-violet-100 text-violet-700 border-violet-200" },
+  entregue: { label: "Entregue", shortLabel: "Entr.", icon: CheckCircle2, color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
+  cancelado: { label: "Cancelado", shortLabel: "Canc.", icon: XCircle, color: "bg-red-100 text-red-700 border-red-200" },
 };
 
-function StatusBadge({ status }: { status: OrderStatus }) {
+function StatusBadge({ status, compact = false }: { status: OrderStatus; compact?: boolean }) {
   const cfg = statusConfig[status];
   const Icon = cfg.icon;
+
   return (
-    <Badge variant="outline" className={cn("gap-1 text-[11px] font-medium border", cfg.color)}>
-      <Icon className="h-3 w-3" />
-      {cfg.label}
+    <Badge
+      variant="outline"
+      className={cn(
+        "font-medium border justify-center max-w-full",
+        compact ? "text-[10px] px-1.5 py-0" : "gap-1 text-[11px]",
+        cfg.color,
+      )}
+    >
+      {!compact && <Icon className="h-3 w-3" />}
+      {compact ? cfg.shortLabel : cfg.label}
     </Badge>
   );
 }
@@ -240,15 +246,14 @@ export default function Pedidos() {
 
           {/* Tabela */}
           <div className="mt-3 rounded-md border border-app-card-border overflow-hidden overflow-x-hidden">
-            <Table className="md:table-auto table-fixed">
+            <Table className="w-full table-fixed">
               <TableHeader>
                 <TableRow className="bg-[hsl(var(--table-header))]">
-                  <TableHead className="text-xs font-semibold px-2 md:px-4">Pedido</TableHead>
-                  <TableHead className="text-xs font-semibold hidden sm:table-cell px-2 md:px-4">Data</TableHead>
-                  <TableHead className="text-xs font-semibold hidden md:table-cell px-2 md:px-4">Itens</TableHead>
-                  <TableHead className="text-xs font-semibold text-right px-2 md:px-4">Total</TableHead>
-                  <TableHead className="text-xs font-semibold text-center px-1.5 md:px-4">Status</TableHead>
-                  
+                  <TableHead className="w-[38%] text-xs font-semibold px-1.5 sm:px-2 md:px-3 lg:px-4">Pedido</TableHead>
+                  <TableHead className="w-[20%] text-xs font-semibold hidden sm:table-cell px-1.5 sm:px-2 md:px-3 lg:px-4">Data</TableHead>
+                  <TableHead className="w-[14%] text-xs font-semibold hidden lg:table-cell px-1.5 sm:px-2 md:px-3 lg:px-4">Itens</TableHead>
+                  <TableHead className="w-[20%] text-xs font-semibold text-right px-1.5 sm:px-2 md:px-3 lg:px-4">Total</TableHead>
+                  <TableHead className="w-[22%] sm:w-[18%] text-xs font-semibold text-center px-1 sm:px-2 md:px-3 lg:px-4">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -261,19 +266,22 @@ export default function Pedidos() {
                 ) : (
                   filtered.map((order) => (
                     <TableRow key={order.id} className="cursor-pointer hover:bg-muted/40" onClick={() => setDetailOrder(order)}>
-                      <TableCell className="text-xs font-medium px-2 md:px-4">
-                        <div className="flex flex-col">
+                      <TableCell className="text-xs font-medium px-1.5 sm:px-2 md:px-3 lg:px-4">
+                        <div className="flex flex-col leading-tight">
                           <span>{order.number}</span>
                           <span className="text-[10px] text-muted-foreground sm:hidden">{formatDate(order.date)}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground hidden sm:table-cell px-2 md:px-4">{formatDate(order.date)}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground hidden md:table-cell px-2 md:px-4">
+                      <TableCell className="text-xs text-muted-foreground hidden sm:table-cell px-1.5 sm:px-2 md:px-3 lg:px-4">{formatDate(order.date)}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground hidden lg:table-cell px-1.5 sm:px-2 md:px-3 lg:px-4">
                         {order.items.length} {order.items.length === 1 ? "item" : "itens"}
                       </TableCell>
-                      <TableCell className="text-xs font-semibold text-right px-2 md:px-4">{formatCurrency(order.total)}</TableCell>
-                      <TableCell className="text-center px-1.5 md:px-4">
-                        <StatusBadge status={order.status} />
+                      <TableCell className="text-xs font-semibold text-right whitespace-nowrap px-1.5 sm:px-2 md:px-3 lg:px-4">
+                        {formatCurrency(order.total)}
+                      </TableCell>
+                      <TableCell className="text-center px-1 sm:px-2 md:px-3 lg:px-4">
+                        <span className="sm:hidden inline-flex"><StatusBadge status={order.status} compact /></span>
+                        <span className="hidden sm:inline-flex"><StatusBadge status={order.status} /></span>
                       </TableCell>
                     </TableRow>
                   ))
