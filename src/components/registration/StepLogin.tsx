@@ -2,7 +2,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
+import { checkUsername } from "@/lib/api/people";
 
 import { CheckCircle2, XCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 
@@ -49,6 +50,8 @@ export const StepLogin = ({ data, onChange, errors, onUsernameStatusChange }: Pr
 
   const isUsernameFormatValid = data.username ? USERNAME_REGEX.test(data.username) : true;
 
+  const abortRef = useRef<AbortController | null>(null);
+
   const handleUsernameChange = (val: string) => {
     const stripped = val.replace(/\s/g, "");
     const trimmed = stripped.slice(0, USERNAME_MAX);
@@ -56,13 +59,28 @@ export const StepLogin = ({ data, onChange, errors, onUsernameStatusChange }: Pr
     setUsernameStatus("idle");
     onUsernameStatusChange?.("idle");
     if (usernameTimer) clearTimeout(usernameTimer);
+    abortRef.current?.abort();
     // Only check availability if format is valid
     if (trimmed.length >= 3 && USERNAME_REGEX.test(trimmed)) {
       setUsernameStatus("checking");
       onUsernameStatusChange?.("checking");
-      const timer = setTimeout(() => {
-        setUsernameStatus("available");
-        onUsernameStatusChange?.("available");
+      const timer = setTimeout(async () => {
+        const controller = new AbortController();
+        abortRef.current = controller;
+        try {
+          const res = await checkUsername(trimmed, controller.signal);
+          if (!controller.signal.aborted) {
+            const status = res.isAvailable ? "available" : "taken";
+            setUsernameStatus(status);
+            onUsernameStatusChange?.(status);
+          }
+        } catch (err: any) {
+          if (err?.name !== "AbortError" && !controller.signal.aborted) {
+            // On error, allow user to proceed
+            setUsernameStatus("available");
+            onUsernameStatusChange?.("available");
+          }
+        }
       }, 600);
       setUsernameTimer(timer);
     }
