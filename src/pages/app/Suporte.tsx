@@ -272,14 +272,10 @@ export default function Suporte() {
       <Dialog open={newTicketOpen} onOpenChange={setNewTicketOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader className="text-center">
-            <button
-              onClick={() => setNewTicketOpen(false)}
-              className="absolute left-4 top-4 text-muted-foreground hover:text-foreground"
-              aria-label="Voltar"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <DialogTitle className="text-lg">Novo Chamado</DialogTitle>
+            <DialogTitle className="text-lg flex items-center justify-center gap-2">
+              <img src={faviconTimol} alt="" className="h-5 w-5" />
+              Novo Chamado
+            </DialogTitle>
             <DialogDescription>
               Descreva sua dúvida ou problema. Nossa equipe responderá em breve.
             </DialogDescription>
@@ -292,7 +288,7 @@ export default function Suporte() {
                   <SelectValue placeholder="Selecione uma categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categorias.map((c) => (
+                  {categoriasChamado.map((c) => (
                     <SelectItem key={c} value={c} className="text-sm">
                       {c}
                     </SelectItem>

@@ -14,7 +14,7 @@ import { DashboardCard } from "@/components/app/DashboardCard";
 
 /* ── FAQ data ── */
 
-const faqTabs = [
+export const faqTabs = [
   { value: "conta", label: "Conta e Cadastro" },
   { value: "financeiro", label: "Financeiro e Bônus" },
   { value: "franquia", label: "Franquia" },

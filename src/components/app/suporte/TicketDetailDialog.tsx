@@ -7,8 +7,12 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ThumbsUp, ThumbsDown, Clock, CheckCircle2, AlertCircle, User, Headphones } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { ThumbsUp, ThumbsDown, Clock, CheckCircle2, AlertCircle, User, Headphones, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import faviconTimol from "@/assets/favicon-timol-azul-escuro.svg";
 
 export interface TicketInteraction {
   id: string;
@@ -45,24 +49,35 @@ interface TicketDetailDialogProps {
 
 export default function TicketDetailDialog({ ticket, open, onOpenChange }: TicketDetailDialogProps) {
   const [rating, setRating] = useState<"positive" | "negative" | null>(null);
+  const [replyOpen, setReplyOpen] = useState(false);
+  const [replyText, setReplyText] = useState("");
+  const [sending, setSending] = useState(false);
 
   if (!ticket) return null;
 
   const st = statusMap[ticket.status];
   const isResolved = ticket.status === "respondido" || ticket.status === "fechado";
+  const canReply = !isResolved;
+
+  function handleSendReply() {
+    if (!replyText.trim()) return;
+    setSending(true);
+    setTimeout(() => {
+      setSending(false);
+      setReplyText("");
+      setReplyOpen(false);
+      toast.success("Resposta enviada com sucesso!");
+    }, 1200);
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader className="text-center">
-          <button
-            onClick={() => onOpenChange(false)}
-            className="absolute left-4 top-4 text-muted-foreground hover:text-foreground"
-            aria-label="Voltar"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-          <DialogTitle className="text-lg">Chamado {ticket.numero}</DialogTitle>
+          <DialogTitle className="text-lg flex items-center justify-center gap-2">
+            <img src={faviconTimol} alt="" className="h-5 w-5" />
+            Chamado {ticket.numero}
+          </DialogTitle>
           <DialogDescription>Detalhes e histórico de interações</DialogDescription>
         </DialogHeader>
 
@@ -90,7 +105,7 @@ export default function TicketDetailDialog({ ticket, open, onOpenChange }: Ticke
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Descrição inicial</p>
-            <p className="text-sm text-muted-foreground leading-relaxed">{ticket.descricaoInicial}</p>
+            <p className="text-sm text-foreground leading-relaxed">{ticket.descricaoInicial}</p>
           </div>
         </div>
 
@@ -125,6 +140,53 @@ export default function TicketDetailDialog({ ticket, open, onOpenChange }: Ticke
               );
             })}
           </div>
+
+          {/* ── Responder ── */}
+          {canReply && !replyOpen && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full mt-4 gap-1.5 text-xs"
+              onClick={() => setReplyOpen(true)}
+            >
+              <Send className="h-3.5 w-3.5" />
+              Responder
+            </Button>
+          )}
+
+          {canReply && replyOpen && (
+            <div className="mt-4 space-y-2">
+              <Textarea
+                placeholder="Digite sua resposta..."
+                className="text-sm min-h-[80px] resize-none"
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                autoFocus
+              />
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs"
+                  onClick={() => {
+                    setReplyOpen(false);
+                    setReplyText("");
+                  }}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  size="sm"
+                  className="flex-1 gap-1.5 text-xs"
+                  disabled={sending || !replyText.trim()}
+                  onClick={handleSendReply}
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  {sending ? "Enviando..." : "Enviar Resposta"}
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── Avaliação (se resolvido) ── */}
