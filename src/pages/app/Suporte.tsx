@@ -142,18 +142,29 @@ export default function Suporte() {
         <div className="text-primary-foreground text-center sm:text-left">
           <p className="font-bold text-base">Não encontrou o que precisava?</p>
           <p className="text-xs opacity-90 mt-0.5">
-            Abra um chamado e nossa equipe responderá em até 24h úteis
+            Abra um chamado ou fale diretamente com uma atendente
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 border-0 gap-1.5 text-xs shrink-0"
-          onClick={() => setNewTicketOpen(true)}
-        >
-          <Ticket className="h-4 w-4" />
-          Abrir Chamado
-        </Button>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 border-0 gap-1.5 text-xs shrink-0"
+            onClick={() => setNewTicketOpen(true)}
+          >
+            <Ticket className="h-4 w-4" />
+            Abrir Chamado
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-[#25D366] text-white hover:bg-[#20bd5a] border-0 gap-1.5 text-xs shrink-0"
+            onClick={() => openWhatsAppLink("Olá! Preciso de ajuda.")}
+          >
+            <img src={iconWhatsapp} alt="" className="h-4 w-4" />
+            Falar com Atendente
+          </Button>
+        </div>
       </section>
 
       {/* ── 3. Meus Chamados ── */}
@@ -218,54 +229,38 @@ export default function Suporte() {
         </DashboardCard>
       </section>
 
+      {/* ── 4. Nossos Endereços ── */}
       <section>
-        <DashboardCard icon={Phone} title="Fale Conosco">
-          <div className="mt-2 flex flex-col gap-4">
-            {/* WhatsApp CTA */}
-            <button
-              onClick={() => openWhatsAppLink("Olá! Preciso de ajuda.")}
-              className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors text-left w-fit"
-            >
-              <img src={iconWhatsapp} alt="WhatsApp" className="h-8 w-8" />
-              <p className="text-sm font-medium">Falar com atendente</p>
-            </button>
-
-            {/* Mapa + Lista de Escritórios */}
-            <div>
-              <h3 className="text-sm font-bold text-primary mb-3 flex items-center gap-1.5">
-                <MapPin className="h-4 w-4" />
-                Nossos Escritórios
-              </h3>
-
-              <OfficeMap selectedOffice={selectedOffice} onSelectOffice={setSelectedOffice} />
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-3">
-                {escritorios.map((e) => {
-                  const isActive = selectedOffice?.cidade === e.cidade;
-                  return (
-                    <button
-                      key={e.cidade}
-                      onClick={() => setSelectedOffice(isActive ? null : e)}
-                      className={`flex items-start gap-2.5 p-2.5 rounded-lg transition-colors text-left ${
-                        isActive
-                          ? "bg-primary/10 border border-primary/30"
-                          : "hover:bg-muted/50 border border-transparent"
-                      }`}
-                    >
-                      <span className={`shrink-0 mt-0.5 h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                        isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                      }`}>
-                        {e.uf}
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium">{e.cidade} – {e.uf}</p>
-                        <p className="text-xs text-muted-foreground leading-snug">{e.endereco}</p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+        <DashboardCard icon={MapPin} title="Nossos Endereços">
+          <div className="mt-2 flex flex-col gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {escritorios.map((e) => {
+                const isActive = selectedOffice?.cidade === e.cidade;
+                return (
+                  <button
+                    key={e.cidade}
+                    onClick={() => setSelectedOffice(isActive ? null : e)}
+                    className={`flex items-start gap-2.5 p-2.5 rounded-lg transition-colors text-left ${
+                      isActive
+                        ? "bg-primary/10 border border-primary/30"
+                        : "hover:bg-muted/50 border border-transparent"
+                    }`}
+                  >
+                    <span className={`shrink-0 mt-0.5 h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                      isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                    }`}>
+                      {e.uf}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium">{e.cidade} – {e.uf}</p>
+                      <p className="text-xs text-muted-foreground leading-snug">{e.endereco}</p>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
+
+            <OfficeMap selectedOffice={selectedOffice} onSelectOffice={setSelectedOffice} />
           </div>
         </DashboardCard>
       </section>
