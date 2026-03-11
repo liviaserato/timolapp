@@ -135,7 +135,7 @@ export default function Suporte() {
         <div className="text-primary-foreground text-center sm:text-left">
           <p className="font-bold text-base">Não encontrou o que precisava?</p>
           <p className="text-xs opacity-90 mt-0.5">
-            Abra um chamado e nossa equipe responderá em até 24h úteis.
+            Abra um chamado e nossa equipe responderá em até 24h úteis
           </p>
         </div>
         <Button
