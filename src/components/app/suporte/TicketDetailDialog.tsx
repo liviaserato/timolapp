@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -52,6 +52,35 @@ export default function TicketDetailDialog({ ticket, open, onOpenChange }: Ticke
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
+  const [loadingFeedback, setLoadingFeedback] = useState(false);
+
+  // Fetch saved feedback from DB when ticket opens
+  useEffect(() => {
+    if (!ticket || !open) {
+      setRating(null);
+      return;
+    }
+    async function fetchFeedback() {
+      setLoadingFeedback(true);
+      try {
+        const { data } = await supabase
+          .from("ticket_feedback" as any)
+          .select("rating")
+          .eq("ticket_id", ticket!.id)
+          .maybeSingle();
+        if (data && (data as any).rating && (data as any).rating !== "pending") {
+          setRating((data as any).rating as "positive" | "negative");
+        } else {
+          setRating(null);
+        }
+      } catch {
+        setRating(null);
+      } finally {
+        setLoadingFeedback(false);
+      }
+    }
+    fetchFeedback();
+  }, [ticket?.id, open]);
 
   if (!ticket) return null;
 
@@ -189,43 +218,36 @@ export default function TicketDetailDialog({ ticket, open, onOpenChange }: Ticke
         </div>
 
         {/* ── Avaliação (se resolvido) ── */}
-        {isResolved && (
+        {isResolved && !loadingFeedback && (
           <div className="mt-4 border-t border-border pt-4">
-            <p className="text-sm font-medium text-center mb-3">
-              Você ficou satisfeito com o atendimento?
-            </p>
-            <div className="flex items-center justify-center gap-6">
-              <button
-                onClick={() => setRating("positive")}
-                className={cn(
-                  "flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all",
-                  rating === "positive"
-                    ? "border-emerald-500 bg-emerald-50 text-emerald-600 scale-110"
-                    : "border-border text-muted-foreground hover:border-muted-foreground/40"
-                )}
-                aria-label="Satisfeito"
-              >
-                <ThumbsUp className={cn("h-6 w-6", rating === "positive" && "fill-emerald-500")} />
-                <span className="text-[10px] font-medium">Sim</span>
-              </button>
-              <button
-                onClick={() => setRating("negative")}
-                className={cn(
-                  "flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all",
-                  rating === "negative"
-                    ? "border-red-500 bg-red-50 text-red-600 scale-110"
-                    : "border-border text-muted-foreground hover:border-muted-foreground/40"
-                )}
-                aria-label="Insatisfeito"
-              >
-                <ThumbsDown className={cn("h-6 w-6", rating === "negative" && "fill-red-500")} />
-                <span className="text-[10px] font-medium">Não</span>
-              </button>
-            </div>
-            {rating && (
-              <p className="text-xs text-muted-foreground text-center mt-2">
-                {rating === "positive" ? "Obrigado pelo feedback! 😊" : "Sentimos muito. Vamos melhorar! 🙏"}
-              </p>
+            {rating ? (
+              <div className="text-center">
+                <p className="text-sm font-medium mb-2">Sua avaliação</p>
+                <div className="flex items-center justify-center gap-2">
+                  {rating === "positive" ? (
+                    <div className="flex items-center gap-2 text-emerald-600">
+                      <ThumbsUp className="h-5 w-5 fill-emerald-500" />
+                      <span className="text-sm font-medium">Satisfeito</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-red-600">
+                      <ThumbsDown className="h-5 w-5 fill-red-500" />
+                      <span className="text-sm font-medium">Insatisfeito</span>
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1.5">
+                  {rating === "positive" ? "Obrigado pelo feedback! 😊" : "Sentimos muito. Vamos melhorar! 🙏"}
+                </p>
+              </div>
+            ) : (
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">
+                  Um e-mail de avaliação foi enviado para você.
+                  <br />
+                  Clique no link do e-mail para registrar sua opinião.
+                </p>
+              </div>
             )}
           </div>
         )}
