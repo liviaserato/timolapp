@@ -36,6 +36,17 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.noSponsorFound.message": "Não encontramos nenhum patrocinador disponível na cidade selecionada. Escolha uma cidade mais próxima ou peça ajuda à Timol pelo WhatsApp.",
     "sponsor.noSponsorFound.whatsapp": "Pedir ajuda pelo WhatsApp",
     "sponsor.whatsapp.generic": "Olá, quero me cadastrar mas ainda não tenho nenhum patrocinador. Preciso de ajuda.",
+    "sponsor.confirm.title": "Confirmar Patrocinador",
+    "sponsor.confirm.instruction": "Clique no card abaixo para selecionar este patrocinador e habilitar a confirmação.",
+    "sponsor.confirm.warning.title": "Atenção!",
+    "sponsor.confirm.warning.text": "Esta informação não poderá ser alterada após a confirmação.",
+    "sponsor.confirm.warning.combined": "Atenção! Não poderá ser alterado depois.",
+    "sponsor.confirm.confirm": "Confirmar e Continuar",
+    "sponsor.confirm.suggestAnother": "Sugerir outro patrocinador",
+    "sponsor.confirm.contactTimol": "Quero que a Timol entre em contato",
+    "sponsor.error.empty": "Informe o ID do patrocinador",
+    "sponsor.error.numericOnly": "O ID deve conter apenas números.",
+    "sponsor.error.notFound": "Patrocinador não encontrado. Verifique o ID e tente novamente.",
 
     // Step 1 - Personal
     "step1.title": "Dados Pessoais",
