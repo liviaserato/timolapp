@@ -257,7 +257,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "validation.ageMin18": "É necessário ter 18 anos ou mais para se cadastrar.",
     "validation.cpfInvalid": "CPF inválido. Verifique os dígitos informados.",
     "validation.cpfRegistered": "Este CPF já está cadastrado no sistema.",
-    "validation.phoneMin": "Telefone deve ter no mínimo 7 dígitos.",
+    "validation.phoneMin": "Telefone deve ter no mínimo 5 dígitos.",
 
     // Success
     "success.title": "Cadastro realizado!",
