@@ -199,6 +199,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const handleFindSuggestAnother = async () => {
     if (!locationSearch.trim() || !findSponsor) return;
     setIndicationLoading(true);
+    setFindSponsorSelected(false);
     try {
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(locationSearch.trim())}`,
