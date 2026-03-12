@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, X } from "lucide-react";
+import { AlertCircle, ArrowLeft, CheckCircle2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { countries, getCountryName } from "@/data/countries";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
@@ -21,6 +21,22 @@ interface Props {
   open: boolean;
   onClose: () => void;
 }
+
+// CPF checksum validation
+function isValidCPF(cpf: string): boolean {
+  const clean = cpf.replace(/\D/g, "");
+  if (clean.length !== 11) return false;
+  if (/^(\d)\1+$/.test(clean)) return false;
+  for (let t = 9; t < 11; t++) {
+    let d = 0;
+    for (let c = 0; c < t; c++) d += parseInt(clean[c]) * (t + 1 - c);
+    d = ((10 * d) % 11) % 10;
+    if (parseInt(clean[t]) !== d) return false;
+  }
+  return true;
+}
+
+type PopupView = "form" | "not-found" | "already-active";
 
 export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
   const { t, language } = useLanguage();
@@ -36,10 +52,10 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
   const [showDocumentCountryList, setShowDocumentCountryList] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [view, setView] = useState<PopupView>("form");
 
   useEffect(() => {
     if (!documentCountryIso2) return;
-
     const selectedCountry = countries.find((country) => country.iso2 === documentCountryIso2) ?? defaultCountry;
     setDocumentCountrySearch(getCountryName(selectedCountry, language));
   }, [defaultCountry, documentCountryIso2, language]);
@@ -50,7 +66,6 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
         setShowDocumentCountryList(false);
       }
     };
-
     window.document.addEventListener("mousedown", handleOutsideClick);
     return () => window.document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
@@ -69,6 +84,7 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
     setShowDocumentCountryList(false);
     setError("");
     setLoading(false);
+    setView("form");
   };
 
   const handleClose = () => {
@@ -77,7 +93,7 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
   };
 
   const isBrazilDocument = documentCountryIso2 === "BR";
-  // Format birth date input as DD/MM/YYYY
+
   const handleBirthDateChange = (val: string) => {
     const digits = val.replace(/\D/g, "").slice(0, 8);
     let formatted = digits;
@@ -97,7 +113,6 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
   const handleSelectDocumentCountry = (iso2: string) => {
     const selectedCountry = countries.find((country) => country.iso2 === iso2);
     if (!selectedCountry) return;
-
     setDocumentCountryIso2(iso2);
     setDocumentCountrySearch(getCountryName(selectedCountry, language));
     setShowDocumentCountryList(false);
@@ -117,13 +132,11 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
     if (documentCountryIso2) {
       return countries.find((country) => country.iso2 === documentCountryIso2) ?? defaultCountry;
     }
-
     return countries.find(
       (country) => getCountryName(country, language).toLowerCase() === documentCountrySearch.trim().toLowerCase(),
     ) ?? null;
   };
 
-  // Format document as CPF mask if Brazil is selected
   const handleDocumentChange = (val: string) => {
     if (isBrazilDocument) {
       const stripped = val.replace(/[^\d]/g, "").slice(0, 11);
@@ -138,26 +151,26 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
     setError("");
   };
 
-  const handleSubmit = async () => {
-    if (loading) return;
-    const selectedCountry = resolveSelectedCountry();
+  // CPF inline validation
+  const cpfDigits = document.replace(/\D/g, "");
+  const cpfComplete = isBrazilDocument && cpfDigits.length === 11;
+  const cpfInvalid = cpfComplete && !isValidCPF(cpfDigits);
 
-    if (!userId.trim()) {
-      setError(t("resume.error.idRequired"));
-      return;
-    }
-    if (!selectedCountry) {
-      setError(t("resume.error.documentCountryRequired"));
-      return;
-    }
-    if (!document.trim()) {
-      setError(t("resume.error.documentRequired"));
-      return;
-    }
-    if (!birthDate || birthDate.length < 10) {
-      setError(t("resume.error.birthDateRequired"));
-      return;
-    }
+  // Form completeness check
+  const selectedCountry = resolveSelectedCountry();
+  const isDocumentFilled = isBrazilDocument
+    ? cpfDigits.length === 11 && !cpfInvalid
+    : document.trim().length > 0;
+  const isFormComplete =
+    userId.trim().length > 0 &&
+    !!selectedCountry &&
+    isDocumentFilled &&
+    birthDate.length === 10;
+
+  const handleSubmit = async () => {
+    if (loading || !isFormComplete) return;
+    const country = resolveSelectedCountry();
+    if (!country) return;
 
     const parts = birthDate.split("/");
     const isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
@@ -172,20 +185,18 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
           franchise_id: userId.trim(),
           document: rawDoc,
           birth_date: isoDate,
-          document_country_iso2: selectedCountry.iso2,
+          document_country_iso2: country.iso2,
         },
       });
 
       if (fnError || !data?.success) {
         const errKey = data?.error;
         if (errKey === "already_completed") {
-          setError(t("resume.error.alreadyCompleted"));
-        } else if (errKey === "validation_failed") {
-          setError(t("resume.error.validationFailed"));
-        } else if (errKey === "not_found") {
-          setError(t("resume.error.notFound"));
+          setView("already-active");
+        } else if (errKey === "not_found" || errKey === "validation_failed") {
+          setView("not-found");
         } else {
-          setError(data?.error || t("resume.error.notFound"));
+          setError(data?.error || t("resume.error.generic"));
         }
         setLoading(false);
         return;
@@ -195,10 +206,10 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
         "continueData",
         JSON.stringify({
           ...data.data,
-          documentCountry: getCountryName(selectedCountry, language),
-          documentCountryIso2: selectedCountry.iso2,
-          documentCountryFlag: selectedCountry.flag,
-          foreignerNoCpf: selectedCountry.iso2 === "BR" ? "false" : "true",
+          documentCountry: getCountryName(country, language),
+          documentCountryIso2: country.iso2,
+          documentCountryFlag: country.flag,
+          foreignerNoCpf: country.iso2 === "BR" ? "false" : "true",
         }),
       );
       handleClose();
@@ -209,6 +220,86 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
     }
   };
 
+  // ── Not Found view ──
+  if (view === "not-found") {
+    return (
+      <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader className="relative items-center space-y-2">
+            <button
+              type="button"
+              onClick={() => setView("form")}
+              className="absolute left-0 top-1 p-1 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+            <img src={timolLogoDark} alt="Timol" className="h-8 mx-auto" />
+            <DialogTitle className="text-base">{t("resume.notFound.title")}</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3 mt-2 px-1">
+            <p className="text-sm text-muted-foreground">
+              {t("resume.notFound.line1")}
+            </p>
+            <p className="text-sm font-medium">
+              {t("resume.notFound.line2")}
+            </p>
+            <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
+              <li>{t("resume.notFound.check1")}</li>
+              <li>{t("resume.notFound.check2")}</li>
+              <li>{t("resume.notFound.check3")}</li>
+            </ul>
+            <p className="text-xs text-muted-foreground italic">
+              {t("resume.notFound.line3")}
+            </p>
+
+            <Button className="w-full mt-2" onClick={() => setView("form")}>
+              {t("resume.notFound.back")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // ── Already Active view ──
+  if (view === "already-active") {
+    return (
+      <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader className="relative items-center space-y-2">
+            <button
+              type="button"
+              onClick={() => setView("form")}
+              className="absolute left-0 top-1 p-1 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+            <img src={timolLogoDark} alt="Timol" className="h-8 mx-auto" />
+            <DialogTitle className="text-base flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
+              {t("resume.alreadyActive.title")}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3 mt-2 px-1">
+            <p className="text-sm text-muted-foreground">
+              {t("resume.alreadyActive.line1")}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {t("resume.alreadyActive.line2")}
+            </p>
+
+            <Button className="w-full mt-2" onClick={handleClose}>
+              {t("resume.alreadyActive.goLogin")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // ── Form view ──
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
       <DialogContent className="max-w-sm">
@@ -291,6 +382,12 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
               onChange={(e) => handleDocumentChange(e.target.value)}
               maxLength={isBrazilDocument ? 14 : 50}
             />
+            {cpfInvalid && (
+              <p className="text-xs text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3 shrink-0" />
+                {t("resume.error.cpfInvalid")}
+              </p>
+            )}
           </div>
 
           {/* Birth date */}
@@ -318,7 +415,7 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
           <Button
             type="submit"
             className="w-full gap-2 mt-1"
-            disabled={loading}
+            disabled={loading || !isFormComplete}
           >
             {t("resume.submit")}
           </Button>
