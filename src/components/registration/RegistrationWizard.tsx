@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { countries } from "@/data/countries";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
     document: initialData.document ?? "",
     gender: initialData.gender ?? "",
     email: initialData.email ?? "",
+    phoneDdi: initialData.phoneDdi ?? "BR",
     phoneNumber: initialData.phoneNumber ?? "",
     country: initialData.country ?? "",
     countryIso2: initialData.countryIso2 ?? "",
@@ -120,7 +122,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
       if (!data.email?.trim()) newErrors.email = req;
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) newErrors.email = t("validation.email");
       if (!data.phoneNumber?.trim()) newErrors.phoneNumber = req;
-      else if (data.phoneNumber.replace(/\D/g, "").length < 7) newErrors.phoneNumber = t("validation.phoneMin");
+      else if (data.phoneNumber.replace(/\D/g, "").length < 5) newErrors.phoneNumber = t("validation.phoneMin");
     } else if (step === 3) {
       if (!data.country?.trim()) newErrors.country = req;
       if (!data.zipCode?.trim()) newErrors.zipCode = req;
@@ -191,7 +193,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
             birth_date: data.birthDate || null,
             document: data.document?.trim(),
             gender: data.gender,
-            phone: data.phoneNumber?.trim(),
+            phone: data.phoneDdi ? `${countries.find(c => c.iso2 === data.phoneDdi)?.dialCode || "+55"} ${data.phoneNumber?.trim()}` : data.phoneNumber?.trim(),
             zip_code: data.zipCode?.trim(),
             street: data.street?.trim(),
             number: data.number?.trim(),
@@ -214,7 +216,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
               document: data.document?.trim(),
               sponsor_name: initialData.sponsorName || null,
               sponsor_id: initialData.sponsorFranchiseId || null,
-              phone: data.phoneNumber?.trim() || null,
+              phone: data.phoneDdi ? `${countries.find(c => c.iso2 === data.phoneDdi)?.dialCode || "+55"} ${data.phoneNumber?.trim()}` : data.phoneNumber?.trim() || null,
               preferred_language: language,
               sponsor_source: initialData.sponsorSelectionMethod || null,
               gender: data.gender || null,
@@ -234,6 +236,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         documentCountryFlag: data.documentCountryFlag,
         gender: data.gender,
         email: data.email,
+        phoneDdi: data.phoneDdi,
         phoneNumber: data.phoneNumber,
         country: data.country,
         countryIso2: data.countryIso2,

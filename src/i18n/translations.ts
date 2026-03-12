@@ -257,7 +257,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "validation.ageMin18": "É necessário ter 18 anos ou mais para se cadastrar.",
     "validation.cpfInvalid": "CPF inválido. Verifique os dígitos informados.",
     "validation.cpfRegistered": "Este CPF já está cadastrado no sistema.",
-    "validation.phoneMin": "Telefone deve ter no mínimo 7 dígitos.",
+    "validation.phoneMin": "Telefone deve ter no mínimo 5 dígitos.",
 
     // Success
     "success.title": "Cadastro realizado!",
@@ -675,7 +675,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "validation.ageMin18": "You must be 18 years old or older to register.",
     "validation.cpfInvalid": "Invalid CPF. Please check the digits entered.",
     "validation.cpfRegistered": "This CPF is already registered in the system.",
-    "validation.phoneMin": "Phone number must have at least 7 digits.",
+    "validation.phoneMin": "Phone number must have at least 5 digits.",
 
     // Success
     "success.title": "Registration completed!",
@@ -1092,7 +1092,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "validation.ageMin18": "Debe tener 18 años o más para registrarse.",
     "validation.cpfInvalid": "CPF inválido. Verifique los dígitos ingresados.",
     "validation.cpfRegistered": "Este CPF ya está registrado en el sistema.",
-    "validation.phoneMin": "El teléfono debe tener al menos 7 dígitos.",
+    "validation.phoneMin": "El teléfono debe tener al menos 5 dígitos.",
 
     // Success
     "success.title": "¡Registro realizado!",

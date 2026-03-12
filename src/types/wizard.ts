@@ -22,6 +22,7 @@ export interface WizardData {
 
   // Contact (Step 2)
   email?: string;
+  phoneDdi?: string; // ISO2 country code for DDI, e.g. "BR"
   phoneNumber?: string;
 
   // Address (Step 3)

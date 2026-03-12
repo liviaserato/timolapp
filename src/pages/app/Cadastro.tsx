@@ -1,10 +1,10 @@
 import { forwardRef, useState } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User, Phone, MapPin, KeyRound, HelpCircle, ShieldCheck, MessageSquarePlus } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { AddressManager, type Address } from "@/components/app/cadastro/AddressManager";
 import { FranchiseCard } from "@/components/app/cadastro/FranchiseCard";
 import { FinancialManager, type FinancialAccount } from "@/components/app/cadastro/FinancialManager";
@@ -105,8 +105,9 @@ Row.displayName = "Row";
 
 /* ── Phone Change Dialog ── */
 
-function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean; onOpenChange: (v: boolean) => void; currentPhone: string }) {
+function PhoneChangeDialog({ open, onOpenChange, currentPhone, currentDdiIso2 }: { open: boolean; onOpenChange: (v: boolean) => void; currentPhone: string; currentDdiIso2?: string }) {
   const [step, setStep] = useState<"phone" | "pin" | "success">("phone");
+  const [newDdi, setNewDdi] = useState(currentDdiIso2 || "BR");
   const [newPhone, setNewPhone] = useState("");
   const [pin, setPin] = useState("");
   const [sending, setSending] = useState(false);
@@ -134,6 +135,7 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean
   const handleClose = (v: boolean) => {
     if (!v) {
       setStep("phone");
+      setNewDdi(currentDdiIso2 || "BR");
       setNewPhone("");
       setPin("");
     }
@@ -172,11 +174,11 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean
               <div className="space-y-3">
                 <div className="space-y-2">
                   <Label>Novo telefone</Label>
-                  <Input
-                    placeholder="+55 11 99999-0000"
-                    value={newPhone}
-                    onChange={(e) => setNewPhone(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter" && newPhone.trim() && !sending) handleSendPin(); }}
+                  <PhoneInput
+                    countryIso2={newDdi}
+                    number={newPhone}
+                    onCountryChange={setNewDdi}
+                    onNumberChange={setNewPhone}
                   />
                 </div>
                 <DialogFooter>
