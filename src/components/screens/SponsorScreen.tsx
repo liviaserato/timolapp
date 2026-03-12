@@ -289,6 +289,8 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setFindSearched(false);
   };
 
+  const locationInputRef = useRef<HTMLInputElement>(null);
+
   const openNoSponsor = () => {
     clearSearch();
     setNoSponsorStep("how-continue");
@@ -301,6 +303,9 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setFindSponsor(null);
     setFindNotFound(false);
     setFindSearched(false);
+    setFindSponsorSelected(false);
+    // Auto-focus the location input after render
+    setTimeout(() => locationInputRef.current?.focus(), 50);
   };
 
   const openWhatsAppGeneric = () => {
