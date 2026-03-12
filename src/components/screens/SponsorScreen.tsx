@@ -47,6 +47,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const [findSponsor, setFindSponsor] = useState<{ id: string; name: string; city: string; state: string; countryFlag: string; countryName: string; photo: string } | null>(null);
   const [findNotFound, setFindNotFound] = useState(false);
   const [findSearched, setFindSearched] = useState(false);
+  const [findSponsorSelected, setFindSponsorSelected] = useState(false);
 
   useEffect(() => {
     setSponsorId("");
