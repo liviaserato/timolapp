@@ -121,7 +121,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
       if (!data.email?.trim()) newErrors.email = req;
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) newErrors.email = t("validation.email");
       if (!data.phoneNumber?.trim()) newErrors.phoneNumber = req;
-      else if (data.phoneNumber.replace(/\D/g, "").length < 7) newErrors.phoneNumber = t("validation.phoneMin");
+      else if (data.phoneNumber.replace(/\D/g, "").length < 5) newErrors.phoneNumber = t("validation.phoneMin");
     } else if (step === 3) {
       if (!data.country?.trim()) newErrors.country = req;
       if (!data.zipCode?.trim()) newErrors.zipCode = req;

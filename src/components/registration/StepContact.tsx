@@ -1,6 +1,7 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PhoneInput } from "@/components/ui/phone-input";
 
 interface Props {
   data: Record<string, string>;
@@ -10,14 +11,6 @@ interface Props {
 
 export const StepContact = ({ data, onChange, errors }: Props) => {
   const { t } = useLanguage();
-  const isForeigner = data.foreignerNoCpf === "true";
-
-  // Default +55 for non-foreigners when phoneNumber is empty
-  const handleFocus = () => {
-    if (!isForeigner && !data.phoneNumber) {
-      onChange("phoneNumber", "+55 ");
-    }
-  };
 
   return (
     <div className="space-y-4">
@@ -36,17 +29,12 @@ export const StepContact = ({ data, onChange, errors }: Props) => {
 
       <div className="space-y-2">
         <Label htmlFor="phoneNumber">{t("step2.phone")}</Label>
-        <Input
-          id="phoneNumber"
-          placeholder={t("step2.phone.placeholder")}
-          value={data.phoneNumber || ""}
-          onFocus={handleFocus}
-          onChange={(e) => {
-            const val = e.target.value.replace(/[^\d+\s()-]/g, "");
-            onChange("phoneNumber", val);
-          }}
-          inputMode="tel"
-          maxLength={20}
+        <PhoneInput
+          countryIso2={data.phoneDdi || "BR"}
+          number={data.phoneNumber || ""}
+          onCountryChange={(iso2) => onChange("phoneDdi", iso2)}
+          onNumberChange={(val) => onChange("phoneNumber", val)}
+          hasError={!!errors.phoneNumber}
         />
         {errors.phoneNumber && <p className="text-sm text-destructive">{errors.phoneNumber}</p>}
       </div>
