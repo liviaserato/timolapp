@@ -478,7 +478,15 @@ export const SponsorScreen = ({ onNext }: Props) => {
 
       {/* No Sponsor Modal — opens directly with "how-continue" */}
       {showNoSponsorBox && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              setShowNoSponsorBox(false);
+              resetAll();
+            }
+          }}
+        >
           <Card className="w-full max-w-sm shadow-2xl overflow-visible">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
