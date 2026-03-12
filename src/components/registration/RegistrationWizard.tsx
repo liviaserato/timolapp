@@ -32,6 +32,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
     document: initialData.document ?? "",
     gender: initialData.gender ?? "",
     email: initialData.email ?? "",
+    phoneDdi: initialData.phoneDdi ?? "BR",
     phoneNumber: initialData.phoneNumber ?? "",
     country: initialData.country ?? "",
     countryIso2: initialData.countryIso2 ?? "",
