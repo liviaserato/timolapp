@@ -83,8 +83,8 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
         setShowCountryList(false);
       }
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    window.document.addEventListener("mousedown", handler);
+    return () => window.document.removeEventListener("mousedown", handler);
   }, []);
 
   // Update country label when language changes
