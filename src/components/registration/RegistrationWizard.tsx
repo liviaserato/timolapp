@@ -168,6 +168,9 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
 
   const handleBack = () => setStep((s) => Math.max(s - 1, 1));
 
+  // ⚠️ TEMPORARY: Set to false when the real API is ready
+  const DEV_BYPASS_REGISTRATION = true;
+
   const handleSubmit = async () => {
     if (!validateStep()) return;
     setLoading(true);
@@ -178,16 +181,22 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
       let authUid: string | undefined;
 
       if (!alreadyRegistered) {
-        const { error: signUpError, data: authData } = await supabase.auth.signUp({
-          email: data.email.trim(),
-          password: data.password,
-          options: { emailRedirectTo: window.location.origin },
-        });
+        if (DEV_BYPASS_REGISTRATION) {
+          // DEV: skip Supabase signup, generate a fake uid
+          authUid = crypto.randomUUID();
+          console.warn("[DEV BYPASS] Skipping auth.signUp — fake authUid:", authUid);
+        } else {
+          const { error: signUpError, data: authData } = await supabase.auth.signUp({
+            email: data.email.trim(),
+            password: data.password,
+            options: { emailRedirectTo: window.location.origin },
+          });
 
-        if (signUpError) throw signUpError;
-        authUid = authData?.user?.id;
+          if (signUpError) throw signUpError;
+          authUid = authData?.user?.id;
+        }
 
-        if (authUid) {
+        if (authUid && !DEV_BYPASS_REGISTRATION) {
           await supabase.from("profiles").update({
             full_name: data.fullName?.trim(),
             birth_date: data.birthDate || null,
