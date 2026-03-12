@@ -192,7 +192,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
             birth_date: data.birthDate || null,
             document: data.document?.trim(),
             gender: data.gender,
-            phone: data.phoneNumber?.trim(),
+            phone: data.phoneDdi ? `${countries.find(c => c.iso2 === data.phoneDdi)?.dialCode || "+55"} ${data.phoneNumber?.trim()}` : data.phoneNumber?.trim(),
             zip_code: data.zipCode?.trim(),
             street: data.street?.trim(),
             number: data.number?.trim(),
