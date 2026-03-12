@@ -220,7 +220,7 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3 mt-2">
+        <form className="space-y-3 mt-2" onSubmit={(event) => { event.preventDefault(); handleSubmit(); }}>
           {/* User ID */}
           <div className="space-y-1.5">
             <Label htmlFor="resume-id" className="text-xs">{t("resume.userId")}</Label>
