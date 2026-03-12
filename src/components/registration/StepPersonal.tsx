@@ -123,8 +123,9 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
               checked={isForeigner}
               onCheckedChange={(v) => {
                 onChange("foreignerNoCpf", v ? "true" : "false");
-                // Reset API validation state (but keep document value)
+                // Reset API validation state and clear document
                 resetDocCheck?.();
+                onChange("document", "");
                 if (!v) {
                   // Switching back to Brazilian: clear foreign country fields
                   onChange("documentCountry", "");
