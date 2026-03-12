@@ -136,6 +136,7 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone, currentDdiIso2 }:
   const handleClose = (v: boolean) => {
     if (!v) {
       setStep("phone");
+      setNewDdi(currentDdiIso2 || "BR");
       setNewPhone("");
       setPin("");
     }
