@@ -289,6 +289,8 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setFindSearched(false);
   };
 
+  const locationInputRef = useRef<HTMLInputElement>(null);
+
   const openNoSponsor = () => {
     clearSearch();
     setNoSponsorStep("how-continue");
@@ -301,6 +303,9 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setFindSponsor(null);
     setFindNotFound(false);
     setFindSearched(false);
+    setFindSponsorSelected(false);
+    // Auto-focus the location input after render
+    setTimeout(() => locationInputRef.current?.focus(), 50);
   };
 
   const openWhatsAppGeneric = () => {
@@ -312,6 +317,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setFindSearched(false);
     setFindSponsor(null);
     setFindNotFound(false);
+    setFindSponsorSelected(false);
     if (locationDebounceRef.current) clearTimeout(locationDebounceRef.current);
     if (value.length >= 2) {
       locationDebounceRef.current = setTimeout(async () => {
@@ -331,16 +337,29 @@ export const SponsorScreen = ({ onNext }: Props) => {
       }, 300);
     } else {
       setShowLocationDropdown(false);
+      setLocationSuggestions([]);
     }
   };
 
   const selectLocation = (value: string) => {
     setLocationSearch(value);
     setShowLocationDropdown(false);
+    setLocationSuggestions([]);
     // Auto-trigger search after selecting a location
     setTimeout(() => {
       handleFindSponsorWithCity(value);
     }, 50);
+  };
+
+  const clearLocation = () => {
+    setLocationSearch("");
+    setLocationSuggestions([]);
+    setShowLocationDropdown(false);
+    setFindSponsor(null);
+    setFindNotFound(false);
+    setFindSearched(false);
+    setFindSponsorSelected(false);
+    setTimeout(() => locationInputRef.current?.focus(), 50);
   };
 
   const handleFindSponsorWithCity = async (city: string) => {
@@ -459,7 +478,15 @@ export const SponsorScreen = ({ onNext }: Props) => {
 
       {/* No Sponsor Modal — opens directly with "how-continue" */}
       {showNoSponsorBox && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              setShowNoSponsorBox(false);
+              resetAll();
+            }
+          }}
+        >
           <Card className="w-full max-w-sm shadow-2xl overflow-visible">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -504,26 +531,45 @@ export const SponsorScreen = ({ onNext }: Props) => {
                     <Label className="text-xs">{t("sponsor.findSponsor.location")} *</Label>
                     <div className="relative">
                       <Input
+                        ref={locationInputRef}
                         placeholder={t("sponsor.findSponsor.location.placeholder")}
                         value={locationSearch}
                         onChange={(e) => handleLocationInput(e.target.value)}
-                        onKeyDown={handleLocationKeyDown}
-                        onFocus={() => {
-                          if (locationSearch.length >= 2 && locationSuggestions.length > 0) {
-                            setShowLocationDropdown(true);
+                        onKeyDown={(e) => {
+                          if (e.key === "Escape") {
+                            if (showLocationDropdown) {
+                              setShowLocationDropdown(false);
+                            } else {
+                              setShowNoSponsorBox(false);
+                              resetAll();
+                            }
+                            return;
                           }
+                          handleLocationKeyDown(e);
                         }}
-                        className="h-8 text-sm pr-10"
+                        className="h-8 text-sm pr-16"
                       />
-                      <button
-                        type="button"
-                        onClick={handleFindSponsor}
-                        disabled={indicationLoading || !locationSearch.trim()}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-accent transition-colors disabled:opacity-50"
-                        aria-label="Search"
-                      >
-                        {indicationLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                      </button>
+                      <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                        {findSearched && locationSearch && (
+                          <button
+                            type="button"
+                            onClick={clearLocation}
+                            className="p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                            aria-label="Clear"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={handleFindSponsor}
+                          disabled={indicationLoading || !locationSearch.trim()}
+                          className="p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-accent transition-colors disabled:opacity-50"
+                          aria-label="Search"
+                        >
+                          {indicationLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                        </button>
+                      </div>
                       {showLocationDropdown && locationSuggestions.length > 0 && (
                         <div className="absolute z-50 w-full mt-1 bg-background border rounded-md shadow-lg max-h-40 overflow-y-auto">
                           {locationSuggestions.map((suggestion, i) => (
@@ -582,7 +628,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
 
                       {findSponsorSelected && (
                         <>
-                          <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
+                          <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2 text-center">
                             <p>⚠️ {t("sponsor.confirm.warning.combined")}</p>
                           </div>
                           <Button className="w-full" onClick={handleConfirmFoundSponsor}>
@@ -660,7 +706,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
               </div>
 
               {sponsorSelected && (
-                <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
+                <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2 text-center">
                   <p>⚠️ {t("sponsor.confirm.warning.combined")}</p>
                 </div>
               )}
