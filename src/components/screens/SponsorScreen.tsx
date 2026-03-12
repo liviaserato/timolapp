@@ -317,6 +317,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setFindSearched(false);
     setFindSponsor(null);
     setFindNotFound(false);
+    setFindSponsorSelected(false);
     if (locationDebounceRef.current) clearTimeout(locationDebounceRef.current);
     if (value.length >= 2) {
       locationDebounceRef.current = setTimeout(async () => {
@@ -336,6 +337,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
       }, 300);
     } else {
       setShowLocationDropdown(false);
+      setLocationSuggestions([]);
     }
   };
 
