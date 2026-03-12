@@ -139,6 +139,7 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
   };
 
   const handleSubmit = async () => {
+    if (loading) return;
     const selectedCountry = resolveSelectedCountry();
 
     if (!userId.trim()) {
