@@ -212,10 +212,10 @@ export default function Pedidos() {
         <DashboardCard icon={Package} title="Resumo">
           <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
             {[
-              { label: "Total", value: summary.total, accent: "text-primary" },
-              { label: "Em processamento", value: summary.pending, accent: "text-amber-600" },
-              { label: "Em trânsito", value: summary.inTransit, accent: "text-violet-600" },
-              { label: "Entregues", value: summary.delivered, accent: "text-emerald-600" },
+              { label: "Mais vendido (30d)", value: summary.topProduct ? `${summary.topProduct.qty}x` : "—", subtitle: summary.topProduct?.name || "Sem dados", accent: "text-primary" },
+              { label: "Em processamento", value: String(summary.pending), subtitle: undefined, accent: "text-amber-600" },
+              { label: "Em trânsito", value: String(summary.inTransit), subtitle: undefined, accent: "text-violet-600" },
+              { label: "Entregues", value: String(summary.delivered), subtitle: undefined, accent: "text-emerald-600" },
             ].map((s) => (
               <div key={s.label} className="rounded-md border border-app-card-border p-3 text-center">
                 <p className="text-xs text-muted-foreground">{s.label}</p>
