@@ -316,8 +316,8 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
 
           {/* Submit */}
           <Button
+            type="submit"
             className="w-full gap-2 mt-1"
-            onClick={handleSubmit}
             disabled={loading}
           >
             {t("resume.submit")}
@@ -329,7 +329,7 @@ export const ResumeRegistrationPopup = ({ open, onClose }: Props) => {
               hint="Aguarde enquanto retomamos a próxima etapa."
             />
           )}
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
