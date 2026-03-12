@@ -675,7 +675,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "validation.ageMin18": "You must be 18 years old or older to register.",
     "validation.cpfInvalid": "Invalid CPF. Please check the digits entered.",
     "validation.cpfRegistered": "This CPF is already registered in the system.",
-    "validation.phoneMin": "Phone number must have at least 7 digits.",
+    "validation.phoneMin": "Phone number must have at least 5 digits.",
 
     // Success
     "success.title": "Registration completed!",
