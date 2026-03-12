@@ -47,6 +47,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const [findSponsor, setFindSponsor] = useState<{ id: string; name: string; city: string; state: string; countryFlag: string; countryName: string; photo: string } | null>(null);
   const [findNotFound, setFindNotFound] = useState(false);
   const [findSearched, setFindSearched] = useState(false);
+  const [findSponsorSelected, setFindSponsorSelected] = useState(false);
 
   useEffect(() => {
     setSponsorId("");
@@ -198,6 +199,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const handleFindSuggestAnother = async () => {
     if (!locationSearch.trim() || !findSponsor) return;
     setIndicationLoading(true);
+    setFindSponsorSelected(false);
     try {
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(locationSearch.trim())}`,
@@ -222,12 +224,19 @@ export const SponsorScreen = ({ onNext }: Props) => {
   };
 
   const handleSelectFoundSponsor = () => {
+    setFindSponsorSelected(true);
+  };
+
+  const handleConfirmFoundSponsor = () => {
     if (!findSponsor) return;
-    setFoundSponsor(findSponsor);
-    setSponsorSelected(false);
-    setFromNoSponsorFlow(true);
-    setShowNoSponsorBox(false);
-    setShowConfirmBox(true);
+    onNext({
+      sponsorFranchiseId: findSponsor.id,
+      sponsorName: findSponsor.name,
+      sponsorCity: findSponsor.city,
+      sponsorState: findSponsor.state,
+      sponsorCountryFlag: findSponsor.countryFlag,
+      sponsorSelectionMethod: "suggest",
+    });
   };
 
   const handleSuggestAnother = async () => {
@@ -328,6 +337,43 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const selectLocation = (value: string) => {
     setLocationSearch(value);
     setShowLocationDropdown(false);
+    // Auto-trigger search after selecting a location
+    setTimeout(() => {
+      handleFindSponsorWithCity(value);
+    }, 50);
+  };
+
+  const handleFindSponsorWithCity = async (city: string) => {
+    if (!city.trim()) return;
+    setIndicationLoading(true);
+    setFindNotFound(false);
+    setFindSponsor(null);
+    setFindSponsorSelected(false);
+    setFindSearched(true);
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(city.trim())}`,
+        { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
+      );
+      const data = await res.json();
+      const sponsors = data?.sponsors || data?.ids || [];
+      if (!sponsors.length) {
+        setFindNotFound(true);
+        setIndicationLoading(false);
+        return;
+      }
+      const randomId = String(sponsors[Math.floor(Math.random() * sponsors.length)]);
+      const sponsor = await fetchSponsorById(randomId);
+      if (sponsor) {
+        setFindSponsor(sponsor);
+      } else {
+        setFindNotFound(true);
+      }
+    } catch {
+      setFindNotFound(true);
+    } finally {
+      setIndicationLoading(false);
+    }
   };
 
   const handleLocationKeyDown = (e: React.KeyboardEvent) => {
@@ -496,11 +542,15 @@ export const SponsorScreen = ({ onNext }: Props) => {
                     <p className="text-xs text-muted-foreground">{t("sponsor.findSponsor.location.hint")}</p>
                   </div>
 
-                  {/* Results: sponsor card */}
+                   {/* Results: sponsor card */}
                   {findSponsor && (
                     <div className="space-y-3 pt-2">
                       <div
-                        className="flex items-center gap-4 rounded-lg border-2 border-primary bg-primary/5 ring-1 ring-primary/20 p-4 cursor-pointer transition-all"
+                        className={`flex items-center gap-4 rounded-lg border-2 p-4 cursor-pointer transition-all ${
+                          findSponsorSelected
+                            ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                            : "border-muted bg-muted/40 hover:border-muted-foreground/30"
+                        }`}
                         onClick={handleSelectFoundSponsor}
                       >
                         <Avatar className="h-14 w-14 flex-shrink-0">
@@ -518,6 +568,12 @@ export const SponsorScreen = ({ onNext }: Props) => {
                         </div>
                       </div>
 
+                      {findSponsorSelected && (
+                        <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
+                          <p>⚠️ {t("sponsor.confirm.warning.combined")}</p>
+                        </div>
+                      )}
+
                       <div className="flex flex-col items-center gap-2">
                         <button
                           type="button"
@@ -529,6 +585,12 @@ export const SponsorScreen = ({ onNext }: Props) => {
                           {t("sponsor.confirm.suggestAnother")}
                         </button>
                       </div>
+
+                      {findSponsorSelected && (
+                        <Button className="w-full" onClick={handleConfirmFoundSponsor}>
+                          {t("sponsor.confirm.confirm")}
+                        </Button>
+                      )}
                     </div>
                   )}
 
