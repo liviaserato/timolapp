@@ -235,6 +235,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         documentCountryFlag: data.documentCountryFlag,
         gender: data.gender,
         email: data.email,
+        phoneDdi: data.phoneDdi,
         phoneNumber: data.phoneNumber,
         country: data.country,
         countryIso2: data.countryIso2,

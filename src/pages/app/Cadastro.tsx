@@ -175,11 +175,11 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone, currentDdiIso2 }:
               <div className="space-y-3">
                 <div className="space-y-2">
                   <Label>Novo telefone</Label>
-                  <Input
-                    placeholder="+55 11 99999-0000"
-                    value={newPhone}
-                    onChange={(e) => setNewPhone(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter" && newPhone.trim() && !sending) handleSendPin(); }}
+                  <PhoneInput
+                    countryIso2={newDdi}
+                    number={newPhone}
+                    onCountryChange={setNewDdi}
+                    onNumberChange={setNewPhone}
                   />
                 </div>
                 <DialogFooter>
