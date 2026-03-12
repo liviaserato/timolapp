@@ -531,26 +531,45 @@ export const SponsorScreen = ({ onNext }: Props) => {
                     <Label className="text-xs">{t("sponsor.findSponsor.location")} *</Label>
                     <div className="relative">
                       <Input
+                        ref={locationInputRef}
                         placeholder={t("sponsor.findSponsor.location.placeholder")}
                         value={locationSearch}
                         onChange={(e) => handleLocationInput(e.target.value)}
-                        onKeyDown={handleLocationKeyDown}
-                        onFocus={() => {
-                          if (locationSearch.length >= 2 && locationSuggestions.length > 0) {
-                            setShowLocationDropdown(true);
+                        onKeyDown={(e) => {
+                          if (e.key === "Escape") {
+                            if (showLocationDropdown) {
+                              setShowLocationDropdown(false);
+                            } else {
+                              setShowNoSponsorBox(false);
+                              resetAll();
+                            }
+                            return;
                           }
+                          handleLocationKeyDown(e);
                         }}
-                        className="h-8 text-sm pr-10"
+                        className="h-8 text-sm pr-16"
                       />
-                      <button
-                        type="button"
-                        onClick={handleFindSponsor}
-                        disabled={indicationLoading || !locationSearch.trim()}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-accent transition-colors disabled:opacity-50"
-                        aria-label="Search"
-                      >
-                        {indicationLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                      </button>
+                      <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                        {findSearched && locationSearch && (
+                          <button
+                            type="button"
+                            onClick={clearLocation}
+                            className="p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                            aria-label="Clear"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={handleFindSponsor}
+                          disabled={indicationLoading || !locationSearch.trim()}
+                          className="p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-accent transition-colors disabled:opacity-50"
+                          aria-label="Search"
+                        >
+                          {indicationLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                        </button>
+                      </div>
                       {showLocationDropdown && locationSuggestions.length > 0 && (
                         <div className="absolute z-50 w-full mt-1 bg-background border rounded-md shadow-lg max-h-40 overflow-y-auto">
                           {locationSuggestions.map((suggestion, i) => (
