@@ -1,9 +1,10 @@
 import { forwardRef, useState } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User, Phone, MapPin, KeyRound, HelpCircle, ShieldCheck, MessageSquarePlus } from "lucide-react";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { AddressManager, type Address } from "@/components/app/cadastro/AddressManager";
 import { FranchiseCard } from "@/components/app/cadastro/FranchiseCard";
