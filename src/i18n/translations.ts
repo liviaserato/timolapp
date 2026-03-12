@@ -398,6 +398,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "forgotUser.error.birthRequired": "Informe sua data de nascimento.",
     "forgotUser.error.emailRequired": "Informe seu e-mail.",
     "forgotUser.error.documentRequired": "Informe seu documento.",
+    "forgotUser.error.countryRequired": "Selecione o país emissor.",
     "forgotUser.error.notFound": "Usuário não encontrado. Verifique os dados e tente novamente.",
     "forgotUser.error.generic": "Erro ao buscar. Tente novamente.",
 
@@ -831,6 +832,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "forgotUser.error.birthRequired": "Please enter your date of birth.",
     "forgotUser.error.emailRequired": "Please enter your email.",
     "forgotUser.error.documentRequired": "Please enter your document.",
+    "forgotUser.error.countryRequired": "Please select the issuing country.",
     "forgotUser.error.notFound": "Username not found. Please check your details and try again.",
     "forgotUser.error.generic": "Error searching. Please try again.",
 
@@ -1264,6 +1266,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "forgotUser.error.birthRequired": "Ingrese su fecha de nacimiento.",
     "forgotUser.error.emailRequired": "Ingrese su correo.",
     "forgotUser.error.documentRequired": "Ingrese su documento.",
+    "forgotUser.error.countryRequired": "Seleccione el país emisor.",
     "forgotUser.error.notFound": "Usuario no encontrado. Verifique los datos e intente nuevamente.",
     "forgotUser.error.generic": "Error al buscar. Intente nuevamente.",
 
