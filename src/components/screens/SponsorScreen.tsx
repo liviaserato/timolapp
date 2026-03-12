@@ -223,12 +223,19 @@ export const SponsorScreen = ({ onNext }: Props) => {
   };
 
   const handleSelectFoundSponsor = () => {
+    setFindSponsorSelected(true);
+  };
+
+  const handleConfirmFoundSponsor = () => {
     if (!findSponsor) return;
-    setFoundSponsor(findSponsor);
-    setSponsorSelected(false);
-    setFromNoSponsorFlow(true);
-    setShowNoSponsorBox(false);
-    setShowConfirmBox(true);
+    onNext({
+      sponsorFranchiseId: findSponsor.id,
+      sponsorName: findSponsor.name,
+      sponsorCity: findSponsor.city,
+      sponsorState: findSponsor.state,
+      sponsorCountryFlag: findSponsor.countryFlag,
+      sponsorSelectionMethod: "suggest",
+    });
   };
 
   const handleSuggestAnother = async () => {
