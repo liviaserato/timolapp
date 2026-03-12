@@ -568,12 +568,6 @@ export const SponsorScreen = ({ onNext }: Props) => {
                         </div>
                       </div>
 
-                      {findSponsorSelected && (
-                        <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
-                          <p>⚠️ {t("sponsor.confirm.warning.combined")}</p>
-                        </div>
-                      )}
-
                       <div className="flex flex-col items-center gap-2">
                         <button
                           type="button"
@@ -587,9 +581,14 @@ export const SponsorScreen = ({ onNext }: Props) => {
                       </div>
 
                       {findSponsorSelected && (
-                        <Button className="w-full" onClick={handleConfirmFoundSponsor}>
-                          {t("sponsor.confirm.confirm")}
-                        </Button>
+                        <>
+                          <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
+                            <p>⚠️ {t("sponsor.confirm.warning.combined")}</p>
+                          </div>
+                          <Button className="w-full" onClick={handleConfirmFoundSponsor}>
+                            {t("sponsor.confirm.confirm")}
+                          </Button>
+                        </>
                       )}
                     </div>
                   )}
