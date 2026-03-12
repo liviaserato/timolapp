@@ -541,11 +541,15 @@ export const SponsorScreen = ({ onNext }: Props) => {
                     <p className="text-xs text-muted-foreground">{t("sponsor.findSponsor.location.hint")}</p>
                   </div>
 
-                  {/* Results: sponsor card */}
+                   {/* Results: sponsor card */}
                   {findSponsor && (
                     <div className="space-y-3 pt-2">
                       <div
-                        className="flex items-center gap-4 rounded-lg border-2 border-primary bg-primary/5 ring-1 ring-primary/20 p-4 cursor-pointer transition-all"
+                        className={`flex items-center gap-4 rounded-lg border-2 p-4 cursor-pointer transition-all ${
+                          findSponsorSelected
+                            ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                            : "border-muted bg-muted/40 hover:border-muted-foreground/30"
+                        }`}
                         onClick={handleSelectFoundSponsor}
                       >
                         <Avatar className="h-14 w-14 flex-shrink-0">
@@ -563,6 +567,12 @@ export const SponsorScreen = ({ onNext }: Props) => {
                         </div>
                       </div>
 
+                      {findSponsorSelected && (
+                        <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
+                          <p>⚠️ {t("sponsor.confirm.warning.combined")}</p>
+                        </div>
+                      )}
+
                       <div className="flex flex-col items-center gap-2">
                         <button
                           type="button"
@@ -574,6 +584,12 @@ export const SponsorScreen = ({ onNext }: Props) => {
                           {t("sponsor.confirm.suggestAnother")}
                         </button>
                       </div>
+
+                      {findSponsorSelected && (
+                        <Button className="w-full" onClick={handleConfirmFoundSponsor}>
+                          {t("sponsor.confirm.confirm")}
+                        </Button>
+                      )}
                     </div>
                   )}
 
