@@ -106,8 +106,9 @@ Row.displayName = "Row";
 
 /* ── Phone Change Dialog ── */
 
-function PhoneChangeDialog({ open, onOpenChange, currentPhone }: { open: boolean; onOpenChange: (v: boolean) => void; currentPhone: string }) {
+function PhoneChangeDialog({ open, onOpenChange, currentPhone, currentDdiIso2 }: { open: boolean; onOpenChange: (v: boolean) => void; currentPhone: string; currentDdiIso2?: string }) {
   const [step, setStep] = useState<"phone" | "pin" | "success">("phone");
+  const [newDdi, setNewDdi] = useState(currentDdiIso2 || "BR");
   const [newPhone, setNewPhone] = useState("");
   const [pin, setPin] = useState("");
   const [sending, setSending] = useState(false);
