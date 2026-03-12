@@ -389,7 +389,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "forgotUser.method.document": "CPF / Documento",
     "forgotUser.email": "E-mail cadastrado",
     "forgotUser.email.placeholder": "Digite seu e-mail",
-    "forgotUser.country": "País emissor do documento",
+    "forgotUser.country": "Naturalidade",
     "forgotUser.document": "Documento",
     "forgotUser.document.placeholder": "Digite seu documento",
     "forgotUser.birthDate": "Data de nascimento",
