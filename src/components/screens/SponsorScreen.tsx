@@ -344,10 +344,22 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const selectLocation = (value: string) => {
     setLocationSearch(value);
     setShowLocationDropdown(false);
+    setLocationSuggestions([]);
     // Auto-trigger search after selecting a location
     setTimeout(() => {
       handleFindSponsorWithCity(value);
     }, 50);
+  };
+
+  const clearLocation = () => {
+    setLocationSearch("");
+    setLocationSuggestions([]);
+    setShowLocationDropdown(false);
+    setFindSponsor(null);
+    setFindNotFound(false);
+    setFindSearched(false);
+    setFindSponsorSelected(false);
+    setTimeout(() => locationInputRef.current?.focus(), 50);
   };
 
   const handleFindSponsorWithCity = async (city: string) => {
