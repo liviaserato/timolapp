@@ -142,8 +142,18 @@ export default function Pedidos() {
     return matchSearch && matchStatus;
   });
 
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const recentOrders = mockOrders.filter((o) => new Date(o.date + "T00:00:00") >= thirtyDaysAgo && o.status !== "cancelado");
+
+  const productSales: Record<string, number> = {};
+  recentOrders.forEach((o) => o.items.forEach((i) => {
+    productSales[i.name] = (productSales[i.name] || 0) + i.qty;
+  }));
+  const topProduct = Object.entries(productSales).sort((a, b) => b[1] - a[1])[0];
+
   const summary = {
-    total: mockOrders.length,
+    topProduct: topProduct ? { name: topProduct[0], qty: topProduct[1] } : null,
     pending: mockOrders.filter((o) => o.status === "pendente" || o.status === "confirmado").length,
     inTransit: mockOrders.filter((o) => o.status === "enviado").length,
     delivered: mockOrders.filter((o) => o.status === "entregue").length,
