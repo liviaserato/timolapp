@@ -4,44 +4,29 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { WizardData } from "@/types/wizard";
-import { Search, Users, Phone, X, ChevronRight, ThumbsUp, MessageCircle, RefreshCw, Loader2 } from "lucide-react";
+import { Search, Users, X, RefreshCw, Loader2 } from "lucide-react";
 import timolLogoAzul from "@/assets/logo-timol-azul-escuro.svg";
 import whatsappIcon from "@/assets/icon-logo-whatsapp.svg";
 import { countries, getCountryName } from "@/data/countries";
 import { openWhatsAppLink } from "@/lib/whatsapp";
 
-// Language to Google Places language map
 const LANG_MAP: Record<string, string> = { pt: "pt-BR", en: "en", es: "es" };
 
 interface Props {
   onNext: (data: Partial<WizardData>) => void;
 }
 
-type NoSponsorStep = "contact-form" | "how-continue" | "contact-success";
-
-interface SponsorApiResult {
-  name: string;
-  city: string;
-  state: string;
-  photo: string;
-}
+type NoSponsorStep = "how-continue" | "find-sponsor";
 
 export const SponsorScreen = ({ onNext }: Props) => {
   const { t, language } = useLanguage();
   const [sponsorId, setSponsorId] = useState("");
   const [foundSponsor, setFoundSponsor] = useState<{ id: string; name: string; city: string; state: string; countryFlag: string; countryName: string; photo: string } | null>(null);
   const [showNoSponsorBox, setShowNoSponsorBox] = useState(false);
-  const [noSponsorStep, setNoSponsorStep] = useState<NoSponsorStep>("contact-form");
+  const [noSponsorStep, setNoSponsorStep] = useState<NoSponsorStep>("how-continue");
   const [showConfirmBox, setShowConfirmBox] = useState(false);
   const [fromNoSponsorFlow, setFromNoSponsorFlow] = useState(false);
   const [error, setError] = useState("");
@@ -49,27 +34,20 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const [sponsorSelected, setSponsorSelected] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
-  // Separate loading state for the "indicate a franchisee" flow
   const [indicationLoading, setIndicationLoading] = useState(false);
-  // No sponsor found popup
-  const [showNoSponsorFound, setShowNoSponsorFound] = useState(false);
 
-  // Contact form state
-  const [contactName, setContactName] = useState("");
-  const [contactPhone, setContactPhone] = useState("");
-  const [contactCityState, setContactCityState] = useState("");
-  const [contactBestTime, setContactBestTime] = useState("");
-  const [contactHowKnew, setContactHowKnew] = useState("");
-  const [contactOther, setContactOther] = useState("");
-  const [contactErrors, setContactErrors] = useState<Record<string, string>>({});
-
-  // Autocomplete state for location
+  // Location search state for find-sponsor popup
+  const [locationSearch, setLocationSearch] = useState("");
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const locationRef = useRef<HTMLDivElement>(null);
+  const locationDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // No longer used: showContactTimolSuccess removed
-  // Reset search when language changes
+  // Find-sponsor sub-state: found sponsor in popup, or not found message
+  const [findSponsor, setFindSponsor] = useState<{ id: string; name: string; city: string; state: string; countryFlag: string; countryName: string; photo: string } | null>(null);
+  const [findNotFound, setFindNotFound] = useState(false);
+  const [findSearched, setFindSearched] = useState(false);
+
   useEffect(() => {
     setSponsorId("");
     setFoundSponsor(null);
@@ -78,7 +56,6 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setNotFound(false);
   }, [language]);
 
-  // Close location dropdown on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (locationRef.current && !locationRef.current.contains(e.target as Node)) {
@@ -104,7 +81,6 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setError("");
     setNotFound(false);
 
-
     try {
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-lookup?id=${trimmed}`,
@@ -126,13 +102,11 @@ export const SponsorScreen = ({ onNext }: Props) => {
       const addr = person.address || {};
       const city = addr.city || "";
       const state = addr.state || "";
-      const photo = "";
       const countryIso = person.issuerCountryIso2 || addr.countryIso2 || "";
       const countryDataResult = countries.find(c => c.iso2 === countryIso);
       const countryFlag = countryDataResult?.flag || "";
-
       const countryName = countryDataResult ? getCountryName(countryDataResult, language) : "";
-      setFoundSponsor({ id: trimmed, name, city, state, countryFlag, countryName, photo });
+      setFoundSponsor({ id: trimmed, name, city, state, countryFlag, countryName, photo: "" });
       setSponsorSelected(false);
       setFromNoSponsorFlow(false);
       setShowConfirmBox(true);
@@ -143,7 +117,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
     } finally {
       setSearching(false);
     }
-  }, [sponsorId, t]);
+  }, [sponsorId, t, language]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleSearch();
@@ -161,66 +135,99 @@ export const SponsorScreen = ({ onNext }: Props) => {
     });
   };
 
-  // Dedicated fetch for the "indicate a franchisee" flow — completely isolated from main ID search
-  const fetchSponsorForIndication = async (id: string) => {
-    setIndicationLoading(true);
+  const fetchSponsorById = async (id: string) => {
     try {
-      // TODO: Replace with dedicated indication endpoint when available
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-lookup?id=${id}`,
         { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
       );
-      if (!res.ok) return;
+      if (!res.ok) return null;
       const json = await res.json();
-      if (json.exists !== "true" || !json.person?.length) return;
+      if (json.exists !== "true" || !json.person?.length) return null;
       const person = json.person[0];
-      const name = person.fullName || "";
       const addr = person.address || {};
-      const city = addr.city || "";
-      const state = addr.state || "";
-      const photo = "";
       const countryIso = person.issuerCountryIso2 || addr.countryIso2 || "";
       const countryDataResult = countries.find(c => c.iso2 === countryIso);
-      const countryFlag = countryDataResult?.flag || "";
-
-      const countryName = countryDataResult ? getCountryName(countryDataResult, language) : "";
-      setFoundSponsor({ id, name, city, state, countryFlag, countryName, photo });
-      setSponsorSelected(false);
-      setShowConfirmBox(true);
+      return {
+        id,
+        name: person.fullName || "",
+        city: addr.city || "",
+        state: addr.state || "",
+        countryFlag: countryDataResult?.flag || "",
+        countryName: countryDataResult ? getCountryName(countryDataResult, language) : "",
+        photo: "",
+      };
     } catch {
-      // Silently fail — don't touch main search state
-    } finally {
-      setIndicationLoading(false);
+      return null;
     }
   };
 
-  const handleRandomSponsor = async () => {
+  // Search sponsor by city in the find-sponsor popup
+  const handleFindSponsor = async () => {
+    if (!locationSearch.trim()) return;
     setIndicationLoading(true);
+    setFindNotFound(false);
+    setFindSponsor(null);
+    setFindSearched(true);
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(contactCityState.trim())}`,
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(locationSearch.trim())}`,
         { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
       );
       const data = await res.json();
       const sponsors = data?.sponsors || data?.ids || [];
       if (!sponsors.length) {
-        // No sponsor found in this city
+        setFindNotFound(true);
         setIndicationLoading(false);
-        setShowNoSponsorBox(false);
-        setShowNoSponsorFound(true);
         return;
       }
-      // Pick a random sponsor ID from the list
       const randomId = String(sponsors[Math.floor(Math.random() * sponsors.length)]);
-      setShowNoSponsorBox(false);
-      setFromNoSponsorFlow(true);
-      await fetchSponsorForIndication(randomId);
+      const sponsor = await fetchSponsorById(randomId);
+      if (sponsor) {
+        setFindSponsor(sponsor);
+      } else {
+        setFindNotFound(true);
+      }
     } catch {
-      setShowNoSponsorBox(false);
-      setShowNoSponsorFound(true);
+      setFindNotFound(true);
     } finally {
       setIndicationLoading(false);
     }
+  };
+
+  const handleFindSuggestAnother = async () => {
+    if (!locationSearch.trim() || !findSponsor) return;
+    setIndicationLoading(true);
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(locationSearch.trim())}`,
+        { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
+      );
+      const data = await res.json();
+      const sponsors = (data?.sponsors || data?.ids || []).filter((id: any) => String(id) !== findSponsor.id);
+      if (!sponsors.length) {
+        // Only one available, re-fetch same
+        const sponsor = await fetchSponsorById(findSponsor.id);
+        if (sponsor) setFindSponsor(sponsor);
+      } else {
+        const randomId = String(sponsors[Math.floor(Math.random() * sponsors.length)]);
+        const sponsor = await fetchSponsorById(randomId);
+        if (sponsor) setFindSponsor(sponsor);
+      }
+    } catch {
+      // keep current
+    } finally {
+      setIndicationLoading(false);
+    }
+  };
+
+  const handleSelectFoundSponsor = () => {
+    if (!findSponsor) return;
+    setFoundSponsor(findSponsor);
+    setSponsorSelected(false);
+    setFromNoSponsorFlow(true);
+    setShowNoSponsorBox(false);
+    setShowConfirmBox(true);
   };
 
   const handleSuggestAnother = async () => {
@@ -229,20 +236,25 @@ export const SponsorScreen = ({ onNext }: Props) => {
     setIndicationLoading(true);
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(contactCityState.trim())}`,
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(locationSearch.trim())}`,
         { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
       );
       const data = await res.json();
       const sponsors = (data?.sponsors || data?.ids || []).filter((id: any) => String(id) !== foundSponsor.id);
       if (!sponsors.length) {
-        // Only one sponsor available, re-fetch same
-        await fetchSponsorForIndication(foundSponsor.id);
+        const sponsor = await fetchSponsorById(foundSponsor.id);
+        if (sponsor) {
+          setFoundSponsor(sponsor);
+        }
       } else {
         const randomId = String(sponsors[Math.floor(Math.random() * sponsors.length)]);
-        await fetchSponsorForIndication(randomId);
+        const sponsor = await fetchSponsorById(randomId);
+        if (sponsor) {
+          setFoundSponsor(sponsor);
+        }
       }
     } catch {
-      // keep current sponsor on error
+      // keep current
     } finally {
       setIndicationLoading(false);
     }
@@ -260,45 +272,37 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const resetAll = () => {
     clearSearch();
     setShowNoSponsorBox(false);
-    setNoSponsorStep("contact-form");
-    setFromNoSponsorFlow(false);
-    setContactName("");
-    setContactPhone("");
-    setContactCityState("");
-    setContactBestTime("");
-    setContactHowKnew("");
-    setContactOther("");
-    setContactErrors({});
-  };
-
-  const handleContactSubmit = () => {
-    const errors: Record<string, string> = {};
-    if (!contactName.trim()) errors.name = t("validation.required");
-    if (!contactPhone.trim()) errors.phone = t("validation.required");
-    else if (contactPhone.replace(/\D/g, "").length < 7) errors.phone = t("validation.phoneMin");
-    if (!contactCityState.trim()) errors.cityState = t("validation.required");
-    if (Object.keys(errors).length > 0) {
-      setContactErrors(errors);
-      return;
-    }
-    setContactErrors({});
     setNoSponsorStep("how-continue");
+    setFromNoSponsorFlow(false);
+    setLocationSearch("");
+    setFindSponsor(null);
+    setFindNotFound(false);
+    setFindSearched(false);
   };
-
-  // handleContactTimol removed — replaced by WhatsApp button
 
   const openNoSponsor = () => {
     clearSearch();
-    setNoSponsorStep("contact-form");
-    setContactErrors({});
+    setNoSponsorStep("how-continue");
     setShowNoSponsorBox(true);
   };
 
-  const locationDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const openFindSponsor = () => {
+    setNoSponsorStep("find-sponsor");
+    setLocationSearch("");
+    setFindSponsor(null);
+    setFindNotFound(false);
+    setFindSearched(false);
+  };
+
+  const openWhatsAppGeneric = () => {
+    openWhatsAppLink(t("sponsor.whatsapp.generic"));
+  };
 
   const handleLocationInput = (value: string) => {
-    setContactCityState(value);
-    setContactErrors((p) => ({ ...p, cityState: "" }));
+    setLocationSearch(value);
+    setFindSearched(false);
+    setFindSponsor(null);
+    setFindNotFound(false);
     if (locationDebounceRef.current) clearTimeout(locationDebounceRef.current);
     if (value.length >= 2) {
       locationDebounceRef.current = setTimeout(async () => {
@@ -322,36 +326,21 @@ export const SponsorScreen = ({ onNext }: Props) => {
   };
 
   const selectLocation = (value: string) => {
-    setContactCityState(value);
+    setLocationSearch(value);
     setShowLocationDropdown(false);
-    setContactErrors((p) => ({ ...p, cityState: "" }));
   };
 
-  // Open WhatsApp from confirm screen (Popup 2) — translated
-  const openWhatsAppFromConfirm = () => {
-    const msg = t("sponsor.whatsapp.chooseSponsor")
-      .replace("{name}", contactName || "—")
-      .replace("{location}", contactCityState || "—");
-    openWhatsAppLink(msg);
+  const handleLocationKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      setShowLocationDropdown(false);
+      handleFindSponsor();
+    }
   };
-
-  // Open WhatsApp from no-sponsor-found popup — translated
-  const openWhatsAppNoSponsorFound = () => {
-    const msg = t("sponsor.whatsapp.noSponsorFound")
-      .replace("{name}", contactName || "—")
-      .replace("{location}", contactCityState || "—");
-    openWhatsAppLink(msg);
-  };
-  const howKnewOptions = [
-    { value: "live", label: t("sponsor.noSponsorBox.contactHowKnew.live") },
-    { value: "showroom", label: t("sponsor.noSponsorBox.contactHowKnew.showroom") },
-    { value: "friend", label: t("sponsor.noSponsorBox.contactHowKnew.friend") },
-    { value: "other", label: t("sponsor.noSponsorBox.contactHowKnew.other") },
-  ];
 
   return (
     <div className="w-full max-w-md mx-auto space-y-5">
-      {/* Logo + Title + Text + Language — OUTSIDE the card */}
+      {/* Logo + Title + Text + Language */}
       <div className="text-center space-y-3">
         <img src={timolLogoAzul} alt="Timol" className="h-auto w-44 mx-auto" />
         <h1 className="text-2xl sm:text-3xl font-bold text-primary">{t("sponsor.title")}</h1>
@@ -362,7 +351,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
         <LanguageSelector />
       </div>
 
-      {/* Sponsor ID block — INSIDE the card */}
+      {/* Sponsor ID card */}
       <Card className="shadow-lg">
         <CardContent className="pt-6 space-y-4">
           <div className="text-center space-y-1">
@@ -422,139 +411,145 @@ export const SponsorScreen = ({ onNext }: Props) => {
         </CardContent>
       </Card>
 
-      {/* No Sponsor Modal */}
+      {/* No Sponsor Modal — opens directly with "how-continue" */}
       {showNoSponsorBox && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <Card className="w-full max-w-sm shadow-2xl max-h-[90vh] overflow-y-auto">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">
-                  {noSponsorStep === "how-continue"
-                    ? t("sponsor.noSponsorBox.howTitle")
-                    : noSponsorStep === "contact-success"
-                    ? ""
-                    : t("sponsor.noSponsorBox.title")}
+                  {noSponsorStep === "find-sponsor"
+                    ? t("sponsor.findSponsor.title")
+                    : t("sponsor.noSponsorBox.howTitle")}
                 </CardTitle>
                 <button onClick={() => setShowNoSponsorBox(false)}>
                   <X className="h-4 w-4 text-muted-foreground" />
                 </button>
               </div>
-              {noSponsorStep === "contact-form" && (
-                <CardDescription className="text-xs">{t("sponsor.noSponsorBox.description")}</CardDescription>
-              )}
               {noSponsorStep === "how-continue" && (
                 <CardDescription className="text-xs">{t("sponsor.noSponsorBox.howDescription")}</CardDescription>
               )}
+              {noSponsorStep === "find-sponsor" && (
+                <CardDescription className="text-xs">{t("sponsor.findSponsor.description")}</CardDescription>
+              )}
             </CardHeader>
             <CardContent className="space-y-3">
-              {noSponsorStep === "contact-form" && (
-                <>
-                  <div className="space-y-3">
-                    <div className="space-y-1">
-                      <Label className="text-xs">{t("sponsor.noSponsorBox.contactFullName")} *</Label>
-                      <Input value={contactName} onChange={(e) => { setContactName(e.target.value); setContactErrors((p) => ({ ...p, name: "" })); }} className="h-8 text-sm" />
-                      {contactErrors.name && <p className="text-xs text-destructive">{contactErrors.name}</p>}
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs">{t("sponsor.noSponsorBox.contactPhone")} *</Label>
-                      <Input
-                        placeholder={t("sponsor.noSponsorBox.contactPhone.placeholder")}
-                        value={contactPhone}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^\d+\s()-]/g, "");
-                          setContactPhone(val);
-                          setContactErrors((p) => ({ ...p, phone: "" }));
-                        }}
-                        inputMode="tel"
-                        className="h-8 text-sm"
-                        maxLength={20}
-                      />
-                      {contactErrors.phone && <p className="text-xs text-destructive">{contactErrors.phone}</p>}
-                    </div>
-                    <div className="space-y-1" ref={locationRef}>
-                      <Label className="text-xs">{t("sponsor.noSponsorBox.contactLocation")} *</Label>
-                      <div className="relative">
-                        <Input
-                          placeholder={t("sponsor.noSponsorBox.contactLocation.placeholder")}
-                          value={contactCityState}
-                          onChange={(e) => handleLocationInput(e.target.value)}
-                          onFocus={() => {
-                            if (contactCityState.length >= 2 && locationSuggestions.length > 0) {
-                              setShowLocationDropdown(true);
-                            }
-                          }}
-                          className="h-8 text-sm"
-                        />
-                        {showLocationDropdown && locationSuggestions.length > 0 && (
-                          <div className="absolute z-50 w-full mt-1 bg-background border rounded-md shadow-lg max-h-40 overflow-y-auto">
-                            {locationSuggestions.map((suggestion, i) => (
-                              <button
-                                key={i}
-                                type="button"
-                                className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
-                                onClick={() => selectLocation(suggestion)}
-                              >
-                                {suggestion}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      {contactErrors.cityState && <p className="text-xs text-destructive">{contactErrors.cityState}</p>}
-                      <p className="text-xs text-muted-foreground">{t("sponsor.noSponsorBox.contactLocation.hint")}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs">{t("sponsor.noSponsorBox.contactBestTime")}</Label>
-                      <Input
-                        placeholder={t("sponsor.noSponsorBox.contactBestTime.placeholder")}
-                        value={contactBestTime}
-                        onChange={(e) => setContactBestTime(e.target.value)}
-                        className="h-8 text-sm"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs">{t("sponsor.noSponsorBox.contactHowKnew")}</Label>
-                      <Select value={contactHowKnew} onValueChange={setContactHowKnew}>
-                        <SelectTrigger className="h-8 text-sm">
-                          <SelectValue placeholder="—" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {howKnewOptions.map((opt) => (
-                            <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    {contactHowKnew === "other" && (
-                      <div className="space-y-1">
-                        <Input
-                          placeholder={t("sponsor.noSponsorBox.contactHowKnew.other.placeholder")}
-                          value={contactOther}
-                          onChange={(e) => setContactOther(e.target.value)}
-                          className="h-8 text-sm"
-                        />
-                      </div>
-                    )}
-                  </div>
-                  <Button size="sm" className="w-full" onClick={handleContactSubmit}>
-                    {t("sponsor.noSponsorBox.contactSend")}
-                  </Button>
-                </>
-              )}
-
               {noSponsorStep === "how-continue" && (
                 <>
-                  <Button variant="outline" className="w-full justify-start gap-2" onClick={handleRandomSponsor} disabled={indicationLoading}>
-                    {indicationLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
+                  <Button variant="outline" className="w-full justify-start gap-2" onClick={openFindSponsor}>
+                    <Users className="h-4 w-4" />
                     {t("sponsor.noSponsorBox.random")}
                   </Button>
                   <Button
                     variant="outline"
                     className="w-full justify-start gap-2"
-                    onClick={openWhatsAppFromConfirm}
+                    onClick={openWhatsAppGeneric}
                   >
                     <img src={whatsappIcon} alt="WhatsApp" className="h-5 w-5" />
                     {t("sponsor.noSponsorBox.whatsapp")}
+                  </Button>
+                </>
+              )}
+
+              {noSponsorStep === "find-sponsor" && (
+                <>
+                  {/* Location search */}
+                  <div className="space-y-1" ref={locationRef}>
+                    <Label className="text-xs">{t("sponsor.findSponsor.location")} *</Label>
+                    <div className="relative">
+                      <Input
+                        placeholder={t("sponsor.findSponsor.location.placeholder")}
+                        value={locationSearch}
+                        onChange={(e) => handleLocationInput(e.target.value)}
+                        onKeyDown={handleLocationKeyDown}
+                        onFocus={() => {
+                          if (locationSearch.length >= 2 && locationSuggestions.length > 0) {
+                            setShowLocationDropdown(true);
+                          }
+                        }}
+                        className="h-8 text-sm pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleFindSponsor}
+                        disabled={indicationLoading || !locationSearch.trim()}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-accent transition-colors disabled:opacity-50"
+                        aria-label="Search"
+                      >
+                        {indicationLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                      </button>
+                      {showLocationDropdown && locationSuggestions.length > 0 && (
+                        <div className="absolute z-50 w-full mt-1 bg-background border rounded-md shadow-lg max-h-40 overflow-y-auto">
+                          {locationSuggestions.map((suggestion, i) => (
+                            <button
+                              key={i}
+                              type="button"
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
+                              onClick={() => selectLocation(suggestion)}
+                            >
+                              {suggestion}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">{t("sponsor.findSponsor.location.hint")}</p>
+                  </div>
+
+                  {/* Results: sponsor card */}
+                  {findSponsor && (
+                    <div className="space-y-3 pt-2">
+                      <div
+                        className="flex items-center gap-4 rounded-lg border-2 border-primary bg-primary/5 ring-1 ring-primary/20 p-4 cursor-pointer transition-all"
+                        onClick={handleSelectFoundSponsor}
+                      >
+                        <Avatar className="h-14 w-14 flex-shrink-0">
+                          <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold">
+                            {findSponsor.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-sm truncate">{findSponsor.name}</p>
+                          <p className="text-xs text-muted-foreground">ID: {findSponsor.id}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {findSponsor.city}{findSponsor.state ? `, ${findSponsor.state}` : ""}
+                            {findSponsor.countryFlag ? <span title={findSponsor.countryName}> {findSponsor.countryFlag}</span> : ""}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={handleFindSuggestAnother}
+                          disabled={indicationLoading}
+                          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          {indicationLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                          {t("sponsor.confirm.suggestAnother")}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Not found message */}
+                  {findNotFound && findSearched && (
+                    <div className="pt-2 space-y-3">
+                      <p className="text-sm text-muted-foreground">{t("sponsor.noSponsorFound.message")}</p>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-center gap-2"
+                        onClick={openWhatsAppGeneric}
+                      >
+                        <img src={whatsappIcon} alt="WhatsApp" className="h-5 w-5" />
+                        {t("sponsor.noSponsorFound.whatsapp")}
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Back button */}
+                  <Button variant="ghost" size="sm" className="w-full mt-2" onClick={() => setNoSponsorStep("how-continue")}>
+                    {t("btn.back")}
                   </Button>
                 </>
               )}
@@ -631,36 +626,6 @@ export const SponsorScreen = ({ onNext }: Props) => {
                   {t("sponsor.confirm.confirm")}
                 </Button>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* No Sponsor Found Popup */}
-      {showNoSponsorFound && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <Card className="w-full max-w-sm shadow-2xl">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base">{t("sponsor.noSponsorFound.title")}</CardTitle>
-                <button onClick={() => setShowNoSponsorFound(false)}>
-                  <X className="h-4 w-4 text-muted-foreground" />
-                </button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">{t("sponsor.noSponsorFound.message")}</p>
-              <Button
-                variant="outline"
-                className="w-full justify-center gap-2"
-                onClick={openWhatsAppNoSponsorFound}
-              >
-                <img src={whatsappIcon} alt="WhatsApp" className="h-5 w-5" />
-                {t("sponsor.noSponsorFound.whatsapp")}
-              </Button>
-              <Button variant="ghost" className="w-full" onClick={() => setShowNoSponsorFound(false)}>
-                {t("sponsor.noSponsorFound.close")}
-              </Button>
             </CardContent>
           </Card>
         </div>
