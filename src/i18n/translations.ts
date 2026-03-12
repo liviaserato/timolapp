@@ -1255,7 +1255,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "forgotUser.method.document": "CPF / Documento",
     "forgotUser.email": "Correo registrado",
     "forgotUser.email.placeholder": "Ingrese su correo",
-    "forgotUser.country": "Nacionalidad",
+    "forgotUser.country": "País emisor",
     "forgotUser.document": "Documento",
     "forgotUser.document.placeholder": "Ingrese su documento",
     "forgotUser.birthDate": "Fecha de nacimiento",
