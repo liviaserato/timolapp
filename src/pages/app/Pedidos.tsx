@@ -220,6 +220,7 @@ export default function Pedidos() {
               <div key={s.label} className="rounded-md border border-app-card-border p-3 text-center">
                 <p className="text-xs text-muted-foreground">{s.label}</p>
                 <p className={cn("text-xl font-bold", s.accent)}>{s.value}</p>
+                {s.subtitle && <p className="text-[10px] text-muted-foreground truncate mt-0.5">{s.subtitle}</p>}
               </div>
             ))}
           </div>
