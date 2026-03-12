@@ -822,7 +822,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "forgotUser.method.document": "CPF / Document",
     "forgotUser.email": "Registered email",
     "forgotUser.email.placeholder": "Enter your email",
-    "forgotUser.country": "Document issuing country",
+    "forgotUser.country": "Nationality",
     "forgotUser.document": "Document",
     "forgotUser.document.placeholder": "Enter your document",
     "forgotUser.birthDate": "Date of birth",
