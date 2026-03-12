@@ -706,7 +706,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
               </div>
 
               {sponsorSelected && (
-                <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2">
+                <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded p-2 text-center">
                   <p>⚠️ {t("sponsor.confirm.warning.combined")}</p>
                 </div>
               )}
