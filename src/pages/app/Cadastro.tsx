@@ -246,7 +246,7 @@ export default function Cadastro() {
       <header className="mb-4">
         <h1 className="text-2xl font-bold text-primary">Meus Dados</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Gerencie suas informações pessoais, financeiras e de franquia
+          Aqui você encontra tudo sobre o seu perfil — mantenha seus dados sempre atualizados 😊
         </p>
       </header>
 
