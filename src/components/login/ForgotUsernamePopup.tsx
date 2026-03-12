@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
   Dialog,
@@ -17,18 +17,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Loader2,
   AlertCircle,
   Copy,
   Check,
+  CalendarIcon,
+  X,
 } from "lucide-react";
-import { countries } from "@/data/countries";
+import { countries, getCountryName } from "@/data/countries";
 import { forgotUsername, ApiRequestError } from "@/lib/api";
+import { format, parse } from "date-fns";
+import { ptBR, enUS, es } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 import timolLogoDark from "@/assets/logo-timol-azul-escuro.svg";
 
 type Step = "form" | "found";
-
 
 interface Props {
   open: boolean;
@@ -43,8 +53,17 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
   const [method, setMethod] = useState<"email" | "document">("email");
   const [email, setEmail] = useState("");
   const [document, setDocument] = useState("");
-  const [country, setCountry] = useState("BR");
-  const [birthDate, setBirthDate] = useState("");
+  const [countryIso2, setCountryIso2] = useState("BR");
+  const [countryLabel, setCountryLabel] = useState(() => {
+    const br = countries.find((c) => c.iso2 === "BR");
+    return br ? getCountryName(br, "pt") : "";
+  });
+  const [countrySearch, setCountrySearch] = useState("");
+  const [showCountryList, setShowCountryList] = useState(false);
+  const countryRef = useRef<HTMLDivElement>(null);
+
+  const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
@@ -53,30 +72,71 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
   const [foundName, setFoundName] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const isBrazilian = country === "BR";
+  const isBrazilian = countryIso2 === "BR";
 
-  const sortedCountries = useMemo(() => {
-    return [...countries].sort((a, b) => {
-      const nameA = language === "en" ? a.nameEn : language === "es" ? a.nameEs : a.name;
-      const nameB = language === "en" ? b.nameEn : language === "es" ? b.nameEs : b.name;
-      return nameA.localeCompare(nameB);
-    });
-  }, [language]);
+  const calendarLocale = language === "en" ? enUS : language === "es" ? es : ptBR;
 
-  const getCountryName = (c: typeof countries[0]) => {
-    return language === "en" ? c.nameEn : language === "es" ? c.nameEs : c.name;
+  // Close country dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (countryRef.current && !countryRef.current.contains(e.target as Node)) {
+        setShowCountryList(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // Update country label when language changes
+  useEffect(() => {
+    if (countryIso2) {
+      const c = countries.find((x) => x.iso2 === countryIso2);
+      if (c) setCountryLabel(getCountryName(c, language));
+    }
+  }, [language, countryIso2]);
+
+  const filteredCountries = countries.filter((c) =>
+    getCountryName(c, language).toLowerCase().includes(countrySearch.toLowerCase())
+  );
+
+  const selectCountry = (iso2: string) => {
+    const c = countries.find((x) => x.iso2 === iso2);
+    if (c) {
+      setCountryIso2(iso2);
+      setCountryLabel(getCountryName(c, language));
+      setDocument(""); // clear document on country change
+    }
+    setShowCountryList(false);
+    setCountrySearch("");
+    setFieldErrors({});
+  };
+
+  const clearCountry = () => {
+    setCountryIso2("");
+    setCountryLabel("");
+    setCountrySearch("");
+    setDocument("");
   };
 
   // Extract first name from full name
   const firstName = foundName ? foundName.split(" ")[0] : "";
+
+  // Max date = 18 years ago
+  const today = new Date();
+  const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
 
   const resetAll = () => {
     setStep("form");
     setMethod("email");
     setEmail("");
     setDocument("");
-    setCountry("BR");
-    setBirthDate("");
+    const br = countries.find((c) => c.iso2 === "BR");
+    setCountryIso2("BR");
+    setCountryLabel(br ? getCountryName(br, language) : "");
+    setCountrySearch("");
+    setShowCountryList(false);
+    setBirthDate(undefined);
+    setCalendarOpen(false);
     setFieldErrors({});
     setLoading(false);
     setFoundUsername("");
@@ -87,17 +147,6 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
   const handleClose = () => {
     resetAll();
     onClose();
-  };
-
-  // Format birth date
-  const handleBirthDateChange = (val: string) => {
-    const digits = val.replace(/\D/g, "").slice(0, 8);
-    let formatted = digits;
-    if (digits.length > 2) formatted = digits.slice(0, 2) + "/" + digits.slice(2);
-    if (digits.length > 4)
-      formatted = digits.slice(0, 2) + "/" + digits.slice(2, 4) + "/" + digits.slice(4);
-    setBirthDate(formatted);
-    setFieldErrors((prev) => ({ ...prev, birthDate: "" }));
   };
 
   // CPF mask
@@ -130,10 +179,11 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
     if (method === "email" && !email.trim()) {
       errs.email = t("forgotUser.error.emailRequired");
     }
-    if (method === "document" && !document.trim()) {
-      errs.document = t("forgotUser.error.documentRequired");
+    if (method === "document") {
+      if (!countryIso2) errs.country = t("forgotUser.error.countryRequired");
+      if (!document.trim()) errs.document = t("forgotUser.error.documentRequired");
     }
-    if (!birthDate || birthDate.length < 10) {
+    if (!birthDate) {
       errs.birthDate = t("forgotUser.error.birthRequired");
     }
 
@@ -148,13 +198,11 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
     setFieldErrors({});
 
     try {
-      // Convert DD/MM/YYYY to ISO YYYY-MM-DD
-      const parts = birthDate.split("/");
-      const isoBirthDate = parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : birthDate;
+      const isoBirthDate = birthDate ? format(birthDate, "yyyy-MM-dd") : "";
 
       const req = method === "email"
         ? { method: "email" as const, email: email.trim().toLowerCase(), birthDate: isoBirthDate }
-        : { method: "document" as const, document: document.trim(), documentCountryCode: country, birthDate: isoBirthDate };
+        : { method: "document" as const, document: document.trim(), documentCountryCode: countryIso2, birthDate: isoBirthDate };
 
       const data = await forgotUsername(req);
 
@@ -252,26 +300,70 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
               {/* Document fields */}
               {method === "document" && (
                 <>
-                  {/* Country selector */}
-                  <div className="space-y-1.5 mb-3">
+                  {/* Country selector with search */}
+                  <div className="space-y-1.5 mb-3 relative" ref={countryRef}>
                     <Label className="text-xs">{t("forgotUser.country")}</Label>
-                    <Select value={country} onValueChange={(v) => { setCountry(v); setDocument(""); setFieldErrors({}); }}>
-                      <SelectTrigger>
-                        <SelectValue>
-                          {(() => {
-                            const c = countries.find((c) => c.iso2 === country);
-                            return c ? `${c.flag} ${getCountryName(c)}` : "";
-                          })()}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60">
-                        {sortedCountries.map((c) => (
-                          <SelectItem key={c.iso2} value={c.iso2}>
-                            {c.flag} {getCountryName(c)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="relative">
+                      {countryLabel ? (
+                        <>
+                          <Input
+                            value={`${countries.find((c) => c.iso2 === countryIso2)?.flag || ""} ${countryLabel}`}
+                            readOnly
+                            className="pr-8"
+                          />
+                          <button
+                            type="button"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            onClick={clearCountry}
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </>
+                      ) : (
+                        <Input
+                          placeholder={t("step3.country.placeholder")}
+                          value={countrySearch}
+                          onChange={(e) => {
+                            setCountrySearch(e.target.value);
+                            setShowCountryList(true);
+                          }}
+                          onFocus={() => setShowCountryList(true)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (filteredCountries.length === 1) {
+                                selectCountry(filteredCountries[0].iso2);
+                              }
+                            }
+                          }}
+                        />
+                      )}
+                    </div>
+                    {showCountryList && !countryLabel && (
+                      <div className="absolute z-50 w-full bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto mt-1">
+                        {filteredCountries.length > 0 ? (
+                          filteredCountries.map((c) => (
+                            <button
+                              key={c.iso2}
+                              type="button"
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2"
+                              onClick={() => selectCountry(c.iso2)}
+                            >
+                              <span>{c.flag}</span>
+                              <span>{getCountryName(c, language)}</span>
+                            </button>
+                          ))
+                        ) : (
+                          <div className="px-3 py-2 text-sm text-muted-foreground">
+                            {t("step1.documentCountry.notFound")}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {fieldErrors.country && (
+                      <p className="text-xs text-destructive">{fieldErrors.country}</p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5 mb-3">
@@ -292,16 +384,44 @@ export const ForgotUsernamePopup = ({ open, onClose }: Props) => {
                 </>
               )}
 
-              {/* Birth date */}
+              {/* Birth date with calendar */}
               <div className="space-y-1.5 mb-3">
                 <Label className="text-xs">{t("forgotUser.birthDate")}</Label>
-                <Input
-                  placeholder="DD/MM/AAAA"
-                  value={birthDate}
-                  onChange={(e) => handleBirthDateChange(e.target.value)}
-                  maxLength={10}
-                  inputMode="numeric"
-                />
+                <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !birthDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {birthDate
+                        ? format(birthDate, "dd/MM/yyyy")
+                        : "DD/MM/AAAA"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={birthDate}
+                      onSelect={(date) => {
+                        setBirthDate(date);
+                        setCalendarOpen(false);
+                        setFieldErrors((prev) => ({ ...prev, birthDate: "" }));
+                      }}
+                      disabled={(date) => date > maxDate || date < new Date("1900-01-01")}
+                      defaultMonth={birthDate || maxDate}
+                      locale={calendarLocale}
+                      captionLayout="dropdown-buttons"
+                      fromYear={1900}
+                      toYear={maxDate.getFullYear()}
+                      className={cn("p-3 pointer-events-auto")}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
                 {fieldErrors.birthDate && (
                   <p className="text-xs text-destructive">{fieldErrors.birthDate}</p>
                 )}
