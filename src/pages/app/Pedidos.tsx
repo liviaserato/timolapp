@@ -142,8 +142,18 @@ export default function Pedidos() {
     return matchSearch && matchStatus;
   });
 
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const recentOrders = mockOrders.filter((o) => new Date(o.date + "T00:00:00") >= thirtyDaysAgo && o.status !== "cancelado");
+
+  const productSales: Record<string, number> = {};
+  recentOrders.forEach((o) => o.items.forEach((i) => {
+    productSales[i.name] = (productSales[i.name] || 0) + i.qty;
+  }));
+  const topProduct = Object.entries(productSales).sort((a, b) => b[1] - a[1])[0];
+
   const summary = {
-    total: mockOrders.length,
+    topProduct: topProduct ? { name: topProduct[0], qty: topProduct[1] } : null,
     pending: mockOrders.filter((o) => o.status === "pendente" || o.status === "confirmado").length,
     inTransit: mockOrders.filter((o) => o.status === "enviado").length,
     delivered: mockOrders.filter((o) => o.status === "entregue").length,
@@ -202,14 +212,15 @@ export default function Pedidos() {
         <DashboardCard icon={Package} title="Resumo">
           <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
             {[
-              { label: "Total", value: summary.total, accent: "text-primary" },
-              { label: "Em processamento", value: summary.pending, accent: "text-amber-600" },
-              { label: "Em trânsito", value: summary.inTransit, accent: "text-violet-600" },
-              { label: "Entregues", value: summary.delivered, accent: "text-emerald-600" },
+              { label: "Mais vendido (30d)", value: summary.topProduct ? `${summary.topProduct.qty}x` : "—", subtitle: summary.topProduct?.name || "Sem dados", accent: "text-primary" },
+              { label: "Em processamento", value: String(summary.pending), subtitle: undefined, accent: "text-amber-600" },
+              { label: "Em trânsito", value: String(summary.inTransit), subtitle: undefined, accent: "text-violet-600" },
+              { label: "Entregues", value: String(summary.delivered), subtitle: undefined, accent: "text-emerald-600" },
             ].map((s) => (
               <div key={s.label} className="rounded-md border border-app-card-border p-3 text-center">
                 <p className="text-xs text-muted-foreground">{s.label}</p>
                 <p className={cn("text-xl font-bold", s.accent)}>{s.value}</p>
+                {s.subtitle && <p className="text-[10px] text-muted-foreground truncate mt-0.5">{s.subtitle}</p>}
               </div>
             ))}
           </div>
