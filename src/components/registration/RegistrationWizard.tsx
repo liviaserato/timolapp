@@ -215,7 +215,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
               document: data.document?.trim(),
               sponsor_name: initialData.sponsorName || null,
               sponsor_id: initialData.sponsorFranchiseId || null,
-              phone: data.phoneNumber?.trim() || null,
+              phone: data.phoneDdi ? `${countries.find(c => c.iso2 === data.phoneDdi)?.dialCode || "+55"} ${data.phoneNumber?.trim()}` : data.phoneNumber?.trim() || null,
               preferred_language: language,
               sponsor_source: initialData.sponsorSelectionMethod || null,
               gender: data.gender || null,
