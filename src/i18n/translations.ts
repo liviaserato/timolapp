@@ -955,8 +955,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "step1.gender.female": "Femenino",
     "step1.gender.other": "Otro",
     "step1.gender.preferNotSay": "Prefiero no decir",
-    "step1.documentCountry": "País emisor del documento",
-    "step1.documentCountry.placeholder": "Seleccione el país emisor",
+    "step1.documentCountry": "Nacionalidad",
+    "step1.documentCountry.placeholder": "Seleccione el país",
     "step1.documentCountry.notFound": "Ningún país encontrado",
 
     "docCheck.title": "Documento ya registrado",
