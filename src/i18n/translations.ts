@@ -1266,6 +1266,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "forgotUser.error.birthRequired": "Ingrese su fecha de nacimiento.",
     "forgotUser.error.emailRequired": "Ingrese su correo.",
     "forgotUser.error.documentRequired": "Ingrese su documento.",
+    "forgotUser.error.countryRequired": "Seleccione el país emisor.",
     "forgotUser.error.notFound": "Usuario no encontrado. Verifique los datos e intente nuevamente.",
     "forgotUser.error.generic": "Error al buscar. Intente nuevamente.",
 
