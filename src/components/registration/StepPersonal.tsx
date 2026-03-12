@@ -82,6 +82,9 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
       onChange("documentCountry", getCountryName(c, language));
       onChange("documentCountryCode", iso2);
       onChange("documentCountryFlag", c.flag);
+      // Clear document when country changes
+      onChange("document", "");
+      resetDocCheck?.();
     }
     setShowDocCountryList(false);
     setDocCountrySearch("");
