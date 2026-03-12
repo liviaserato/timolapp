@@ -522,8 +522,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "step1.gender.female": "Female",
     "step1.gender.other": "Other",
     "step1.gender.preferNotSay": "Prefer not to say",
-    "step1.documentCountry": "Nationality",
-    "step1.documentCountry.placeholder": "Select the country",
+    "step1.documentCountry": "Issuing country",
+    "step1.documentCountry.placeholder": "Select the issuing country",
     "step1.documentCountry.notFound": "No country found",
 
     "docCheck.title": "Document already registered",
