@@ -329,6 +329,43 @@ export const SponsorScreen = ({ onNext }: Props) => {
   const selectLocation = (value: string) => {
     setLocationSearch(value);
     setShowLocationDropdown(false);
+    // Auto-trigger search after selecting a location
+    setTimeout(() => {
+      handleFindSponsorWithCity(value);
+    }, 50);
+  };
+
+  const handleFindSponsorWithCity = async (city: string) => {
+    if (!city.trim()) return;
+    setIndicationLoading(true);
+    setFindNotFound(false);
+    setFindSponsor(null);
+    setFindSponsorSelected(false);
+    setFindSearched(true);
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sponsor-suggest?city=${encodeURIComponent(city.trim())}`,
+        { headers: { "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
+      );
+      const data = await res.json();
+      const sponsors = data?.sponsors || data?.ids || [];
+      if (!sponsors.length) {
+        setFindNotFound(true);
+        setIndicationLoading(false);
+        return;
+      }
+      const randomId = String(sponsors[Math.floor(Math.random() * sponsors.length)]);
+      const sponsor = await fetchSponsorById(randomId);
+      if (sponsor) {
+        setFindSponsor(sponsor);
+      } else {
+        setFindNotFound(true);
+      }
+    } catch {
+      setFindNotFound(true);
+    } finally {
+      setIndicationLoading(false);
+    }
   };
 
   const handleLocationKeyDown = (e: React.KeyboardEvent) => {
