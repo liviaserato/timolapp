@@ -565,7 +565,7 @@ export const SponsorScreen = ({ onNext }: Props) => {
 
       {/* Confirm Sponsor Modal */}
       {showConfirmBox && foundSponsor && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onKeyDown={(e) => { if (e.key === "Enter" && sponsorSelected) handleConfirmSponsor(); }}>
           <Card className="w-full max-w-sm shadow-2xl">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
