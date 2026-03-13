@@ -68,7 +68,7 @@ interface Order {
 const mockOrders: Order[] = [
   {
     id: "1", number: "#5001", date: "2026-03-10",
-    items: [{ name: "Combo Mega", qty: 2, price: 189.9 }, { name: "Combo Mini", qty: 1, price: 99.9 }],
+    items: [{ name: "Combo Mega", qty: 2, price: 189.9 }, { name: "Combo Mini", qty: 1, price: 99.9 }, { name: "Refil Alcalino", qty: 3, price: 59.9 }],
     total: 479.7, status: "enviado", tracking: "BR123456789",
   },
   {
