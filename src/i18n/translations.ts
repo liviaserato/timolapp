@@ -82,6 +82,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "step2.title": "Contato",
     "step2.email": "E-mail",
     "step2.email.placeholder": "seu@email.com",
+    "step2.email.available": "✓ E-mail disponível",
+    "step2.email.taken": "Este e-mail já está cadastrado no sistema.",
     "step2.phone": "Telefone",
     "step2.phone.placeholder": "Ex: +55 11 99999-0000",
 
