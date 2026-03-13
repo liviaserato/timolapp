@@ -197,9 +197,9 @@ export default function Pedidos() {
                 <Users className="h-4 w-4" />
                 Indicar Franquia
               </Button>
-              <Button variant="outline" className="gap-2 w-full">
-                <BookOpen className="h-4 w-4" />
-                Catálogo de Produtos
+              <Button variant="outline" className="gap-2 w-full truncate">
+                <BookOpen className="h-4 w-4 shrink-0" />
+                <span className="truncate">Catálogo Produtos</span>
               </Button>
             </div>
           </div>
