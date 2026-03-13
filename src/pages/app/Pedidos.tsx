@@ -176,8 +176,8 @@ export default function Pedidos() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="-left-3 h-8 w-8 bg-transparent border-0 shadow-none hover:bg-muted/60 text-foreground drop-shadow-md" />
-              <CarouselNext className="-right-3 h-8 w-8 bg-transparent border-0 shadow-none hover:bg-muted/60 text-foreground drop-shadow-md" />
+              <CarouselPrevious className="left-2 h-10 w-10 bg-transparent border-0 shadow-none hover:bg-muted/60 text-white/70 drop-shadow-md [&>svg]:h-7 [&>svg]:w-7" />
+              <CarouselNext className="right-2 h-10 w-10 bg-transparent border-0 shadow-none hover:bg-muted/60 text-white/70 drop-shadow-md [&>svg]:h-7 [&>svg]:w-7" />
             </Carousel>
           </div>
         </DashboardCard>
