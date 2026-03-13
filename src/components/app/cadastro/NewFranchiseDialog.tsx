@@ -473,8 +473,11 @@ export function NewFranchiseDialog({
 
   // Format balance input to always show ,00
   const handleBalanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/[^\d.,]/g, "").replace(",", ".");
-    setBalanceToUse(val);
+    // Only allow digits
+    const raw = e.target.value.replace(/[^\d]/g, "");
+    if (!raw) { setBalanceToUse(""); return; }
+    const num = parseInt(raw, 10);
+    setBalanceToUse(num.toFixed(2).replace(".", ","));
   };
 
   const handleBalanceBlur = () => {
