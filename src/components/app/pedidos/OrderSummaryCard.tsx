@@ -60,10 +60,11 @@ interface FranchiseDistribution {
 interface OrderSummaryCardProps {
   orders: Order[];
 }
+/* ── Helpers ── */
 
 const localeMap: Record<string, Locale> = { pt: ptBR, en: enUS, es };
 
-const HIDDEN = "•••";
+function formatCurrency(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
