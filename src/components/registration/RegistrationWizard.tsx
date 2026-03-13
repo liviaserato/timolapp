@@ -339,8 +339,8 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
                 )}
 
                 {step < TOTAL_STEPS ? (
-                  <Button type="submit" disabled={loading || (step === 1 && (docChecking || docBlocked || docNotValidated))}>
-                    {(step === 1 && docChecking) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                  <Button type="submit" disabled={loading || (step === 1 && (docChecking || docBlocked || docNotValidated)) || (step === 2 && (emailStatus === "taken" || emailStatus === "checking"))}>
+                    {((step === 1 && docChecking) || (step === 2 && emailStatus === "checking")) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                     {t("btn.next")}
                   </Button>
                 ) : (
