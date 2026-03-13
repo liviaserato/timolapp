@@ -20,8 +20,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Shield, TrendingUp, Crown, Gem, Check, CircleDollarSign,
-  QrCode, CreditCard, Eye, EyeOff, Copy, ChevronLeft, ExternalLink, Building2,
+  Shield, TrendingUp, Crown, Gem, Check, Rocket,
+  QrCode, CreditCard, Eye, EyeOff, Copy, ChevronLeft, Building2,
+  AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { loadStripe } from "@stripe/stripe-js";
@@ -29,6 +30,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 import { openWhatsAppLink } from "@/lib/whatsapp";
 
+import timolLogo from "@/assets/favicon-timol-azul-escuro.svg";
 import franquiaBronze from "@/assets/franquia-bronze.svg";
 import franquiaPrata from "@/assets/franquia-prata.svg";
 import franquiaOuro from "@/assets/franquia-ouro.svg";
@@ -148,24 +150,32 @@ const formatExpiry = (v: string) => {
 
 /* ── Props ── */
 
+interface UpgradeFranchiseOption {
+  franchiseId: string;
+  planCode: string;
+}
+
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   currentPlanCode: string;
   franchiseId: string;
+  userFranchises?: UpgradeFranchiseOption[];
   isBrazilian?: boolean;
   userName?: string;
   userEmail?: string;
 }
 
-type Step = "select" | "payment" | "confirmation";
+type Step = "intro" | "select" | "payment" | "confirmation";
 type PaymentMethod = "pix" | "credit-card";
 
 export function UpgradeDialog({
   open, onOpenChange, currentPlanCode, franchiseId,
+  userFranchises = [],
   isBrazilian = true, userName = "", userEmail = "",
 }: Props) {
-  const [step, setStep] = useState<Step>("select");
+  const [step, setStep] = useState<Step>("intro");
+  const [upgradeTargetId, setUpgradeTargetId] = useState<string>(franchiseId);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [method, setMethod] = useState<PaymentMethod>(isBrazilian ? "pix" : "credit-card");
   const [installments, setInstallments] = useState("1");
@@ -182,9 +192,16 @@ export function UpgradeDialog({
     method: string; cardLast4?: string; installments?: number; amount: number;
   } | null>(null);
 
-  const currentPlanIdx = planOrder.indexOf(currentPlanCode);
+  // Determine the plan code for the selected upgrade target
+  const targetFranchise = userFranchises.find((f) => f.franchiseId === upgradeTargetId);
+  const effectivePlanCode = targetFranchise?.planCode ?? currentPlanCode;
+  const currentPlanIdx = planOrder.indexOf(effectivePlanCode);
   const upgradeOptions = franchisePlans.filter((_, i) => i > currentPlanIdx);
   const selectedFranchise = franchisePlans.find((f) => f.id === selectedPlan);
+
+  // Eligible franchises for upgrade (not platinum)
+  const eligibleFranchises = userFranchises.filter((f) => f.planCode !== "platinum");
+  const hasMultipleEligible = eligibleFranchises.length > 1;
 
   const price = selectedFranchise ? selectedFranchise.installmentPrice * selectedFranchise.installments : 0;
   const isPixDiscount = method === "pix";
@@ -196,13 +213,19 @@ export function UpgradeDialog({
 
   const handleClose = (v: boolean) => {
     if (!v) {
-      setStep("select");
+      setStep("intro");
+      setUpgradeTargetId(franchiseId);
       setSelectedPlan(null);
       setMethod(isBrazilian ? "pix" : "credit-card");
       setCardNumber(""); setCardName(""); setCardExpiry(""); setCardCvv("");
       setErrors({}); setPaymentResult(null);
     }
     onOpenChange(v);
+  };
+
+  const handleConfirmIntro = () => {
+    setSelectedPlan(null);
+    setStep("select");
   };
 
   const handleContinueToPayment = () => {
@@ -244,7 +267,7 @@ export function UpgradeDialog({
               currency: "brl",
               customerEmail: userEmail,
               franchiseTypeCode: selectedPlan,
-              franchiseId,
+              franchiseId: upgradeTargetId,
               installments: parseInt(installments),
               customerName: userName,
             },
@@ -267,7 +290,7 @@ export function UpgradeDialog({
         const [expMonth, expYear] = cardExpiry.split("/").map(Number);
         const cardNumberClean = cardNumber.replace(/\s/g, "");
 
-        const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(
+        const { error: stripeError } = await stripe.confirmCardPayment(
           checkoutData.clientSecret,
           {
             payment_method: {
@@ -316,22 +339,109 @@ export function UpgradeDialog({
     } catch {}
   };
 
+  const isMaxPlan = effectivePlanCode === "platinum";
+
   return (
     <>
       <Dialog open={open} onOpenChange={handleClose}>
         <DialogContent className={cn(
           "max-h-[90vh] overflow-y-auto",
-          step === "select" ? "max-w-4xl" : "max-w-md"
+          step === "intro" ? "max-w-sm" : step === "select" ? "max-w-4xl" : "max-w-md"
         )}>
+          {/* ── STEP 0: Intro ── */}
+          {step === "intro" && (
+            <>
+              <DialogHeader className="text-center">
+                <div className="mx-auto mb-2">
+                  <img src={timolLogo} alt="Timol" className="h-10 w-10 mx-auto" />
+                </div>
+                <DialogTitle className="text-xl text-center">Upgrade de Franquia</DialogTitle>
+                <DialogDescription className="text-center text-sm leading-relaxed mt-2">
+                  Avance para o próximo nível e acelere seus resultados!
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-3 mt-1">
+                <div className="bg-primary/5 rounded-lg p-4">
+                  <p className="text-sm text-foreground leading-relaxed">
+                    Fazer o upgrade é uma <strong>ótima decisão</strong>! Com um plano superior, seus ganhos vão
+                    <strong> acelerar significativamente</strong> — bônus maiores, qualificações mais altas e
+                    acesso a premiações exclusivas. <Rocket className="inline h-4 w-4 text-primary -translate-y-px" />
+                  </p>
+                </div>
+
+                <div className="bg-warning/10 border border-warning/30 rounded-lg p-3.5 text-center">
+                  <div className="flex items-center justify-center gap-1.5 mb-1">
+                    <AlertTriangle className="h-4 w-4 text-warning" />
+                    <strong className="text-sm text-warning">Importante</strong>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    O upgrade mantém seu ID atual e<br />substitui o plano por um superior.
+                  </p>
+                </div>
+
+                {hasMultipleEligible && (
+                  <div className="space-y-2 text-center">
+                    <Label className="text-sm font-medium">
+                      Qual ID vai receber o upgrade?
+                    </Label>
+                    <Select value={upgradeTargetId} onValueChange={setUpgradeTargetId}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o ID" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {eligibleFranchises.map((uf) => (
+                          <SelectItem key={uf.franchiseId} value={uf.franchiseId}>
+                            ID {uf.franchiseId} — {planLabels[uf.planCode] || uf.planCode}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {!hasMultipleEligible && (
+                  <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground bg-muted/30 rounded-md p-3">
+                    <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                    <span>
+                      O upgrade será aplicado ao <strong className="text-foreground">ID {upgradeTargetId}</strong> — {planLabels[effectivePlanCode] || ""}
+                    </span>
+                  </div>
+                )}
+
+                <p className="text-sm text-center text-foreground font-medium pt-1">
+                  Está pronto para acelerar seus ganhos?
+                </p>
+              </div>
+
+              <div className="flex gap-3 mt-3">
+                <Button variant="outline" className="flex-1" onClick={() => handleClose(false)}>
+                  Cancelar
+                </Button>
+                <Button className="flex-1" onClick={handleConfirmIntro} disabled={isMaxPlan}>
+                  Confirmar
+                </Button>
+              </div>
+            </>
+          )}
+
           {/* ── STEP 1: Select Plan ── */}
           {step === "select" && (
             <>
-              <DialogHeader className="text-center">
-                <DialogTitle className="text-xl">Upgrade de Franquia</DialogTitle>
-                <DialogDescription>
-                  Sua franquia atual (ID {franchiseId}) é {planLabels[currentPlanCode] || currentPlanCode}. Escolha um plano superior:
-                </DialogDescription>
-              </DialogHeader>
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setStep("intro")}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Voltar"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <DialogTitle className="text-xl">Escolha sua Franquia</DialogTitle>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                ID {upgradeTargetId} — Atualmente: <strong className="text-foreground">{planLabels[effectivePlanCode]}</strong>. Selecione o plano superior.
+              </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mt-2">
                 {upgradeOptions.map((f) => {
@@ -353,7 +463,6 @@ export function UpgradeDialog({
                       )}
                       onClick={() => setSelectedPlan(f.id)}
                     >
-                      {/* Selected badge */}
                       {isSelected && (
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                           <Badge className="bg-yellow-500 text-white border-0 text-xs px-3 py-1 shadow-md whitespace-nowrap cursor-default pointer-events-none hover:bg-yellow-500">
@@ -362,7 +471,6 @@ export function UpgradeDialog({
                         </div>
                       )}
 
-                      {/* Header */}
                       <div className={cn(
                         "flex items-center justify-between px-4 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]",
                         isSelected ? "bg-[#FEFAD2]" : "bg-primary/5"
@@ -404,7 +512,6 @@ export function UpgradeDialog({
 
                       <Separator className={isSelected ? "bg-yellow-500" : ""} />
 
-                      {/* Benefits */}
                       <div className="px-4 pt-3 pb-2">
                         <div className="flex flex-col gap-2">
                           {f.benefits.map((b, i) => (
@@ -419,7 +526,6 @@ export function UpgradeDialog({
                         </div>
                       </div>
 
-                      {/* Products */}
                       <div className="mt-auto">
                         <Separator className={cn("mx-4 w-auto", isSelected ? "bg-yellow-400/60" : "bg-border/40")} />
                       </div>
@@ -441,7 +547,6 @@ export function UpgradeDialog({
                         </div>
                       </div>
 
-                      {/* Highlight */}
                       <div className="mt-auto">
                         <Separator className={isSelected ? "bg-yellow-500" : ""} />
                         <div className={cn(
@@ -457,7 +562,6 @@ export function UpgradeDialog({
                         </div>
                       </div>
 
-                      {/* Check mark */}
                       {isSelected && (
                         <div className="absolute top-2 right-2 bg-yellow-500 text-white rounded-full p-0.5">
                           <Check className="h-3.5 w-3.5" />
@@ -469,7 +573,7 @@ export function UpgradeDialog({
               </div>
 
               <div className="flex justify-end gap-3 mt-4">
-                <Button variant="outline" onClick={() => handleClose(false)}>Cancelar</Button>
+                <Button variant="outline" onClick={() => setStep("intro")}>Voltar</Button>
                 <Button onClick={handleContinueToPayment} disabled={!selectedPlan}>
                   Continuar
                 </Button>
@@ -492,7 +596,7 @@ export function UpgradeDialog({
                 <DialogHeader className="text-center px-8">
                   <DialogTitle className="text-xl">Pagamento do Upgrade</DialogTitle>
                   <DialogDescription className="text-center">
-                    Upgrade para {selectedFranchise.name} — ID {franchiseId}
+                    Upgrade para {selectedFranchise.name} — ID {upgradeTargetId}
                   </DialogDescription>
                 </DialogHeader>
               </div>
@@ -509,7 +613,6 @@ export function UpgradeDialog({
                 )}
               </div>
 
-              {/* Method selection - only for Brazilians */}
               {isBrazilian && (
                 <div className="grid grid-cols-2 gap-3 mt-3" role="tablist">
                   <button
@@ -539,7 +642,6 @@ export function UpgradeDialog({
                 </div>
               )}
 
-              {/* PIX */}
               {method === "pix" && isBrazilian && (
                 <Card className="mt-3">
                   <CardContent className="pt-4 space-y-3 text-center">
@@ -571,7 +673,6 @@ export function UpgradeDialog({
                 </Card>
               )}
 
-              {/* Credit Card */}
               {method === "credit-card" && (
                 <Card className="mt-3">
                   <CardHeader className="pb-3">
@@ -649,7 +750,6 @@ export function UpgradeDialog({
                       </div>
                     </div>
 
-                    {/* Installments */}
                     {isBrazilian && (
                       <div className="space-y-1">
                         <Label>Parcelas</Label>
@@ -693,7 +793,7 @@ export function UpgradeDialog({
               </p>
 
               <div className="w-full bg-primary/5 rounded-xl p-4 space-y-2 text-sm text-left">
-                <ConfirmRow label="ID" value={franchiseId} />
+                <ConfirmRow label="ID" value={upgradeTargetId} />
                 <ConfirmRow label="Nova franquia" value={selectedFranchise.name} />
                 <ConfirmRow label="Valor" value={formatPrice(paymentResult.amount)} />
                 {paymentResult.method === "credit-card" && paymentResult.cardLast4 && (
@@ -731,7 +831,7 @@ export function UpgradeDialog({
           </DialogHeader>
           <Button
             onClick={() => {
-              const msg = `Olá, meu nome é ${userName}, estou fazendo upgrade para a franquia ${selectedFranchise?.name ?? ""}, ID ${franchiseId}, no valor de ${formatPrice(discountedPrice)} (com o desconto). Gostaria de pagar presencialmente no banco, como fazer?`;
+              const msg = `Olá, meu nome é ${userName}, estou fazendo upgrade para a franquia ${selectedFranchise?.name ?? ""}, ID ${upgradeTargetId}, no valor de ${formatPrice(discountedPrice)} (com o desconto). Gostaria de pagar presencialmente no banco, como fazer?`;
               openWhatsAppLink(msg);
               setShowInPersonPopup(false);
             }}

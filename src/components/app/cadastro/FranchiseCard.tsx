@@ -281,6 +281,10 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
         onOpenChange={setUpgradeOpen}
         currentPlanCode={viewing.planCode}
         franchiseId={viewing.franchiseId}
+        userFranchises={sortedFranchises.map((f) => ({
+          franchiseId: f.franchiseId,
+          planCode: f.planCode,
+        }))}
         isBrazilian={true}
         userName="Lívia Serato"
         userEmail="livia.serato@email.com"
