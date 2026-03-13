@@ -35,6 +35,9 @@ export async function loginWithUsername({
       if (err.status === 401 || err.code === "invalid_credentials") {
         return { success: false, error: "invalid_credentials" };
       }
+      if (err.status === 403 || err.code === "system_access_denied") {
+        return { success: false, error: "system_access_denied" };
+      }
     }
     return { success: false, error: "server_error" };
   }

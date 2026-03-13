@@ -66,23 +66,32 @@ export const SummaryScreen = ({ data, onConfirm, onBack, onEditPersonal, onEditA
 
   const discountedPrice = couponStatus === "valid" ? price - couponDiscount : price;
 
-  const handleCouponCheck = () => {
+  const handleCouponCheck = async () => {
     if (!couponCode.trim()) return;
     setCouponStatus("checking");
-    setTimeout(() => {
-      const code = couponCode.trim().toUpperCase();
-      if (code === "TIMOL10") {
-        setCouponDiscount(price * 0.1);
+    try {
+      const { validateCoupon } = await import("@/lib/api/coupons");
+      const currencyCode = isBrazil ? "BRL" : isEuro ? "EUR" : "USD";
+      const result = await validateCoupon({
+        couponCode: couponCode.trim().toUpperCase(),
+        scope: "franchisePurchase",
+        franchiseTypeCode: data.franchiseTypeCode,
+        amount: price,
+        currencyCode,
+      });
+      if (result.isValid && result.discountPreview) {
+        setCouponDiscount(result.discountPreview.discountAmount);
         setCouponStatus("valid");
-      } else if (code === "TESTE") {
-        setCouponDiscount(10);
-        setCouponStatus("valid");
-      } else if (code === "EXPIRED") {
+      } else if (result.reasonCode === "expired") {
         setCouponStatus("expired");
+      } else if (result.reasonCode === "invalid") {
+        setCouponStatus("invalid");
       } else {
         setCouponStatus("notfound");
       }
-    }, 1000);
+    } catch {
+      setCouponStatus("notfound");
+    }
   };
 
   const handleCouponClear = () => {
