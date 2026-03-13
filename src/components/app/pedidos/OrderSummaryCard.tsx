@@ -53,7 +53,7 @@ interface Order {
 interface FranchiseDistribution {
   type: string;
   count: number;
-  color: string;
+  dotColor: string;
 }
 
 interface OrderSummaryCardProps {
