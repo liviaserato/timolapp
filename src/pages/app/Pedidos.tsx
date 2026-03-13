@@ -88,22 +88,22 @@ const mockOrders: Order[] = [
   },
 ];
 
-const statusConfig: Record<OrderStatus, { label: string; icon: React.ElementType; badgeColor: string; borderColor: string }> = {
-  pendente:   { label: "Pendente",   icon: Clock,        badgeColor: "bg-amber-100 text-amber-700 border-amber-200",     borderColor: "border-l-gray-400" },
-  confirmado: { label: "Confirmado", icon: CheckCircle2,  badgeColor: "bg-blue-100 text-blue-700 border-blue-200",       borderColor: "border-l-blue-500" },
-  enviado:    { label: "Enviado",    icon: Truck,         badgeColor: "bg-amber-100 text-amber-700 border-amber-200",    borderColor: "border-l-amber-400" },
-  entregue:   { label: "Entregue",   icon: CheckCircle2,  badgeColor: "bg-emerald-100 text-emerald-700 border-emerald-200", borderColor: "border-l-emerald-500" },
-  cancelado:  { label: "Cancelado",  icon: XCircle,       badgeColor: "bg-red-100 text-red-700 border-red-200",          borderColor: "border-l-red-500" },
+const statusConfig: Record<OrderStatus, { label: string; icon: React.ElementType; textColor: string; borderColor: string }> = {
+  pendente:   { label: "Pendente",   icon: Clock,        textColor: "text-amber-600",   borderColor: "border-l-gray-400" },
+  confirmado: { label: "Confirmado", icon: CheckCircle2,  textColor: "text-blue-600",    borderColor: "border-l-blue-500" },
+  enviado:    { label: "Enviado",    icon: Truck,         textColor: "text-amber-600",   borderColor: "border-l-amber-400" },
+  entregue:   { label: "Entregue",   icon: CheckCircle2,  textColor: "text-emerald-600", borderColor: "border-l-emerald-500" },
+  cancelado:  { label: "Cancelado",  icon: XCircle,       textColor: "text-red-600",     borderColor: "border-l-red-500" },
 };
 
 function StatusBadge({ status }: { status: OrderStatus }) {
   const cfg = statusConfig[status];
   const Icon = cfg.icon;
   return (
-    <Badge variant="outline" className={cn("font-medium border gap-1 text-[11px]", cfg.badgeColor)}>
+    <span className={cn("inline-flex items-center gap-1 text-[11px] font-semibold", cfg.textColor)}>
       <Icon className="h-3 w-3" />
       {cfg.label}
-    </Badge>
+    </span>
   );
 }
 
