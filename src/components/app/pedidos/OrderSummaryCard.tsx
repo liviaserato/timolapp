@@ -267,7 +267,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
               {visible ? (
                 <div className="w-full space-y-1">
                   {top3.map(([name, qty]) => (
-                    <div key={name} className="flex items-center justify-between text-[11px] px-1">
+                    <div key={name} className="flex items-center justify-between text-[11px] px-3">
                       <span className="text-muted-foreground truncate mr-1">{name}</span>
                       <span className="font-semibold text-foreground shrink-0">{qty}x</span>
                     </div>
