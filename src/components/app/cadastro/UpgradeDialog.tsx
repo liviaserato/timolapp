@@ -453,7 +453,7 @@ export function UpgradeDialog({
                 </button>
                 <DialogTitle className="text-xl">Escolha sua Franquia</DialogTitle>
               </div>
-              <p className="text-sm text-muted-foreground mt-1 pl-7">
+              <p className="text-sm text-muted-foreground -mt-0.5 pl-7">
                 ID {upgradeTargetId} — Atualmente: <strong className="text-foreground">{planLabels[effectivePlanCode]}</strong>. Selecione o plano superior.
               </p>
 
