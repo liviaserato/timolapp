@@ -211,7 +211,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                   <ChevronLeft className="h-3.5 w-3.5" />
                 </Button>
                 <span className="text-xs font-medium text-foreground min-w-[120px] text-center capitalize">
-                  {format(selectedMonth, "MMMM yyyy", { locale: ptBR })}
+                  {format(selectedMonth, "MMMM yyyy", { locale })}
                 </span>
                 <Button
                   variant="ghost"
