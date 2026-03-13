@@ -232,6 +232,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                   onSelect={(d) => setCustomFrom(d)}
                   maxDate={customTo || today}
                   placeholder="Início"
+                  locale={locale}
                 />
                 <span className="text-xs text-muted-foreground">—</span>
                 <DatePickerButton
@@ -240,6 +241,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                   minDate={customFrom}
                   maxDate={today}
                   placeholder="Fim"
+                  locale={locale}
                 />
               </div>
             )}
