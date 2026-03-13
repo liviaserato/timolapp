@@ -157,7 +157,7 @@ export default function Pedidos() {
         {/* Banners de promoção */}
         <DashboardCard icon={Megaphone} title="Promoções">
           <div className="mt-2">
-            <Carousel className="w-full">
+            <Carousel className="w-full" opts={{ loop: true }}>
               <CarouselContent>
                 {mockBanners.map((b) => (
                   <CarouselItem key={b.id}>
