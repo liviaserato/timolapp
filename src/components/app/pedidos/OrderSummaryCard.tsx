@@ -334,7 +334,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
 
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Star className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
-                <span className="text-base sm:text-sm text-muted-foreground leading-tight">Pontos gerados</span>
+                <span className="text-[13px] sm:text-sm text-muted-foreground leading-tight">Pontos gerados</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? pointsGenerated.toLocaleString("pt-BR") : HIDDEN}</p>
             </div>
