@@ -187,14 +187,24 @@ export default function Pedidos() {
 
         {/* Realizar Pedido */}
         <DashboardCard icon={ShoppingCart} title="Novo Pedido">
-          <div className="mt-2 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            <p className="text-sm text-muted-foreground flex-1">
-              Acesse o catálogo de produtos e faça seu pedido diretamente pelo sistema.
+          <div className="mt-2 flex flex-col gap-3">
+            <p className="text-sm text-muted-foreground">
+              Acesse o catálogo, faça seu pedido ou indique uma nova franquia.
             </p>
-            <Button className="gap-2 shrink-0">
-              <ShoppingCart className="h-4 w-4" />
-              Realizar Pedido
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button className="gap-2 shrink-0">
+                <ShoppingCart className="h-4 w-4" />
+                Realizar Pedido
+              </Button>
+              <Button variant="outline" className="gap-2 shrink-0">
+                <BookOpen className="h-4 w-4" />
+                Catálogo de Produtos
+              </Button>
+              <Button variant="outline" className="gap-2 shrink-0">
+                <Users className="h-4 w-4" />
+                Indicar Franquia
+              </Button>
+            </div>
           </div>
         </DashboardCard>
 
