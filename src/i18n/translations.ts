@@ -314,6 +314,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "login.resumeRegistration": "Concluir meu cadastro",
     "login.error.invalid": "Usuário ou senha incorretos. Tente novamente.",
     "login.error.locked": "Muitas tentativas. Tente novamente em alguns minutos.",
+    "login.error.systemDenied": "Você não tem permissão para acessar este sistema.",
 
     // Forgot password popup
     "forgotPw.title": "Recuperar Senha",
