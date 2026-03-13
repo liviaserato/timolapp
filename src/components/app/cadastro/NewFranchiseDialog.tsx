@@ -1160,13 +1160,6 @@ export function NewFranchiseDialog({
                 )}
               </div>
 
-              <div className="w-full bg-muted/50 rounded-lg border border-border/60 p-3 text-center">
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Sua nova franquia já está disponível! Acesse ela no <strong className="text-foreground">cabeçalho</strong>, 
-                  clicando na <strong className="text-foreground">setinha de seleção de IDs</strong> abaixo do seu nome.
-                </p>
-              </div>
-
               <Button onClick={() => handleClose(false)} className="w-full max-w-[200px]">
                 Fechar
               </Button>
