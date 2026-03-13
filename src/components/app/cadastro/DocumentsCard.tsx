@@ -13,7 +13,7 @@ const documents: DocumentItem[] = [
   { id: "guide", name: "Guia do Franqueado", description: "Manual completo para novos franqueados", available: true },
   { id: "marketing", name: "Plano de Marketing", description: "Estratégias e materiais de divulgação", available: true },
   { id: "compensation", name: "Plano de Compensação", description: "Detalhes sobre comissões e bônus", available: true },
-  { id: "policies", name: "Políticas e Procedimentos", description: "Regras gerais da rede Timol", available: false },
+  
 ];
 
 export function DocumentsCard({ className }: { className?: string }) {
