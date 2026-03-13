@@ -391,12 +391,14 @@ function DatePickerButton({
   minDate,
   maxDate,
   placeholder,
+  locale,
 }: {
   date: Date | undefined;
   onSelect: (d: Date | undefined) => void;
   minDate?: Date;
   maxDate?: Date;
   placeholder: string;
+  locale?: Locale;
 }) {
   return (
     <Popover>
@@ -417,6 +419,7 @@ function DatePickerButton({
           mode="single"
           selected={date}
           onSelect={onSelect}
+          locale={locale}
           disabled={(d) => {
             if (maxDate && d > maxDate) return true;
             if (minDate && d < minDate) return true;
