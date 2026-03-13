@@ -344,9 +344,9 @@ export function UpgradeDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={handleClose}>
-        <DialogContent className={cn(
+         <DialogContent className={cn(
           "max-h-[90vh] overflow-y-auto",
-          step === "intro" ? "max-w-sm" : step === "select" ? "max-w-4xl" : "max-w-md"
+          step === "intro" ? "max-w-sm" : step === "select" ? (upgradeOptions.length <= 1 ? "max-w-md" : upgradeOptions.length === 2 ? "max-w-2xl" : "max-w-4xl") : "max-w-md"
         )}>
           {/* ── STEP 0: Intro ── */}
           {step === "intro" && (
