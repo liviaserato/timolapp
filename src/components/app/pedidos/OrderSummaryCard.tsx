@@ -265,9 +265,9 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
               <div className="my-2 w-full border-t border-app-card-border/50" />
 
               {visible ? (
-                <div className="w-full space-y-1">
+                <div className="w-full max-w-[160px] mx-auto space-y-1">
                   {top3.map(([name, qty]) => (
-                    <div key={name} className="flex items-center justify-between text-[11px] px-3">
+                    <div key={name} className="flex items-center justify-between text-[11px]">
                       <span className="text-muted-foreground truncate mr-1">{name}</span>
                       <span className="font-semibold text-foreground shrink-0">{qty}x</span>
                     </div>
@@ -276,7 +276,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                     <button
                       type="button"
                       onClick={() => setShowAllProducts(true)}
-                      className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5 px-3"
+                      className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5"
                     >
                       Ver todos <ChevronRight className="h-2.5 w-2.5" />
                     </button>
