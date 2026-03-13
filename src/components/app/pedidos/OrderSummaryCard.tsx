@@ -258,7 +258,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
                 <Package className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground leading-tight">Produtos adquiridos</span>
+                <span className="text-base sm:text-sm text-muted-foreground leading-tight">Produtos adquiridos</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? totalUnits : HIDDEN}</p>
 
@@ -295,7 +295,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
                 <Users className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground leading-tight">Franquias cadastradas</span>
+                <span className="text-base sm:text-sm text-muted-foreground leading-tight">Franquias cadastradas</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? totalFranchises : HIDDEN}</p>
 
@@ -326,7 +326,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Award className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground leading-tight">Bônus gerados</span>
+                <span className="text-base sm:text-sm text-muted-foreground leading-tight">Bônus gerados</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? formatCurrency(bonusGenerated) : HIDDEN}</p>
 
@@ -334,7 +334,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
 
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Star className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground leading-tight">Pontos gerados</span>
+                <span className="text-base sm:text-sm text-muted-foreground leading-tight">Pontos gerados</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? pointsGenerated.toLocaleString("pt-BR") : HIDDEN}</p>
             </div>
@@ -445,7 +445,7 @@ function MiniCard({
     <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
       <div className="flex items-center gap-1.5 mb-1">
         <Icon className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
-        <span className="text-sm text-muted-foreground leading-tight">{label}</span>
+        <span className="text-base sm:text-sm text-muted-foreground leading-tight">{label}</span>
       </div>
       <p className={cn("font-bold", accent, valueClass || "text-xl")}>{value}</p>
     </div>
