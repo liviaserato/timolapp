@@ -232,17 +232,29 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
             );
           })()}
 
-          {!isMaxPlan && (
+          {/* Action buttons */}
+          <div className={cn("mt-3 flex gap-2", isMaxPlan ? "" : "")}>
+            {!isMaxPlan && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs h-7 flex-1 gap-1.5"
+                onClick={() => setUpgradeOpen(true)}
+              >
+                <ArrowUp className="h-3 w-3" />
+                Fazer upgrade
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
-              className="mt-3 text-xs h-7 w-full gap-1.5"
-              onClick={() => setUpgradeOpen(true)}
+              className="text-xs h-7 flex-1 gap-1.5"
+              onClick={() => setNewFranchiseOpen(true)}
             >
-              <ArrowUp className="h-3 w-3" />
-              Fazer upgrade
+              <Plus className="h-3 w-3" />
+              Nova franquia
             </Button>
-          )}
+          </div>
         </div>
       </DashboardCard>
 
@@ -251,6 +263,18 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
         onOpenChange={setUpgradeOpen}
         currentPlanCode={viewing.planCode}
         franchiseId={viewing.franchiseId}
+        isBrazilian={true}
+        userName="Lívia Serato"
+        userEmail="livia.serato@email.com"
+      />
+
+      <NewFranchiseDialog
+        open={newFranchiseOpen}
+        onOpenChange={setNewFranchiseOpen}
+        userFranchises={sortedFranchises.map((f) => ({
+          franchiseId: f.franchiseId,
+          planCode: f.planCode,
+        }))}
         isBrazilian={true}
         userName="Lívia Serato"
         userEmail="livia.serato@email.com"
