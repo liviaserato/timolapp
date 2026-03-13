@@ -16,7 +16,33 @@ const challenges = [
   { id: "meta3", label: "Desafio 3: Expandir Rede" },
 ];
 
-export default function Dashboard() {
+const mockOrders = [
+  {
+    id: "1", number: "#5001", date: "2026-03-10",
+    items: [{ name: "Combo Mega", qty: 2, price: 189.9 }, { name: "Combo Mini", qty: 1, price: 99.9 }, { name: "Refil Alcalino", qty: 3, price: 59.9 }],
+    total: 479.7, status: "enviado", tracking: "BR123456789",
+  },
+  {
+    id: "2", number: "#4998", date: "2026-03-07",
+    items: [{ name: "Loader Transparente", qty: 5, price: 29.9 }, { name: "Filtro Premium", qty: 2, price: 79.9 }],
+    total: 149.5, status: "entregue",
+  },
+  {
+    id: "3", number: "#4985", date: "2026-03-03",
+    items: [{ name: "Combo Mega", qty: 1, price: 189.9 }, { name: "Produtos Separados", qty: 3, price: 49.9 }, { name: "Galão Ionizado", qty: 2, price: 45.0 }],
+    total: 339.6, status: "confirmado",
+  },
+  {
+    id: "4", number: "#4970", date: "2026-03-01",
+    items: [{ name: "Combo Mini", qty: 4, price: 99.9 }],
+    total: 399.6, status: "entregue",
+  },
+  {
+    id: "5", number: "#4955", date: "2026-02-25",
+    items: [{ name: "Combo Mega", qty: 1, price: 189.9 }],
+    total: 189.9, status: "cancelado",
+  },
+];
   return (
     <div>
       <header className="mb-4">
