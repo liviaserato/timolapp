@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -22,14 +23,17 @@ import {
 import {
   Shield, TrendingUp, Crown, Gem, Check, CircleDollarSign,
   QrCode, CreditCard, Eye, EyeOff, Copy, ChevronLeft, ExternalLink, Building2,
-  Plus, Sparkles,
+  Plus, AlertTriangle, X, Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { loadStripe } from "@stripe/stripe-js";
 import { supabase } from "@/integrations/supabase/client";
 import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 import { openWhatsAppLink } from "@/lib/whatsapp";
+import { validateCoupon, type DiscountPreview } from "@/lib/api/coupons";
+import { useFranchise } from "@/contexts/FranchiseContext";
 
+import timolLogo from "@/assets/favicon-timol-azul-escuro.svg";
 import franquiaBronze from "@/assets/franquia-bronze.svg";
 import franquiaPrata from "@/assets/franquia-prata.svg";
 import franquiaOuro from "@/assets/franquia-ouro.svg";
@@ -179,16 +183,32 @@ interface Props {
   userEmail?: string;
 }
 
-type Step = "intro" | "select" | "payment" | "confirmation";
+type Step = "intro" | "select" | "summary" | "payment" | "confirmation";
 type PaymentMethod = "pix" | "credit-card";
+
+// Mock Banco Timol balance — will come from API later
+const MOCK_BANCO_BALANCE = 450.0;
 
 export function NewFranchiseDialog({
   open, onOpenChange, userFranchises,
   isBrazilian = true, userName = "", userEmail = "",
 }: Props) {
+  const { addProfile } = useFranchise();
+
   const [step, setStep] = useState<Step>("intro");
   const [sponsorId, setSponsorId] = useState<string>(userFranchises[0]?.franchiseId ?? "");
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+
+  // Summary step state
+  const [contractAccepted, setContractAccepted] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponDiscount, setCouponDiscount] = useState<DiscountPreview | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [balanceToUse, setBalanceToUse] = useState("");
+  const bancoBalance = MOCK_BANCO_BALANCE;
+
+  // Payment step state
   const [method, setMethod] = useState<PaymentMethod>(isBrazilian ? "pix" : "credit-card");
   const [installments, setInstallments] = useState("1");
   const [cardNumber, setCardNumber] = useState("");
@@ -202,16 +222,21 @@ export function NewFranchiseDialog({
   const [showInPersonPopup, setShowInPersonPopup] = useState(false);
   const [generatedFranchiseId, setGeneratedFranchiseId] = useState<string | null>(null);
   const [paymentResult, setPaymentResult] = useState<{
-    method: string; cardLast4?: string; installments?: number; amount: number;
+    method: string; cardLast4?: string; installments?: number; amount: number; balanceUsed?: number;
   } | null>(null);
 
   const selectedFranchise = franchisePlans.find((f) => f.id === selectedPlan);
   const price = selectedFranchise ? selectedFranchise.installmentPrice * selectedFranchise.installments : 0;
-  const isPixDiscount = method === "pix";
-  const discountedPrice = isPixDiscount ? price * (1 - PIX_DISCOUNT) : price;
+
+  // Compute effective price after coupon and balance
+  const couponAmount = couponDiscount?.discountAmount ?? 0;
+  const parsedBalance = Math.min(Math.max(parseFloat(balanceToUse) || 0, 0), bancoBalance, Math.max(price - couponAmount, 0));
+  const priceAfterDeductions = Math.max(price - couponAmount - parsedBalance, 0);
+  const isPixDiscount = method === "pix" && priceAfterDeductions > 0;
+  const discountedPrice = isPixDiscount ? priceAfterDeductions * (1 - PIX_DISCOUNT) : priceAfterDeductions;
   const formatPrice = (v: number) => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   const brand = detectCardBrand(cardNumber);
-  const installmentOptions = getInstallmentOptions(price);
+  const installmentOptions = getInstallmentOptions(priceAfterDeductions > 0 ? priceAfterDeductions : price);
   const hasMultipleIds = userFranchises.length > 1;
 
   const handleClose = (v: boolean) => {
@@ -222,15 +247,74 @@ export function NewFranchiseDialog({
       setMethod(isBrazilian ? "pix" : "credit-card");
       setCardNumber(""); setCardName(""); setCardExpiry(""); setCardCvv("");
       setErrors({}); setPaymentResult(null); setGeneratedFranchiseId(null);
+      setContractAccepted(false); setCouponCode(""); setCouponDiscount(null); setCouponError("");
+      setBalanceToUse("");
     }
     onOpenChange(v);
   };
 
   const handleConfirmIntro = () => setStep("select");
 
-  const handleContinueToPayment = () => {
+  const handleContinueToSummary = () => {
     if (!selectedPlan) return;
+    setStep("summary");
+  };
+
+  const handleContinueToPayment = () => {
+    if (!contractAccepted) return;
+    // If price is fully covered by balance/coupon, skip payment
+    if (priceAfterDeductions <= 0) {
+      handleFinalizeWithBalance();
+      return;
+    }
     setStep("payment");
+  };
+
+  const handleFinalizeWithBalance = async () => {
+    setLoading(true);
+    try {
+      // TODO: Call API to create franchise with balance-only payment
+      const mockNewId = String(Math.floor(100000 + Math.random() * 900000));
+      setGeneratedFranchiseId(mockNewId);
+      addProfile({
+        franchiseId: mockNewId,
+        name: `${userName} - ID ${mockNewId}`,
+        planCode: selectedPlan ?? undefined,
+      });
+      setPaymentResult({
+        method: "saldo",
+        amount: 0,
+        balanceUsed: parsedBalance + couponAmount,
+      });
+      setStep("confirmation");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleValidateCoupon = async () => {
+    if (!couponCode.trim() || !selectedPlan) return;
+    setCouponLoading(true);
+    setCouponError("");
+    setCouponDiscount(null);
+    try {
+      const res = await validateCoupon({
+        couponCode: couponCode.trim(),
+        scope: "franchisePurchase",
+        franchiseTypeCode: selectedPlan,
+        amount: price,
+        currencyCode: "BRL",
+      });
+      if (res.isValid && res.discountPreview) {
+        setCouponDiscount(res.discountPreview);
+      } else {
+        setCouponError(res.reasonCode === "expired" ? "Cupom expirado" : res.reasonCode === "not_found" ? "Cupom não encontrado" : "Cupom inválido");
+      }
+    } catch {
+      setCouponError("Erro ao validar cupom");
+    } finally {
+      setCouponLoading(false);
+    }
   };
 
   const validate = () => {
@@ -259,12 +343,11 @@ export function NewFranchiseDialog({
 
     try {
       if (method === "credit-card") {
-        // TODO: When API is ready, call create-checkout with sponsorId for new franchise
         const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
           "create-checkout",
           {
             body: {
-              price,
+              price: priceAfterDeductions,
               currency: "brl",
               customerEmail: userEmail,
               franchiseTypeCode: selectedPlan,
@@ -272,6 +355,8 @@ export function NewFranchiseDialog({
               installments: parseInt(installments),
               customerName: userName,
               isNewFranchise: true,
+              balanceUsed: parsedBalance,
+              couponCode: couponDiscount ? couponCode : undefined,
             },
           }
         );
@@ -314,16 +399,20 @@ export function NewFranchiseDialog({
           return;
         }
 
-        // TODO: After payment, call API to generate new franchiseId
-        // const newId = await generateNewFranchiseId({ sponsorId, franchiseTypeCode: selectedPlan, ... });
         const mockNewId = String(Math.floor(100000 + Math.random() * 900000));
         setGeneratedFranchiseId(mockNewId);
+        addProfile({
+          franchiseId: mockNewId,
+          name: `${userName} - ID ${mockNewId}`,
+          planCode: selectedPlan ?? undefined,
+        });
 
         setPaymentResult({
           method: "credit-card",
           cardLast4: cardNumberClean.slice(-4),
           installments: parseInt(installments),
-          amount: price,
+          amount: priceAfterDeductions,
+          balanceUsed: parsedBalance > 0 ? parsedBalance : undefined,
         });
         setStep("confirmation");
       } else {
@@ -331,7 +420,16 @@ export function NewFranchiseDialog({
         setLoading(false);
         const mockNewId = String(Math.floor(100000 + Math.random() * 900000));
         setGeneratedFranchiseId(mockNewId);
-        setPaymentResult({ method: "pix", amount: discountedPrice });
+        addProfile({
+          franchiseId: mockNewId,
+          name: `${userName} - ID ${mockNewId}`,
+          planCode: selectedPlan ?? undefined,
+        });
+        setPaymentResult({
+          method: "pix",
+          amount: discountedPrice,
+          balanceUsed: parsedBalance > 0 ? parsedBalance : undefined,
+        });
         setStep("confirmation");
       }
     } catch {
@@ -359,36 +457,35 @@ export function NewFranchiseDialog({
           {step === "intro" && (
             <>
               <DialogHeader className="text-center">
-                <div className="mx-auto mb-2 h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Sparkles className="h-6 w-6 text-primary" />
+                <div className="mx-auto mb-2">
+                  <img src={timolLogo} alt="Timol" className="h-10 w-10 mx-auto" />
                 </div>
-                <DialogTitle className="text-xl">Adquirir Nova Franquia</DialogTitle>
+                <DialogTitle className="text-xl text-center">Adquirir Nova Franquia</DialogTitle>
                 <DialogDescription className="text-center text-sm leading-relaxed mt-2">
                   Sabia que você pode ter mais de uma franquia Timol?
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-3 mt-1">
-                <div className="bg-primary/5 rounded-lg p-4 space-y-2.5">
+                <div className="bg-primary/5 rounded-lg p-4">
                   <p className="text-sm text-foreground leading-relaxed">
                     Expandir sua rede com uma nova franquia é uma excelente estratégia para 
-                    <strong> multiplicar seus ganhos</strong> e fortalecer sua presença no mercado.
-                  </p>
-                  <p className="text-sm text-foreground leading-relaxed">
-                    Cada franquia adicional opera com seu próprio ID, ampliando suas possibilidades de 
-                    bônus, qualificações e premiações. 🚀
+                    <strong> multiplicar seus ganhos</strong> e fortalecer sua presença no mercado. 🚀
                   </p>
                 </div>
 
-                <div className="bg-muted/50 rounded-lg border border-border/60 p-3.5">
+                <div className="bg-warning/10 border border-warning/30 rounded-lg p-3.5 text-center">
+                  <div className="flex items-center justify-center gap-1.5 mb-1">
+                    <AlertTriangle className="h-4 w-4 text-warning" />
+                    <strong className="text-sm text-warning">Importante</strong>
+                  </div>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    <strong className="text-foreground">Importante:</strong> o patrocinador da nova franquia 
-                    será obrigatoriamente um de seus IDs existentes.
+                    O patrocinador da nova franquia será obrigatoriamente um de seus IDs existentes.
                   </p>
                 </div>
 
                 {hasMultipleIds && (
-                  <div className="space-y-2">
+                  <div className="space-y-2 text-center">
                     <Label className="text-sm font-medium">
                       Qual ID será o patrocinador da nova franquia?
                     </Label>
@@ -408,10 +505,10 @@ export function NewFranchiseDialog({
                 )}
 
                 {!hasMultipleIds && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 rounded-md p-3">
+                  <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground bg-muted/30 rounded-md p-3">
                     <Check className="h-4 w-4 text-primary flex-shrink-0" />
                     <span>
-                      Patrocinador: <strong className="text-foreground">ID {sponsorId}</strong> ({planLabels[userFranchises[0]?.planCode] || ""})
+                      Seu ID patrocinador será <strong className="text-foreground">ID {sponsorId}</strong> — {planLabels[userFranchises[0]?.planCode] || ""}
                     </span>
                   </div>
                 )}
@@ -583,20 +680,171 @@ export function NewFranchiseDialog({
 
               <div className="flex justify-end gap-3 mt-4">
                 <Button variant="outline" onClick={() => setStep("intro")}>Voltar</Button>
-                <Button onClick={handleContinueToPayment} disabled={!selectedPlan}>
+                <Button onClick={handleContinueToSummary} disabled={!selectedPlan}>
                   Continuar
                 </Button>
               </div>
             </>
           )}
 
-          {/* ── STEP 2: Payment ── */}
+          {/* ── STEP 2: Summary ── */}
+          {step === "summary" && selectedFranchise && (
+            <>
+              <div className="relative pt-1">
+                <button
+                  type="button"
+                  onClick={() => { setStep("select"); setContractAccepted(false); }}
+                  className="absolute left-0 top-1 z-10 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Voltar"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <DialogHeader className="text-center px-8">
+                  <DialogTitle className="text-xl">Resumo da Compra</DialogTitle>
+                  <DialogDescription className="text-center">
+                    Confira os detalhes antes de prosseguir.
+                  </DialogDescription>
+                </DialogHeader>
+              </div>
+
+              <div className="space-y-4 mt-2">
+                {/* Order details */}
+                <div className="bg-primary/5 rounded-xl p-4 space-y-1.5 text-sm">
+                  <ConfirmRow label="Patrocinador" value={`ID ${sponsorId}`} />
+                  <ConfirmRow label="Franquia" value={selectedFranchise.name} />
+                  <ConfirmRow label="Valor" value={formatPrice(price)} />
+                </div>
+
+                {/* Coupon */}
+                <div className="space-y-1.5">
+                  <Label className="text-sm font-medium">Cupom de desconto</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Digite o cupom"
+                      value={couponCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value.toUpperCase());
+                        if (couponDiscount) { setCouponDiscount(null); setCouponError(""); }
+                      }}
+                      className="flex-1"
+                      disabled={!!couponDiscount}
+                    />
+                    {couponDiscount ? (
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => { setCouponDiscount(null); setCouponCode(""); setCouponError(""); }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        onClick={handleValidateCoupon}
+                        disabled={!couponCode.trim() || couponLoading}
+                      >
+                        {couponLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Aplicar"}
+                      </Button>
+                    )}
+                  </div>
+                  {couponError && <p className="text-xs text-destructive">{couponError}</p>}
+                  {couponDiscount && (
+                    <p className="text-xs text-green-600 font-medium">
+                      Desconto aplicado: -{formatPrice(couponDiscount.discountAmount)}
+                    </p>
+                  )}
+                </div>
+
+                {/* Banco Timol balance */}
+                {bancoBalance > 0 && (
+                  <div className="space-y-1.5">
+                    <Label className="text-sm font-medium">
+                      Usar saldo do Banco Timol <span className="text-muted-foreground font-normal">(disponível: {formatPrice(bancoBalance)})</span>
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        placeholder="0,00"
+                        value={balanceToUse}
+                        onChange={(e) => {
+                          // Allow only numbers and comma/dot
+                          const val = e.target.value.replace(/[^\d.,]/g, "").replace(",", ".");
+                          setBalanceToUse(val);
+                        }}
+                        className="pr-9"
+                      />
+                      {balanceToUse && (
+                        <button
+                          type="button"
+                          onClick={() => setBalanceToUse("")}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                    {parsedBalance > 0 && (
+                      <p className="text-xs text-green-600 font-medium">
+                        Saldo a utilizar: -{formatPrice(parsedBalance)}
+                      </p>
+                    )}
+                    {parseFloat(balanceToUse) > bancoBalance && (
+                      <p className="text-xs text-destructive">Valor acima do saldo disponível</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Total */}
+                <Separator />
+                <div className="flex justify-between items-center text-base font-bold">
+                  <span>Total a pagar</span>
+                  <span className="text-primary">{formatPrice(priceAfterDeductions)}</span>
+                </div>
+                {priceAfterDeductions <= 0 && (parsedBalance > 0 || couponAmount > 0) && (
+                  <p className="text-xs text-green-600 text-center font-medium">
+                    Compra coberta pelo saldo e/ou cupom!
+                  </p>
+                )}
+
+                {/* Contract checkbox */}
+                <div className="flex items-start gap-2.5 pt-1">
+                  <Checkbox
+                    id="contract-accept"
+                    checked={contractAccepted}
+                    onCheckedChange={(v) => setContractAccepted(v === true)}
+                    className="mt-0.5"
+                  />
+                  <label htmlFor="contract-accept" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+                    Li e aceito o{" "}
+                    <a href="/contrato" target="_blank" className="text-primary underline hover:no-underline">
+                      Contrato de Franquia
+                    </a>{" "}
+                    e os termos de uso da plataforma Timol.
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-4">
+                <Button variant="outline" className="flex-1" onClick={() => { setStep("select"); setContractAccepted(false); }}>
+                  Voltar
+                </Button>
+                <Button
+                  className="flex-1"
+                  onClick={handleContinueToPayment}
+                  disabled={!contractAccepted}
+                >
+                  {priceAfterDeductions <= 0 ? "Finalizar" : "Ir para pagamento"}
+                </Button>
+              </div>
+            </>
+          )}
+
+          {/* ── STEP 3: Payment ── */}
           {step === "payment" && selectedFranchise && (
             <>
               <div className="relative pt-1">
                 <button
                   type="button"
-                  onClick={() => setStep("select")}
+                  onClick={() => setStep("summary")}
                   className="absolute left-0 top-1 z-10 text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="Voltar"
                 >
@@ -614,11 +862,16 @@ export function NewFranchiseDialog({
                 <p className="text-sm font-medium text-foreground">
                   Franquia {selectedFranchise.name}
                 </p>
+                {parsedBalance > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    Saldo aplicado: {formatPrice(parsedBalance)} · Restante:
+                  </p>
+                )}
                 <p className="text-3xl font-extrabold text-foreground tracking-tight">
                   {formatPrice(discountedPrice)}
                 </p>
-                {isPixDiscount && price !== discountedPrice && (
-                  <p className="text-sm line-through text-muted-foreground">{formatPrice(price)}</p>
+                {isPixDiscount && priceAfterDeductions !== discountedPrice && (
+                  <p className="text-sm line-through text-muted-foreground">{formatPrice(priceAfterDeductions)}</p>
                 )}
               </div>
 
@@ -770,7 +1023,7 @@ export function NewFranchiseDialog({
                             {installmentOptions.map(({ n, value }) => (
                               <SelectItem key={n} value={String(n)}>
                                 {n === 1
-                                  ? `À vista — ${formatPrice(price)}`
+                                  ? `À vista — ${formatPrice(priceAfterDeductions)}`
                                   : `${n}× ${formatPrice(value)} (sem juros)`}
                               </SelectItem>
                             ))}
@@ -790,8 +1043,8 @@ export function NewFranchiseDialog({
             </>
           )}
 
-          {/* ── STEP 3: Confirmation ── */}
-          {step === "confirmation" && selectedFranchise && paymentResult && (
+          {/* ── STEP 4: Confirmation ── */}
+          {step === "confirmation" && selectedFranchise && (paymentResult || priceAfterDeductions <= 0) && (
             <div className="flex flex-col items-center gap-5 py-4">
               <div className="h-14 w-14 rounded-full bg-green-100 flex items-center justify-center">
                 <Check className="h-7 w-7 text-green-600" />
@@ -810,10 +1063,18 @@ export function NewFranchiseDialog({
                 {generatedFranchiseId && <ConfirmRow label="Novo ID" value={generatedFranchiseId} />}
                 <ConfirmRow label="Franquia" value={selectedFranchise.name} />
                 <ConfirmRow label="Patrocinador" value={`ID ${sponsorId}`} />
-                <ConfirmRow label="Valor" value={formatPrice(paymentResult.amount)} />
-                {paymentResult.method === "credit-card" && paymentResult.cardLast4 && (
+                <ConfirmRow label="Valor da franquia" value={formatPrice(price)} />
+                {couponAmount > 0 && (
+                  <ConfirmRow label="Desconto cupom" value={`-${formatPrice(couponAmount)}`} />
+                )}
+                {paymentResult?.balanceUsed && paymentResult.balanceUsed > 0 && (
+                  <ConfirmRow label="Saldo Banco Timol" value={`-${formatPrice(paymentResult.balanceUsed)}`} />
+                )}
+                <Separator className="my-1" />
+                {paymentResult?.method === "credit-card" && paymentResult.cardLast4 && (
                   <>
                     <ConfirmRow label="Cartão" value={`•••• ${paymentResult.cardLast4}`} />
+                    <ConfirmRow label="Valor no cartão" value={formatPrice(paymentResult.amount)} />
                     {paymentResult.installments && paymentResult.installments > 1 && (
                       <ConfirmRow
                         label="Parcelas"
@@ -822,9 +1083,19 @@ export function NewFranchiseDialog({
                     )}
                   </>
                 )}
-                {paymentResult.method === "pix" && (
-                  <ConfirmRow label="Método" value="PIX" />
+                {paymentResult?.method === "pix" && (
+                  <ConfirmRow label="Pago via PIX" value={formatPrice(paymentResult.amount)} />
                 )}
+                {paymentResult?.method === "saldo" && (
+                  <ConfirmRow label="Método" value="Saldo + Cupom" />
+                )}
+              </div>
+
+              <div className="w-full bg-muted/50 rounded-lg border border-border/60 p-3 text-center">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Sua nova franquia já está disponível! Acesse ela no <strong className="text-foreground">cabeçalho</strong>, 
+                  clicando na <strong className="text-foreground">setinha de seleção de IDs</strong> abaixo do seu nome.
+                </p>
               </div>
 
               <Button onClick={() => handleClose(false)} className="w-full max-w-[200px]">

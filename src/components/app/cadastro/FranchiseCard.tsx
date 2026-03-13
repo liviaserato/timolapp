@@ -6,6 +6,7 @@ import { Gem, ArrowUp, Plus, ChevronLeft, ChevronRight, ShieldCheck, ShieldAlert
 import { cn } from "@/lib/utils";
 import { UpgradeDialog } from "./UpgradeDialog";
 import { NewFranchiseDialog } from "./NewFranchiseDialog";
+import { useFranchise } from "@/contexts/FranchiseContext";
 
 /* ── franchise status helper ── */
 
@@ -97,9 +98,10 @@ interface Props {
 export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Props) {
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [newFranchiseOpen, setNewFranchiseOpen] = useState(false);
+  const { profiles: contextProfiles } = useFranchise();
 
   // Mock: user may have multiple IDs with different activity dates
-  const userFranchises: UserFranchise[] = [
+  const baseFranchises: UserFranchise[] = [
     { franchiseId, planCode, sponsor, registrationDate: "10/01/2025", qualification: "esmeralda", activeUntil: "2026-07-20" },
     { franchiseId: "200587", planCode: "silver", sponsor: "Carlos Souza (ID 88002)", registrationDate: "15/06/2025", qualification: "distribuidor", activeUntil: "2026-03-18" },
     { franchiseId: "300145", planCode: "bronze", sponsor: "Ana Costa (ID 77003)", registrationDate: "20/09/2025", qualification: "consultor", activeUntil: "2026-02-01" },
@@ -108,10 +110,26 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
     { franchiseId: "600789", planCode: "bronze", sponsor: "João Santos (ID 44006)", registrationDate: "05/07/2025", qualification: "consultor", activeUntil: "2025-12-10" },
   ];
 
+  // Merge dynamically added franchises from context
+  const baseIds = new Set(baseFranchises.map((f) => f.franchiseId));
+  const dynamicFranchises: UserFranchise[] = contextProfiles
+    .filter((p) => !baseIds.has(p.franchiseId))
+    .map((p) => ({
+      franchiseId: p.franchiseId,
+      planCode: p.planCode ?? "bronze",
+      sponsor: `ID ${franchiseId}`,
+      registrationDate: new Date().toLocaleDateString("pt-BR"),
+      qualification: "consultor",
+      activeUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+    }));
+
+  const userFranchises = [...baseFranchises, ...dynamicFranchises];
+
   const sortedFranchises = [
     ...userFranchises.filter((f) => f.franchiseId === franchiseId),
     ...userFranchises.filter((f) => f.franchiseId !== franchiseId).sort((a, b) => a.franchiseId.localeCompare(b.franchiseId)),
   ];
+
 
   const hasMultipleIds = sortedFranchises.length > 1;
   const [selectedTabIdx, setSelectedTabIdx] = useState(0);
