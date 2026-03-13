@@ -171,7 +171,7 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone, currentDdiIso2 }:
               </DialogDescription>
             </DialogHeader>
             {step === "phone" ? (
-              <div className="space-y-3">
+              <form onSubmit={(e) => { e.preventDefault(); if (newPhone.trim() && !sending) handleSendPin(); }} className="space-y-3">
                 <div className="space-y-2">
                   <Label>Novo telefone</Label>
                   <PhoneInput
@@ -182,12 +182,12 @@ function PhoneChangeDialog({ open, onOpenChange, currentPhone, currentDdiIso2 }:
                   />
                 </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => handleClose(false)}>Cancelar</Button>
-                  <Button onClick={handleSendPin} disabled={!newPhone.trim() || sending}>
+                  <Button type="button" variant="outline" onClick={() => handleClose(false)}>Cancelar</Button>
+                  <Button type="submit" disabled={!newPhone.trim() || sending}>
                     {sending ? "Enviando..." : "Enviar PIN"}
                   </Button>
                 </DialogFooter>
-              </div>
+              </form>
             ) : (
               <div className="space-y-3">
                 <div className="space-y-2">
