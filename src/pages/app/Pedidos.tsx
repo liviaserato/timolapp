@@ -194,12 +194,12 @@ export default function Pedidos() {
                 Realizar Pedido
               </Button>
               <Button variant="outline" className="gap-2 shrink-0">
-                <BookOpen className="h-4 w-4" />
-                Catálogo de Produtos
-              </Button>
-              <Button variant="outline" className="gap-2 shrink-0">
                 <Users className="h-4 w-4" />
                 Indicar Franquia
+              </Button>
+              <Button variant="outline" className="gap-2 shrink-0">
+                <BookOpen className="h-4 w-4" />
+                Catálogo de Produtos
               </Button>
             </div>
           </div>
