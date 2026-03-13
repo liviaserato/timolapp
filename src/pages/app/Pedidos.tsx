@@ -68,17 +68,17 @@ interface Order {
 const mockOrders: Order[] = [
   {
     id: "1", number: "#5001", date: "2026-03-10",
-    items: [{ name: "Combo Mega", qty: 2, price: 189.9 }, { name: "Combo Mini", qty: 1, price: 99.9 }],
+    items: [{ name: "Combo Mega", qty: 2, price: 189.9 }, { name: "Combo Mini", qty: 1, price: 99.9 }, { name: "Refil Alcalino", qty: 3, price: 59.9 }],
     total: 479.7, status: "enviado", tracking: "BR123456789",
   },
   {
     id: "2", number: "#4998", date: "2026-03-07",
-    items: [{ name: "Loader Transparente", qty: 5, price: 29.9 }],
+    items: [{ name: "Loader Transparente", qty: 5, price: 29.9 }, { name: "Filtro Premium", qty: 2, price: 79.9 }],
     total: 149.5, status: "entregue",
   },
   {
     id: "3", number: "#4985", date: "2026-03-03",
-    items: [{ name: "Combo Mega", qty: 1, price: 189.9 }, { name: "Produtos Separados", qty: 3, price: 49.9 }],
+    items: [{ name: "Combo Mega", qty: 1, price: 189.9 }, { name: "Produtos Separados", qty: 3, price: 49.9 }, { name: "Galão Ionizado", qty: 2, price: 45.0 }],
     total: 339.6, status: "confirmado",
   },
   {

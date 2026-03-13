@@ -48,6 +48,9 @@ const productCategoryMap: Record<string, ProductCategory> = {
   "Combo Mega": "agua",
   "Combo Mini": "agua",
   "Loader Transparente": "agua",
+  "Refil Alcalino": "agua",
+  "Filtro Premium": "agua",
+  "Galão Ionizado": "agua",
   "Produtos Separados": "dia-a-dia",
 };
 
