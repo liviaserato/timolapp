@@ -34,6 +34,27 @@ import {
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 
+/* ── Product categories ── */
+
+type ProductCategory = "agua" | "beleza" | "dia-a-dia";
+
+const categoryLabels: Record<ProductCategory, string> = {
+  agua: "Água Saudável",
+  beleza: "Beleza/Auto Cuidado",
+  "dia-a-dia": "Dia a Dia",
+};
+
+const productCategoryMap: Record<string, ProductCategory> = {
+  "Combo Mega": "agua",
+  "Combo Mini": "agua",
+  "Loader Transparente": "agua",
+  "Produtos Separados": "dia-a-dia",
+};
+
+function getCategory(name: string): ProductCategory {
+  return productCategoryMap[name] || "dia-a-dia";
+}
+
 /* ── Types ── */
 
 interface OrderItem {
