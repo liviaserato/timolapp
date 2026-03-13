@@ -514,7 +514,7 @@ export function NewFranchiseDialog({
                 )}
 
                 <p className="text-sm text-center text-foreground font-medium pt-1">
-                  Deseja adquirir uma nova franquia?
+                  Está pronto para adquirir sua nova franquia?
                 </p>
               </div>
 
