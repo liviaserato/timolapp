@@ -849,7 +849,7 @@ export function NewFranchiseDialog({
                     <>
                       <div className="flex justify-between items-center text-muted-foreground">
                         <span>Saldo utilizado</span>
-                        <span>-{formatPrice(parsedBalance)}</span>
+                        <span>({formatPrice(parsedBalance)})</span>
                       </div>
                       <div className="flex justify-between items-center font-bold text-base">
                         <span>Valor restante a pagar</span>
