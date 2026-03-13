@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import {
   Package,
-  ShoppingBag,
+  
   Award,
   Star,
   Users,
