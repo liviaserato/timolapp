@@ -176,8 +176,8 @@ export default function Pedidos() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="-left-3 h-8 w-8 border-app-card-border" />
-              <CarouselNext className="-right-3 h-8 w-8 border-app-card-border" />
+              <CarouselPrevious className="-left-3 h-8 w-8 bg-transparent border-0 shadow-none hover:bg-muted/60 text-foreground drop-shadow-md" />
+              <CarouselNext className="-right-3 h-8 w-8 bg-transparent border-0 shadow-none hover:bg-muted/60 text-foreground drop-shadow-md" />
             </Carousel>
           </div>
         </DashboardCard>
