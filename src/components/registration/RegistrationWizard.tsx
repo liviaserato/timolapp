@@ -133,7 +133,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
     } else if (step === 4) {
       if (!data.username?.trim()) {
         newErrors.username = req;
-      } else if (!/^[a-zA-Z0-9_]*$/.test(data.username)) {
+      } else if (!/^[a-z0-9._]*$/.test(data.username)) {
         newErrors.username = t("step4.username.invalidCharsSubmit");
       } else if (data.username.length > 20) {
         newErrors.username = t("step4.username.hint");
