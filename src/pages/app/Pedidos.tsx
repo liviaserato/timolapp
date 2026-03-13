@@ -242,7 +242,7 @@ export default function Pedidos() {
           <div className="mt-4 space-y-6">
             {Object.entries(grouped).map(([month, orders]) => (
               <div key={month}>
-                <h3 className="text-sm font-bold text-primary capitalize mb-3">{month}</h3>
+                <h3 className="text-sm font-bold text-foreground capitalize mb-3">{month}</h3>
                 <div className="space-y-2">
                   {orders.map((order) => {
                     const sortedItems = [...order.items].sort((a, b) => b.qty - a.qty);
