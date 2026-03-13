@@ -104,7 +104,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
   // Period label
   const periodLabel = useMemo(() => {
     if (mode === "30d") return "Últimos 30 dias";
-    if (mode === "month") return format(selectedMonth, "MMMM yyyy", { locale: ptBR }).replace(/^\w/, (c) => c.toUpperCase());
+    if (mode === "month") return format(selectedMonth, "MMMM yyyy", { locale }).replace(/^\w/, (c) => c.toUpperCase());
     return `${format(from, "dd/MM/yy")} — ${format(to, "dd/MM/yy")}`;
   }, [mode, selectedMonth, from, to]);
 
