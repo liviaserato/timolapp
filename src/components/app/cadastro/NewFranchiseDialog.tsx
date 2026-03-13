@@ -922,7 +922,7 @@ export function NewFranchiseDialog({
                 </button>
                 <DialogTitle className="text-xl">Pagamento</DialogTitle>
               </div>
-              <p className="text-sm text-muted-foreground mt-1 pl-7">
+              <p className="text-sm text-muted-foreground -mt-0.5 pl-7">
                 Nova franquia {selectedFranchise.name} — Patrocinador: ID {sponsorId}
               </p>
 
