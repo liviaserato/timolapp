@@ -114,6 +114,9 @@ export const ForgotPasswordPopup = ({ open, onClose, onSwitchToUsername }: Props
           return t("forgotPw.error.invalidPin");
         case "update_failed":
           return t("forgotPw.error.resetFailed");
+        case "rate_limited":
+        case "too_many_requests":
+          return t("forgotPw.error.rateLimited");
         default:
           return t(fallbackKey);
       }
