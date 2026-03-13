@@ -363,6 +363,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "forgotPw.error.passwordMin": "A senha deve ter no mínimo 6 caracteres.",
     "forgotPw.error.passwordMismatch": "As senhas não coincidem.",
     "forgotPw.error.resetFailed": "Erro ao alterar a senha. Tente novamente.",
+    "forgotPw.error.rateLimited": "Muitas solicitações. Aguarde 30 minutos antes de tentar novamente.",
 
     // Forgot username popup
     "forgotUser.title": "Recuperar Usuário",
