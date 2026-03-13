@@ -883,7 +883,7 @@ export function NewFranchiseDialog({
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        setIsContractOpen(true);
+                        window.open("/contrato", "_blank");
                       }}
                     >
                       Contrato de Franquia
