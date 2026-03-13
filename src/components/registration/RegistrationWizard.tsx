@@ -314,7 +314,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
           >
             <div className="space-y-6">
               {step === 1 && <StepPersonal data={data} onChange={onChange} errors={errors} docCheckError={docCheckError} docBlocked={docBlocked} showDocCheck={showDocCheck} docChecking={docChecking} docCheckResult={docCheckResult} resetDocCheck={resetDocCheck} />}
-              {step === 2 && <StepContact data={data} onChange={onChange} errors={errors} />}
+              {step === 2 && <StepContact data={data} onChange={onChange} errors={errors} onEmailStatusChange={setEmailStatus} />}
               {step === 3 && <StepAddress data={data} onChange={onChange} errors={errors} />}
               {step === 4 && <StepLogin data={data} onChange={onChange} errors={errors} onUsernameStatusChange={setUsernameStatus} />}
 
