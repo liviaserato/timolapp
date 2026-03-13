@@ -263,31 +263,31 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                 <span className="text-sm text-muted-foreground leading-tight">Produtos adquiridos</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? totalUnits : HIDDEN}</p>
-              {visible && top3.length > 0 && (
-                <div className="mt-1.5 space-y-0.5">
-                  {top3.map(([name, qty], idx) => (
-                    <div key={name} className="flex items-center justify-between text-[10px]">
-                      <span className="text-muted-foreground truncate mr-1">
-                        {idx + 1}. {name}
-                      </span>
+
+              <div className="my-2 w-full border-t border-app-card-border/50" />
+
+              {visible ? (
+                <div className="w-full space-y-1">
+                  {top3.map(([name, qty]) => (
+                    <div key={name} className="flex items-center justify-between text-[11px] px-1">
+                      <span className="text-muted-foreground truncate mr-1">{name}</span>
                       <span className="font-semibold text-foreground shrink-0">{qty}x</span>
                     </div>
                   ))}
+                  {sortedProducts.length > 3 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAllProducts(true)}
+                      className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5 px-1"
+                    >
+                      Ver todos <ChevronRight className="h-2.5 w-2.5" />
+                    </button>
+                  )}
                 </div>
-              )}
-              {visible && sortedProducts.length > 3 && (
-                <button
-                  type="button"
-                  onClick={() => setShowAllProducts(true)}
-                  className="mt-1.5 text-[10px] text-primary hover:underline self-start flex items-center gap-0.5"
-                >
-                  Ver todos <ChevronRight className="h-2.5 w-2.5" />
-                </button>
-              )}
-              {!visible && (
-                <div className="mt-1.5 space-y-0.5">
+              ) : (
+                <div className="w-full space-y-1">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="text-[10px] text-muted-foreground">{HIDDEN}</div>
+                    <div key={i} className="text-[11px] text-muted-foreground">{HIDDEN}</div>
                   ))}
                 </div>
               )}
