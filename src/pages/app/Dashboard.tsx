@@ -43,6 +43,8 @@ const mockOrders = [
     total: 189.9, status: "cancelado",
   },
 ];
+
+export default function Dashboard() {
   return (
     <div>
       <header className="mb-4">
