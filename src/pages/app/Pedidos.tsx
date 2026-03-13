@@ -188,16 +188,16 @@ export default function Pedidos() {
             <p className="text-sm text-muted-foreground">
               Acesse o catálogo, faça seu pedido ou indique uma nova franquia.
             </p>
-            <div className="flex flex-wrap gap-2">
-              <Button className="gap-2 shrink-0">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <Button className="gap-2 w-full">
                 <ShoppingCart className="h-4 w-4" />
                 Realizar Pedido
               </Button>
-              <Button variant="outline" className="gap-2 shrink-0">
+              <Button variant="outline" className="gap-2 w-full">
                 <Users className="h-4 w-4" />
                 Indicar Franquia
               </Button>
-              <Button variant="outline" className="gap-2 shrink-0">
+              <Button variant="outline" className="gap-2 w-full">
                 <BookOpen className="h-4 w-4" />
                 Catálogo de Produtos
               </Button>
