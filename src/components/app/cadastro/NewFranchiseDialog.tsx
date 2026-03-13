@@ -1168,8 +1168,6 @@ export function NewFranchiseDialog({
         </DialogContent>
       </Dialog>
 
-      {/* Contract modal */}
-      {isContractOpen && <ContractScreen mode="modal" onClose={() => setIsContractOpen(false)} />}
 
       {/* In-person payment dialog */}
       <Dialog open={showInPersonPopup} onOpenChange={setShowInPersonPopup}>
