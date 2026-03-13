@@ -379,7 +379,7 @@ export function UpgradeDialog({
                   <img src={timolLogo} alt="Timol" className="h-10 w-10 mx-auto" />
                 </div>
                 <DialogTitle className="text-xl text-center">Upgrade de Franquia</DialogTitle>
-                <DialogDescription className="text-center text-sm leading-relaxed mt-2">
+                <DialogDescription className="text-center text-sm leading-relaxed mt-0.5">
                   Está na hora de subir de nível!
                 </DialogDescription>
               </DialogHeader>
@@ -453,7 +453,7 @@ export function UpgradeDialog({
                 </button>
                 <DialogTitle className="text-xl">Escolha sua Franquia</DialogTitle>
               </div>
-              <p className="text-sm text-muted-foreground mt-1 pl-7">
+              <p className="text-sm text-muted-foreground -mt-0.5 pl-7">
                 ID {upgradeTargetId} — Atualmente: <strong className="text-foreground">{planLabels[effectivePlanCode]}</strong>. Selecione o plano superior.
               </p>
 
@@ -567,7 +567,7 @@ export function UpgradeDialog({
                 </button>
                 <DialogTitle className="text-xl">Resumo da Compra</DialogTitle>
               </div>
-              <p className="text-sm text-muted-foreground mt-1 pl-7">
+              <p className="text-sm text-muted-foreground -mt-0.5 pl-7">
                 Confira os detalhes antes de prosseguir.
               </p>
 
@@ -712,7 +712,7 @@ export function UpgradeDialog({
                 </button>
                 <DialogTitle className="text-xl">Pagamento do Upgrade</DialogTitle>
               </div>
-              <p className="text-sm text-muted-foreground mt-1 pl-7">
+              <p className="text-sm text-muted-foreground -mt-0.5 pl-7">
                 Upgrade para {selectedFranchise.name} — ID {upgradeTargetId}
               </p>
 

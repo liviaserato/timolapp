@@ -502,7 +502,7 @@ export function NewFranchiseDialog({
                   <img src={timolLogo} alt="Timol" className="h-10 w-10 mx-auto" />
                 </div>
                 <DialogTitle className="text-xl text-center">Adquirir Nova Franquia</DialogTitle>
-                <DialogDescription className="text-center text-sm leading-relaxed mt-2">
+                <DialogDescription className="text-center text-sm leading-relaxed mt-0.5">
                   Sabia que você pode ter mais de uma franquia Timol?
                 </DialogDescription>
               </DialogHeader>
@@ -584,7 +584,7 @@ export function NewFranchiseDialog({
                 </button>
                 <DialogTitle className="text-xl">Escolha sua Franquia</DialogTitle>
               </div>
-              <p className="text-sm text-muted-foreground mt-1 pl-7">
+              <p className="text-sm text-muted-foreground -mt-0.5 pl-7">
                 Patrocinador: <strong className="text-foreground">ID {sponsorId}</strong>. Selecione qual franquia faz mais sentido para você.
               </p>
 
@@ -740,7 +740,7 @@ export function NewFranchiseDialog({
                 </button>
                 <DialogTitle className="text-xl">Resumo da Compra</DialogTitle>
               </div>
-              <p className="text-sm text-muted-foreground text-left mt-1 pl-7">
+              <p className="text-sm text-muted-foreground text-left -mt-0.5 pl-7">
                 Confira os detalhes antes de prosseguir.
               </p>
 
@@ -922,7 +922,7 @@ export function NewFranchiseDialog({
                 </button>
                 <DialogTitle className="text-xl">Pagamento</DialogTitle>
               </div>
-              <p className="text-sm text-muted-foreground mt-1 pl-7">
+              <p className="text-sm text-muted-foreground -mt-0.5 pl-7">
                 Nova franquia {selectedFranchise.name} — Patrocinador: ID {sponsorId}
               </p>
 
