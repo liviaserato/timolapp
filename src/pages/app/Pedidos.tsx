@@ -9,6 +9,8 @@ import {
   Search,
   Filter,
   Megaphone,
+  Users,
+  BookOpen,
 } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { OrderSummaryCard } from "@/components/app/pedidos/OrderSummaryCard";
