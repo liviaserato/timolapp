@@ -14,7 +14,8 @@ import {
   EyeOff,
 } from "lucide-react";
 import { format, subDays, startOfMonth, endOfMonth, subMonths, addMonths, isAfter } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR, enUS, es, type Locale } from "date-fns/locale";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { DashboardCard } from "@/components/app/DashboardCard";
 
 import { Button } from "@/components/ui/button";
@@ -59,8 +60,9 @@ interface FranchiseDistribution {
 interface OrderSummaryCardProps {
   orders: Order[];
 }
-
 /* ── Helpers ── */
+
+const localeMap: Record<string, Locale> = { pt: ptBR, en: enUS, es };
 
 function formatCurrency(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -73,8 +75,9 @@ type PeriodMode = "30d" | "month" | "custom";
 /* ── Component ── */
 
 export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
+  const { language } = useLanguage();
+  const locale = localeMap[language] || ptBR;
   const [showAllProducts, setShowAllProducts] = useState(false);
-  
   const [visible, setVisible] = useState(true);
 
   // Period state
@@ -101,7 +104,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
   // Period label
   const periodLabel = useMemo(() => {
     if (mode === "30d") return "Últimos 30 dias";
-    if (mode === "month") return format(selectedMonth, "MMMM yyyy", { locale: ptBR }).replace(/^\w/, (c) => c.toUpperCase());
+    if (mode === "month") return format(selectedMonth, "MMMM yyyy", { locale }).replace(/^\w/, (c) => c.toUpperCase());
     return `${format(from, "dd/MM/yy")} — ${format(to, "dd/MM/yy")}`;
   }, [mode, selectedMonth, from, to]);
 
@@ -208,7 +211,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                   <ChevronLeft className="h-3.5 w-3.5" />
                 </Button>
                 <span className="text-xs font-medium text-foreground min-w-[120px] text-center capitalize">
-                  {format(selectedMonth, "MMMM yyyy", { locale: ptBR })}
+                  {format(selectedMonth, "MMMM yyyy", { locale })}
                 </span>
                 <Button
                   variant="ghost"
@@ -229,6 +232,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                   onSelect={(d) => setCustomFrom(d)}
                   maxDate={customTo || today}
                   placeholder="Início"
+                  locale={locale}
                 />
                 <span className="text-xs text-muted-foreground">—</span>
                 <DatePickerButton
@@ -237,6 +241,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                   minDate={customFrom}
                   maxDate={today}
                   placeholder="Fim"
+                  locale={locale}
                 />
               </div>
             )}
@@ -386,12 +391,14 @@ function DatePickerButton({
   minDate,
   maxDate,
   placeholder,
+  locale,
 }: {
   date: Date | undefined;
   onSelect: (d: Date | undefined) => void;
   minDate?: Date;
   maxDate?: Date;
   placeholder: string;
+  locale?: Locale;
 }) {
   return (
     <Popover>
@@ -412,6 +419,7 @@ function DatePickerButton({
           mode="single"
           selected={date}
           onSelect={onSelect}
+          locale={locale}
           disabled={(d) => {
             if (maxDate && d > maxDate) return true;
             if (minDate && d < minDate) return true;
