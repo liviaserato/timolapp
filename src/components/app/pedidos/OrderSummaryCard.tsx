@@ -6,7 +6,7 @@ import {
   Star,
   Users,
   ChevronRight,
-  ChevronDown,
+  
   ChevronLeft,
   Calendar,
   CalendarRange,
