@@ -202,7 +202,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             </div>
 
             {mode === "month" && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 justify-center w-full sm:w-auto">
                 <Button
                   variant="ghost"
                   size="icon"
