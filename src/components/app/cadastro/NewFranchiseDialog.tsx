@@ -23,7 +23,7 @@ import {
 import {
   Shield, TrendingUp, Crown, Gem, Check,
   QrCode, CreditCard, Eye, EyeOff, Copy, ChevronLeft, Building2,
-  Plus, AlertTriangle, X, Loader2, BarChart3,
+  Plus, AlertTriangle, X, Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { loadStripe } from "@stripe/stripe-js";
@@ -32,7 +32,7 @@ import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader"
 import { openWhatsAppLink } from "@/lib/whatsapp";
 import { validateCoupon, type DiscountPreview } from "@/lib/api/coupons";
 import { useFranchise } from "@/contexts/FranchiseContext";
-import { ContractScreen } from "@/components/screens/ContractScreen";
+
 
 import timolLogo from "@/assets/favicon-timol-azul-escuro.svg";
 import franquiaBronze from "@/assets/franquia-bronze.svg";
@@ -214,7 +214,7 @@ export function NewFranchiseDialog({
   const [couponError, setCouponError] = useState("");
   const [balanceToUse, setBalanceToUse] = useState("");
   const bancoBalance = MOCK_BANCO_BALANCE;
-  const [isContractOpen, setIsContractOpen] = useState(false);
+  
 
   // Payment step state
   const [method, setMethod] = useState<PaymentMethod>(isBrazilian ? "pix" : "credit-card");
@@ -256,7 +256,7 @@ export function NewFranchiseDialog({
       setCardNumber(""); setCardName(""); setCardExpiry(""); setCardCvv("");
       setErrors({}); setPaymentResult(null); setGeneratedFranchiseId(null);
       setContractAccepted(false); setCouponCode(""); setCouponDiscount(null); setCouponError("");
-      setBalanceToUse(""); setIsContractOpen(false);
+      setBalanceToUse("");
     }
     onOpenChange(v);
   };
@@ -473,8 +473,11 @@ export function NewFranchiseDialog({
 
   // Format balance input to always show ,00
   const handleBalanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/[^\d.,]/g, "").replace(",", ".");
-    setBalanceToUse(val);
+    // Only allow digits
+    const raw = e.target.value.replace(/[^\d]/g, "");
+    if (!raw) { setBalanceToUse(""); return; }
+    const num = parseInt(raw, 10);
+    setBalanceToUse(num.toFixed(2).replace(".", ","));
   };
 
   const handleBalanceBlur = () => {
@@ -508,7 +511,7 @@ export function NewFranchiseDialog({
                 <div className="bg-primary/5 rounded-lg p-4">
                   <p className="text-sm text-foreground leading-relaxed">
                     Expandir sua rede com uma nova franquia é uma excelente estratégia para
-                    <strong> multiplicar seus ganhos</strong>! <BarChart3 className="inline h-4 w-4 text-primary -translate-y-px" />
+                    <strong> multiplicar seus ganhos</strong>!
                   </p>
                 </div>
 
@@ -581,7 +584,7 @@ export function NewFranchiseDialog({
                 </button>
                 <DialogTitle className="text-xl">Escolha sua Franquia</DialogTitle>
               </div>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-muted-foreground mt-1 pl-7">
                 Patrocinador: <strong className="text-foreground">ID {sponsorId}</strong>. Selecione qual franquia faz mais sentido para você.
               </p>
 
@@ -737,7 +740,7 @@ export function NewFranchiseDialog({
                 </button>
                 <DialogTitle className="text-xl">Resumo da Compra</DialogTitle>
               </div>
-              <p className="text-sm text-muted-foreground text-left mt-1">
+              <p className="text-sm text-muted-foreground text-left mt-1 pl-7">
                 Confira os detalhes antes de prosseguir.
               </p>
 
@@ -752,9 +755,9 @@ export function NewFranchiseDialog({
                       couponAmount > 0 ? (
                         <div className="text-right">
                           <span className="text-sm text-muted-foreground relative">
-                            <span className="relative inline-block">
+                          <span className="relative inline-block">
                               {formatPrice(price)}
-                              <span className="absolute left-0 right-0 top-1/2 h-[2px] bg-destructive -rotate-6" />
+                              <span className="absolute left-0 right-0 top-1/2 h-[2px] bg-green-500 -rotate-6" />
                             </span>
                           </span>
                           <br />
@@ -802,7 +805,7 @@ export function NewFranchiseDialog({
                   {couponError && <p className="text-xs text-destructive">{couponError}</p>}
                   {couponDiscount && (
                     <p className="text-xs text-green-600 font-medium">
-                      Desconto aplicado: -{formatPrice(couponDiscount.discountAmount)}
+                      Desconto aplicado: {formatPrice(couponDiscount.discountAmount)}
                     </p>
                   )}
                 </div>
@@ -812,7 +815,7 @@ export function NewFranchiseDialog({
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium">Usar saldo do Banco Timol</Label>
-                      <span className="text-sm text-muted-foreground">Disponível: {formatPrice(bancoBalance)}</span>
+                      <span className="text-sm text-muted-foreground">Disponível {formatPrice(bancoBalance)}</span>
                     </div>
                     <div className="relative">
                       <Input
@@ -849,7 +852,7 @@ export function NewFranchiseDialog({
                     <>
                       <div className="flex justify-between items-center text-muted-foreground">
                         <span>Saldo utilizado</span>
-                        <span>-{formatPrice(parsedBalance)}</span>
+                        <span>({formatPrice(parsedBalance)})</span>
                       </div>
                       <div className="flex justify-between items-center font-bold text-base">
                         <span>Valor restante a pagar</span>
@@ -880,7 +883,7 @@ export function NewFranchiseDialog({
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        setIsContractOpen(true);
+                        window.open("/contrato", "_blank");
                       }}
                     >
                       Contrato de Franquia
@@ -1132,12 +1135,11 @@ export function NewFranchiseDialog({
                 <ConfirmRow label="Patrocinador" value={`ID ${sponsorId}`} />
                 <ConfirmRow label="Valor da franquia" value={formatPrice(price)} />
                 {couponAmount > 0 && (
-                  <ConfirmRow label="Desconto cupom" value={`-${formatPrice(couponAmount)}`} />
+                  <ConfirmRow label="Desconto cupom" value={`(${formatPrice(couponAmount)})`} />
                 )}
                 {paymentResult?.balanceUsed && paymentResult.balanceUsed > 0 && (
-                  <ConfirmRow label="Saldo Banco Timol" value={`-${formatPrice(paymentResult.balanceUsed)}`} />
+                  <ConfirmRow label="Saldo Banco Timol" value={`(${formatPrice(paymentResult.balanceUsed)})`} />
                 )}
-                <Separator className="my-1" />
                 {paymentResult?.method === "credit-card" && paymentResult.cardLast4 && (
                   <>
                     <ConfirmRow label="Cartão" value={`•••• ${paymentResult.cardLast4}`} />
@@ -1158,13 +1160,6 @@ export function NewFranchiseDialog({
                 )}
               </div>
 
-              <div className="w-full bg-muted/50 rounded-lg border border-border/60 p-3 text-center">
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Sua nova franquia já está disponível! Acesse ela no <strong className="text-foreground">cabeçalho</strong>, 
-                  clicando na <strong className="text-foreground">setinha de seleção de IDs</strong> abaixo do seu nome.
-                </p>
-              </div>
-
               <Button onClick={() => handleClose(false)} className="w-full max-w-[200px]">
                 Fechar
               </Button>
@@ -1173,8 +1168,6 @@ export function NewFranchiseDialog({
         </DialogContent>
       </Dialog>
 
-      {/* Contract modal */}
-      {isContractOpen && <ContractScreen mode="modal" onClose={() => setIsContractOpen(false)} />}
 
       {/* In-person payment dialog */}
       <Dialog open={showInPersonPopup} onOpenChange={setShowInPersonPopup}>
