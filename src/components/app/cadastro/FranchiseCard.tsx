@@ -117,7 +117,7 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
     .map((p) => ({
       franchiseId: p.franchiseId,
       planCode: p.planCode ?? "bronze",
-      sponsor: `${userName} (ID ${sponsorIdFromContext(p, contextProfiles)})`,
+      sponsor: `ID ${franchiseId}`,
       registrationDate: new Date().toLocaleDateString("pt-BR"),
       qualification: "consultor",
       activeUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
