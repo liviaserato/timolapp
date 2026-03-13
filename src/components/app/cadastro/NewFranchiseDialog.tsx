@@ -469,8 +469,8 @@ export function NewFranchiseDialog({
               <div className="space-y-3 mt-1">
                 <div className="bg-primary/5 rounded-lg p-4">
                   <p className="text-sm text-foreground leading-relaxed">
-                    Expandir sua rede com uma nova franquia é uma excelente estratégia para 
-                    <strong> multiplicar seus ganhos</strong> e fortalecer sua presença no mercado. 🚀
+                    Expandir sua rede com uma nova franquia é uma excelente estratégia para
+                    <strong> multiplicar seus ganhos</strong>! <CircleDollarSign className="inline h-4 w-4 text-primary -translate-y-px" />
                   </p>
                 </div>
 
