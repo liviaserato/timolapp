@@ -152,6 +152,9 @@ export default function Pedidos() {
       </header>
 
       <section className="flex flex-col gap-2">
+      {/* Resumo */}
+        <OrderSummaryCard orders={mockOrders} />
+
         {/* Banners de promoção */}
         <DashboardCard icon={Megaphone} title="Promoções">
           <div className="mt-2">
@@ -180,7 +183,7 @@ export default function Pedidos() {
           </div>
         </DashboardCard>
 
-        {/* Realizar Pedido + Resumo */}
+        {/* Realizar Pedido */}
         <DashboardCard icon={ShoppingCart} title="Novo Pedido">
           <div className="mt-2 flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <p className="text-sm text-muted-foreground flex-1">
@@ -192,9 +195,6 @@ export default function Pedidos() {
             </Button>
           </div>
         </DashboardCard>
-
-      {/* Resumo */}
-        <OrderSummaryCard orders={mockOrders} />
 
         {/* Histórico de Pedidos */}
         <DashboardCard icon={Clock} title="Histórico de Pedidos">
