@@ -164,6 +164,11 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
       return;
     }
 
+    // Block step 2 if email is taken or still checking
+    if (step === 2 && (emailStatus === "taken" || emailStatus === "checking")) {
+      return;
+    }
+
     setStep((s) => Math.min(s + 1, TOTAL_STEPS));
   };
 
