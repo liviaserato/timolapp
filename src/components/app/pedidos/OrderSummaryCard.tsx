@@ -255,7 +255,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
           {/* KPI grid — 3 cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {/* Produtos adquiridos */}
-            <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
+            <div className="rounded-lg border border-app-card-border px-6 py-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
                 <Package className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground leading-tight">Produtos adquiridos</span>
@@ -267,7 +267,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
               {visible ? (
                 <div className="w-full space-y-1">
                   {top3.map(([name, qty]) => (
-                    <div key={name} className="flex items-center justify-between text-[11px] px-1">
+                    <div key={name} className="flex items-center justify-between text-[11px] px-3">
                       <span className="text-muted-foreground truncate mr-1">{name}</span>
                       <span className="font-semibold text-foreground shrink-0">{qty}x</span>
                     </div>
@@ -276,7 +276,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                     <button
                       type="button"
                       onClick={() => setShowAllProducts(true)}
-                      className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5 px-1"
+                      className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5 px-3"
                     >
                       Ver todos <ChevronRight className="h-2.5 w-2.5" />
                     </button>
@@ -292,7 +292,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             </div>
 
             {/* Franquias cadastradas */}
-            <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
+            <div className="rounded-lg border border-app-card-border px-6 py-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
                 <Users className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground leading-tight">Franquias cadastradas</span>
@@ -304,7 +304,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
               {visible ? (
                 <div className="w-full space-y-1">
                   {franchiseDistribution.map((f) => (
-                    <div key={f.type} className="flex items-center justify-between text-[11px] px-1">
+                    <div key={f.type} className="flex items-center justify-between text-[11px] px-3">
                       <div className="flex items-center gap-1.5">
                         <span className={cn("h-2 w-2 rounded-full shrink-0", f.dotColor)} />
                         <span className="text-muted-foreground">{f.type}</span>
@@ -323,7 +323,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             </div>
 
             {/* Bônus e Pontos */}
-            <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
+            <div className="rounded-lg border border-app-card-border px-6 py-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Award className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground leading-tight">Bônus gerados</span>
@@ -442,7 +442,7 @@ function MiniCard({
   valueClass?: string;
 }) {
   return (
-    <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
+    <div className="rounded-lg border border-app-card-border px-6 py-3 flex flex-col items-center text-center">
       <div className="flex items-center gap-1.5 mb-1">
         <Icon className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
         <span className="text-sm text-muted-foreground leading-tight">{label}</span>
