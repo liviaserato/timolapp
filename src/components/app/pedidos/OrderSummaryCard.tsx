@@ -74,7 +74,7 @@ type PeriodMode = "30d" | "month" | "custom";
 
 export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
   const [showAllProducts, setShowAllProducts] = useState(false);
-  const [showFranchiseDetail, setShowFranchiseDetail] = useState(false);
+  const [showFranchiseDetail] = [false]; // kept for potential future use
   const [visible, setVisible] = useState(true);
 
   // Period state
