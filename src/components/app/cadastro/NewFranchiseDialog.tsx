@@ -802,7 +802,7 @@ export function NewFranchiseDialog({
                   {couponError && <p className="text-xs text-destructive">{couponError}</p>}
                   {couponDiscount && (
                     <p className="text-xs text-green-600 font-medium">
-                      Desconto aplicado: -{formatPrice(couponDiscount.discountAmount)}
+                      Desconto aplicado: {formatPrice(couponDiscount.discountAmount)}
                     </p>
                   )}
                 </div>
