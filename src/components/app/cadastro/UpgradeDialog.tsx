@@ -567,7 +567,7 @@ export function UpgradeDialog({
                 </button>
                 <DialogTitle className="text-xl">Resumo da Compra</DialogTitle>
               </div>
-              <p className="text-sm text-muted-foreground mt-1 pl-7">
+              <p className="text-sm text-muted-foreground -mt-0.5 pl-7">
                 Confira os detalhes antes de prosseguir.
               </p>
 
