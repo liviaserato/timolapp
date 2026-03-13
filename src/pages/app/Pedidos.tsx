@@ -11,6 +11,7 @@ import {
   Megaphone,
   Users,
   BookOpen,
+  ExternalLink,
 } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
@@ -31,20 +32,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 /* ── Mock data ── */
 
@@ -94,29 +88,21 @@ const mockOrders: Order[] = [
   },
 ];
 
-const statusConfig: Record<OrderStatus, { label: string; shortLabel: string; icon: React.ElementType; color: string }> = {
-  pendente: { label: "Pendente", shortLabel: "Pend.", icon: Clock, color: "bg-amber-100 text-amber-700 border-amber-200" },
-  confirmado: { label: "Confirmado", shortLabel: "Conf.", icon: CheckCircle2, color: "bg-blue-100 text-blue-700 border-blue-200" },
-  enviado: { label: "Enviado", shortLabel: "Env.", icon: Truck, color: "bg-violet-100 text-violet-700 border-violet-200" },
-  entregue: { label: "Entregue", shortLabel: "Entr.", icon: CheckCircle2, color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
-  cancelado: { label: "Cancelado", shortLabel: "Canc.", icon: XCircle, color: "bg-red-100 text-red-700 border-red-200" },
+const statusConfig: Record<OrderStatus, { label: string; icon: React.ElementType; badgeColor: string; borderColor: string }> = {
+  pendente:   { label: "Pendente",   icon: Clock,        badgeColor: "bg-amber-100 text-amber-700 border-amber-200",     borderColor: "border-l-gray-400" },
+  confirmado: { label: "Confirmado", icon: CheckCircle2,  badgeColor: "bg-blue-100 text-blue-700 border-blue-200",       borderColor: "border-l-blue-500" },
+  enviado:    { label: "Enviado",    icon: Truck,         badgeColor: "bg-amber-100 text-amber-700 border-amber-200",    borderColor: "border-l-amber-400" },
+  entregue:   { label: "Entregue",   icon: CheckCircle2,  badgeColor: "bg-emerald-100 text-emerald-700 border-emerald-200", borderColor: "border-l-emerald-500" },
+  cancelado:  { label: "Cancelado",  icon: XCircle,       badgeColor: "bg-red-100 text-red-700 border-red-200",          borderColor: "border-l-red-500" },
 };
 
-function StatusBadge({ status, compact = false }: { status: OrderStatus; compact?: boolean }) {
+function StatusBadge({ status }: { status: OrderStatus }) {
   const cfg = statusConfig[status];
   const Icon = cfg.icon;
-
   return (
-    <Badge
-      variant="outline"
-      className={cn(
-        "font-medium border justify-center max-w-full",
-        compact ? "text-[10px] px-1.5 py-0" : "gap-1 text-[11px]",
-        cfg.color,
-      )}
-    >
-      {!compact && <Icon className="h-3 w-3" />}
-      {compact ? cfg.shortLabel : cfg.label}
+    <Badge variant="outline" className={cn("font-medium border gap-1 text-[11px]", cfg.badgeColor)}>
+      <Icon className="h-3 w-3" />
+      {cfg.label}
     </Badge>
   );
 }
@@ -129,6 +115,13 @@ function formatDate(d: string) {
   return new Date(d + "T00:00:00").toLocaleDateString("pt-BR");
 }
 
+function handleTrackingClick(e: React.MouseEvent, tracking: string) {
+  e.stopPropagation();
+  navigator.clipboard.writeText(tracking);
+  toast.success("Código copiado!", { description: tracking });
+  window.open(`https://www.linkcorreios.com.br/?id=${tracking}`, "_blank");
+}
+
 /* ── Component ── */
 
 export default function Pedidos() {
@@ -136,14 +129,24 @@ export default function Pedidos() {
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [detailOrder, setDetailOrder] = useState<Order | null>(null);
 
-  const filtered = mockOrders.filter((o) => {
-    const matchSearch =
-      o.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      o.items.some((i) => i.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchStatus = statusFilter === "todos" || o.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
+  const filtered = mockOrders
+    .filter((o) => {
+      const matchSearch =
+        o.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        o.items.some((i) => i.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchStatus = statusFilter === "todos" || o.status === statusFilter;
+      return matchSearch && matchStatus;
+    })
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
+  // Group by month
+  const grouped = filtered.reduce<Record<string, Order[]>>((acc, order) => {
+    const d = new Date(order.date + "T00:00:00");
+    const key = d.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(order);
+    return acc;
+  }, {});
 
   return (
     <div>
@@ -176,7 +179,6 @@ export default function Pedidos() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              {/* Wide touch strips with chevron centered */}
               <CarouselPrevious className="left-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-black/5 text-white/70 drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
               <CarouselNext className="right-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-black/5 text-white/70 drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
             </Carousel>
@@ -206,8 +208,8 @@ export default function Pedidos() {
           </div>
         </DashboardCard>
 
-        {/* Histórico de Pedidos */}
-        <DashboardCard icon={ShoppingCart} title="Pedidos">
+        {/* Pedidos em Cards */}
+        <DashboardCard icon={Package} title="Pedidos">
           {/* Filtros */}
           <div className="mt-2 flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
@@ -235,102 +237,55 @@ export default function Pedidos() {
             </Select>
           </div>
 
-          {/* Tabela */}
-          <div className="mt-3 rounded-md border border-app-card-border overflow-hidden overflow-x-hidden">
-            <Table className="w-full table-fixed">
-              <TableHeader>
-                <TableRow className="bg-[hsl(var(--table-header))]">
-                  <TableHead className="w-[38%] text-xs font-semibold px-1.5 sm:px-2 md:px-3 lg:px-4">Pedido</TableHead>
-                  <TableHead className="w-[20%] text-xs font-semibold hidden sm:table-cell px-1.5 sm:px-2 md:px-3 lg:px-4">Data</TableHead>
-                  <TableHead className="w-[14%] text-xs font-semibold hidden lg:table-cell px-1.5 sm:px-2 md:px-3 lg:px-4">Itens</TableHead>
-                  <TableHead className="w-[20%] text-xs font-semibold text-right px-1.5 sm:px-2 md:px-3 lg:px-4">Total</TableHead>
-                  <TableHead className="w-[22%] sm:w-[18%] text-xs font-semibold text-center px-1 sm:px-2 md:px-3 lg:px-4">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filtered.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center text-sm text-muted-foreground py-8">
-                      Nenhum pedido encontrado.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filtered.map((order) => (
-                    <TableRow key={order.id} className="cursor-pointer hover:bg-muted/40" onClick={() => setDetailOrder(order)}>
-                      <TableCell className="text-xs font-medium px-1.5 sm:px-2 md:px-3 lg:px-4">
-                        <div className="flex flex-col leading-tight">
-                          <span>{order.number}</span>
-                          <span className="text-[10px] text-muted-foreground sm:hidden">{formatDate(order.date)}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground hidden sm:table-cell px-1.5 sm:px-2 md:px-3 lg:px-4">{formatDate(order.date)}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground hidden lg:table-cell px-1.5 sm:px-2 md:px-3 lg:px-4">
-                        {order.items.length} {order.items.length === 1 ? "item" : "itens"}
-                      </TableCell>
-                      <TableCell className="text-xs font-semibold text-right whitespace-nowrap px-1.5 sm:px-2 md:px-3 lg:px-4">
-                        {formatCurrency(order.total)}
-                      </TableCell>
-                      <TableCell className="text-center px-1 sm:px-2 md:px-3 lg:px-4">
-                        <span className="sm:hidden inline-flex"><StatusBadge status={order.status} compact /></span>
-                        <span className="hidden sm:inline-flex"><StatusBadge status={order.status} /></span>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </DashboardCard>
-
-        {/* Cards de Pedidos (agrupados por mês) */}
-        <DashboardCard icon={Package} title="Pedidos (Cards)">
-          <div className="mt-2 space-y-4">
-            {Object.entries(
-              filtered.reduce<Record<string, Order[]>>((acc, order) => {
-                const d = new Date(order.date + "T00:00:00");
-                const key = d.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
-                if (!acc[key]) acc[key] = [];
-                acc[key].push(order);
-                return acc;
-              }, {})
-            ).map(([month, orders]) => (
+          {/* Cards agrupados por mês */}
+          <div className="mt-4 space-y-6">
+            {Object.entries(grouped).map(([month, orders]) => (
               <div key={month}>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-px flex-1 bg-border" />
-                  <span className="text-xs font-semibold text-primary capitalize">{month}</span>
-                  <div className="h-px flex-1 bg-border" />
-                </div>
+                <h3 className="text-sm font-bold text-primary capitalize mb-3">{month}</h3>
                 <div className="space-y-2">
-                  {orders.map((order) => (
-                    <div
-                      key={order.id}
-                      className="rounded-lg border border-app-card-border bg-card p-3 cursor-pointer hover:bg-muted/40 transition-colors"
-                      onClick={() => setDetailOrder(order)}
-                    >
-                      {/* Row 1: date + order number */}
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs text-muted-foreground">{formatDate(order.date)}</span>
-                        <span className="text-xs font-bold text-primary">{order.number}</span>
-                      </div>
-                      {/* Row 2: items summary + total */}
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-sm text-foreground truncate mr-2">
-                          {order.items.map((i) => `${i.qty}x ${i.name}`).join(", ")}
-                        </span>
-                        <span className="text-sm font-bold whitespace-nowrap">{formatCurrency(order.total)}</span>
-                      </div>
-                      {/* Row 3: status + tracking */}
-                      <div className="flex items-center justify-between">
-                        <StatusBadge status={order.status} />
-                        {order.tracking && (
-                          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                            <Truck className="h-3 w-3" />
-                            <span className="font-mono">{order.tracking}</span>
-                          </div>
+                  {orders.map((order) => {
+                    const sortedItems = [...order.items].sort((a, b) => b.qty - a.qty);
+                    const itemsSummary = sortedItems.map((i) => `${i.qty}x ${i.name}`).join(", ");
+
+                    return (
+                      <div
+                        key={order.id}
+                        className={cn(
+                          "rounded-lg border border-app-card-border bg-card cursor-pointer hover:bg-muted/40 transition-colors overflow-hidden border-l-4",
+                          statusConfig[order.status].borderColor,
                         )}
+                        onClick={() => setDetailOrder(order)}
+                      >
+                        <div className="p-3 flex items-start justify-between gap-3">
+                          {/* Left side */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span className="text-base font-extrabold text-primary">{order.number}</span>
+                              <span className="text-[11px] text-muted-foreground">{formatDate(order.date)}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs text-muted-foreground truncate flex-1 min-w-0">{itemsSummary}</p>
+                              <span className="text-sm font-bold whitespace-nowrap">{formatCurrency(order.total)}</span>
+                              {order.status === "enviado" && order.tracking && (
+                                <button
+                                  onClick={(e) => handleTrackingClick(e, order.tracking!)}
+                                  className="flex items-center gap-0.5 text-primary hover:text-primary/80 transition-colors shrink-0"
+                                  title="Rastrear pedido"
+                                >
+                                  <Truck className="h-4 w-4" />
+                                  <ExternalLink className="h-3 w-3" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          {/* Right side: status */}
+                          <div className="shrink-0 pt-0.5">
+                            <StatusBadge status={order.status} />
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))}
