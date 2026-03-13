@@ -253,7 +253,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
           </div>
 
           {/* KPI grid — 3 cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Produtos adquiridos */}
             <div className="rounded-lg border border-app-card-border px-6 py-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
