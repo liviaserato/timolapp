@@ -1,21 +1,32 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Package,
   ShoppingBag,
   Award,
-  Star,
   Users,
   ChevronRight,
-  X,
+  ChevronLeft,
+  Calendar,
+  CalendarRange,
+  CalendarDays,
 } from "lucide-react";
+import { format, subDays, startOfMonth, endOfMonth, subMonths, addMonths, isAfter } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 
 /* ── Types ── */
@@ -52,29 +63,64 @@ function formatCurrency(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+type PeriodMode = "30d" | "month" | "custom";
+
 /* ── Component ── */
 
 export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
   const [showAllProducts, setShowAllProducts] = useState(false);
   const [showFranchiseDetail, setShowFranchiseDetail] = useState(false);
 
-  // Filter out cancelled orders for calculations
-  const activeOrders = orders.filter((o) => o.status !== "cancelado");
+  // Period state
+  const [mode, setMode] = useState<PeriodMode>("30d");
+  const [selectedMonth, setSelectedMonth] = useState(new Date());
+  const [customFrom, setCustomFrom] = useState<Date | undefined>(subDays(new Date(), 30));
+  const [customTo, setCustomTo] = useState<Date | undefined>(new Date());
+
+  const today = new Date();
+
+  // Compute date range
+  const { from, to } = useMemo(() => {
+    if (mode === "30d") {
+      return { from: subDays(today, 30), to: today };
+    }
+    if (mode === "month") {
+      const s = startOfMonth(selectedMonth);
+      const e = endOfMonth(selectedMonth);
+      return { from: s, to: isAfter(e, today) ? today : e };
+    }
+    // custom
+    return { from: customFrom || subDays(today, 30), to: customTo || today };
+  }, [mode, selectedMonth, customFrom, customTo]);
+
+  // Period label
+  const periodLabel = useMemo(() => {
+    if (mode === "30d") return "Últimos 30 dias";
+    if (mode === "month") return format(selectedMonth, "MMMM yyyy", { locale: ptBR }).replace(/^\w/, (c) => c.toUpperCase());
+    return `${format(from, "dd/MM/yy")} — ${format(to, "dd/MM/yy")}`;
+  }, [mode, selectedMonth, from, to]);
+
+  // Filter orders by period
+  const filteredOrders = useMemo(() => {
+    return orders.filter((o) => {
+      const d = new Date(o.date + "T00:00:00");
+      return d >= from && d <= to && o.status !== "cancelado";
+    });
+  }, [orders, from, to]);
 
   // 1) Pedidos realizados
-  const totalOrders = activeOrders.length;
+  const totalOrders = filteredOrders.length;
 
   // 2) Produtos adquiridos
   const productMap: Record<string, number> = {};
   let totalUnits = 0;
-  activeOrders.forEach((o) =>
+  filteredOrders.forEach((o) =>
     o.items.forEach((i) => {
       productMap[i.name] = (productMap[i.name] || 0) + i.qty;
       totalUnits += i.qty;
     })
   );
-  const sortedProducts = Object.entries(productMap)
-    .sort((a, b) => b[1] - a[1]);
+  const sortedProducts = Object.entries(productMap).sort((a, b) => b[1] - a[1]);
   const top3 = sortedProducts.slice(0, 3);
 
   // 3) Franquias cadastradas (mock)
@@ -86,87 +132,169 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
   ];
   const totalFranchises = franchiseDistribution.reduce((s, f) => s + f.count, 0);
 
-  // 4) Bônus gerados (mock — % of order total)
-  const totalSpent = activeOrders.reduce((s, o) => s + o.total, 0);
+  // 4) Bônus + Pontos (merged)
+  const totalSpent = filteredOrders.reduce((s, o) => s + o.total, 0);
   const bonusGenerated = totalSpent * 0.08;
-
-  // 5) Pontos gerados (mock — 1 point per R$10)
   const pointsGenerated = Math.floor(totalSpent / 10);
+
+  // Month navigation
+  const canGoForward = mode === "month" && isAfter(today, endOfMonth(selectedMonth));
 
   return (
     <>
       <DashboardCard icon={Package} title="Resumo">
-        <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-          {/* Pedidos realizados */}
-          <MiniCard
-            icon={ShoppingBag}
-            label="Pedidos realizados"
-            value={String(totalOrders)}
-            accent="text-primary"
-          />
-
-          {/* Produtos adquiridos */}
-          <div className="rounded-lg border border-app-card-border p-3 flex flex-col col-span-2 sm:col-span-1">
-            <div className="flex items-center gap-1.5 mb-1">
-              <Package className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="text-[10px] text-muted-foreground leading-tight">Produtos adquiridos</span>
+        {/* Period selector */}
+        <div className="mt-2 flex flex-col gap-2">
+          {/* Mode chips + period label */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <div className="flex items-center gap-1">
+              {([
+                { key: "30d", label: "30 dias", icon: CalendarDays },
+                { key: "month", label: "Mês", icon: Calendar },
+                { key: "custom", label: "Período", icon: CalendarRange },
+              ] as const).map((m) => (
+                <button
+                  key={m.key}
+                  type="button"
+                  onClick={() => {
+                    setMode(m.key);
+                    if (m.key === "custom" && !customFrom) {
+                      setCustomFrom(subDays(today, 30));
+                      setCustomTo(today);
+                    }
+                  }}
+                  className={cn(
+                    "flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors",
+                    mode === m.key
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted/60 text-muted-foreground hover:bg-muted"
+                  )}
+                >
+                  <m.icon className="h-3 w-3" />
+                  {m.label}
+                </button>
+              ))}
             </div>
-            <p className="text-xl font-bold text-emerald-600">{totalUnits}</p>
-            {top3.length > 0 && (
-              <div className="mt-1.5 space-y-0.5">
-                {top3.map(([name, qty], idx) => (
-                  <div key={name} className="flex items-center justify-between text-[10px]">
-                    <span className="text-muted-foreground truncate mr-1">
-                      {idx + 1}. {name}
-                    </span>
-                    <span className="font-semibold text-foreground shrink-0">{qty}x</span>
-                  </div>
-                ))}
+
+            {/* Month nav or date pickers */}
+            {mode === "month" && (
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => setSelectedMonth((p) => subMonths(p, 1))}
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                </Button>
+                <span className="text-xs font-medium text-foreground min-w-[120px] text-center capitalize">
+                  {format(selectedMonth, "MMMM yyyy", { locale: ptBR })}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  disabled={!canGoForward}
+                  onClick={() => setSelectedMonth((p) => addMonths(p, 1))}
+                >
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Button>
               </div>
             )}
-            {sortedProducts.length > 3 && (
-              <button
-                type="button"
-                onClick={() => setShowAllProducts(true)}
-                className="mt-1.5 text-[10px] text-primary hover:underline self-start flex items-center gap-0.5"
-              >
-                Ver todos <ChevronRight className="h-2.5 w-2.5" />
-              </button>
+
+            {mode === "custom" && (
+              <div className="flex items-center gap-1.5">
+                <DatePickerButton
+                  date={customFrom}
+                  onSelect={(d) => setCustomFrom(d)}
+                  maxDate={customTo || today}
+                  placeholder="Início"
+                />
+                <span className="text-xs text-muted-foreground">—</span>
+                <DatePickerButton
+                  date={customTo}
+                  onSelect={(d) => setCustomTo(d)}
+                  minDate={customFrom}
+                  maxDate={today}
+                  placeholder="Fim"
+                />
+              </div>
+            )}
+
+            {mode === "30d" && (
+              <span className="text-[11px] text-muted-foreground">{periodLabel}</span>
             )}
           </div>
 
-          {/* Franquias cadastradas */}
-          <button
-            type="button"
-            onClick={() => setShowFranchiseDetail(true)}
-            className="rounded-lg border border-app-card-border p-3 flex flex-col text-left hover:bg-muted/40 transition-colors group"
-          >
-            <div className="flex items-center gap-1.5 mb-1">
-              <Users className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="text-[10px] text-muted-foreground leading-tight">Franquias cadastradas</span>
-            </div>
-            <div className="flex items-baseline gap-1">
-              <p className="text-xl font-bold text-violet-600">{totalFranchises}</p>
-              <ChevronRight className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-          </button>
+          {/* KPI grid — 4 cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+            {/* Pedidos realizados */}
+            <MiniCard
+              icon={ShoppingBag}
+              label="Pedidos realizados"
+              value={String(totalOrders)}
+              accent="text-primary"
+            />
 
-          {/* Bônus gerados */}
-          <MiniCard
-            icon={Award}
-            label="Bônus gerados"
-            value={formatCurrency(bonusGenerated)}
-            accent="text-amber-600"
-            valueClass="text-base"
-          />
+            {/* Produtos adquiridos */}
+            <div className="rounded-lg border border-app-card-border p-3 flex flex-col">
+              <div className="flex items-center gap-1.5 mb-1">
+                <Package className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground leading-tight">Produtos adquiridos</span>
+              </div>
+              <p className="text-xl font-bold text-emerald-600">{totalUnits}</p>
+              {top3.length > 0 && (
+                <div className="mt-1.5 space-y-0.5">
+                  {top3.map(([name, qty], idx) => (
+                    <div key={name} className="flex items-center justify-between text-[10px]">
+                      <span className="text-muted-foreground truncate mr-1">
+                        {idx + 1}. {name}
+                      </span>
+                      <span className="font-semibold text-foreground shrink-0">{qty}x</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {sortedProducts.length > 3 && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllProducts(true)}
+                  className="mt-1.5 text-[10px] text-primary hover:underline self-start flex items-center gap-0.5"
+                >
+                  Ver todos <ChevronRight className="h-2.5 w-2.5" />
+                </button>
+              )}
+            </div>
 
-          {/* Pontos gerados */}
-          <MiniCard
-            icon={Star}
-            label="Pontos gerados"
-            value={pointsGenerated.toLocaleString("pt-BR")}
-            accent="text-blue-600"
-          />
+            {/* Franquias cadastradas */}
+            <button
+              type="button"
+              onClick={() => setShowFranchiseDetail(true)}
+              className="rounded-lg border border-app-card-border p-3 flex flex-col text-left hover:bg-muted/40 transition-colors group"
+            >
+              <div className="flex items-center gap-1.5 mb-1">
+                <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground leading-tight">Franquias cadastradas</span>
+              </div>
+              <div className="flex items-baseline gap-1">
+                <p className="text-xl font-bold text-violet-600">{totalFranchises}</p>
+                <ChevronRight className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            </button>
+
+            {/* Bônus e Pontos */}
+            <div className="rounded-lg border border-app-card-border p-3 flex flex-col">
+              <div className="flex items-center gap-1.5 mb-1">
+                <Award className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground leading-tight">Bônus e Pontos</span>
+              </div>
+              <p className="text-base font-bold text-amber-600">{formatCurrency(bonusGenerated)}</p>
+              <div className="flex items-center gap-1 mt-0.5">
+                <span className="text-[10px] text-muted-foreground">Pontos:</span>
+                <span className="text-xs font-semibold text-blue-600">{pointsGenerated.toLocaleString("pt-BR")}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </DashboardCard>
 
@@ -179,6 +307,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
               Produtos adquiridos
             </DialogTitle>
           </DialogHeader>
+          <p className="text-xs text-muted-foreground -mt-2 mb-1">{periodLabel}</p>
           <div className="space-y-1.5 max-h-[50vh] overflow-y-auto">
             {sortedProducts.map(([name, qty], idx) => (
               <div
@@ -192,6 +321,9 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                 <span className="font-bold text-foreground">{qty}x</span>
               </div>
             ))}
+            {sortedProducts.length === 0 && (
+              <p className="text-center text-sm text-muted-foreground py-4">Nenhum produto no período.</p>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -205,6 +337,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
               Franquias cadastradas
             </DialogTitle>
           </DialogHeader>
+          <p className="text-xs text-muted-foreground -mt-2 mb-1">{periodLabel}</p>
           <div className="space-y-2">
             {franchiseDistribution.map((f) => (
               <div
@@ -225,6 +358,53 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+/* ── Date Picker Button ── */
+
+function DatePickerButton({
+  date,
+  onSelect,
+  minDate,
+  maxDate,
+  placeholder,
+}: {
+  date: Date | undefined;
+  onSelect: (d: Date | undefined) => void;
+  minDate?: Date;
+  maxDate?: Date;
+  placeholder: string;
+}) {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className={cn(
+            "h-7 px-2 text-[11px] font-normal w-[100px] justify-start",
+            !date && "text-muted-foreground"
+          )}
+        >
+          <Calendar className="h-3 w-3 mr-1 shrink-0" />
+          {date ? format(date, "dd/MM/yy") : placeholder}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+        <CalendarPicker
+          mode="single"
+          selected={date}
+          onSelect={onSelect}
+          disabled={(d) => {
+            if (maxDate && d > maxDate) return true;
+            if (minDate && d < minDate) return true;
+            return false;
+          }}
+          initialFocus
+          className="p-3 pointer-events-auto"
+        />
+      </PopoverContent>
+    </Popover>
   );
 }
 
