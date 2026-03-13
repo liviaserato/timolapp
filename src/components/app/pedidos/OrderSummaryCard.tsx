@@ -130,10 +130,10 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
 
   // 3) Franquias cadastradas (mock)
   const franchiseDistribution: FranchiseDistribution[] = [
-    { type: "Bronze", count: 3, color: "bg-amber-700/15 text-amber-800 border-amber-300" },
-    { type: "Prata", count: 2, color: "bg-slate-200/60 text-slate-700 border-slate-300" },
-    { type: "Ouro", count: 1, color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
-    { type: "Platina", count: 1, color: "bg-cyan-100 text-cyan-700 border-cyan-300" },
+    { type: "Platina", count: 1, dotColor: "bg-cyan-500" },
+    { type: "Ouro", count: 1, dotColor: "bg-yellow-500" },
+    { type: "Prata", count: 2, dotColor: "bg-slate-400" },
+    { type: "Bronze", count: 3, dotColor: "bg-amber-700" },
   ];
   const totalFranchises = franchiseDistribution.reduce((s, f) => s + f.count, 0);
 
