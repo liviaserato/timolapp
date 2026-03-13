@@ -14,7 +14,8 @@ import {
   EyeOff,
 } from "lucide-react";
 import { format, subDays, startOfMonth, endOfMonth, subMonths, addMonths, isAfter } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR, enUS, es } from "date-fns/locale";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { DashboardCard } from "@/components/app/DashboardCard";
 
 import { Button } from "@/components/ui/button";
