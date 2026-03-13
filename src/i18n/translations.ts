@@ -1155,6 +1155,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "login.resumeRegistration": "Completar mi registro",
     "login.error.invalid": "Usuario o contraseña incorrectos. Intente nuevamente.",
     "login.error.locked": "Demasiados intentos. Inténtelo nuevamente en unos minutos.",
+    "login.error.systemDenied": "No tiene permiso para acceder a este sistema.",
 
     // Forgot password popup
     "forgotPw.title": "Recuperar Contraseña",
