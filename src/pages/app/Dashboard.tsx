@@ -1,5 +1,6 @@
-import { Hand, DollarSign, Target, CalendarDays, Newspaper, ChevronLeft, ChevronRight } from "lucide-react";
+import { Hand, DollarSign, Target, CalendarDays, Newspaper } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
+import { OrderSummaryCard } from "@/components/app/pedidos/OrderSummaryCard";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Carousel,
