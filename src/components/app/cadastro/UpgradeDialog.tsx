@@ -379,7 +379,7 @@ export function UpgradeDialog({
                   <img src={timolLogo} alt="Timol" className="h-10 w-10 mx-auto" />
                 </div>
                 <DialogTitle className="text-xl text-center">Upgrade de Franquia</DialogTitle>
-                <DialogDescription className="text-center text-sm leading-relaxed mt-2">
+                <DialogDescription className="text-center text-sm leading-relaxed mt-0.5">
                   Está na hora de subir de nível!
                 </DialogDescription>
               </DialogHeader>
