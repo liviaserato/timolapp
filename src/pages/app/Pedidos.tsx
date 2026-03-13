@@ -264,12 +264,9 @@ export default function Pedidos() {
                               <span className="text-base font-extrabold text-primary">{order.number}</span>
                               <span className="text-[11px] text-muted-foreground">{formatDate(order.date)}</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <p className="text-xs text-muted-foreground truncate flex-1 min-w-0">{itemsSummary}</p>
-                              <span className="text-sm font-bold whitespace-nowrap">{formatCurrency(order.total)}</span>
-                            </div>
+                            <p className="text-xs text-muted-foreground truncate">{itemsSummary}</p>
                           </div>
-                          {/* Right side: status + tracking */}
+                          {/* Right side: status + value */}
                           <div className="shrink-0 flex flex-col items-end gap-1 pt-0.5">
                             <div className="flex items-center gap-1.5">
                               {order.status === "enviado" && order.tracking && (
@@ -284,6 +281,7 @@ export default function Pedidos() {
                               )}
                               <StatusBadge status={order.status} />
                             </div>
+                            <span className="text-sm font-bold whitespace-nowrap">{formatCurrency(order.total)}</span>
                           </div>
                         </div>
                       </div>
