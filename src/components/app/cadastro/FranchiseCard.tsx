@@ -22,7 +22,7 @@ function getFranchiseStatusInfo(activeUntil: string) {
       icon: ShieldX,
       colorClass: "text-destructive",
       bgClass: "bg-destructive/8 border-destructive/20",
-      message: "Franquia inativa. Bônus e pontos não são gerados. Adquira produtos para reativá-la!",
+      message: "Bônus e pontos não estão sendo gerados. Adquira produtos ativáveis para reativar sua franquia!",
       label: `Inativa desde ${expDate.toLocaleDateString("pt-BR")}`,
     };
   }
