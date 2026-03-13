@@ -23,7 +23,7 @@ import {
 import {
   Shield, TrendingUp, Crown, Gem, Check,
   QrCode, CreditCard, Eye, EyeOff, Copy, ChevronLeft, Building2,
-  Plus, AlertTriangle, X, Loader2, BarChart3,
+  Plus, AlertTriangle, X, Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { loadStripe } from "@stripe/stripe-js";
