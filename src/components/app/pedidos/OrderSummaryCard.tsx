@@ -248,7 +248,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             )}
 
             {mode === "30d" && (
-              <span className="text-sm sm:text-[11px] text-muted-foreground text-center w-full sm:w-auto block sm:inline">{periodLabel}</span>
+              <span className="text-sm text-muted-foreground text-center w-full sm:w-auto block sm:inline">{periodLabel}</span>
             )}
           </div>
 
