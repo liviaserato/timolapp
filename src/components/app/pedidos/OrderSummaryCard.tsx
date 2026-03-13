@@ -442,7 +442,7 @@ function MiniCard({
   valueClass?: string;
 }) {
   return (
-    <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
+    <div className="rounded-lg border border-app-card-border px-6 py-3 flex flex-col items-center text-center">
       <div className="flex items-center gap-1.5 mb-1">
         <Icon className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
         <span className="text-sm text-muted-foreground leading-tight">{label}</span>
