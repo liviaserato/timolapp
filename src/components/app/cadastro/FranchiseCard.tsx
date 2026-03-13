@@ -2,9 +2,10 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Gem, ArrowUp, ChevronLeft, ChevronRight, ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
+import { Gem, ArrowUp, Plus, ChevronLeft, ChevronRight, ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UpgradeDialog } from "./UpgradeDialog";
+import { NewFranchiseDialog } from "./NewFranchiseDialog";
 
 /* ── franchise status helper ── */
 
