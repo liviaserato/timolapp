@@ -393,16 +393,6 @@ export function UpgradeDialog({
                   </p>
                 </div>
 
-                <div className="bg-warning/10 border border-warning/30 rounded-lg p-3.5 text-center">
-                  <div className="flex items-center justify-center gap-1.5 mb-1">
-                    <AlertTriangle className="h-4 w-4 text-warning" />
-                    <strong className="text-sm text-warning">Importante</strong>
-                  </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    No upgrade, seu ID permanece o mesmo.
-                  </p>
-                </div>
-
                 {hasMultipleEligible && (
                   <div className="space-y-2 text-center">
                     <Label className="text-sm font-medium">
@@ -431,6 +421,10 @@ export function UpgradeDialog({
                     </span>
                   </div>
                 )}
+
+                <p className="text-xs text-muted-foreground text-center leading-relaxed">
+                  No upgrade, seu ID permanece o mesmo.
+                </p>
 
                 <p className="text-sm text-center text-foreground font-medium pt-1">
                   Está pronto para acelerar seus ganhos?
