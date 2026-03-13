@@ -812,7 +812,7 @@ export function NewFranchiseDialog({
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium">Usar saldo do Banco Timol</Label>
-                      <span className="text-sm text-muted-foreground">Disponível: {formatPrice(bancoBalance)}</span>
+                      <span className="text-sm text-muted-foreground">Disponível {formatPrice(bancoBalance)}</span>
                     </div>
                     <div className="relative">
                       <Input
