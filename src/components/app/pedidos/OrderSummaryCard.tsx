@@ -257,10 +257,10 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             />
 
             {/* Produtos adquiridos */}
-            <div className="rounded-lg border border-app-card-border p-3 flex flex-col">
+            <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
                 <Package className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground leading-tight">Produtos adquiridos</span>
+                <span className="text-xs text-muted-foreground leading-tight">Produtos adquiridos</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? totalUnits : HIDDEN}</p>
               {visible && top3.length > 0 && (
@@ -298,13 +298,13 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
               type="button"
               onClick={() => visible && setShowFranchiseDetail(true)}
               className={cn(
-                "rounded-lg border border-app-card-border p-3 flex flex-col text-left transition-colors group",
+                "rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center transition-colors group",
                 visible && "hover:bg-muted/40 cursor-pointer"
               )}
             >
               <div className="flex items-center gap-1.5 mb-1">
                 <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground leading-tight">Franquias cadastradas</span>
+                <span className="text-xs text-muted-foreground leading-tight">Franquias cadastradas</span>
               </div>
               <div className="flex items-baseline gap-1">
                 <p className="text-xl font-bold text-primary">{visible ? totalFranchises : HIDDEN}</p>
@@ -313,21 +313,21 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             </button>
 
             {/* Bônus e Pontos */}
-            <div className="rounded-lg border border-app-card-border p-3 flex flex-col">
+            <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               {/* Bônus */}
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Award className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground leading-tight">Bônus gerados</span>
+                <span className="text-xs text-muted-foreground leading-tight">Bônus gerados</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? formatCurrency(bonusGenerated) : HIDDEN}</p>
 
               {/* Divider */}
-              <div className="my-1.5 border-t border-app-card-border/50" />
+              <div className="my-1.5 w-8 border-t border-app-card-border/50" />
 
               {/* Pontos */}
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Star className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground leading-tight">Pontos gerados</span>
+                <span className="text-xs text-muted-foreground leading-tight">Pontos gerados</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? pointsGenerated.toLocaleString("pt-BR") : HIDDEN}</p>
             </div>
@@ -461,10 +461,10 @@ function MiniCard({
   valueClass?: string;
 }) {
   return (
-    <div className="rounded-lg border border-app-card-border p-3 flex flex-col">
+    <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
       <div className="flex items-center gap-1.5 mb-1">
         <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-        <span className="text-[10px] text-muted-foreground leading-tight">{label}</span>
+        <span className="text-xs text-muted-foreground leading-tight">{label}</span>
       </div>
       <p className={cn("font-bold", accent, valueClass || "text-xl")}>{value}</p>
     </div>
