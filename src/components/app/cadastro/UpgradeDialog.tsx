@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -22,13 +23,14 @@ import {
 import {
   Shield, TrendingUp, Crown, Gem, Check, Rocket,
   QrCode, CreditCard, Eye, EyeOff, Copy, ChevronLeft, Building2,
-  AlertTriangle,
+  AlertTriangle, X, Loader2, ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { loadStripe } from "@stripe/stripe-js";
 import { supabase } from "@/integrations/supabase/client";
 import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 import { openWhatsAppLink } from "@/lib/whatsapp";
+import { validateCoupon, type DiscountPreview } from "@/lib/api/coupons";
 
 import timolLogo from "@/assets/favicon-timol-azul-escuro.svg";
 import franquiaBronze from "@/assets/franquia-bronze.svg";
@@ -120,6 +122,9 @@ const PIX_DISCOUNT = 0.05;
 const STRIPE_PUBLISHABLE_KEY = "pk_live_51RlasdFteIQdimMI2ZGm9VfZ7KDmY1jUJxTqe0IdTaigPV0S6L97Yj0TGySaEzZ7De96cCS2qVNayXybUogpnFlz00VeYyJ5ZR";
 const PIX_CODE = "00020126580014BR.GOV.BCB.PIX0136timol-pix-key@timol.com.br5204000053039865802BR5913TIMOL SISTEMA6009SAO PAULO62070503***6304ABCD";
 
+const MOCK_COUPONS: Record<string, number> = { TESTE: 10 };
+const MOCK_BANCO_BALANCE = 450.0;
+
 function detectCardBrand(number: string): string {
   const clean = number.replace(/\s/g, "");
   if (/^4/.test(clean)) return "visa";
@@ -148,6 +153,23 @@ const formatExpiry = (v: string) => {
   return d.length >= 3 ? d.slice(0, 2) + "/" + d.slice(2) : d;
 };
 
+function splitPrice(price: number, locale: string): { integer: string; decimal: string } {
+  const formatted = price.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const sep = locale === "en-US" ? "." : ",";
+  const idx = formatted.lastIndexOf(sep);
+  if (idx === -1) return { integer: formatted, decimal: "00" };
+  return { integer: formatted.slice(0, idx), decimal: formatted.slice(idx + 1) };
+}
+
+function ConfirmRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex justify-between items-center border-b border-border/40 py-1 last:border-0">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-semibold">{value}</span>
+    </div>
+  );
+}
+
 /* ── Props ── */
 
 interface UpgradeFranchiseOption {
@@ -166,7 +188,7 @@ interface Props {
   userEmail?: string;
 }
 
-type Step = "intro" | "select" | "payment" | "confirmation";
+type Step = "intro" | "select" | "summary" | "payment" | "confirmation";
 type PaymentMethod = "pix" | "credit-card";
 
 export function UpgradeDialog({
@@ -177,6 +199,17 @@ export function UpgradeDialog({
   const [step, setStep] = useState<Step>("intro");
   const [upgradeTargetId, setUpgradeTargetId] = useState<string>(franchiseId);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+
+  // Summary state
+  const [contractAccepted, setContractAccepted] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponDiscount, setCouponDiscount] = useState<DiscountPreview | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [balanceToUse, setBalanceToUse] = useState("");
+  const bancoBalance = MOCK_BANCO_BALANCE;
+
+  // Payment state
   const [method, setMethod] = useState<PaymentMethod>(isBrazilian ? "pix" : "credit-card");
   const [installments, setInstallments] = useState("1");
   const [cardNumber, setCardNumber] = useState("");
@@ -189,27 +222,30 @@ export function UpgradeDialog({
   const [pixCopied, setPixCopied] = useState(false);
   const [showInPersonPopup, setShowInPersonPopup] = useState(false);
   const [paymentResult, setPaymentResult] = useState<{
-    method: string; cardLast4?: string; installments?: number; amount: number;
+    method: string; cardLast4?: string; installments?: number; amount: number; balanceUsed?: number;
   } | null>(null);
 
-  // Determine the plan code for the selected upgrade target
+  // Derived
   const targetFranchise = userFranchises.find((f) => f.franchiseId === upgradeTargetId);
   const effectivePlanCode = targetFranchise?.planCode ?? currentPlanCode;
   const currentPlanIdx = planOrder.indexOf(effectivePlanCode);
   const upgradeOptions = franchisePlans.filter((_, i) => i > currentPlanIdx);
   const selectedFranchise = franchisePlans.find((f) => f.id === selectedPlan);
 
-  // Eligible franchises for upgrade (not platinum)
   const eligibleFranchises = userFranchises.filter((f) => f.planCode !== "platinum");
   const hasMultipleEligible = eligibleFranchises.length > 1;
 
   const price = selectedFranchise ? selectedFranchise.installmentPrice * selectedFranchise.installments : 0;
-  const isPixDiscount = method === "pix";
-  const discountedPrice = isPixDiscount ? price * (1 - PIX_DISCOUNT) : price;
+  const couponAmount = couponDiscount?.discountAmount ?? 0;
+  const parsedBalance = Math.min(Math.max(parseFloat(balanceToUse.replace(",", ".")) || 0, 0), bancoBalance, Math.max(price - couponAmount, 0));
+  const priceAfterDeductions = Math.max(price - couponAmount - parsedBalance, 0);
+  const isPixDiscount = method === "pix" && priceAfterDeductions > 0;
+  const discountedPrice = isPixDiscount ? priceAfterDeductions * (1 - PIX_DISCOUNT) : priceAfterDeductions;
 
   const formatPrice = (v: number) => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   const brand = detectCardBrand(cardNumber);
-  const installmentOptions = getInstallmentOptions(price);
+  const installmentOptions = getInstallmentOptions(priceAfterDeductions > 0 ? priceAfterDeductions : price);
+  const isMaxPlan = effectivePlanCode === "platinum";
 
   const handleClose = (v: boolean) => {
     if (!v) {
@@ -219,18 +255,59 @@ export function UpgradeDialog({
       setMethod(isBrazilian ? "pix" : "credit-card");
       setCardNumber(""); setCardName(""); setCardExpiry(""); setCardCvv("");
       setErrors({}); setPaymentResult(null);
+      setContractAccepted(false); setCouponCode(""); setCouponDiscount(null); setCouponError("");
+      setBalanceToUse("");
     }
     onOpenChange(v);
   };
 
-  const handleConfirmIntro = () => {
-    setSelectedPlan(null);
-    setStep("select");
-  };
+  const handleConfirmIntro = () => { setSelectedPlan(null); setStep("select"); };
+  const handleContinueToSummary = () => { if (!selectedPlan) return; setStep("summary"); };
 
   const handleContinueToPayment = () => {
-    if (!selectedPlan) return;
+    if (!contractAccepted) return;
+    if (priceAfterDeductions <= 0) { handleFinalizeWithBalance(); return; }
     setStep("payment");
+  };
+
+  const handleFinalizeWithBalance = async () => {
+    setLoading(true);
+    try {
+      setPaymentResult({ method: "saldo", amount: 0, balanceUsed: parsedBalance + couponAmount });
+      setStep("confirmation");
+    } finally { setLoading(false); }
+  };
+
+  const handleValidateCoupon = async () => {
+    if (!couponCode.trim() || !selectedPlan) return;
+    setCouponLoading(true); setCouponError(""); setCouponDiscount(null);
+    const code = couponCode.trim().toUpperCase();
+    if (MOCK_COUPONS[code] !== undefined) {
+      const discountAmount = MOCK_COUPONS[code];
+      setCouponDiscount({ discountType: "fixed", value: discountAmount, discountAmount, finalAmount: price - discountAmount, currencyCode: "BRL" });
+      setCouponLoading(false);
+      return;
+    }
+    try {
+      const res = await validateCoupon({ couponCode: code, scope: "franchisePurchase", franchiseTypeCode: selectedPlan, amount: price, currencyCode: "BRL" });
+      if (res.isValid && res.discountPreview) { setCouponDiscount(res.discountPreview); }
+      else { setCouponError("Cupom inválido ou expirado"); }
+    } catch { setCouponError("Erro ao validar cupom"); }
+    finally { setCouponLoading(false); }
+  };
+
+  const handleBalanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^\d]/g, "");
+    if (!raw) { setBalanceToUse(""); return; }
+    const num = parseInt(raw, 10);
+    setBalanceToUse(num.toFixed(2).replace(".", ","));
+  };
+
+  const handleBalanceBlur = () => {
+    if (!balanceToUse) return;
+    const num = parseFloat(balanceToUse.replace(",", "."));
+    if (isNaN(num)) { setBalanceToUse(""); return; }
+    setBalanceToUse(num.toFixed(2).replace(".", ","));
   };
 
   const validate = () => {
@@ -238,14 +315,11 @@ export function UpgradeDialog({
     if (method === "credit-card") {
       if (cardNumber.replace(/\s/g, "").length < 16) e.cardNumber = "Número do cartão inválido";
       if (!cardName.trim()) e.cardName = "Informe o titular";
-      if (cardExpiry.length < 5) {
-        e.cardExpiry = "Validade inválida";
-      } else {
+      if (cardExpiry.length < 5) { e.cardExpiry = "Validade inválida"; }
+      else {
         const [mm, yy] = cardExpiry.split("/").map(Number);
         const now = new Date();
-        if (yy < now.getFullYear() % 100 || (yy === now.getFullYear() % 100 && mm < now.getMonth() + 1)) {
-          e.cardExpiry = "Cartão vencido";
-        }
+        if (yy < now.getFullYear() % 100 || (yy === now.getFullYear() % 100 && mm < now.getMonth() + 1)) e.cardExpiry = "Cartão vencido";
       }
       if (cardCvv.length < 3) e.cardCvv = "CVV inválido";
     }
@@ -256,98 +330,47 @@ export function UpgradeDialog({
   const handlePayment = async () => {
     if (!validate()) return;
     setLoading(true);
-
     try {
       if (method === "credit-card") {
-        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
-          "create-checkout",
-          {
-            body: {
-              price,
-              currency: "brl",
-              customerEmail: userEmail,
-              franchiseTypeCode: selectedPlan,
-              franchiseId: upgradeTargetId,
-              installments: parseInt(installments),
-              customerName: userName,
-            },
-          }
-        );
-
-        if (checkoutError || !checkoutData?.clientSecret) {
-          setErrors({ general: "Erro ao processar pagamento. Tente novamente." });
-          setLoading(false);
-          return;
-        }
-
+        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke("create-checkout", {
+          body: { price: priceAfterDeductions, currency: "brl", customerEmail: userEmail, franchiseTypeCode: selectedPlan, franchiseId: upgradeTargetId, installments: parseInt(installments), customerName: userName, balanceUsed: parsedBalance, couponCode: couponDiscount ? couponCode : undefined },
+        });
+        if (checkoutError || !checkoutData?.clientSecret) { setErrors({ general: "Erro ao processar pagamento. Tente novamente." }); setLoading(false); return; }
         const stripe = await loadStripe(STRIPE_PUBLISHABLE_KEY);
-        if (!stripe) {
-          setErrors({ general: "Erro ao carregar gateway de pagamento." });
-          setLoading(false);
-          return;
-        }
-
+        if (!stripe) { setErrors({ general: "Erro ao carregar gateway de pagamento." }); setLoading(false); return; }
         const [expMonth, expYear] = cardExpiry.split("/").map(Number);
         const cardNumberClean = cardNumber.replace(/\s/g, "");
-
-        const { error: stripeError } = await stripe.confirmCardPayment(
-          checkoutData.clientSecret,
-          {
-            payment_method: {
-              card: {
-                number: cardNumberClean,
-                exp_month: expMonth,
-                exp_year: 2000 + expYear,
-                cvc: cardCvv,
-              } as any,
-              billing_details: { name: cardName, email: userEmail },
-            },
-          }
-        );
-
-        setLoading(false);
-
-        if (stripeError) {
-          setErrors({ general: stripeError.message || "Erro no pagamento." });
-          return;
-        }
-
-        setPaymentResult({
-          method: "credit-card",
-          cardLast4: cardNumberClean.slice(-4),
-          installments: parseInt(installments),
-          amount: price,
+        const { error: stripeError } = await stripe.confirmCardPayment(checkoutData.clientSecret, {
+          payment_method: { card: { number: cardNumberClean, exp_month: expMonth, exp_year: 2000 + expYear, cvc: cardCvv } as any, billing_details: { name: cardName, email: userEmail } },
         });
+        setLoading(false);
+        if (stripeError) { setErrors({ general: stripeError.message || "Erro no pagamento." }); return; }
+        setPaymentResult({ method: "credit-card", cardLast4: cardNumberClean.slice(-4), installments: parseInt(installments), amount: priceAfterDeductions, balanceUsed: parsedBalance > 0 ? parsedBalance : undefined });
         setStep("confirmation");
       } else {
-        // PIX
         setLoading(false);
-        setPaymentResult({ method: "pix", amount: discountedPrice });
+        setPaymentResult({ method: "pix", amount: discountedPrice, balanceUsed: parsedBalance > 0 ? parsedBalance : undefined });
         setStep("confirmation");
       }
-    } catch {
-      setErrors({ general: "Erro inesperado. Tente novamente." });
-      setLoading(false);
-    }
+    } catch { setErrors({ general: "Erro inesperado. Tente novamente." }); setLoading(false); }
   };
 
   const handleCopyPix = async () => {
-    try {
-      await navigator.clipboard.writeText(PIX_CODE);
-      setPixCopied(true);
-      setTimeout(() => setPixCopied(false), 2000);
-    } catch {}
+    try { await navigator.clipboard.writeText(PIX_CODE); setPixCopied(true); setTimeout(() => setPixCopied(false), 2000); } catch {}
   };
 
-  const isMaxPlan = effectivePlanCode === "platinum";
+  // Compute dialog width per step
+  const getDialogWidth = () => {
+    if (step === "intro") return "max-w-sm";
+    if (step === "select") return "max-w-4xl";
+    return "max-w-md";
+  };
 
   return (
     <>
       <Dialog open={open} onOpenChange={handleClose}>
-         <DialogContent className={cn(
-          "max-h-[90vh] overflow-y-auto",
-          step === "intro" ? "max-w-sm" : step === "select" ? (upgradeOptions.length <= 1 ? "max-w-md" : upgradeOptions.length === 2 ? "max-w-2xl" : "max-w-4xl") : "max-w-md"
-        )}>
+        <DialogContent className={cn("max-h-[90vh] overflow-y-auto", getDialogWidth())}>
+
           {/* ── STEP 0: Intro ── */}
           {step === "intro" && (
             <>
@@ -357,7 +380,7 @@ export function UpgradeDialog({
                 </div>
                 <DialogTitle className="text-xl text-center">Upgrade de Franquia</DialogTitle>
                 <DialogDescription className="text-center text-sm leading-relaxed mt-2">
-                  Avance para o próximo nível e acelere seus resultados!
+                  Está na hora de subir de nível!
                 </DialogDescription>
               </DialogHeader>
 
@@ -376,7 +399,7 @@ export function UpgradeDialog({
                     <strong className="text-sm text-warning">Importante</strong>
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    O upgrade mantém seu ID atual e<br />substitui o plano por um superior.
+                    No upgrade, seu ID permanece o mesmo.
                   </p>
                 </div>
 
@@ -415,12 +438,8 @@ export function UpgradeDialog({
               </div>
 
               <div className="flex gap-3 mt-3">
-                <Button variant="outline" className="flex-1" onClick={() => handleClose(false)}>
-                  Cancelar
-                </Button>
-                <Button className="flex-1" onClick={handleConfirmIntro} disabled={isMaxPlan}>
-                  Confirmar
-                </Button>
+                <Button variant="outline" className="flex-1" onClick={() => handleClose(false)}>Cancelar</Button>
+                <Button className="flex-1" onClick={handleConfirmIntro} disabled={isMaxPlan}>Confirmar</Button>
               </div>
             </>
           )}
@@ -429,12 +448,7 @@ export function UpgradeDialog({
           {step === "select" && (
             <>
               <div className="flex items-center gap-2 pt-1">
-                <button
-                  type="button"
-                  onClick={() => setStep("intro")}
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label="Voltar"
-                >
+                <button type="button" onClick={() => setStep("intro")} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Voltar">
                   <ChevronLeft className="h-5 w-5" />
                 </button>
                 <DialogTitle className="text-xl">Escolha sua Franquia</DialogTitle>
@@ -465,48 +479,26 @@ export function UpgradeDialog({
                     >
                       {isSelected && (
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                          <Badge className="bg-yellow-500 text-white border-0 text-xs px-3 py-1 shadow-md whitespace-nowrap cursor-default pointer-events-none hover:bg-yellow-500">
-                            Selecionado
-                          </Badge>
+                          <Badge className="bg-yellow-500 text-white border-0 text-xs px-3 py-1 shadow-md whitespace-nowrap cursor-default pointer-events-none hover:bg-yellow-500">Selecionado</Badge>
                         </div>
                       )}
 
-                      <div className={cn(
-                        "flex items-center justify-between px-4 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]",
-                        isSelected ? "bg-[#FEFAD2]" : "bg-primary/5"
-                      )}>
+                      <div className={cn("flex items-center justify-between px-4 pt-5 pb-3 rounded-t-[calc(0.5rem-2px)]", isSelected ? "bg-[#FEFAD2]" : "bg-primary/5")}>
                         <div className="flex items-center gap-3 min-w-0">
-                          <Icon className={cn(
-                            "h-7 w-7 flex-shrink-0",
-                            isSelected ? "text-yellow-800" : "text-primary/60"
-                          )} />
+                          <Icon className={cn("h-7 w-7 flex-shrink-0", isSelected ? "text-yellow-800" : "text-primary/60")} />
                           <div className="flex flex-col min-w-0">
-                            <span className={cn(
-                              "text-xs font-medium uppercase tracking-wider leading-tight",
-                              isSelected ? "text-yellow-800" : "text-primary/60"
-                            )}>
-                              Franquia
-                            </span>
-                            <h3 className={cn(
-                              "text-xl font-extrabold leading-tight uppercase",
-                              isSelected ? "text-yellow-900" : "text-foreground"
-                            )}>{f.name}</h3>
+                            <span className={cn("text-xs font-medium uppercase tracking-wider leading-tight", isSelected ? "text-yellow-800" : "text-primary/60")}>Franquia</span>
+                            <h3 className={cn("text-xl font-extrabold leading-tight uppercase", isSelected ? "text-yellow-900" : "text-foreground")}>{f.name}</h3>
                           </div>
                         </div>
                         <div className="flex flex-col items-end min-w-0 text-right">
                           <div className="flex items-baseline gap-0.5">
                             <span className="text-[11px] text-muted-foreground font-medium">12x</span>
                             <span className="text-[11px] text-muted-foreground font-medium">R$</span>
-                            <span className="text-3xl font-extrabold text-foreground leading-none tracking-tight">
-                              {integer}
-                            </span>
-                            <span className="text-sm font-bold text-foreground -translate-y-2">
-                              ,{decimal}
-                            </span>
+                            <span className="text-3xl font-extrabold text-foreground leading-none tracking-tight">{integer}</span>
+                            <span className="text-sm font-bold text-foreground -translate-y-2">,{decimal}</span>
                           </div>
-                          <p className="text-xs text-muted-foreground">
-                            à vista: R$ {cashFormatted}
-                          </p>
+                          <p className="text-xs text-muted-foreground">à vista: R$ {cashFormatted}</p>
                         </div>
                       </div>
 
@@ -516,19 +508,14 @@ export function UpgradeDialog({
                         <div className="flex flex-col gap-2">
                           {f.benefits.map((b, i) => (
                             <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                              <Check className={cn(
-                                "h-4 w-4 mt-0.5 flex-shrink-0",
-                                isSelected ? "text-yellow-600" : "text-primary/60"
-                              )} />
+                              <Check className={cn("h-4 w-4 mt-0.5 flex-shrink-0", isSelected ? "text-yellow-600" : "text-primary/60")} />
                               <span>{b}</span>
                             </div>
                           ))}
                         </div>
                       </div>
 
-                      <div className="mt-auto">
-                        <Separator className={cn("mx-4 w-auto", isSelected ? "bg-yellow-400/60" : "bg-border/40")} />
-                      </div>
+                      <div className="mt-auto"><Separator className={cn("mx-4 w-auto", isSelected ? "bg-yellow-400/60" : "bg-border/40")} /></div>
                       <div className="px-4 pt-3 pb-2">
                         <p className="text-xs font-bold text-foreground mb-2 uppercase tracking-wider">Produtos inclusos</p>
                         <div className="flex items-center gap-6">
@@ -549,16 +536,8 @@ export function UpgradeDialog({
 
                       <div className="mt-auto">
                         <Separator className={isSelected ? "bg-yellow-500" : ""} />
-                        <div className={cn(
-                          "px-4 py-3 rounded-b-[calc(0.5rem-2px)]",
-                          isSelected ? "bg-[#FEFAD2]" : "bg-muted/20"
-                        )}>
-                          <p className={cn(
-                            "text-sm font-semibold italic text-center",
-                            isSelected ? "text-yellow-700" : "text-primary/70"
-                          )}>
-                            "{f.highlight}"
-                          </p>
+                        <div className={cn("px-4 py-3 rounded-b-[calc(0.5rem-2px)]", isSelected ? "bg-[#FEFAD2]" : "bg-muted/20")}>
+                          <p className={cn("text-sm font-semibold italic text-center", isSelected ? "text-yellow-700" : "text-primary/70")}>"{f.highlight}"</p>
                         </div>
                       </div>
 
@@ -574,70 +553,193 @@ export function UpgradeDialog({
 
               <div className="flex justify-end gap-3 mt-4">
                 <Button variant="outline" onClick={() => setStep("intro")}>Voltar</Button>
-                <Button onClick={handleContinueToPayment} disabled={!selectedPlan}>
-                  Continuar
+                <Button onClick={handleContinueToSummary} disabled={!selectedPlan}>Continuar</Button>
+              </div>
+            </>
+          )}
+
+          {/* ── STEP 2: Summary ── */}
+          {step === "summary" && selectedFranchise && (
+            <>
+              <div className="flex items-center gap-2 pt-1">
+                <button type="button" onClick={() => { setStep("select"); setContractAccepted(false); }} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Voltar">
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <DialogTitle className="text-xl">Resumo da Compra</DialogTitle>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1 pl-7">
+                Confira os detalhes antes de prosseguir.
+              </p>
+
+              <div className="space-y-4 mt-2">
+                {/* Order details */}
+                <div className="bg-primary/5 rounded-xl p-4 space-y-1.5 text-sm">
+                  <ConfirmRow label="ID" value={upgradeTargetId} />
+                  <ConfirmRow label="Upgrade" value={
+                    <span className="flex items-center gap-1.5">
+                      {planLabels[effectivePlanCode]} <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" /> <strong>{selectedFranchise.name}</strong>
+                    </span>
+                  } />
+                  <ConfirmRow
+                    label="Valor"
+                    value={
+                      couponAmount > 0 ? (
+                        <div className="text-right">
+                          <span className="text-sm text-muted-foreground relative">
+                            <span className="relative inline-block">
+                              {formatPrice(price)}
+                              <span className="absolute left-0 right-0 top-1/2 h-[2px] bg-green-500 -rotate-6" />
+                            </span>
+                          </span>
+                          <br />
+                          <span className="font-bold">{formatPrice(price - couponAmount)}</span>
+                        </div>
+                      ) : (
+                        <span className="font-bold">{formatPrice(price)}</span>
+                      )
+                    }
+                  />
+                </div>
+
+                {/* Coupon */}
+                <div className="space-y-1.5">
+                  <Label className="text-sm font-medium">Cupom de desconto</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Digite o cupom"
+                      value={couponCode}
+                      onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); if (couponDiscount) { setCouponDiscount(null); setCouponError(""); } }}
+                      className="flex-1"
+                      disabled={!!couponDiscount}
+                    />
+                    {couponDiscount ? (
+                      <Button variant="outline" size="icon" onClick={() => { setCouponDiscount(null); setCouponCode(""); setCouponError(""); }}>
+                        <X className="h-4 w-4" />
+                      </Button>
+                    ) : (
+                      <Button variant="outline" onClick={handleValidateCoupon} disabled={!couponCode.trim() || couponLoading}>
+                        {couponLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Aplicar"}
+                      </Button>
+                    )}
+                  </div>
+                  {couponError && <p className="text-xs text-destructive">{couponError}</p>}
+                  {couponDiscount && (
+                    <p className="text-xs text-green-600 font-medium">
+                      Desconto aplicado: {formatPrice(couponDiscount.discountAmount)}
+                    </p>
+                  )}
+                </div>
+
+                {/* Banco Timol balance */}
+                {bancoBalance > 0 && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-medium">Usar saldo do Banco Timol</Label>
+                      <span className="text-sm text-muted-foreground">Disponível {formatPrice(bancoBalance)}</span>
+                    </div>
+                    <div className="relative">
+                      <Input
+                        placeholder="0,00"
+                        value={balanceToUse}
+                        onChange={handleBalanceChange}
+                        onBlur={handleBalanceBlur}
+                        className="pr-9"
+                      />
+                      {balanceToUse && (
+                        <button type="button" onClick={() => setBalanceToUse("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                    {parseFloat(balanceToUse.replace(",", ".")) > bancoBalance && (
+                      <p className="text-xs text-destructive">Valor acima do saldo disponível</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Total breakdown */}
+                <Separator />
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between items-center font-bold text-base">
+                    <span>Total</span>
+                    <span className="text-primary">{formatPrice(price - couponAmount)}</span>
+                  </div>
+                  {parsedBalance > 0 && (
+                    <>
+                      <div className="flex justify-between items-center text-muted-foreground">
+                        <span>Saldo utilizado</span>
+                        <span>({formatPrice(parsedBalance)})</span>
+                      </div>
+                      <div className="flex justify-between items-center font-bold text-base">
+                        <span>Valor restante a pagar</span>
+                        <span className="text-primary">{formatPrice(priceAfterDeductions)}</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+                {priceAfterDeductions <= 0 && (parsedBalance > 0 || couponAmount > 0) && (
+                  <p className="text-xs text-green-600 text-center font-medium">Compra coberta pelo saldo e/ou cupom!</p>
+                )}
+
+                {/* Contract checkbox */}
+                <div className="flex items-start gap-2.5 pt-1">
+                  <Checkbox id="upgrade-contract-accept" checked={contractAccepted} onCheckedChange={(v) => setContractAccepted(v === true)} className="mt-0.5" />
+                  <label htmlFor="upgrade-contract-accept" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+                    Li e aceito o{" "}
+                    <button type="button" className="text-primary underline underline-offset-2 hover:no-underline" onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open("/contrato", "_blank"); }}>
+                      Contrato de Franquia
+                    </button>{" "}
+                    e os termos de uso da plataforma Timol.
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-4">
+                <Button variant="outline" className="flex-1" onClick={() => { setStep("select"); setContractAccepted(false); }}>Voltar</Button>
+                <Button className="flex-1" onClick={handleContinueToPayment} disabled={!contractAccepted}>
+                  {priceAfterDeductions <= 0 ? "Finalizar" : "Ir para pagamento"}
                 </Button>
               </div>
             </>
           )}
 
-          {/* ── STEP 2: Payment ── */}
+          {/* ── STEP 3: Payment ── */}
           {step === "payment" && selectedFranchise && (
             <>
-              <div className="relative pt-1">
-                <button
-                  type="button"
-                  onClick={() => setStep("select")}
-                  className="absolute left-0 top-1 z-10 text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label="Voltar"
-                >
+              <div className="flex items-center gap-2 pt-1">
+                <button type="button" onClick={() => setStep("summary")} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Voltar">
                   <ChevronLeft className="h-5 w-5" />
                 </button>
-                <DialogHeader className="text-center px-8">
-                  <DialogTitle className="text-xl">Pagamento do Upgrade</DialogTitle>
-                  <DialogDescription className="text-center">
-                    Upgrade para {selectedFranchise.name} — ID {upgradeTargetId}
-                  </DialogDescription>
-                </DialogHeader>
+                <DialogTitle className="text-xl">Pagamento do Upgrade</DialogTitle>
               </div>
+              <p className="text-sm text-muted-foreground mt-1 pl-7">
+                Upgrade para {selectedFranchise.name} — ID {upgradeTargetId}
+              </p>
 
               <div className="text-center space-y-1 mt-2">
                 <p className="text-sm font-medium text-foreground">
                   Franquia {selectedFranchise.name}
                 </p>
+                {parsedBalance > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    Saldo aplicado: {formatPrice(parsedBalance)} · Restante:
+                  </p>
+                )}
                 <p className="text-3xl font-extrabold text-foreground tracking-tight">
                   {formatPrice(discountedPrice)}
                 </p>
-                {isPixDiscount && price !== discountedPrice && (
-                  <p className="text-sm line-through text-muted-foreground">{formatPrice(price)}</p>
+                {isPixDiscount && priceAfterDeductions !== discountedPrice && (
+                  <p className="text-sm line-through text-muted-foreground">{formatPrice(priceAfterDeductions)}</p>
                 )}
               </div>
 
               {isBrazilian && (
                 <div className="grid grid-cols-2 gap-3 mt-3" role="tablist">
-                  <button
-                    role="tab"
-                    aria-selected={method === "pix"}
-                    onClick={() => setMethod("pix")}
-                    className={cn(
-                      "flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all",
-                      method === "pix" ? "border-primary bg-primary/5 text-primary" : "border-border hover:border-primary/50"
-                    )}
-                  >
-                    <QrCode className="h-7 w-7" />
-                    <span className="font-semibold text-sm">PIX</span>
+                  <button role="tab" aria-selected={method === "pix"} onClick={() => setMethod("pix")} className={cn("flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all", method === "pix" ? "border-primary bg-primary/5 text-primary" : "border-border hover:border-primary/50")}>
+                    <QrCode className="h-7 w-7" /><span className="font-semibold text-sm">PIX</span>
                   </button>
-                  <button
-                    role="tab"
-                    aria-selected={method === "credit-card"}
-                    onClick={() => setMethod("credit-card")}
-                    className={cn(
-                      "flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all",
-                      method === "credit-card" ? "border-primary bg-primary/5 text-primary" : "border-border hover:border-primary/50"
-                    )}
-                  >
-                    <CreditCard className="h-7 w-7" />
-                    <span className="font-semibold text-sm">Cartão</span>
+                  <button role="tab" aria-selected={method === "credit-card"} onClick={() => setMethod("credit-card")} className={cn("flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all", method === "credit-card" ? "border-primary bg-primary/5 text-primary" : "border-border hover:border-primary/50")}>
+                    <CreditCard className="h-7 w-7" /><span className="font-semibold text-sm">Cartão</span>
                   </button>
                 </div>
               )}
@@ -651,23 +753,13 @@ export function UpgradeDialog({
                     <p className="text-xs text-muted-foreground">Escaneie o QR Code ou copie o código abaixo</p>
                     <div className="relative bg-muted rounded p-2 text-xs font-mono break-all select-all pr-10">
                       {PIX_CODE}
-                      <button
-                        type="button"
-                        onClick={handleCopyPix}
-                        className="absolute right-2 top-2 p-1 rounded hover:bg-accent transition-colors"
-                        title="Copiar"
-                      >
+                      <button type="button" onClick={handleCopyPix} className="absolute right-2 top-2 p-1 rounded hover:bg-accent transition-colors" title="Copiar">
                         {pixCopied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4 text-muted-foreground" />}
                       </button>
                     </div>
                     <p className="text-xs text-green-600 font-medium">O código expira em 30 minutos</p>
-                    <button
-                      type="button"
-                      onClick={() => setShowInPersonPopup(true)}
-                      className="mt-2 flex items-center gap-1.5 mx-auto text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
-                    >
-                      <Building2 className="h-3.5 w-3.5" />
-                      Pagar presencialmente no banco ou lotérica
+                    <button type="button" onClick={() => setShowInPersonPopup(true)} className="mt-2 flex items-center gap-1.5 mx-auto text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2">
+                      <Building2 className="h-3.5 w-3.5" />Pagar presencialmente no banco ou lotérica
                     </button>
                   </CardContent>
                 </Card>
@@ -675,94 +767,48 @@ export function UpgradeDialog({
 
               {method === "credit-card" && (
                 <Card className="mt-3">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base">Dados do cartão</CardTitle>
-                  </CardHeader>
+                  <CardHeader className="pb-3"><CardTitle className="text-base">Dados do cartão</CardTitle></CardHeader>
                   <CardContent className="space-y-3">
-                    {errors.general && (
-                      <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">
-                        {errors.general}
-                      </div>
-                    )}
-
+                    {errors.general && <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">{errors.general}</div>}
                     <div className="space-y-1">
                       <Label>Número do cartão</Label>
                       <div className="relative">
-                        <Input
-                          placeholder="0000 0000 0000 0000"
-                          value={cardNumber}
-                          onChange={(e) => setCardNumber(formatCard(e.target.value))}
-                          maxLength={19}
-                          className="pr-28"
-                        />
-                        {brand && (
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
-                            <img src={brandIcon[brand]} alt={brand} className="h-5" />
-                          </div>
-                        )}
+                        <Input placeholder="0000 0000 0000 0000" value={cardNumber} onChange={(e) => setCardNumber(formatCard(e.target.value))} maxLength={19} className="pr-28" />
+                        {brand && <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center"><img src={brandIcon[brand]} alt={brand} className="h-5" /></div>}
                       </div>
                       {errors.cardNumber && <p className="text-xs text-destructive">{errors.cardNumber}</p>}
                     </div>
-
                     <div className="space-y-1">
                       <Label>Nome no cartão</Label>
-                      <Input
-                        placeholder="NOME COMO ESTÁ NO CARTÃO"
-                        value={cardName}
-                        onChange={(e) => setCardName(e.target.value.toUpperCase())}
-                        maxLength={60}
-                      />
+                      <Input placeholder="NOME COMO ESTÁ NO CARTÃO" value={cardName} onChange={(e) => setCardName(e.target.value.toUpperCase())} maxLength={60} />
                       {errors.cardName && <p className="text-xs text-destructive">{errors.cardName}</p>}
                     </div>
-
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
                         <Label>Validade</Label>
-                        <Input
-                          placeholder="MM/AA"
-                          value={cardExpiry}
-                          onChange={(e) => setCardExpiry(formatExpiry(e.target.value))}
-                          maxLength={5}
-                        />
+                        <Input placeholder="MM/AA" value={cardExpiry} onChange={(e) => setCardExpiry(formatExpiry(e.target.value))} maxLength={5} />
                         {errors.cardExpiry && <p className="text-xs text-destructive">{errors.cardExpiry}</p>}
                       </div>
                       <div className="space-y-1">
                         <Label>CVV</Label>
                         <div className="relative">
-                          <Input
-                            placeholder="000"
-                            value={cardCvv}
-                            onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                            maxLength={4}
-                            type={showCvv ? "text" : "password"}
-                            className="pr-9"
-                          />
-                          <button
-                            type="button"
-                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                            onClick={() => setShowCvv(!showCvv)}
-                            tabIndex={-1}
-                          >
+                          <Input placeholder="000" value={cardCvv} onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 4))} maxLength={4} type={showCvv ? "text" : "password"} className="pr-9" />
+                          <button type="button" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors" onClick={() => setShowCvv(!showCvv)} tabIndex={-1}>
                             {showCvv ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </button>
                         </div>
                         {errors.cardCvv && <p className="text-xs text-destructive">{errors.cardCvv}</p>}
                       </div>
                     </div>
-
                     {isBrazilian && (
                       <div className="space-y-1">
                         <Label>Parcelas</Label>
                         <Select value={installments} onValueChange={setInstallments}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione" />
-                          </SelectTrigger>
+                          <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
                           <SelectContent>
                             {installmentOptions.map(({ n, value }) => (
                               <SelectItem key={n} value={String(n)}>
-                                {n === 1
-                                  ? `À vista — ${formatPrice(price)}`
-                                  : `${n}× ${formatPrice(value)} (sem juros)`}
+                                {n === 1 ? `À vista — ${formatPrice(priceAfterDeductions)}` : `${n}× ${formatPrice(value)} (sem juros)`}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -781,40 +827,46 @@ export function UpgradeDialog({
             </>
           )}
 
-          {/* ── STEP 3: Confirmation ── */}
-          {step === "confirmation" && selectedFranchise && paymentResult && (
+          {/* ── STEP 4: Confirmation ── */}
+          {step === "confirmation" && selectedFranchise && (paymentResult || priceAfterDeductions <= 0) && (
             <div className="flex flex-col items-center gap-5 py-4">
               <div className="h-14 w-14 rounded-full bg-green-100 flex items-center justify-center">
                 <Check className="h-7 w-7 text-green-600" />
               </div>
               <h2 className="text-xl font-bold text-primary">Upgrade realizado!</h2>
-              <p className="text-sm text-muted-foreground text-center max-w-xs">
-                Seu upgrade para a franquia {selectedFranchise.name} foi processado com sucesso.
-              </p>
 
               <div className="w-full bg-primary/5 rounded-xl p-4 space-y-2 text-sm text-left">
                 <ConfirmRow label="ID" value={upgradeTargetId} />
-                <ConfirmRow label="Nova franquia" value={selectedFranchise.name} />
-                <ConfirmRow label="Valor" value={formatPrice(paymentResult.amount)} />
-                {paymentResult.method === "credit-card" && paymentResult.cardLast4 && (
+                <ConfirmRow label="Upgrade" value={
+                  <span className="flex items-center gap-1.5">
+                    {planLabels[effectivePlanCode]} <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" /> <strong>{selectedFranchise.name}</strong>
+                  </span>
+                } />
+                <ConfirmRow label="Valor da franquia" value={formatPrice(price)} />
+                {couponAmount > 0 && (
+                  <ConfirmRow label="Desconto cupom" value={`(${formatPrice(couponAmount)})`} />
+                )}
+                {paymentResult?.balanceUsed && paymentResult.balanceUsed > 0 && (
+                  <ConfirmRow label="Saldo Banco Timol" value={`(${formatPrice(paymentResult.balanceUsed)})`} />
+                )}
+                {paymentResult?.method === "credit-card" && paymentResult.cardLast4 && (
                   <>
                     <ConfirmRow label="Cartão" value={`•••• ${paymentResult.cardLast4}`} />
+                    <ConfirmRow label="Valor no cartão" value={formatPrice(paymentResult.amount)} />
                     {paymentResult.installments && paymentResult.installments > 1 && (
-                      <ConfirmRow
-                        label="Parcelas"
-                        value={`${paymentResult.installments}× ${formatPrice(paymentResult.amount / paymentResult.installments)}`}
-                      />
+                      <ConfirmRow label="Parcelas" value={`${paymentResult.installments}× ${formatPrice(paymentResult.amount / paymentResult.installments)}`} />
                     )}
                   </>
                 )}
-                {paymentResult.method === "pix" && (
-                  <ConfirmRow label="Método" value="PIX" />
+                {paymentResult?.method === "pix" && (
+                  <ConfirmRow label="Pago via PIX" value={formatPrice(paymentResult.amount)} />
+                )}
+                {paymentResult?.method === "saldo" && (
+                  <ConfirmRow label="Método" value="Saldo + Cupom" />
                 )}
               </div>
 
-              <Button onClick={() => handleClose(false)} className="w-full max-w-[200px]">
-                Fechar
-              </Button>
+              <Button onClick={() => handleClose(false)} className="w-full max-w-[200px]">Fechar</Button>
             </div>
           )}
         </DialogContent>
@@ -825,9 +877,7 @@ export function UpgradeDialog({
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-base">Pagamento Presencial</DialogTitle>
-            <DialogDescription className="text-sm">
-              Para pagar presencialmente, entre em contato com nosso suporte via WhatsApp.
-            </DialogDescription>
+            <DialogDescription className="text-sm">Para pagar presencialmente, entre em contato com nosso suporte via WhatsApp.</DialogDescription>
           </DialogHeader>
           <Button
             onClick={() => {
@@ -843,31 +893,7 @@ export function UpgradeDialog({
         </DialogContent>
       </Dialog>
 
-      {loading && (
-        <FullScreenTimolLoader
-          title="Processando pagamento..."
-          hint="Aguarde enquanto avançamos para a próxima etapa."
-        />
-      )}
+      {loading && <FullScreenTimolLoader title="Processando pagamento..." hint="Aguarde enquanto avançamos para a próxima etapa." />}
     </>
-  );
-}
-
-/* ── Helpers ── */
-
-function splitPrice(price: number, locale: string): { integer: string; decimal: string } {
-  const formatted = price.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const sep = locale === "en-US" ? "." : ",";
-  const idx = formatted.lastIndexOf(sep);
-  if (idx === -1) return { integer: formatted, decimal: "00" };
-  return { integer: formatted.slice(0, idx), decimal: formatted.slice(idx + 1) };
-}
-
-function ConfirmRow({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex justify-between items-center border-b border-border/40 py-1 last:border-0">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-semibold">{value}</span>
-    </div>
   );
 }
