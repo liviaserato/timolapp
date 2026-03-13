@@ -206,7 +206,7 @@ export default function Pedidos() {
         </DashboardCard>
 
         {/* Histórico de Pedidos */}
-        <DashboardCard icon={Clock} title="Histórico de Pedidos">
+        <DashboardCard icon={ShoppingCart} title="Pedidos">
           {/* Filtros */}
           <div className="mt-2 flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
