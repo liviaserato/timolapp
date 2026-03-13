@@ -3,12 +3,15 @@ import {
   Package,
   ShoppingBag,
   Award,
+  Star,
   Users,
   ChevronRight,
   ChevronLeft,
   Calendar,
   CalendarRange,
   CalendarDays,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { format, subDays, startOfMonth, endOfMonth, subMonths, addMonths, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -63,6 +66,8 @@ function formatCurrency(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+const HIDDEN = "•••";
+
 type PeriodMode = "30d" | "month" | "custom";
 
 /* ── Component ── */
@@ -70,6 +75,7 @@ type PeriodMode = "30d" | "month" | "custom";
 export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
   const [showAllProducts, setShowAllProducts] = useState(false);
   const [showFranchiseDetail, setShowFranchiseDetail] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   // Period state
   const [mode, setMode] = useState<PeriodMode>("30d");
@@ -89,7 +95,6 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
       const e = endOfMonth(selectedMonth);
       return { from: s, to: isAfter(e, today) ? today : e };
     }
-    // custom
     return { from: customFrom || subDays(today, 30), to: customTo || today };
   }, [mode, selectedMonth, customFrom, customTo]);
 
@@ -132,7 +137,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
   ];
   const totalFranchises = franchiseDistribution.reduce((s, f) => s + f.count, 0);
 
-  // 4) Bônus + Pontos (merged)
+  // 4) Bônus + Pontos
   const totalSpent = filteredOrders.reduce((s, o) => s + o.total, 0);
   const bonusGenerated = totalSpent * 0.08;
   const pointsGenerated = Math.floor(totalSpent / 10);
@@ -140,12 +145,28 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
   // Month navigation
   const canGoForward = mode === "month" && isAfter(today, endOfMonth(selectedMonth));
 
+  // Visibility toggle button for headerRight
+  const visibilityToggle = (
+    <button
+      type="button"
+      onClick={() => setVisible((v) => !v)}
+      className="p-1.5 rounded-md bg-card border-2 border-app-card-border hover:bg-muted/60 transition-colors"
+      aria-label={visible ? "Ocultar valores" : "Mostrar valores"}
+    >
+      {visible ? (
+        <Eye className="h-4 w-4 text-muted-foreground" />
+      ) : (
+        <EyeOff className="h-4 w-4 text-muted-foreground" />
+      )}
+    </button>
+  );
+
   return (
     <>
-      <DashboardCard icon={Package} title="Resumo">
+      <DashboardCard icon={Package} title="Resumo" headerRight={visibilityToggle}>
         {/* Period selector */}
         <div className="mt-2 flex flex-col gap-2">
-          {/* Mode chips + period label */}
+          {/* Mode chips */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
             <div className="flex items-center gap-1">
               {([
@@ -176,7 +197,6 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
               ))}
             </div>
 
-            {/* Month nav or date pickers */}
             {mode === "month" && (
               <div className="flex items-center gap-1">
                 <Button
@@ -232,7 +252,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             <MiniCard
               icon={ShoppingBag}
               label="Pedidos realizados"
-              value={String(totalOrders)}
+              value={visible ? String(totalOrders) : HIDDEN}
               accent="text-primary"
             />
 
@@ -242,8 +262,8 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                 <Package className="h-3.5 w-3.5 text-muted-foreground" />
                 <span className="text-[10px] text-muted-foreground leading-tight">Produtos adquiridos</span>
               </div>
-              <p className="text-xl font-bold text-emerald-600">{totalUnits}</p>
-              {top3.length > 0 && (
+              <p className="text-xl font-bold text-primary">{visible ? totalUnits : HIDDEN}</p>
+              {visible && top3.length > 0 && (
                 <div className="mt-1.5 space-y-0.5">
                   {top3.map(([name, qty], idx) => (
                     <div key={name} className="flex items-center justify-between text-[10px]">
@@ -255,7 +275,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                   ))}
                 </div>
               )}
-              {sortedProducts.length > 3 && (
+              {visible && sortedProducts.length > 3 && (
                 <button
                   type="button"
                   onClick={() => setShowAllProducts(true)}
@@ -264,35 +284,52 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                   Ver todos <ChevronRight className="h-2.5 w-2.5" />
                 </button>
               )}
+              {!visible && (
+                <div className="mt-1.5 space-y-0.5">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="text-[10px] text-muted-foreground">{HIDDEN}</div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Franquias cadastradas */}
             <button
               type="button"
-              onClick={() => setShowFranchiseDetail(true)}
-              className="rounded-lg border border-app-card-border p-3 flex flex-col text-left hover:bg-muted/40 transition-colors group"
+              onClick={() => visible && setShowFranchiseDetail(true)}
+              className={cn(
+                "rounded-lg border border-app-card-border p-3 flex flex-col text-left transition-colors group",
+                visible && "hover:bg-muted/40 cursor-pointer"
+              )}
             >
               <div className="flex items-center gap-1.5 mb-1">
                 <Users className="h-3.5 w-3.5 text-muted-foreground" />
                 <span className="text-[10px] text-muted-foreground leading-tight">Franquias cadastradas</span>
               </div>
               <div className="flex items-baseline gap-1">
-                <p className="text-xl font-bold text-violet-600">{totalFranchises}</p>
-                <ChevronRight className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                <p className="text-xl font-bold text-primary">{visible ? totalFranchises : HIDDEN}</p>
+                {visible && <ChevronRight className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />}
               </div>
             </button>
 
             {/* Bônus e Pontos */}
             <div className="rounded-lg border border-app-card-border p-3 flex flex-col">
-              <div className="flex items-center gap-1.5 mb-1">
+              {/* Bônus */}
+              <div className="flex items-center gap-1.5 mb-0.5">
                 <Award className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground leading-tight">Bônus e Pontos</span>
+                <span className="text-[10px] text-muted-foreground leading-tight">Bônus gerados</span>
               </div>
-              <p className="text-base font-bold text-amber-600">{formatCurrency(bonusGenerated)}</p>
-              <div className="flex items-center gap-1 mt-0.5">
-                <span className="text-[10px] text-muted-foreground">Pontos:</span>
-                <span className="text-xs font-semibold text-blue-600">{pointsGenerated.toLocaleString("pt-BR")}</span>
+              <p className="text-xl font-bold text-primary">{visible ? formatCurrency(bonusGenerated) : HIDDEN}</p>
+
+              {/* Divider */}
+              <div className="my-1.5 border-t border-app-card-border/50" />
+
+              {/* Pontos */}
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <Star className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground leading-tight">Pontos gerados</span>
               </div>
+              <p className="text-xl font-bold text-primary">{visible ? pointsGenerated.toLocaleString("pt-BR") : HIDDEN}</p>
             </div>
           </div>
         </div>
