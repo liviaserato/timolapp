@@ -214,7 +214,7 @@ export function NewFranchiseDialog({
   const [couponError, setCouponError] = useState("");
   const [balanceToUse, setBalanceToUse] = useState("");
   const bancoBalance = MOCK_BANCO_BALANCE;
-  const [isContractOpen, setIsContractOpen] = useState(false);
+  
 
   // Payment step state
   const [method, setMethod] = useState<PaymentMethod>(isBrazilian ? "pix" : "credit-card");
