@@ -16,7 +16,7 @@ import {
 import { format, subDays, startOfMonth, endOfMonth, subMonths, addMonths, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { DashboardCard } from "@/components/app/DashboardCard";
-import { Badge } from "@/components/ui/badge";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -53,7 +53,7 @@ interface Order {
 interface FranchiseDistribution {
   type: string;
   count: number;
-  color: string;
+  dotColor: string;
 }
 
 interface OrderSummaryCardProps {
@@ -74,7 +74,7 @@ type PeriodMode = "30d" | "month" | "custom";
 
 export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
   const [showAllProducts, setShowAllProducts] = useState(false);
-  const [showFranchiseDetail, setShowFranchiseDetail] = useState(false);
+  
   const [visible, setVisible] = useState(true);
 
   // Period state
@@ -130,10 +130,10 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
 
   // 3) Franquias cadastradas (mock)
   const franchiseDistribution: FranchiseDistribution[] = [
-    { type: "Bronze", count: 3, color: "bg-amber-700/15 text-amber-800 border-amber-300" },
-    { type: "Prata", count: 2, color: "bg-slate-200/60 text-slate-700 border-slate-300" },
-    { type: "Ouro", count: 1, color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
-    { type: "Platina", count: 1, color: "bg-cyan-100 text-cyan-700 border-cyan-300" },
+    { type: "Platina", count: 1, dotColor: "bg-cyan-500" },
+    { type: "Ouro", count: 1, dotColor: "bg-yellow-500" },
+    { type: "Prata", count: 2, dotColor: "bg-slate-400" },
+    { type: "Bronze", count: 3, dotColor: "bg-amber-700" },
   ];
   const totalFranchises = franchiseDistribution.reduce((s, f) => s + f.count, 0);
 
@@ -260,7 +260,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
                 <Package className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground leading-tight">Produtos adquiridos</span>
+                <span className="text-sm text-muted-foreground leading-tight">Produtos adquiridos</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? totalUnits : HIDDEN}</p>
               {visible && top3.length > 0 && (
@@ -294,40 +294,49 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             </div>
 
             {/* Franquias cadastradas */}
-            <button
-              type="button"
-              onClick={() => visible && setShowFranchiseDetail(true)}
-              className={cn(
-                "rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center transition-colors group",
-                visible && "hover:bg-muted/40 cursor-pointer"
-              )}
-            >
+            <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
                 <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground leading-tight">Franquias cadastradas</span>
+                <span className="text-sm text-muted-foreground leading-tight">Franquias cadastradas</span>
               </div>
-              <div className="flex items-baseline gap-1">
-                <p className="text-xl font-bold text-primary">{visible ? totalFranchises : HIDDEN}</p>
-                {visible && <ChevronRight className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />}
-              </div>
-            </button>
+              <p className="text-xl font-bold text-primary">{visible ? totalFranchises : HIDDEN}</p>
+
+              <div className="my-2 w-full border-t border-app-card-border/50" />
+
+              {visible ? (
+                <div className="w-full space-y-1">
+                  {franchiseDistribution.map((f) => (
+                    <div key={f.type} className="flex items-center justify-between text-[11px] px-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className={cn("h-2 w-2 rounded-full shrink-0", f.dotColor)} />
+                        <span className="text-muted-foreground">{f.type}</span>
+                      </div>
+                      <span className="font-semibold text-foreground">{f.count}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="w-full space-y-1">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="text-[11px] text-muted-foreground">{HIDDEN}</div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Bônus e Pontos */}
             <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
-              {/* Bônus */}
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Award className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground leading-tight">Bônus gerados</span>
+                <span className="text-sm text-muted-foreground leading-tight">Bônus gerados</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? formatCurrency(bonusGenerated) : HIDDEN}</p>
 
-              {/* Divider */}
-              <div className="my-1.5 w-8 border-t border-app-card-border/50" />
+              <div className="my-2 w-full border-t border-app-card-border/50" />
 
-              {/* Pontos */}
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Star className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground leading-tight">Pontos gerados</span>
+                <span className="text-sm text-muted-foreground leading-tight">Pontos gerados</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? pointsGenerated.toLocaleString("pt-BR") : HIDDEN}</p>
             </div>
@@ -365,35 +374,6 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog: Distribuição de franquias */}
-      <Dialog open={showFranchiseDetail} onOpenChange={setShowFranchiseDetail}>
-        <DialogContent className="max-w-xs">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-primary text-base">
-              <Users className="h-4 w-4" />
-              Franquias cadastradas
-            </DialogTitle>
-          </DialogHeader>
-          <p className="text-xs text-muted-foreground -mt-2 mb-1">{periodLabel}</p>
-          <div className="space-y-2">
-            {franchiseDistribution.map((f) => (
-              <div
-                key={f.type}
-                className="flex items-center justify-between text-sm py-2 px-3 rounded-md border border-app-card-border"
-              >
-                <Badge variant="outline" className={cn("text-xs font-medium", f.color)}>
-                  {f.type}
-                </Badge>
-                <span className="font-bold text-foreground">{f.count}</span>
-              </div>
-            ))}
-            <div className="flex items-center justify-between text-sm font-bold pt-2 border-t border-app-card-border px-3">
-              <span>Total</span>
-              <span className="text-primary">{totalFranchises}</span>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
@@ -464,7 +444,7 @@ function MiniCard({
     <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
       <div className="flex items-center gap-1.5 mb-1">
         <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-        <span className="text-xs text-muted-foreground leading-tight">{label}</span>
+        <span className="text-sm text-muted-foreground leading-tight">{label}</span>
       </div>
       <p className={cn("font-bold", accent, valueClass || "text-xl")}>{value}</p>
     </div>
