@@ -1135,12 +1135,11 @@ export function NewFranchiseDialog({
                 <ConfirmRow label="Patrocinador" value={`ID ${sponsorId}`} />
                 <ConfirmRow label="Valor da franquia" value={formatPrice(price)} />
                 {couponAmount > 0 && (
-                  <ConfirmRow label="Desconto cupom" value={`-${formatPrice(couponAmount)}`} />
+                  <ConfirmRow label="Desconto cupom" value={`(${formatPrice(couponAmount)})`} />
                 )}
                 {paymentResult?.balanceUsed && paymentResult.balanceUsed > 0 && (
-                  <ConfirmRow label="Saldo Banco Timol" value={`-${formatPrice(paymentResult.balanceUsed)}`} />
+                  <ConfirmRow label="Saldo Banco Timol" value={`(${formatPrice(paymentResult.balanceUsed)})`} />
                 )}
-                <Separator className="my-1" />
                 {paymentResult?.method === "credit-card" && paymentResult.cardLast4 && (
                   <>
                     <ConfirmRow label="Cartão" value={`•••• ${paymentResult.cardLast4}`} />
