@@ -156,7 +156,7 @@ export default function Pedidos() {
 
         {/* Banners de promoção */}
         <DashboardCard icon={Megaphone} title="Promoções">
-          <div className="mt-2">
+          <div className="mt-2 relative">
             <Carousel className="w-full" opts={{ loop: true }}>
               <CarouselContent>
                 {mockBanners.map((b) => (
@@ -176,8 +176,9 @@ export default function Pedidos() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="left-2 h-10 w-10 bg-transparent border-0 shadow-none hover:bg-muted/60 text-white/70 drop-shadow-md [&>svg]:h-7 [&>svg]:w-7" />
-              <CarouselNext className="right-2 h-10 w-10 bg-transparent border-0 shadow-none hover:bg-muted/60 text-white/70 drop-shadow-md [&>svg]:h-7 [&>svg]:w-7" />
+              {/* Wide touch strips with chevron centered */}
+              <CarouselPrevious className="left-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-black/5 text-white/70 drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
+              <CarouselNext className="right-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-black/5 text-white/70 drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
             </Carousel>
           </div>
         </DashboardCard>
