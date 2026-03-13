@@ -142,7 +142,8 @@ export default function Pedidos() {
   // Group by month
   const grouped = filtered.reduce<Record<string, Order[]>>((acc, order) => {
     const d = new Date(order.date + "T00:00:00");
-    const key = d.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+    const monthName = d.toLocaleDateString("pt-BR", { month: "long" });
+    const key = `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} ${d.getFullYear()}`;
     if (!acc[key]) acc[key] = [];
     acc[key].push(order);
     return acc;
