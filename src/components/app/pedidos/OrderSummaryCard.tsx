@@ -276,7 +276,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                     <button
                       type="button"
                       onClick={() => setShowAllProducts(true)}
-                      className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5 px-1"
+                      className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5 px-3"
                     >
                       Ver todos <ChevronRight className="h-2.5 w-2.5" />
                     </button>
