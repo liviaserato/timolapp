@@ -313,21 +313,21 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             </button>
 
             {/* Bônus e Pontos */}
-            <div className="rounded-lg border border-app-card-border p-3 flex flex-col">
+            <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               {/* Bônus */}
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Award className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground leading-tight">Bônus gerados</span>
+                <span className="text-xs text-muted-foreground leading-tight">Bônus gerados</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? formatCurrency(bonusGenerated) : HIDDEN}</p>
 
               {/* Divider */}
-              <div className="my-1.5 border-t border-app-card-border/50" />
+              <div className="my-1.5 w-8 border-t border-app-card-border/50" />
 
               {/* Pontos */}
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Star className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground leading-tight">Pontos gerados</span>
+                <span className="text-xs text-muted-foreground leading-tight">Pontos gerados</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? pointsGenerated.toLocaleString("pt-BR") : HIDDEN}</p>
             </div>
