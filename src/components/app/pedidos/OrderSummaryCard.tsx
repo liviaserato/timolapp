@@ -461,10 +461,10 @@ function MiniCard({
   valueClass?: string;
 }) {
   return (
-    <div className="rounded-lg border border-app-card-border p-3 flex flex-col">
+    <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
       <div className="flex items-center gap-1.5 mb-1">
         <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-        <span className="text-[10px] text-muted-foreground leading-tight">{label}</span>
+        <span className="text-xs text-muted-foreground leading-tight">{label}</span>
       </div>
       <p className={cn("font-bold", accent, valueClass || "text-xl")}>{value}</p>
     </div>
