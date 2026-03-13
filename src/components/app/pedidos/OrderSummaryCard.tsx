@@ -34,6 +34,27 @@ import {
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 
+/* ── Product categories ── */
+
+type ProductCategory = "agua" | "beleza" | "dia-a-dia";
+
+const categoryLabels: Record<ProductCategory, string> = {
+  agua: "Água Saudável",
+  beleza: "Beleza/Auto Cuidado",
+  "dia-a-dia": "Dia a Dia",
+};
+
+const productCategoryMap: Record<string, ProductCategory> = {
+  "Combo Mega": "agua",
+  "Combo Mini": "agua",
+  "Loader Transparente": "agua",
+  "Produtos Separados": "dia-a-dia",
+};
+
+function getCategory(name: string): ProductCategory {
+  return productCategoryMap[name] || "dia-a-dia";
+}
+
 /* ── Types ── */
 
 interface OrderItem {
@@ -79,6 +100,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
   const { language } = useLanguage();
   const locale = localeMap[language] || ptBR;
   const [showAllProducts, setShowAllProducts] = useState(false);
+  const [productTab, setProductTab] = useState<ProductCategory>("agua");
   const [visible, setVisible] = useState(true);
 
   // Period state
@@ -343,7 +365,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
       </DashboardCard>
 
       {/* Dialog: Todos os produtos */}
-      <Dialog open={showAllProducts} onOpenChange={setShowAllProducts}>
+      <Dialog open={showAllProducts} onOpenChange={(open) => { setShowAllProducts(open); if (open) setProductTab("agua"); }}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-primary text-base">
@@ -352,22 +374,46 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             </DialogTitle>
           </DialogHeader>
           <p className="text-xs text-muted-foreground -mt-2 mb-1">{periodLabel}</p>
-          <div className="space-y-1.5 max-h-[50vh] overflow-y-auto">
-            {sortedProducts.map(([name, qty], idx) => (
-              <div
-                key={name}
-                className="flex items-center justify-between text-sm py-1.5 px-2 rounded-md even:bg-muted/30"
+
+          {/* Category tabs */}
+          <div className="flex items-center gap-1 border-b border-app-card-border pb-0">
+            {(["agua", "beleza", "dia-a-dia"] as ProductCategory[]).map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setProductTab(cat)}
+                className={cn(
+                  "px-2.5 py-1.5 text-[11px] font-medium rounded-t-md transition-colors border-b-2 -mb-[1px]",
+                  productTab === cat
+                    ? "border-primary text-primary bg-primary/5"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                )}
               >
-                <span className="text-muted-foreground">
-                  <span className="font-semibold text-foreground mr-1.5">{idx + 1}.</span>
-                  {name}
-                </span>
-                <span className="font-bold text-foreground">{qty}x</span>
-              </div>
+                {categoryLabels[cat]}
+              </button>
             ))}
-            {sortedProducts.length === 0 && (
-              <p className="text-center text-sm text-muted-foreground py-4">Nenhum produto no período.</p>
-            )}
+          </div>
+
+          {/* Products for selected category */}
+          <div className="space-y-1.5 max-h-[50vh] overflow-y-auto">
+            {(() => {
+              const categoryProducts = sortedProducts.filter(([name]) => getCategory(name) === productTab);
+              if (categoryProducts.length === 0) {
+                return <p className="text-center text-sm text-muted-foreground py-4">Nenhum produto nesta categoria.</p>;
+              }
+              return categoryProducts.map(([name, qty], idx) => (
+                <div
+                  key={name}
+                  className="flex items-center justify-between text-sm py-1.5 px-2 rounded-md even:bg-muted/30"
+                >
+                  <span className="text-muted-foreground">
+                    <span className="font-semibold text-foreground mr-1.5">{idx + 1}.</span>
+                    {name}
+                  </span>
+                  <span className="font-bold text-foreground">{qty}x</span>
+                </div>
+              ));
+            })()}
           </div>
         </DialogContent>
       </Dialog>
