@@ -1120,14 +1120,6 @@ export function NewFranchiseDialog({
                 <Check className="h-7 w-7 text-green-600" />
               </div>
               <h2 className="text-xl font-bold text-primary">Nova franquia adquirida!</h2>
-              <p className="text-sm text-muted-foreground text-center max-w-xs">
-                Sua nova franquia {selectedFranchise.name} foi criada com sucesso.
-                {generatedFranchiseId && (
-                  <>
-                    {" "}Seu novo ID é <strong className="text-foreground">{generatedFranchiseId}</strong>.
-                  </>
-                )}
-              </p>
 
               <div className="w-full bg-primary/5 rounded-xl p-4 space-y-2 text-sm text-left">
                 {generatedFranchiseId && <ConfirmRow label="Novo ID" value={generatedFranchiseId} />}
