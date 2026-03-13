@@ -25,6 +25,9 @@ export default function Dashboard() {
       </header>
 
       <section className="flex flex-col gap-2">
+        {/* Movimentação de Pedidos */}
+        <OrderSummaryCard orders={mockOrders} />
+
         {/* Boas Vindas */}
         <DashboardCard icon={Hand} title="Boas Vindas">
           <p className="mt-1 text-sm">
