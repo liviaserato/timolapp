@@ -73,7 +73,7 @@ const mockOrders: Order[] = [
   },
   {
     id: "2", number: "#4998", date: "2026-03-07",
-    items: [{ name: "Loader Transparente", qty: 5, price: 29.9 }],
+    items: [{ name: "Loader Transparente", qty: 5, price: 29.9 }, { name: "Filtro Premium", qty: 2, price: 79.9 }],
     total: 149.5, status: "entregue",
   },
   {
