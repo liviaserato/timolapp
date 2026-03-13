@@ -737,7 +737,7 @@ export function NewFranchiseDialog({
                 </button>
                 <DialogTitle className="text-xl">Resumo da Compra</DialogTitle>
               </div>
-              <p className="text-sm text-muted-foreground text-left mt-1">
+              <p className="text-sm text-muted-foreground text-left mt-1 pl-7">
                 Confira os detalhes antes de prosseguir.
               </p>
 
