@@ -312,26 +312,37 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
               </div>
               <p className="text-xl font-bold text-primary">{visible ? totalFranchises : HIDDEN}</p>
 
-              <div className="my-2 w-full border-t border-app-card-border/50" />
+              {/* Collapsible divider */}
+              <button
+                type="button"
+                onClick={() => setFranchisesExpanded((v) => !v)}
+                className="my-1.5 w-full flex items-center gap-0"
+              >
+                <div className="flex-1 border-t border-app-card-border/50" />
+                <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground mx-1 transition-transform", franchisesExpanded && "rotate-180")} />
+                <div className="flex-1 border-t border-app-card-border/50" />
+              </button>
 
-              {visible ? (
-                <div className="w-full space-y-1">
-                  {franchiseDistribution.map((f) => (
-                    <div key={f.type} className="flex items-center justify-between text-[11px] px-1">
-                      <div className="flex items-center gap-1.5">
-                        <span className={cn("h-2 w-2 rounded-full shrink-0", f.dotColor)} />
-                        <span className="text-muted-foreground">{f.type}</span>
+              {franchisesExpanded && (
+                visible ? (
+                  <div className="w-full space-y-1">
+                    {franchiseDistribution.map((f) => (
+                      <div key={f.type} className="flex items-center justify-between text-[11px] px-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className={cn("h-2 w-2 rounded-full shrink-0", f.dotColor)} />
+                          <span className="text-muted-foreground">{f.type}</span>
+                        </div>
+                        <span className="font-semibold text-foreground">{f.count}</span>
                       </div>
-                      <span className="font-semibold text-foreground">{f.count}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="w-full space-y-1">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="text-[11px] text-muted-foreground">{HIDDEN}</div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="w-full space-y-1">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="text-[11px] text-muted-foreground">{HIDDEN}</div>
+                    ))}
+                  </div>
+                )
               )}
             </div>
 
