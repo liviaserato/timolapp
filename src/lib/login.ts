@@ -7,6 +7,7 @@ import { login as apiLogin, ApiRequestError } from "@/lib/api";
 export type LoginErrorCode =
   | "temporarily_locked"
   | "invalid_credentials"
+  | "system_access_denied"
   | "server_error";
 
 export async function loginWithUsername({
