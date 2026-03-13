@@ -245,7 +245,7 @@ export default function Pedidos() {
                 <div className="space-y-2">
                   {orders.map((order) => {
                     const sortedItems = [...order.items].sort((a, b) => b.qty - a.qty);
-                    const itemsSummary = sortedItems.map((i) => `${i.qty}x ${i.name}`).join(", ");
+                    const itemsSummary = sortedItems.map((i) => `${i.name} x ${i.qty}`).join(", ");
 
                     return (
                       <div
@@ -266,21 +266,23 @@ export default function Pedidos() {
                             <div className="flex items-center gap-2">
                               <p className="text-xs text-muted-foreground truncate flex-1 min-w-0">{itemsSummary}</p>
                               <span className="text-sm font-bold whitespace-nowrap">{formatCurrency(order.total)}</span>
+                            </div>
+                          </div>
+                          {/* Right side: status + tracking */}
+                          <div className="shrink-0 flex flex-col items-end gap-1 pt-0.5">
+                            <div className="flex items-center gap-1.5">
                               {order.status === "enviado" && order.tracking && (
                                 <button
                                   onClick={(e) => handleTrackingClick(e, order.tracking!)}
-                                  className="flex items-center gap-0.5 text-primary hover:text-primary/80 transition-colors shrink-0"
+                                  className="flex items-center gap-0.5 text-primary hover:text-primary/80 transition-colors"
                                   title="Rastrear pedido"
                                 >
                                   <Truck className="h-4 w-4" />
                                   <ExternalLink className="h-3 w-3" />
                                 </button>
                               )}
+                              <StatusBadge status={order.status} />
                             </div>
-                          </div>
-                          {/* Right side: status */}
-                          <div className="shrink-0 pt-0.5">
-                            <StatusBadge status={order.status} />
                           </div>
                         </div>
                       </div>
