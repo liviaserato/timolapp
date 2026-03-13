@@ -100,6 +100,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
   const { language } = useLanguage();
   const locale = localeMap[language] || ptBR;
   const [showAllProducts, setShowAllProducts] = useState(false);
+  const [productTab, setProductTab] = useState<ProductCategory>("agua");
   const [visible, setVisible] = useState(true);
 
   // Period state
