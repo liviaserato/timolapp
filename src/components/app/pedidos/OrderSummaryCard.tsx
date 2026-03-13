@@ -298,13 +298,13 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
               type="button"
               onClick={() => visible && setShowFranchiseDetail(true)}
               className={cn(
-                "rounded-lg border border-app-card-border p-3 flex flex-col text-left transition-colors group",
+                "rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center transition-colors group",
                 visible && "hover:bg-muted/40 cursor-pointer"
               )}
             >
               <div className="flex items-center gap-1.5 mb-1">
                 <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground leading-tight">Franquias cadastradas</span>
+                <span className="text-xs text-muted-foreground leading-tight">Franquias cadastradas</span>
               </div>
               <div className="flex items-baseline gap-1">
                 <p className="text-xl font-bold text-primary">{visible ? totalFranchises : HIDDEN}</p>
