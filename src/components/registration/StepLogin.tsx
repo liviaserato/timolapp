@@ -46,14 +46,14 @@ export const StepLogin = ({ data, onChange, errors, onUsernameStatusChange }: Pr
   );
 
   const USERNAME_MAX = 20;
-  const USERNAME_REGEX = /^[a-zA-Z0-9_]*$/;
+  const USERNAME_REGEX = /^[a-z0-9._]*$/;
 
   const isUsernameFormatValid = data.username ? USERNAME_REGEX.test(data.username) : true;
 
   const abortRef = useRef<AbortController | null>(null);
 
   const handleUsernameChange = (val: string) => {
-    const stripped = val.replace(/\s/g, "");
+    const stripped = val.replace(/\s/g, "").toLowerCase();
     const trimmed = stripped.slice(0, USERNAME_MAX);
     onChange("username", trimmed);
     setUsernameStatus("idle");

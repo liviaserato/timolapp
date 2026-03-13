@@ -55,6 +55,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
+  const [emailStatus, setEmailStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
   const [apiError, setApiError] = useState("");
 
   // Document check via hook (debounced, reactive)
@@ -133,7 +134,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
     } else if (step === 4) {
       if (!data.username?.trim()) {
         newErrors.username = req;
-      } else if (!/^[a-zA-Z0-9_]*$/.test(data.username)) {
+      } else if (!/^[a-z0-9._]*$/.test(data.username)) {
         newErrors.username = t("step4.username.invalidCharsSubmit");
       } else if (data.username.length > 20) {
         newErrors.username = t("step4.username.hint");
@@ -160,6 +161,11 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
 
     // If doc not yet validated (checking/error/no result), block
     if (step === 1 && docNotValidated) {
+      return;
+    }
+
+    // Block step 2 if email is taken or still checking
+    if (step === 2 && (emailStatus === "taken" || emailStatus === "checking")) {
       return;
     }
 
@@ -234,29 +240,34 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
         }
       }
 
+      // Trim all string fields before passing to next step
+      const trimmed = Object.fromEntries(
+        Object.entries(data).map(([k, v]) => [k, typeof v === "string" ? v.trim() : v])
+      ) as Record<string, string>;
+
       onComplete({
         ...initialData,
-        fullName: data.fullName,
-        birthDate: data.birthDate,
-        document: data.document,
-        foreignerNoCpf: data.foreignerNoCpf,
-        documentCountry: data.documentCountry,
-        documentCountryCode: data.documentCountryCode,
-        documentCountryFlag: data.documentCountryFlag,
-        gender: data.gender,
-        email: data.email,
-        phoneDdi: data.phoneDdi,
-        phoneNumber: data.phoneNumber,
-        country: data.country,
-        countryIso2: data.countryIso2,
-        zipCode: data.zipCode,
-        street: data.street,
-        number: data.number,
-        complement: data.complement,
-        neighborhood: data.neighborhood,
-        cityId: data.cityId,
-        stateId: data.stateId,
-        username: data.username,
+        fullName: trimmed.fullName,
+        birthDate: trimmed.birthDate,
+        document: trimmed.document,
+        foreignerNoCpf: trimmed.foreignerNoCpf,
+        documentCountry: trimmed.documentCountry,
+        documentCountryCode: trimmed.documentCountryCode,
+        documentCountryFlag: trimmed.documentCountryFlag,
+        gender: trimmed.gender,
+        email: trimmed.email,
+        phoneDdi: trimmed.phoneDdi,
+        phoneNumber: trimmed.phoneNumber,
+        country: trimmed.country,
+        countryIso2: trimmed.countryIso2,
+        zipCode: trimmed.zipCode,
+        street: trimmed.street,
+        number: trimmed.number,
+        complement: trimmed.complement,
+        neighborhood: trimmed.neighborhood,
+        cityId: trimmed.cityId,
+        stateId: trimmed.stateId,
+        username: trimmed.username,
         documentCheckPassed: !docBlocked,
         authUserId: alreadyRegistered ? initialData.authUserId : authUid,
         franchiseId: initialData.franchiseId ?? (authUid ? String(Math.floor(100000 + Math.random() * 900000)) : undefined),
@@ -308,7 +319,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
           >
             <div className="space-y-6">
               {step === 1 && <StepPersonal data={data} onChange={onChange} errors={errors} docCheckError={docCheckError} docBlocked={docBlocked} showDocCheck={showDocCheck} docChecking={docChecking} docCheckResult={docCheckResult} resetDocCheck={resetDocCheck} />}
-              {step === 2 && <StepContact data={data} onChange={onChange} errors={errors} />}
+              {step === 2 && <StepContact data={data} onChange={onChange} errors={errors} onEmailStatusChange={setEmailStatus} />}
               {step === 3 && <StepAddress data={data} onChange={onChange} errors={errors} />}
               {step === 4 && <StepLogin data={data} onChange={onChange} errors={errors} onUsernameStatusChange={setUsernameStatus} />}
 
@@ -328,8 +339,8 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
                 )}
 
                 {step < TOTAL_STEPS ? (
-                  <Button type="submit" disabled={loading || (step === 1 && (docChecking || docBlocked || docNotValidated))}>
-                    {(step === 1 && docChecking) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                  <Button type="submit" disabled={loading || (step === 1 && (docChecking || docBlocked || docNotValidated)) || (step === 2 && (emailStatus === "taken" || emailStatus === "checking"))}>
+                    {((step === 1 && docChecking) || (step === 2 && emailStatus === "checking")) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                     {t("btn.next")}
                   </Button>
                 ) : (

@@ -49,9 +49,13 @@ const Login = () => {
     const result = await loginWithUsername({ username, password, rememberMe });
 
     if (result.success === false) {
+      const errorMsg =
+        result.error === "temporarily_locked" ? t("login.error.locked") :
+        result.error === "system_access_denied" ? t("login.error.systemDenied") :
+        t("login.error.invalid");
       setErrors((prev) => ({
         ...prev,
-        general: result.error === "temporarily_locked" ? t("login.error.locked") : t("login.error.invalid"),
+        general: errorMsg,
       }));
       setLoading(false);
       return;

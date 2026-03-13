@@ -27,9 +27,10 @@ export interface LoginResponse {
 
 export async function login(req: LoginRequest): Promise<LoginResponse> {
   const data = await api.post<LoginResponse>("/api/auth/login", {
-    username: req.username.trim(),
+    username: req.username.trim().toLowerCase(),
     password: req.password,
     rememberMe: req.rememberMe,
+    systemId: "timol-app",
   }, { auth: false });
 
   // Store the token

@@ -82,6 +82,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "step2.title": "Contato",
     "step2.email": "E-mail",
     "step2.email.placeholder": "seu@email.com",
+    "step2.email.available": "✓ E-mail disponível",
+    "step2.email.taken": "Este e-mail já está cadastrado no sistema.",
     "step2.phone": "Telefone",
     "step2.phone.placeholder": "Ex: +55 11 99999-0000",
 
@@ -114,7 +116,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "step4.username.placeholder": "Escolha um nome de usuário",
     "step4.username.available": "✓ Nome de usuário disponível",
     "step4.username.taken": "Nome de usuário já em uso. Tente outro.",
-    "step4.username.hint": "Apenas letras, números e underscore (_). Máx. 20 caracteres.",
+    "step4.username.hint": "Apenas letras minúsculas, números, ponto (.) e underscore (_). Máx. 20 caracteres.",
     "step4.username.invalidChars": "Caracteres especiais não são permitidos.",
     "step4.username.invalidCharsSubmit": "Esse campo foi preenchido incorretamente. Caracteres especiais não são permitidos.",
     "step4.password": "Senha",
@@ -312,6 +314,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "login.resumeRegistration": "Concluir meu cadastro",
     "login.error.invalid": "Usuário ou senha incorretos. Tente novamente.",
     "login.error.locked": "Muitas tentativas. Tente novamente em alguns minutos.",
+    "login.error.systemDenied": "Você não tem permissão para acessar este sistema.",
 
     // Forgot password popup
     "forgotPw.title": "Recuperar Senha",
@@ -360,6 +363,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "forgotPw.error.passwordMin": "A senha deve ter no mínimo 6 caracteres.",
     "forgotPw.error.passwordMismatch": "As senhas não coincidem.",
     "forgotPw.error.resetFailed": "Erro ao alterar a senha. Tente novamente.",
+    "forgotPw.error.rateLimited": "Muitas solicitações. Aguarde 30 minutos antes de tentar novamente.",
 
     // Forgot username popup
     "forgotUser.title": "Recuperar Usuário",
@@ -504,6 +508,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "step2.title": "Contact",
     "step2.email": "Email",
     "step2.email.placeholder": "your@email.com",
+    "step2.email.available": "✓ Email available",
+    "step2.email.taken": "This email is already registered.",
     "step2.phone": "Phone",
     "step2.phone.placeholder": "E.g.: +1 555 123-4567",
 
@@ -534,7 +540,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "step4.username.placeholder": "Choose a username",
     "step4.username.available": "✓ Username available",
     "step4.username.taken": "Username already in use. Try another.",
-    "step4.username.hint": "Only letters, numbers and underscore (_). Max 20 characters.",
+    "step4.username.hint": "Only lowercase letters, numbers, dot (.) and underscore (_). Max 20 characters.",
     "step4.username.invalidChars": "Special characters are not allowed.",
     "step4.username.invalidCharsSubmit": "This field was filled incorrectly. Special characters are not allowed.",
     "step4.password": "Password",
@@ -729,6 +735,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "login.resumeRegistration": "Complete my registration",
     "login.error.invalid": "Invalid username or password. Please try again.",
     "login.error.locked": "Too many attempts. Please try again in a few minutes.",
+    "login.error.systemDenied": "You do not have permission to access this system.",
 
     // Forgot password popup
     "forgotPw.title": "Recover Password",
@@ -777,6 +784,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "forgotPw.error.passwordMin": "Password must be at least 6 characters.",
     "forgotPw.error.passwordMismatch": "Passwords do not match.",
     "forgotPw.error.resetFailed": "Error changing password. Please try again.",
+    "forgotPw.error.rateLimited": "Too many requests. Please wait 30 minutes before trying again.",
 
     // Forgot username popup
     "forgotUser.title": "Recover Username",
@@ -921,6 +929,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "step2.title": "Contacto",
     "step2.email": "Correo electrónico",
     "step2.email.placeholder": "su@correo.com",
+    "step2.email.available": "✓ E-mail disponible",
+    "step2.email.taken": "Este e-mail ya está registrado en el sistema.",
     "step2.phone": "Teléfono",
     "step2.phone.placeholder": "Ej: +54 11 1234-5678",
 
@@ -951,7 +961,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "step4.username.placeholder": "Elija un nombre de usuario",
     "step4.username.available": "✓ Nombre de usuario disponible",
     "step4.username.taken": "Nombre de usuario en uso. Intente otro.",
-    "step4.username.hint": "Solo letras, números y guion bajo (_). Máx. 20 caracteres.",
+    "step4.username.hint": "Solo letras minúsculas, números, punto (.) y guion bajo (_). Máx. 20 caracteres.",
     "step4.username.invalidChars": "Los caracteres especiales no están permitidos.",
     "step4.username.invalidCharsSubmit": "Este campo fue rellenado incorrectamente. Los caracteres especiales no están permitidos.",
     "step4.password": "Contraseña",
@@ -1146,6 +1156,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "login.resumeRegistration": "Completar mi registro",
     "login.error.invalid": "Usuario o contraseña incorrectos. Intente nuevamente.",
     "login.error.locked": "Demasiados intentos. Inténtelo nuevamente en unos minutos.",
+    "login.error.systemDenied": "No tiene permiso para acceder a este sistema.",
 
     // Forgot password popup
     "forgotPw.title": "Recuperar Contraseña",
@@ -1194,6 +1205,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "forgotPw.error.passwordMin": "La contraseña debe tener al menos 6 caracteres.",
     "forgotPw.error.passwordMismatch": "Las contraseñas no coinciden.",
     "forgotPw.error.resetFailed": "Error al cambiar la contraseña. Intente nuevamente.",
+    "forgotPw.error.rateLimited": "Demasiadas solicitudes. Espere 30 minutos antes de intentar nuevamente.",
 
     // Forgot username popup
     "forgotUser.title": "Recuperar Usuario",

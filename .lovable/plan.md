@@ -1,135 +1,107 @@
 
+Objetivo
 
-## Auditoria Completa: Login e Cadastro — Regras de Negócio vs Implementação
+Sim, dá para fazer. O padrão mais aceito não é só “bloquear depois de 5 erros”, e sim combinar:
+- limite de tentativas por conta
+- limite por IP/dispositivo
+- bloqueio temporário curto
+- mensagem genérica no login
+- reset da contagem quando a pessoa acerta a senha
 
-Analisei o documento de regras contra todo o código do fluxo de Login e Cadastro. Abaixo está o diagnóstico completo, separado em **o que está correto**, **o que precisa ser corrigido** e **o que precisa ser criado**.
+O que encontrei no projeto
 
----
+- Hoje a tela `src/pages/Login.tsx` ainda está em modo mock: ela faz `setTimeout` e entra em `/app` sem autenticação real.
+- Então essa trava de 5 tentativas precisa ser implementada junto com o login real no backend, senão ela não protege nada de verdade.
+- O projeto já usa autenticação no cadastro e já tem `profiles` com `username`, então o caminho natural é autenticar por usuário no frontend e validar/bloquear no backend.
 
-### Já implementado e correto
+Padrão “universal” recomendado
 
-| Regra | Status |
-|-------|--------|
-| 1.1 Login: campos username/password/rememberMe, validação, mensagem genérica | OK |
-| 1.3 Recuperação senha: PIN 6 dígitos, 5 min validade, cooldown 60s reenvio | OK |
-| 2.1 Busca patrocinador por ID (numérico, API sponsor-lookup) | OK |
-| 2.2 Sugestão por localidade (sponsor-suggest, card selecionável) | OK |
-| 3.1 Validação documento: CPF checksum, duplicidade via API, país emissor | OK |
-| 3.2 Validação idade 18+ com mensagem | OK |
-| 4.1 Email: regex validação formato | OK |
-| 4.2 Username: regex `[a-zA-Z0-9_]`, max 20, debounce 600ms, duplicidade API | OK |
-| 5.1 Franquias bronze/prata/ouro/platina com preços por moeda | OK |
-| 6.1 PIX apenas para brasileiros | OK |
-| 6.2 Cartão via Stripe para todos | OK |
-| Fluxo WhatsApp sem patrocinador | OK |
-| DEV_BYPASS para login e registro | OK |
-| i18n pt/en/es | OK |
+Para este app, eu recomendaria este padrão:
+- até 5 tentativas erradas
+- ao errar a 5ª vez: bloquear por 10 minutos
+- aplicar a regra por `username` e também observar IP/origem
+- ao acertar a senha: zerar tentativas
+- sempre mostrar erro genérico como “Usuário ou senha inválidos” ou “Tente novamente mais tarde”
+- não informar se o bloqueio foi por usuário inexistente, senha errada ou conta bloqueada
+- opcional depois: CAPTCHA após muitas tentativas repetidas
 
----
+Esse é um padrão comum e equilibrado. Não existe um número único “universal” obrigatório, mas 5 tentativas + 10 a 15 minutos de bloqueio é bem aceitável.
 
-### Correções necessárias (11 itens)
+Plano de implementação
 
-**1. Login: campo `systemId` ausente**
-- Doc regra 1.1: API `/api/auth/login` requer `systemId`
-- `src/lib/api/auth.ts` não envia `systemId`
-- Ação: Adicionar `systemId: "timol-app"` (constante) ao body do login
+1. Trocar o login mock por login real
+- Substituir o `setTimeout` do `Login.tsx` por uma chamada a uma backend function própria de login.
+- Essa function receberá `username` e `password`.
 
-**2. Login: mensagem de permissão de sistema**
-- Doc regra 1.2: Se não possuir acesso ao systemId → "Você não tem permissão para acessar este sistema"
-- `src/lib/login.ts` não trata esse código de erro
-- Ação: Adicionar tratamento para erro `system_access_denied` ou similar
+2. Validar bloqueio antes de autenticar
+- A backend function verifica se o usuário está temporariamente bloqueado.
+- Se estiver, retorna resposta genérica com tempo restante.
 
-**3. Login: trim de username/password**
-- Doc regra 1.1: "Remover espaços antes/depois dos campos"
-- `Login.tsx` não faz `.trim()` no username antes de enviar (o `auth.ts` faz trim no username mas não na password — password não deve ter trim)
-- Ação: username já tem trim no auth.ts — OK. Confirmar que está correto.
+3. Registrar tentativas falhas
+- Criar uma tabela específica de controle, separada de `profiles`, por exemplo:
+  - `login_security`
+  - ou `login_attempts`
+- Campos típicos:
+  - `username`
+  - `failed_attempts`
+  - `locked_until`
+  - `last_failed_at`
+  - `last_ip`
+  - `updated_at`
 
-**4. Recuperação senha: limite 5 solicitações em 30 min + bloqueio 30 min**
-- Doc regra 1.3: "limite 5 solicitações em 30 minutos; bloqueio por 30 minutos após limite"
-- Frontend não controla/exibe esse estado (rate limit)
-- Ação: Tratar erro `rate_limited`/`too_many_requests` no `ForgotPasswordPopup` com mensagem de bloqueio
+4. Fazer o fluxo de autenticação seguro
+- A function localiza o usuário pelo `username`.
+- Faz a autenticação real no backend.
+- Se falhar:
+  - incrementa contador
+  - se chegou ao limite, grava `locked_until = now + 10 min`
+- Se der certo:
+  - zera contador e remove bloqueio
 
-**5. Cadastro Step 2: email sem duplicidade via API**
-- Doc regra 4.1: "Validar regex e duplicidade"
-- `StepContact.tsx` valida formato mas **não verifica duplicidade** via `checkEmail()`
-- Ação: Adicionar validação de duplicidade de email com debounce (similar ao username)
+5. Ajustar a UI do login
+- Mostrar mensagem amigável e genérica.
+- Se bloqueado, pode exibir algo como:
+  - “Muitas tentativas. Tente novamente em alguns minutos.”
+- Não mostrar detalhes que permitam adivinhar contas válidas.
 
-**6. Cadastro: username permite ponto (`.`)**
-- Doc regra 4.2: "Permitido letras minúsculas, números, ponto e underline"
-- `StepLogin.tsx` regex é `[a-zA-Z0-9_]` — **não inclui ponto**
-- Ação: Alterar regex para `/^[a-zA-Z0-9._]*$/`
+Recomendação de segurança
 
-**7. Cadastro: trim em todos os campos antes do envio**
-- Doc regra geral: "Remover espaços antes/depois dos campos"
-- `RegistrationWizard.tsx` faz trim em alguns campos no submit, mas **não em todos os campos de entrada** (ex: email, document ao digitar)
-- Ação: Aplicar `.trim()` no `onComplete` para todos os campos string
+Eu não recomendo bloquear só por usuário.
+O ideal é:
+- regra principal por usuário
+- proteção extra por IP/origem
+Porque, se for só por usuário, alguém pode bloquear a conta de outra pessoa de propósito.
 
-**8. Franquias: preços devem vir da API**
-- Doc regra 5.1: "Carregar preços via API" (`/api/franchise/prices`)
-- `FranchiseScreen.tsx` tem preços hardcoded no frontend
-- Ação: Para agora, manter hardcoded (API não pronta), mas preparar estrutura para futura integração. Adicionar nota/TODO.
+Detalhes técnicos
 
-**9. Cupom: validação via API real**
-- Doc regra 5.2: "Cupom deve ser validado antes do pagamento" via `/api/coupon/validate`
-- `SummaryScreen.tsx` usa validação **mock** (hardcoded "TIMOL10", "TESTE")
-- Ação: Substituir mock pela chamada real `validateCoupon()` de `src/lib/api/coupons.ts`. Enviar `sponsorId`, `franchiseType`, `currencyCode`.
+Arquivos que provavelmente entrarão nessa mudança:
+- `src/pages/Login.tsx`
+- uma nova backend function de login
+- uma migration para criar a tabela de tentativas/bloqueio
+- possivelmente proteção de rota em `src/App.tsx` / layout do app
 
-**10. Registro completo (7.1): API `/api/register/complete` após pagamento**
-- Doc regra 7.1: Após pagamento aprovado, enviar dados do contrato
-- `PaymentScreen.tsx` confirma pagamento mas **não chama** `registerComplete()`
-- Ação: Após pagamento Stripe bem-sucedido, chamar `registerComplete()` com `franchiseType`, `couponId`, `agreeContract`, `agreeCommunications`, `contractVersion`, `acceptedAt`, `ipAddress`, `userAgent`
+Decisões de produto que eu seguiria por padrão
+- Limite: 5 erros
+- Janela/bloqueio: 10 minutos
+- Reset ao sucesso: sim
+- Mensagem detalhada: não
+- CAPTCHA depois de abuso repetido: recomendado numa segunda etapa
 
-**11. Username: converter para lowercase antes de enviar**
-- Doc regra 4.2: "letras minúsculas" — implica armazenamento em minúsculo
-- `StepLogin.tsx` aceita maiúsculas mas não converte
-- Ação: Converter para lowercase no `onChange` ou antes do envio
+Resumo prático
 
----
+Sim, é totalmente viável.
+O melhor padrão para seu caso seria:
+- 5 senhas erradas
+- bloqueio temporário de 10 minutos
+- controle no backend
+- por usuário + sinal de IP/origem
+- mensagem genérica
+- zerar ao login bem-sucedido
 
-### Itens para criar (2 itens)
+Observação importante
 
-**1. Validação de email com duplicidade (debounce)**
-- Similar à validação de username em `StepLogin.tsx`
-- Adicionar em `StepContact.tsx`: debounce 600ms, ícone de status (checking/available/taken)
+Como o login atual ainda não é real, eu trataria isso como uma implementação em duas partes:
+1. conectar o login de verdade ao backend
+2. acoplar o bloqueio temporário no mesmo fluxo
 
-**2. Chamada `registerComplete` no fluxo de pagamento**
-- Criar integração no `PaymentScreen.tsx` ou no `Index.tsx` após confirmação de pagamento
-
----
-
-### Varredura de segurança e bugs
-
-| Item | Risco | Ação |
-|------|-------|------|
-| `dangerouslySetInnerHTML` em `FranchiseScreen.tsx` (benefícios) | Médio — conteúdo é hardcoded, não user-input | OK por agora, mas a função `styleEmTags` já sanitiza |
-| PIX_CODE hardcoded em `PaymentScreen.tsx` | Baixo — placeholder, mas deve vir do backend | Adicionar TODO |
-| Stripe publishable key hardcoded | OK — chave pública, é o padrão |
-| `console.warn("[DEV BYPASS]")` em produção | Baixo — remover antes do release | Manter com flag |
-| `AuthGate` `DEV_BYPASS = true` | Crítico em produção — desabilitar antes do release | Flag está marcado como temporário |
-| Coupon mock aceita qualquer código hardcoded | Médio — substituir pela API real | Incluído nas correções |
-| `crypto.randomUUID()` para fake authUid | OK — é dev bypass |
-| Sem rate limiting no frontend para buscas de patrocinador | Baixo — backend tem proteção | OK |
-| Email do login não é sanitizado/validado antes de envio | Baixo — username não é email | OK |
-
----
-
-### Plano de implementação (ordem de prioridade)
-
-1. **Username regex**: incluir ponto `.` e converter para lowercase
-2. **Email duplicidade**: adicionar validação com debounce em `StepContact`
-3. **Login systemId**: adicionar campo ao body da API de login
-4. **Cupom via API real**: substituir mock por `validateCoupon()`
-5. **Trim geral**: garantir trim em todos os campos antes do submit
-6. **Rate limit na recuperação de senha**: tratar erro de bloqueio
-7. **registerComplete**: integrar chamada após pagamento aprovado
-8. **Mensagem system_access_denied**: tratar no login
-9. **Username lowercase**: normalizar no onChange
-
-### Notas para o backend (futuro)
-
-- `systemId` precisa ser validado no backend (regra 1.2)
-- `/api/franchise/prices` precisa ser criado para carregar preços dinamicamente
-- `/api/coupon/validate` precisa receber `sponsorId` e `franchiseType`
-- `/api/register/complete` precisa registrar dados do contrato (versão, IP, userAgent, aceite)
-- PIX deve gerar código dinâmico via backend
-
+Assim a regra fica realmente segura e não só visual.
