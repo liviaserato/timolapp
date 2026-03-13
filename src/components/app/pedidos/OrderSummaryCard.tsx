@@ -253,7 +253,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
           </div>
 
           {/* KPI grid — 3 cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
             {/* Produtos adquiridos */}
             <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
@@ -323,7 +323,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             </div>
 
             {/* Bônus e Pontos */}
-            <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
+            <div className="col-span-2 sm:col-span-1 rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Award className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
                 <span className="text-base sm:text-sm text-muted-foreground leading-tight">Bônus gerados</span>
