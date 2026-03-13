@@ -257,30 +257,36 @@ export default function Pedidos() {
                         )}
                         onClick={() => setDetailOrder(order)}
                       >
-                        <div className="p-3 grid grid-cols-[1fr_auto] gap-x-3 gap-y-0.5">
-                          {/* Row 1 left: #pedido + data */}
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="text-base font-extrabold text-foreground">{order.number}</span>
-                            <span className="text-[11px] text-muted-foreground">{formatDate(order.date)}</span>
+                        <div className="p-3 flex flex-col gap-1">
+                          {/* Row 1: #pedido + data | resumo (desktop) / valor (mobile) */}
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="text-base font-extrabold text-foreground">{order.number}</span>
+                              <span className="text-[11px] text-muted-foreground">{formatDate(order.date)}</span>
+                            </div>
+                            <p className="hidden sm:block text-xs text-muted-foreground truncate max-w-[50%] text-right">{itemsSummary}</p>
+                            <span className="sm:hidden text-sm font-bold whitespace-nowrap">{formatCurrency(order.total)}</span>
                           </div>
-                          {/* Row 1 right: tracking + status */}
-                          <div className="flex items-center justify-end gap-1.5">
-                            {order.status === "enviado" && order.tracking && (
-                              <button
-                                onClick={(e) => handleTrackingClick(e, order.tracking!)}
-                                className="flex items-center gap-0.5 text-primary hover:text-primary/80 transition-colors"
-                                title="Rastrear pedido"
-                              >
-                                <Truck className="h-4 w-4" />
-                                <ExternalLink className="h-3 w-3" />
-                              </button>
-                            )}
-                            <StatusBadge status={order.status} />
+                          {/* Mobile only: resumo */}
+                          <p className="sm:hidden text-xs text-muted-foreground truncate">{itemsSummary}</p>
+                          {/* Row 2: status + tracking | valor */}
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-1.5">
+                              <StatusBadge status={order.status} />
+                              {order.status === "enviado" && order.tracking && (
+                                <button
+                                  onClick={(e) => handleTrackingClick(e, order.tracking!)}
+                                  className="flex items-center gap-0.5 text-primary hover:text-primary/80 transition-colors"
+                                  title="Rastrear pedido"
+                                >
+                                  <Truck className="h-4 w-4" />
+                                  <span className="text-[11px] font-mono">{order.tracking}</span>
+                                  <ExternalLink className="h-3 w-3" />
+                                </button>
+                              )}
+                            </div>
+                            <span className="hidden sm:block text-sm font-bold whitespace-nowrap">{formatCurrency(order.total)}</span>
                           </div>
-                          {/* Row 2 left: resumo */}
-                          <p className="text-xs text-muted-foreground truncate flex items-center">{itemsSummary}</p>
-                          {/* Row 2 right: valor */}
-                          <span className="text-sm font-bold whitespace-nowrap flex items-center justify-end">{formatCurrency(order.total)}</span>
                         </div>
                       </div>
                     );
