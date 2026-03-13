@@ -32,7 +32,7 @@ import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader"
 import { openWhatsAppLink } from "@/lib/whatsapp";
 import { validateCoupon, type DiscountPreview } from "@/lib/api/coupons";
 import { useFranchise } from "@/contexts/FranchiseContext";
-import { ContractScreen } from "@/components/screens/ContractScreen";
+
 
 import timolLogo from "@/assets/favicon-timol-azul-escuro.svg";
 import franquiaBronze from "@/assets/franquia-bronze.svg";
