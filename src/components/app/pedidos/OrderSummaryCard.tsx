@@ -254,8 +254,8 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             )}
           </div>
 
-          {/* KPI grid — 4 cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+          {/* KPI grid — 3 cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {/* Produtos adquiridos */}
             <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
@@ -264,43 +264,32 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
               </div>
               <p className="text-xl font-bold text-primary">{visible ? totalUnits : HIDDEN}</p>
 
-              {/* Collapsible divider */}
-              <button
-                type="button"
-                onClick={() => setProductsExpanded((v) => !v)}
-                className="my-1.5 w-full flex items-center gap-0"
-              >
-                <div className="flex-1 border-t border-app-card-border/50" />
-                <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground mx-1 transition-transform", productsExpanded && "rotate-180")} />
-                <div className="flex-1 border-t border-app-card-border/50" />
-              </button>
+              <div className="my-2 w-full border-t border-app-card-border/50" />
 
-              {productsExpanded && (
-                visible ? (
-                  <div className="w-full space-y-1">
-                    {top3.map(([name, qty]) => (
-                      <div key={name} className="flex items-center justify-between text-[11px] px-1">
-                        <span className="text-muted-foreground truncate mr-1">{name}</span>
-                        <span className="font-semibold text-foreground shrink-0">{qty}x</span>
-                      </div>
-                    ))}
-                    {sortedProducts.length > 3 && (
-                      <button
-                        type="button"
-                        onClick={() => setShowAllProducts(true)}
-                        className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5 px-1"
-                      >
-                        Ver todos <ChevronRight className="h-2.5 w-2.5" />
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <div className="w-full space-y-1">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="text-[11px] text-muted-foreground">{HIDDEN}</div>
-                    ))}
-                  </div>
-                )
+              {visible ? (
+                <div className="w-full space-y-1">
+                  {top3.map(([name, qty]) => (
+                    <div key={name} className="flex items-center justify-between text-[11px] px-1">
+                      <span className="text-muted-foreground truncate mr-1">{name}</span>
+                      <span className="font-semibold text-foreground shrink-0">{qty}x</span>
+                    </div>
+                  ))}
+                  {sortedProducts.length > 3 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAllProducts(true)}
+                      className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5 px-1"
+                    >
+                      Ver todos <ChevronRight className="h-2.5 w-2.5" />
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="w-full space-y-1">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="text-[11px] text-muted-foreground">{HIDDEN}</div>
+                  ))}
+                </div>
               )}
             </div>
 
@@ -312,56 +301,45 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
               </div>
               <p className="text-xl font-bold text-primary">{visible ? totalFranchises : HIDDEN}</p>
 
-              {/* Collapsible divider */}
-              <button
-                type="button"
-                onClick={() => setFranchisesExpanded((v) => !v)}
-                className="my-1.5 w-full flex items-center gap-0"
-              >
-                <div className="flex-1 border-t border-app-card-border/50" />
-                <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground mx-1 transition-transform", franchisesExpanded && "rotate-180")} />
-                <div className="flex-1 border-t border-app-card-border/50" />
-              </button>
+              <div className="my-2 w-full border-t border-app-card-border/50" />
 
-              {franchisesExpanded && (
-                visible ? (
-                  <div className="w-full space-y-1">
-                    {franchiseDistribution.map((f) => (
-                      <div key={f.type} className="flex items-center justify-between text-[11px] px-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className={cn("h-2 w-2 rounded-full shrink-0", f.dotColor)} />
-                          <span className="text-muted-foreground">{f.type}</span>
-                        </div>
-                        <span className="font-semibold text-foreground">{f.count}</span>
+              {visible ? (
+                <div className="w-full space-y-1">
+                  {franchiseDistribution.map((f) => (
+                    <div key={f.type} className="flex items-center justify-between text-[11px] px-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className={cn("h-2 w-2 rounded-full shrink-0", f.dotColor)} />
+                        <span className="text-muted-foreground">{f.type}</span>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="w-full space-y-1">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="text-[11px] text-muted-foreground">{HIDDEN}</div>
-                    ))}
-                  </div>
-                )
+                      <span className="font-semibold text-foreground">{f.count}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="w-full space-y-1">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="text-[11px] text-muted-foreground">{HIDDEN}</div>
+                  ))}
+                </div>
               )}
             </div>
 
-            {/* Bônus gerados */}
-            <MiniCard
-              icon={Award}
-              label="Bônus gerados"
-              value={visible ? formatCurrency(bonusGenerated) : HIDDEN}
-              accent="text-primary"
-              valueClass="text-lg"
-            />
+            {/* Bônus e Pontos */}
+            <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <Award className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground leading-tight">Bônus gerados</span>
+              </div>
+              <p className="text-xl font-bold text-primary">{visible ? formatCurrency(bonusGenerated) : HIDDEN}</p>
 
-            {/* Pontos gerados */}
-            <MiniCard
-              icon={Star}
-              label="Pontos gerados"
-              value={visible ? pointsGenerated.toLocaleString("pt-BR") : HIDDEN}
-              accent="text-primary"
-            />
+              <div className="my-2 w-full border-t border-app-card-border/50" />
+
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <Star className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground leading-tight">Pontos gerados</span>
+              </div>
+              <p className="text-xl font-bold text-primary">{visible ? pointsGenerated.toLocaleString("pt-BR") : HIDDEN}</p>
+            </div>
           </div>
         </div>
       </DashboardCard>
