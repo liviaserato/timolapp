@@ -581,7 +581,7 @@ export function NewFranchiseDialog({
                 </button>
                 <DialogTitle className="text-xl">Escolha sua Franquia</DialogTitle>
               </div>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-muted-foreground mt-1 pl-7">
                 Patrocinador: <strong className="text-foreground">ID {sponsorId}</strong>. Selecione qual franquia faz mais sentido para você.
               </p>
 
