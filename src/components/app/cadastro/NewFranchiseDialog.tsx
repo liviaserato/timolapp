@@ -911,22 +911,20 @@ export function NewFranchiseDialog({
           {/* ── STEP 3: Payment ── */}
           {step === "payment" && selectedFranchise && (
             <>
-              <div className="relative pt-1">
+              <div className="flex items-center gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => setStep("summary")}
-                  className="absolute left-0 top-1 z-10 text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="Voltar"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
-                <DialogHeader className="text-center px-8">
-                  <DialogTitle className="text-xl">Pagamento</DialogTitle>
-                  <DialogDescription className="text-center">
-                    Nova franquia {selectedFranchise.name} — Patrocinador: ID {sponsorId}
-                  </DialogDescription>
-                </DialogHeader>
+                <DialogTitle className="text-xl">Pagamento</DialogTitle>
               </div>
+              <p className="text-sm text-muted-foreground mt-1 pl-7">
+                Nova franquia {selectedFranchise.name} — Patrocinador: ID {sponsorId}
+              </p>
 
               <div className="text-center space-y-1 mt-2">
                 <p className="text-sm font-medium text-foreground">
