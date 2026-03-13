@@ -154,8 +154,6 @@ export default function Pedidos() {
       </header>
 
       <section className="flex flex-col gap-2">
-      {/* Resumo */}
-        <OrderSummaryCard orders={mockOrders} />
 
         {/* Banners de promoção */}
         <DashboardCard icon={Megaphone} title="Promoções">
