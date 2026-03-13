@@ -295,7 +295,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
                 <Users className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
-                <span className="text-base sm:text-sm text-muted-foreground leading-tight">Franquias cadastradas</span>
+                <span className="text-[13px] sm:text-sm text-muted-foreground leading-tight">Franquias cadastradas</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? totalFranchises : HIDDEN}</p>
 
