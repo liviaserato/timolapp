@@ -6,6 +6,7 @@ import { Gem, ArrowUp, Plus, ChevronLeft, ChevronRight, ShieldCheck, ShieldAlert
 import { cn } from "@/lib/utils";
 import { UpgradeDialog } from "./UpgradeDialog";
 import { NewFranchiseDialog } from "./NewFranchiseDialog";
+import { useFranchise } from "@/contexts/FranchiseContext";
 
 /* ── franchise status helper ── */
 
