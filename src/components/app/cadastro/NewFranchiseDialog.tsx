@@ -508,7 +508,7 @@ export function NewFranchiseDialog({
                 <div className="bg-primary/5 rounded-lg p-4">
                   <p className="text-sm text-foreground leading-relaxed">
                     Expandir sua rede com uma nova franquia é uma excelente estratégia para
-                    <strong> multiplicar seus ganhos</strong>! <BarChart3 className="inline h-4 w-4 text-primary -translate-y-px" />
+                    <strong> multiplicar seus ganhos</strong>!
                   </p>
                 </div>
 
