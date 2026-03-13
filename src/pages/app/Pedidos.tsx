@@ -268,24 +268,22 @@ export default function Pedidos() {
                             <span className="sm:hidden text-sm font-bold whitespace-nowrap">{formatCurrency(order.total)}</span>
                           </div>
                           {/* Mobile only: resumo */}
-                          <p className="sm:hidden text-xs text-muted-foreground truncate">{itemsSummary}</p>
+                          <p className="sm:hidden text-xs text-muted-foreground truncate mb-1">{itemsSummary}</p>
                           {/* Row 2: status + tracking | valor */}
                           <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-1.5">
-                              <StatusBadge status={order.status} />
-                              {order.status === "enviado" && order.tracking && (
-                                <button
-                                  onClick={(e) => handleTrackingClick(e, order.tracking!)}
-                                  className="flex items-center gap-0.5 text-primary hover:text-primary/80 transition-colors"
-                                  title="Rastrear pedido"
-                                >
-                                  <Truck className="h-4 w-4" />
-                                  <span className="text-[11px] font-mono">{order.tracking}</span>
-                                  <ExternalLink className="h-3 w-3" />
-                                </button>
-                              )}
-                            </div>
-                            <span className="hidden sm:block text-sm font-bold whitespace-nowrap">{formatCurrency(order.total)}</span>
+                            <StatusBadge status={order.status} />
+                            {order.status === "enviado" && order.tracking && (
+                              <button
+                                onClick={(e) => handleTrackingClick(e, order.tracking!)}
+                                className="flex items-center gap-0.5 text-primary hover:text-primary/80 transition-colors sm:order-none order-last ml-auto sm:ml-0"
+                                title="Rastrear pedido"
+                              >
+                                <Truck className="h-4 w-4" />
+                                <span className="text-[11px] font-mono">{order.tracking}</span>
+                                <ExternalLink className="h-3 w-3" />
+                              </button>
+                            )}
+                            <span className="hidden sm:block text-sm font-bold whitespace-nowrap ml-auto">{formatCurrency(order.total)}</span>
                           </div>
                         </div>
                       </div>
