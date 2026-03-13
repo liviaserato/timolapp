@@ -61,9 +61,9 @@ interface OrderSummaryCardProps {
   orders: Order[];
 }
 
-/* ── Helpers ── */
+const localeMap: Record<string, Locale> = { pt: ptBR, en: enUS, es };
 
-function formatCurrency(v: number) {
+const HIDDEN = "•••";
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
