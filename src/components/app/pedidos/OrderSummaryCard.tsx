@@ -374,35 +374,6 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog: Distribuição de franquias */}
-      <Dialog open={showFranchiseDetail} onOpenChange={setShowFranchiseDetail}>
-        <DialogContent className="max-w-xs">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-primary text-base">
-              <Users className="h-4 w-4" />
-              Franquias cadastradas
-            </DialogTitle>
-          </DialogHeader>
-          <p className="text-xs text-muted-foreground -mt-2 mb-1">{periodLabel}</p>
-          <div className="space-y-2">
-            {franchiseDistribution.map((f) => (
-              <div
-                key={f.type}
-                className="flex items-center justify-between text-sm py-2 px-3 rounded-md border border-app-card-border"
-              >
-                <Badge variant="outline" className={cn("text-xs font-medium", f.color)}>
-                  {f.type}
-                </Badge>
-                <span className="font-bold text-foreground">{f.count}</span>
-              </div>
-            ))}
-            <div className="flex items-center justify-between text-sm font-bold pt-2 border-t border-app-card-border px-3">
-              <span>Total</span>
-              <span className="text-primary">{totalFranchises}</span>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
