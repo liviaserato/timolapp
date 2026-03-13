@@ -13,7 +13,6 @@ import { ContractScreen } from "@/components/screens/ContractScreen";
 import { AppScreen, WizardData } from "@/types/wizard";
 import { supabase } from "@/integrations/supabase/client";
 import { registerComplete } from "@/lib/api/people";
-import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   useEffect(() => { document.title = "Cadastro Nova Franquia"; return () => { document.title = "Timol System"; }; }, []);
