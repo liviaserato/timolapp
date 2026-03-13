@@ -78,7 +78,7 @@ const mockOrders: Order[] = [
   },
   {
     id: "3", number: "#4985", date: "2026-03-03",
-    items: [{ name: "Combo Mega", qty: 1, price: 189.9 }, { name: "Produtos Separados", qty: 3, price: 49.9 }],
+    items: [{ name: "Combo Mega", qty: 1, price: 189.9 }, { name: "Produtos Separados", qty: 3, price: 49.9 }, { name: "Galão Ionizado", qty: 2, price: 45.0 }],
     total: 339.6, status: "confirmado",
   },
   {
