@@ -256,7 +256,7 @@ export function NewFranchiseDialog({
       setCardNumber(""); setCardName(""); setCardExpiry(""); setCardCvv("");
       setErrors({}); setPaymentResult(null); setGeneratedFranchiseId(null);
       setContractAccepted(false); setCouponCode(""); setCouponDiscount(null); setCouponError("");
-      setBalanceToUse(""); setIsContractOpen(false);
+      setBalanceToUse("");
     }
     onOpenChange(v);
   };
