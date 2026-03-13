@@ -294,40 +294,49 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             </div>
 
             {/* Franquias cadastradas */}
-            <button
-              type="button"
-              onClick={() => visible && setShowFranchiseDetail(true)}
-              className={cn(
-                "rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center transition-colors group",
-                visible && "hover:bg-muted/40 cursor-pointer"
-              )}
-            >
+            <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
                 <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground leading-tight">Franquias cadastradas</span>
+                <span className="text-sm text-muted-foreground leading-tight">Franquias cadastradas</span>
               </div>
-              <div className="flex items-baseline gap-1">
-                <p className="text-xl font-bold text-primary">{visible ? totalFranchises : HIDDEN}</p>
-                {visible && <ChevronRight className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />}
-              </div>
-            </button>
+              <p className="text-xl font-bold text-primary">{visible ? totalFranchises : HIDDEN}</p>
+
+              <div className="my-2 w-full border-t border-app-card-border/50" />
+
+              {visible ? (
+                <div className="w-full space-y-1">
+                  {franchiseDistribution.map((f) => (
+                    <div key={f.type} className="flex items-center justify-between text-[11px] px-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className={cn("h-2 w-2 rounded-full shrink-0", f.dotColor)} />
+                        <span className="text-muted-foreground">{f.type}</span>
+                      </div>
+                      <span className="font-semibold text-foreground">{f.count}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="w-full space-y-1">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="text-[11px] text-muted-foreground">{HIDDEN}</div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Bônus e Pontos */}
             <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
-              {/* Bônus */}
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Award className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground leading-tight">Bônus gerados</span>
+                <span className="text-sm text-muted-foreground leading-tight">Bônus gerados</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? formatCurrency(bonusGenerated) : HIDDEN}</p>
 
-              {/* Divider */}
-              <div className="my-1.5 w-8 border-t border-app-card-border/50" />
+              <div className="my-2 w-full border-t border-app-card-border/50" />
 
-              {/* Pontos */}
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Star className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground leading-tight">Pontos gerados</span>
+                <span className="text-sm text-muted-foreground leading-tight">Pontos gerados</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? pointsGenerated.toLocaleString("pt-BR") : HIDDEN}</p>
             </div>
