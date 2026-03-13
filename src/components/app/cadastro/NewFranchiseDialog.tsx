@@ -752,9 +752,9 @@ export function NewFranchiseDialog({
                       couponAmount > 0 ? (
                         <div className="text-right">
                           <span className="text-sm text-muted-foreground relative">
-                            <span className="relative inline-block">
+                          <span className="relative inline-block">
                               {formatPrice(price)}
-                              <span className="absolute left-0 right-0 top-1/2 h-[2px] bg-destructive -rotate-6" />
+                              <span className="absolute left-0 right-0 top-1/2 h-[2px] bg-green-500 -rotate-6" />
                             </span>
                           </span>
                           <br />
