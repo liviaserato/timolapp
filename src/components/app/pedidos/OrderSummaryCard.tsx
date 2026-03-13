@@ -227,7 +227,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             )}
 
             {mode === "custom" && (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 justify-center w-full sm:w-auto">
                 <DatePickerButton
                   date={customFrom}
                   onSelect={(d) => setCustomFrom(d)}
