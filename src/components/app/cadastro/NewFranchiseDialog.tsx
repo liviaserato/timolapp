@@ -545,7 +545,7 @@ export function NewFranchiseDialog({
                 )}
 
                 <p className="text-xs text-muted-foreground text-center leading-relaxed">
-                  O patrocinador da nova franquia será obrigatoriamente um de seus IDs existentes.
+                  O patrocinador da sua nova franquia deverá ser um dos seus próprios IDs já existentes.
                 </p>
 
                 <p className="text-sm text-center text-foreground font-medium pt-1">
