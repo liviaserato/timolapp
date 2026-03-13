@@ -136,7 +136,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
 
   // 3) Franquias cadastradas (mock)
   const franchiseDistribution: FranchiseDistribution[] = [
-    { type: "Platina", count: 1, dotColor: "bg-cyan-500" },
+    { type: "Platina", count: 1, dotColor: "bg-zinc-600" },
     { type: "Ouro", count: 1, dotColor: "bg-yellow-500" },
     { type: "Prata", count: 2, dotColor: "bg-slate-400" },
     { type: "Bronze", count: 3, dotColor: "bg-amber-700" },
