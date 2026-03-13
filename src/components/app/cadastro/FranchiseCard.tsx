@@ -96,6 +96,7 @@ interface Props {
 
 export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Props) {
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [newFranchiseOpen, setNewFranchiseOpen] = useState(false);
 
   // Mock: user may have multiple IDs with different activity dates
   const userFranchises: UserFranchise[] = [
