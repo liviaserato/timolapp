@@ -55,6 +55,7 @@ export const RegistrationWizard = ({ initialData = {}, initialStep = 1, onComple
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
+  const [emailStatus, setEmailStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
   const [apiError, setApiError] = useState("");
 
   // Document check via hook (debounced, reactive)
