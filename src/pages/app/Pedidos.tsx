@@ -188,7 +188,7 @@ export default function Pedidos() {
             <p className="text-sm text-muted-foreground">
               Acesse o catálogo, faça seu pedido ou indique uma nova franquia.
             </p>
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button className="gap-2 shrink-0">
                 <ShoppingCart className="h-4 w-4" />
                 Realizar Pedido
