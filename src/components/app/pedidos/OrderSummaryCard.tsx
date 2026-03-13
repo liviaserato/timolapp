@@ -264,32 +264,43 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
               </div>
               <p className="text-xl font-bold text-primary">{visible ? totalUnits : HIDDEN}</p>
 
-              <div className="my-2 w-full border-t border-app-card-border/50" />
+              {/* Collapsible divider */}
+              <button
+                type="button"
+                onClick={() => setProductsExpanded((v) => !v)}
+                className="my-1.5 w-full flex items-center gap-0"
+              >
+                <div className="flex-1 border-t border-app-card-border/50" />
+                <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground mx-1 transition-transform", productsExpanded && "rotate-180")} />
+                <div className="flex-1 border-t border-app-card-border/50" />
+              </button>
 
-              {visible ? (
-                <div className="w-full space-y-1">
-                  {top3.map(([name, qty]) => (
-                    <div key={name} className="flex items-center justify-between text-[11px] px-1">
-                      <span className="text-muted-foreground truncate mr-1">{name}</span>
-                      <span className="font-semibold text-foreground shrink-0">{qty}x</span>
-                    </div>
-                  ))}
-                  {sortedProducts.length > 3 && (
-                    <button
-                      type="button"
-                      onClick={() => setShowAllProducts(true)}
-                      className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5 px-1"
-                    >
-                      Ver todos <ChevronRight className="h-2.5 w-2.5" />
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <div className="w-full space-y-1">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="text-[11px] text-muted-foreground">{HIDDEN}</div>
-                  ))}
-                </div>
+              {productsExpanded && (
+                visible ? (
+                  <div className="w-full space-y-1">
+                    {top3.map(([name, qty]) => (
+                      <div key={name} className="flex items-center justify-between text-[11px] px-1">
+                        <span className="text-muted-foreground truncate mr-1">{name}</span>
+                        <span className="font-semibold text-foreground shrink-0">{qty}x</span>
+                      </div>
+                    ))}
+                    {sortedProducts.length > 3 && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAllProducts(true)}
+                        className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5 px-1"
+                      >
+                        Ver todos <ChevronRight className="h-2.5 w-2.5" />
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="w-full space-y-1">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="text-[11px] text-muted-foreground">{HIDDEN}</div>
+                    ))}
+                  </div>
+                )
               )}
             </div>
 
