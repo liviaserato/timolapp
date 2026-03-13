@@ -172,7 +172,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
         <div className="mt-2 flex flex-col gap-2">
           {/* Mode chips */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 justify-center sm:justify-start">
               {([
                 { key: "30d", label: "30 dias", icon: CalendarDays },
                 { key: "month", label: "Mês", icon: Calendar },
@@ -248,7 +248,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             )}
 
             {mode === "30d" && (
-              <span className="text-sm sm:text-[11px] text-muted-foreground text-center w-full sm:w-auto block sm:inline">{periodLabel}</span>
+              <span className="text-sm text-muted-foreground text-center w-full sm:w-auto block sm:inline">{periodLabel}</span>
             )}
           </div>
 
