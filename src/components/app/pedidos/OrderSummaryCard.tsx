@@ -304,7 +304,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
               {visible ? (
                 <div className="w-full space-y-1">
                   {franchiseDistribution.map((f) => (
-                    <div key={f.type} className="flex items-center justify-between text-[11px] px-1">
+                    <div key={f.type} className="flex items-center justify-between text-[11px] px-3">
                       <div className="flex items-center gap-1.5">
                         <span className={cn("h-2 w-2 rounded-full shrink-0", f.dotColor)} />
                         <span className="text-muted-foreground">{f.type}</span>
