@@ -395,7 +395,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
           </div>
 
           {/* Products for selected category */}
-          <div className="space-y-1.5 max-h-[50vh] overflow-y-auto">
+          <div className="min-h-[170px] max-h-[50vh] overflow-y-auto pr-3">
             {(() => {
               const categoryProducts = sortedProducts.filter(([name]) => getCategory(name) === productTab);
               if (categoryProducts.length === 0) {
