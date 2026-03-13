@@ -735,6 +735,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "login.resumeRegistration": "Complete my registration",
     "login.error.invalid": "Invalid username or password. Please try again.",
     "login.error.locked": "Too many attempts. Please try again in a few minutes.",
+    "login.error.systemDenied": "You do not have permission to access this system.",
 
     // Forgot password popup
     "forgotPw.title": "Recover Password",
