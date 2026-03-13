@@ -540,7 +540,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "step4.username.placeholder": "Choose a username",
     "step4.username.available": "✓ Username available",
     "step4.username.taken": "Username already in use. Try another.",
-    "step4.username.hint": "Only letters, numbers and underscore (_). Max 20 characters.",
+    "step4.username.hint": "Only lowercase letters, numbers, dot (.) and underscore (_). Max 20 characters.",
     "step4.username.invalidChars": "Special characters are not allowed.",
     "step4.username.invalidCharsSubmit": "This field was filled incorrectly. Special characters are not allowed.",
     "step4.password": "Password",
