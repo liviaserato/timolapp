@@ -80,6 +80,8 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
   const locale = localeMap[language] || ptBR;
   const [showAllProducts, setShowAllProducts] = useState(false);
   const [visible, setVisible] = useState(true);
+  const [productsExpanded, setProductsExpanded] = useState(true);
+  const [franchisesExpanded, setFranchisesExpanded] = useState(true);
 
   // Period state
   const [mode, setMode] = useState<PeriodMode>("30d");
