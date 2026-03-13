@@ -480,7 +480,7 @@ export function NewFranchiseDialog({
                     <strong className="text-sm text-warning">Importante</strong>
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    O patrocinador da nova franquia será obrigatoriamente um de seus IDs existentes.
+                    O patrocinador da nova franquia será<br />obrigatoriamente um de seus IDs existentes.
                   </p>
                 </div>
 
