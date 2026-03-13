@@ -16,7 +16,7 @@ import {
 import { format, subDays, startOfMonth, endOfMonth, subMonths, addMonths, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { DashboardCard } from "@/components/app/DashboardCard";
-import { Badge } from "@/components/ui/badge";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
