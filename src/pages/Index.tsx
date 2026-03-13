@@ -151,6 +151,25 @@ const Index = () => {
                 const confirmed = paymentInfo.registrationStatus === "payment_confirmed";
                 if (confirmed) {
                   updateRegistrationStatus({ payment_completed: true, status: "completed" });
+
+                  // Call registerComplete API (fire-and-forget, non-blocking)
+                  const mergedData = { ...wizardData, ...paymentInfo };
+                  registerComplete({
+                    franchiseId: mergedData.franchiseId || "",
+                    franchiseTypeCode: mergedData.franchiseTypeCode || "",
+                    couponCode: mergedData.couponCode,
+                    agreeContract: mergedData.agreeContract ?? true,
+                    agreeCommunications: mergedData.agreeCommunications ?? false,
+                    paymentMethod: "credit-card",
+                    installments: mergedData.installments,
+                    amountPaid: mergedData.amountPaid ?? mergedData.franchisePrice ?? 0,
+                    currencyCode: mergedData.currencyCode || "brl",
+                    contractVersion: "1.0",
+                    acceptedAt: new Date().toISOString(),
+                    ipAddress: "client",
+                    userAgent: navigator.userAgent,
+                  }).catch((err) => console.error("registerComplete error:", err));
+
                   setScreen("paymentConfirmation");
                 } else {
                   setScreen("paymentPending");
