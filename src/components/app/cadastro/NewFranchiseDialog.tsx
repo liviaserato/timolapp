@@ -21,9 +21,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Shield, TrendingUp, Crown, Gem, Check, CircleDollarSign,
-  QrCode, CreditCard, Eye, EyeOff, Copy, ChevronLeft, ExternalLink, Building2,
-  Plus, AlertTriangle, X, Loader2,
+  Shield, TrendingUp, Crown, Gem, Check,
+  QrCode, CreditCard, Eye, EyeOff, Copy, ChevronLeft, Building2,
+  Plus, AlertTriangle, X, Loader2, BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { loadStripe } from "@stripe/stripe-js";
@@ -32,6 +32,7 @@ import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader"
 import { openWhatsAppLink } from "@/lib/whatsapp";
 import { validateCoupon, type DiscountPreview } from "@/lib/api/coupons";
 import { useFranchise } from "@/contexts/FranchiseContext";
+import { ContractScreen } from "@/components/screens/ContractScreen";
 
 import timolLogo from "@/assets/favicon-timol-azul-escuro.svg";
 import franquiaBronze from "@/assets/franquia-bronze.svg";
@@ -167,6 +168,12 @@ function ConfirmRow({ label, value }: { label: string; value: React.ReactNode })
   );
 }
 
+/* ── Mock coupon validation for TESTE ── */
+
+const MOCK_COUPONS: Record<string, number> = {
+  TESTE: 10,
+};
+
 /* ── Props ── */
 
 interface SponsorOption {
@@ -207,6 +214,7 @@ export function NewFranchiseDialog({
   const [couponError, setCouponError] = useState("");
   const [balanceToUse, setBalanceToUse] = useState("");
   const bancoBalance = MOCK_BANCO_BALANCE;
+  const [isContractOpen, setIsContractOpen] = useState(false);
 
   // Payment step state
   const [method, setMethod] = useState<PaymentMethod>(isBrazilian ? "pix" : "credit-card");
@@ -230,7 +238,7 @@ export function NewFranchiseDialog({
 
   // Compute effective price after coupon and balance
   const couponAmount = couponDiscount?.discountAmount ?? 0;
-  const parsedBalance = Math.min(Math.max(parseFloat(balanceToUse) || 0, 0), bancoBalance, Math.max(price - couponAmount, 0));
+  const parsedBalance = Math.min(Math.max(parseFloat(balanceToUse.replace(",", ".")) || 0, 0), bancoBalance, Math.max(price - couponAmount, 0));
   const priceAfterDeductions = Math.max(price - couponAmount - parsedBalance, 0);
   const isPixDiscount = method === "pix" && priceAfterDeductions > 0;
   const discountedPrice = isPixDiscount ? priceAfterDeductions * (1 - PIX_DISCOUNT) : priceAfterDeductions;
@@ -248,7 +256,7 @@ export function NewFranchiseDialog({
       setCardNumber(""); setCardName(""); setCardExpiry(""); setCardCvv("");
       setErrors({}); setPaymentResult(null); setGeneratedFranchiseId(null);
       setContractAccepted(false); setCouponCode(""); setCouponDiscount(null); setCouponError("");
-      setBalanceToUse("");
+      setBalanceToUse(""); setIsContractOpen(false);
     }
     onOpenChange(v);
   };
@@ -297,9 +305,26 @@ export function NewFranchiseDialog({
     setCouponLoading(true);
     setCouponError("");
     setCouponDiscount(null);
+
+    const code = couponCode.trim().toUpperCase();
+
+    // Check mock coupons first
+    if (MOCK_COUPONS[code] !== undefined) {
+      const discountAmount = MOCK_COUPONS[code];
+      setCouponDiscount({
+        discountType: "fixed",
+        value: discountAmount,
+        discountAmount,
+        finalAmount: price - discountAmount,
+        currencyCode: "BRL",
+      });
+      setCouponLoading(false);
+      return;
+    }
+
     try {
       const res = await validateCoupon({
-        couponCode: couponCode.trim(),
+        couponCode: code,
         scope: "franchisePurchase",
         franchiseTypeCode: selectedPlan,
         amount: price,
@@ -446,12 +471,25 @@ export function NewFranchiseDialog({
     } catch {}
   };
 
+  // Format balance input to always show ,00
+  const handleBalanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/[^\d.,]/g, "").replace(",", ".");
+    setBalanceToUse(val);
+  };
+
+  const handleBalanceBlur = () => {
+    if (!balanceToUse) return;
+    const num = parseFloat(balanceToUse.replace(",", "."));
+    if (isNaN(num)) { setBalanceToUse(""); return; }
+    setBalanceToUse(num.toFixed(2).replace(".", ","));
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={handleClose}>
         <DialogContent className={cn(
           "max-h-[90vh] overflow-y-auto",
-          step === "select" ? "max-w-4xl" : "max-w-md"
+          step === "intro" ? "max-w-sm" : step === "select" ? "max-w-4xl" : "max-w-md"
         )}>
           {/* ── STEP 0: Intro ── */}
           {step === "intro" && (
@@ -470,7 +508,7 @@ export function NewFranchiseDialog({
                 <div className="bg-primary/5 rounded-lg p-4">
                   <p className="text-sm text-foreground leading-relaxed">
                     Expandir sua rede com uma nova franquia é uma excelente estratégia para
-                    <strong> multiplicar seus ganhos</strong>! <CircleDollarSign className="inline h-4 w-4 text-primary -translate-y-px" />
+                    <strong> multiplicar seus ganhos</strong>! <BarChart3 className="inline h-4 w-4 text-primary -translate-y-px" />
                   </p>
                 </div>
 
@@ -532,22 +570,20 @@ export function NewFranchiseDialog({
           {/* ── STEP 1: Select Plan ── */}
           {step === "select" && (
             <>
-              <div className="relative pt-1">
+              <div className="flex items-center gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => setStep("intro")}
-                  className="absolute left-0 top-1 z-10 text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="Voltar"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
-                <DialogHeader className="text-center px-8">
-                  <DialogTitle className="text-xl">Escolha sua Franquia</DialogTitle>
-                  <DialogDescription>
-                    Patrocinador: ID {sponsorId}. Selecione o tipo de franquia para a nova unidade.
-                  </DialogDescription>
-                </DialogHeader>
+                <DialogTitle className="text-xl">Escolha sua Franquia</DialogTitle>
               </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                Patrocinador: <strong className="text-foreground">ID {sponsorId}</strong>. Selecione qual franquia faz mais sentido para você.
+              </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-4 mt-2">
                 {franchisePlans.map((f) => {
@@ -690,29 +726,45 @@ export function NewFranchiseDialog({
           {/* ── STEP 2: Summary ── */}
           {step === "summary" && selectedFranchise && (
             <>
-              <div className="relative pt-1">
+              <div className="flex items-center gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => { setStep("select"); setContractAccepted(false); }}
-                  className="absolute left-0 top-1 z-10 text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="Voltar"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
-                <DialogHeader className="text-center px-8">
-                  <DialogTitle className="text-xl">Resumo da Compra</DialogTitle>
-                  <DialogDescription className="text-center">
-                    Confira os detalhes antes de prosseguir.
-                  </DialogDescription>
-                </DialogHeader>
+                <DialogTitle className="text-xl">Resumo da Compra</DialogTitle>
               </div>
+              <p className="text-sm text-muted-foreground text-left mt-1">
+                Confira os detalhes antes de prosseguir.
+              </p>
 
               <div className="space-y-4 mt-2">
                 {/* Order details */}
                 <div className="bg-primary/5 rounded-xl p-4 space-y-1.5 text-sm">
                   <ConfirmRow label="Patrocinador" value={`ID ${sponsorId}`} />
                   <ConfirmRow label="Franquia" value={selectedFranchise.name} />
-                  <ConfirmRow label="Valor" value={formatPrice(price)} />
+                  <ConfirmRow
+                    label="Valor"
+                    value={
+                      couponAmount > 0 ? (
+                        <div className="text-right">
+                          <span className="text-sm text-muted-foreground relative">
+                            <span className="relative inline-block">
+                              {formatPrice(price)}
+                              <span className="absolute left-0 right-0 top-1/2 h-[2px] bg-destructive -rotate-6" />
+                            </span>
+                          </span>
+                          <br />
+                          <span className="font-bold">{formatPrice(price - couponAmount)}</span>
+                        </div>
+                      ) : (
+                        <span className="font-bold">{formatPrice(price)}</span>
+                      )
+                    }
+                  />
                 </div>
 
                 {/* Coupon */}
@@ -758,18 +810,16 @@ export function NewFranchiseDialog({
                 {/* Banco Timol balance */}
                 {bancoBalance > 0 && (
                   <div className="space-y-1.5">
-                    <Label className="text-sm font-medium">
-                      Usar saldo do Banco Timol <span className="text-muted-foreground font-normal">(disponível: {formatPrice(bancoBalance)})</span>
-                    </Label>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-medium">Usar saldo do Banco Timol</Label>
+                      <span className="text-sm text-muted-foreground">Disponível: {formatPrice(bancoBalance)}</span>
+                    </div>
                     <div className="relative">
                       <Input
                         placeholder="0,00"
                         value={balanceToUse}
-                        onChange={(e) => {
-                          // Allow only numbers and comma/dot
-                          const val = e.target.value.replace(/[^\d.,]/g, "").replace(",", ".");
-                          setBalanceToUse(val);
-                        }}
+                        onChange={handleBalanceChange}
+                        onBlur={handleBalanceBlur}
                         className="pr-9"
                       />
                       {balanceToUse && (
@@ -782,22 +832,31 @@ export function NewFranchiseDialog({
                         </button>
                       )}
                     </div>
-                    {parsedBalance > 0 && (
-                      <p className="text-xs text-green-600 font-medium">
-                        Saldo a utilizar: -{formatPrice(parsedBalance)}
-                      </p>
-                    )}
-                    {parseFloat(balanceToUse) > bancoBalance && (
+                    {parseFloat(balanceToUse.replace(",", ".")) > bancoBalance && (
                       <p className="text-xs text-destructive">Valor acima do saldo disponível</p>
                     )}
                   </div>
                 )}
 
-                {/* Total */}
+                {/* Total breakdown */}
                 <Separator />
-                <div className="flex justify-between items-center text-base font-bold">
-                  <span>Total a pagar</span>
-                  <span className="text-primary">{formatPrice(priceAfterDeductions)}</span>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between items-center font-bold text-base">
+                    <span>Total</span>
+                    <span className="text-primary">{formatPrice(price - couponAmount)}</span>
+                  </div>
+                  {parsedBalance > 0 && (
+                    <>
+                      <div className="flex justify-between items-center text-muted-foreground">
+                        <span>Saldo utilizado</span>
+                        <span>-{formatPrice(parsedBalance)}</span>
+                      </div>
+                      <div className="flex justify-between items-center font-bold text-base">
+                        <span>Valor restante a pagar</span>
+                        <span className="text-primary">{formatPrice(priceAfterDeductions)}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
                 {priceAfterDeductions <= 0 && (parsedBalance > 0 || couponAmount > 0) && (
                   <p className="text-xs text-green-600 text-center font-medium">
@@ -815,9 +874,17 @@ export function NewFranchiseDialog({
                   />
                   <label htmlFor="contract-accept" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
                     Li e aceito o{" "}
-                    <a href="/contrato" target="_blank" className="text-primary underline hover:no-underline">
+                    <button
+                      type="button"
+                      className="text-primary underline underline-offset-2 hover:no-underline"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsContractOpen(true);
+                      }}
+                    >
                       Contrato de Franquia
-                    </a>{" "}
+                    </button>{" "}
                     e os termos de uso da plataforma Timol.
                   </label>
                 </div>
@@ -1105,6 +1172,9 @@ export function NewFranchiseDialog({
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Contract modal */}
+      {isContractOpen && <ContractScreen mode="modal" onClose={() => setIsContractOpen(false)} />}
 
       {/* In-person payment dialog */}
       <Dialog open={showInPersonPopup} onOpenChange={setShowInPersonPopup}>
