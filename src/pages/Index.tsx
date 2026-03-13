@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { SponsorScreen } from "@/components/screens/SponsorScreen";
