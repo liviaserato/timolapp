@@ -257,10 +257,10 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             />
 
             {/* Produtos adquiridos */}
-            <div className="rounded-lg border border-app-card-border p-3 flex flex-col">
+            <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
                 <Package className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground leading-tight">Produtos adquiridos</span>
+                <span className="text-xs text-muted-foreground leading-tight">Produtos adquiridos</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? totalUnits : HIDDEN}</p>
               {visible && top3.length > 0 && (
