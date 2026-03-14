@@ -365,10 +365,10 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                         <span className="font-medium">{formatDate(order.delivery.deliveryDate)}</span>
                       </div>
                     )}
-                    {order.delivery.tracking && (
+                     {order.delivery.tracking && (
                       <div className="flex items-center gap-2 text-xs ml-5">
-                        <Truck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="text-muted-foreground">Rastreio:</span>
+                        <Truck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="font-mono font-medium text-primary">{order.delivery.tracking}</span>
                       </div>
                     )}
