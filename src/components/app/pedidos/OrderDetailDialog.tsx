@@ -111,6 +111,21 @@ function canReturn(order: Order): boolean {
 
 const Separator = () => <div className="border-t border-border/40 my-2" />;
 
+const paymentOrder: Record<string, number> = {
+  "saldo": 0, "banco": 0,
+  "voucher": 1,
+  "pix": 2,
+  "crédito": 3, "credito": 3,
+};
+
+function sortPayments(payments: OrderPayment[]) {
+  return [...payments].sort((a, b) => {
+    const aKey = Object.keys(paymentOrder).find(k => a.method.toLowerCase().includes(k)) ?? "";
+    const bKey = Object.keys(paymentOrder).find(k => b.method.toLowerCase().includes(k)) ?? "";
+    return (paymentOrder[aKey] ?? 99) - (paymentOrder[bKey] ?? 99);
+  });
+}
+
 /* ── Component ── */
 
 interface OrderDetailDialogProps {
