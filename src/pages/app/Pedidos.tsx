@@ -275,7 +275,7 @@ export default function Pedidos() {
                             {order.status === "enviado" && order.tracking && (
                               <button
                                 onClick={(e) => handleTrackingClick(e, order.tracking!)}
-                                className="flex items-center gap-0.5 text-primary hover:text-primary/80 transition-colors sm:order-none order-last ml-auto sm:ml-0"
+                                className="flex items-center gap-0.5 text-muted-foreground hover:text-foreground transition-colors sm:order-none order-last ml-auto sm:ml-0"
                                 title="Rastrear pedido"
                               >
                                 <span className="text-[11px] font-mono">{order.tracking}</span>
