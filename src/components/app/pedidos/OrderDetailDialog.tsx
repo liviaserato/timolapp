@@ -6,6 +6,7 @@ import {
   Truck,
   Calendar,
   CheckSquare,
+  Star,
   Plus,
   CreditCard,
   Landmark,
@@ -77,12 +78,12 @@ export interface Order {
 
 /* ── Helpers ── */
 
-const statusConfig: Record<OrderStatus, { label: string; textColor: string }> = {
-  pendente:   { label: "Pendente",   textColor: "text-gray-500" },
-  confirmado: { label: "Confirmado", textColor: "text-blue-600" },
-  enviado:    { label: "Enviado",    textColor: "text-emerald-600" },
-  entregue:   { label: "Entregue",   textColor: "text-[#003885]" },
-  cancelado:  { label: "Cancelado",  textColor: "text-red-600" },
+const statusConfig: Record<OrderStatus, { label: string; textColor: string; bgColor: string; borderColor: string }> = {
+  pendente:   { label: "Pendente",   textColor: "text-gray-600",       bgColor: "bg-gray-50",         borderColor: "border-gray-300" },
+  confirmado: { label: "Confirmado", textColor: "text-blue-600",       bgColor: "bg-blue-50",         borderColor: "border-blue-300" },
+  enviado:    { label: "Enviado",    textColor: "text-emerald-600",    bgColor: "bg-emerald-50",      borderColor: "border-emerald-300" },
+  entregue:   { label: "Entregue",   textColor: "text-[#003885]",      bgColor: "bg-blue-50",         borderColor: "border-[#003885]/30" },
+  cancelado:  { label: "Cancelado",  textColor: "text-red-600",        bgColor: "bg-red-50",          borderColor: "border-red-300" },
 };
 
 const productImages: Record<string, string> = {
@@ -108,7 +109,22 @@ function canReturn(order: Order): boolean {
   return diffDays <= 7;
 }
 
-const Separator = () => <div className="border-t border-border/50 my-3" />;
+const Separator = () => <div className="border-t border-border/40 my-2" />;
+
+const paymentOrder: Record<string, number> = {
+  "saldo": 0, "banco": 0,
+  "voucher": 1,
+  "pix": 2,
+  "crédito": 3, "credito": 3,
+};
+
+function sortPayments(payments: OrderPayment[]) {
+  return [...payments].sort((a, b) => {
+    const aKey = Object.keys(paymentOrder).find(k => a.method.toLowerCase().includes(k)) ?? "";
+    const bKey = Object.keys(paymentOrder).find(k => b.method.toLowerCase().includes(k)) ?? "";
+    return (paymentOrder[aKey] ?? 99) - (paymentOrder[bKey] ?? 99);
+  });
+}
 
 /* ── Component ── */
 
@@ -137,13 +153,18 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
               <Package className="h-5 w-5" />
               <div>
                 <div>Pedido {order.number}</div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-normal text-muted-foreground">{formatDate(order.date)}</span>
-                </div>
+                <span className="text-[13px] font-normal text-muted-foreground">{formatDate(order.date)}</span>
               </div>
-              <span className={cn("text-xs font-semibold ml-auto", cfg.textColor)}>{cfg.label}</span>
             </DialogTitle>
           </DialogHeader>
+
+          {/* Status badge */}
+          <span className={cn(
+            "inline-flex items-center self-start px-2.5 py-1 rounded-md text-xs font-semibold border -mt-1",
+            cfg.textColor, cfg.bgColor, cfg.borderColor
+          )}>
+            {cfg.label}
+          </span>
 
           <Separator />
 
@@ -218,15 +239,16 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
 
           {/* Points banner */}
           {(order.pointsUnilevel || order.pointsBinary) && (
-            <div className="rounded-lg bg-primary/5 border border-primary/20 px-3 py-2.5 text-center">
-              <p className="text-xs text-muted-foreground">
+            <div className="rounded-lg bg-sky-50 border border-sky-200 px-3 py-2.5 flex items-center gap-2">
+              <Star className="h-4 w-4 text-sky-500 shrink-0" />
+              <p className="text-xs text-sky-700">
                 Com este pedido, você acumulou{" "}
                 {order.pointsUnilevel != null && (
-                  <span className="font-bold text-primary">{order.pointsUnilevel} pontos Unilevel</span>
+                  <span className="font-bold text-sky-600">{order.pointsUnilevel} pontos Unilevel</span>
                 )}
                 {order.pointsUnilevel != null && order.pointsBinary != null && " e "}
                 {order.pointsBinary != null && (
-                  <span className="font-bold text-primary">{order.pointsBinary} pontos Binário</span>
+                  <span className="font-bold text-sky-600">{order.pointsBinary} pontos Binário</span>
                 )}
                 .
               </p>
@@ -241,7 +263,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
               <div>
                 <p className="text-sm font-bold text-foreground mb-2">Forma de Pagamento</p>
                 <div className="space-y-1.5 text-sm">
-                  {order.payments.map((p, idx) => (
+                  {sortPayments(order.payments).map((p, idx) => (
                     <div key={idx}>
                       <div className="flex justify-between">
                         <div className="flex items-center gap-1.5">
@@ -254,7 +276,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                         <span>{formatCurrency(p.value)}</span>
                       </div>
                       {p.installments && (
-                        <p className="text-[11px] text-muted-foreground italic ml-5">{p.installments}</p>
+                        <p className="text-[11px] text-muted-foreground italic ml-5">({p.installments})</p>
                       )}
                     </div>
                   ))}
