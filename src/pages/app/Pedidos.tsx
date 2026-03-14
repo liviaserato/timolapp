@@ -149,8 +149,12 @@ export default function Pedidos() {
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginatedOrders = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
-  // Group by month
-  const grouped = filtered.reduce<Record<string, Order[]>>((acc, order) => {
+  // Reset page when filters change
+  const handleSearchChange = (value: string) => { setSearchTerm(value); setCurrentPage(1); };
+  const handleStatusChange = (value: string) => { setStatusFilter(value); setCurrentPage(1); };
+
+  // Group by month (paginated)
+  const grouped = paginatedOrders.reduce<Record<string, Order[]>>((acc, order) => {
     const d = new Date(order.date + "T00:00:00");
     const monthName = d.toLocaleDateString("pt-BR", { month: "long" });
     const key = `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} ${d.getFullYear()}`;
@@ -158,6 +162,23 @@ export default function Pedidos() {
     acc[key].push(order);
     return acc;
   }, {});
+
+  // Pagination helpers
+  const getPageNumbers = () => {
+    const pages: (number | "ellipsis")[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push("ellipsis");
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (currentPage < totalPages - 2) pages.push("ellipsis");
+      pages.push(totalPages);
+    }
+    return pages;
+  };
 
   return (
     <div>
