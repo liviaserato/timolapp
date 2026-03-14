@@ -325,6 +325,46 @@ export default function Pedidos() {
             {filtered.length === 0 && (
               <p className="text-center text-sm text-muted-foreground py-6">Nenhum pedido encontrado.</p>
             )}
+
+            {/* Paginação */}
+            {totalPages > 1 && (
+              <nav className="flex items-center justify-center gap-1 pt-4">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="flex h-8 w-8 items-center justify-center rounded border border-border text-muted-foreground hover:bg-muted/60 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                {getPageNumbers().map((p, idx) =>
+                  p === "ellipsis" ? (
+                    <span key={`e-${idx}`} className="flex h-8 w-8 items-center justify-center text-muted-foreground">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </span>
+                  ) : (
+                    <button
+                      key={p}
+                      onClick={() => setCurrentPage(p)}
+                      className={cn(
+                        "flex h-8 w-8 items-center justify-center rounded text-sm font-medium transition-colors",
+                        currentPage === p
+                          ? "bg-primary text-primary-foreground"
+                          : "border border-border text-foreground hover:bg-muted/60"
+                      )}
+                    >
+                      {p}
+                    </button>
+                  )
+                )}
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="flex h-8 w-8 items-center justify-center rounded border border-border text-muted-foreground hover:bg-muted/60 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </nav>
+            )}
           </div>
         </DashboardCard>
       </section>
