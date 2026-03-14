@@ -137,13 +137,18 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
               <Package className="h-5 w-5" />
               <div>
                 <div>Pedido {order.number}</div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-normal text-muted-foreground">{formatDate(order.date)}</span>
-                </div>
+                <span className="text-[13px] font-normal text-muted-foreground">{formatDate(order.date)}</span>
               </div>
-              <span className={cn("text-xs font-semibold ml-auto", cfg.textColor)}>{cfg.label}</span>
             </DialogTitle>
           </DialogHeader>
+
+          {/* Status badge */}
+          <span className={cn(
+            "inline-flex items-center self-start px-2.5 py-1 rounded-md text-xs font-semibold border -mt-1",
+            cfg.textColor, cfg.bgColor, cfg.borderColor
+          )}>
+            {cfg.label}
+          </span>
 
           <Separator />
 
