@@ -135,15 +135,15 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-primary">
               <Package className="h-5 w-5" />
-              Pedido {order.number}
+              <div>
+                <div>Pedido {order.number}</div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-normal text-muted-foreground">{formatDate(order.date)}</span>
+                </div>
+              </div>
+              <span className={cn("text-xs font-semibold ml-auto", cfg.textColor)}>{cfg.label}</span>
             </DialogTitle>
           </DialogHeader>
-
-          {/* Date + Status */}
-          <div className="flex items-center justify-between -mt-1">
-            <span className="text-sm text-muted-foreground">{formatDate(order.date)}</span>
-            <span className={cn("text-sm font-semibold", cfg.textColor)}>{cfg.label}</span>
-          </div>
 
           <Separator />
 
