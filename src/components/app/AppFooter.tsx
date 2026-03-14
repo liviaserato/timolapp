@@ -52,8 +52,9 @@ export function AppFooter() {
 
   return (
     <footer
+      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       className={cn(
-        "shrink-0 z-30 flex h-[70px] items-center justify-center bg-gradient-to-b from-app-header to-app-header-gradient shadow-[0_-2px_4px_rgba(0,0,0,0.08)] md:hidden transition-transform duration-300 ease-out",
+        "shrink-0 z-30 flex min-h-[70px] items-center justify-center bg-gradient-to-b from-app-header to-app-header-gradient shadow-[0_-2px_4px_rgba(0,0,0,0.08)] md:hidden transition-transform duration-300 ease-out",
         visible ? "translate-y-0" : "translate-y-full"
       )}
     >
