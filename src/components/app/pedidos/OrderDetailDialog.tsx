@@ -151,11 +151,9 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
         <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-primary">
-              <Package className="h-5 w-5" />
-              <div>
-                <div>Pedido {order.number}</div>
-                <span className="text-[13px] font-normal text-muted-foreground">{formatDate(order.date)}</span>
-              </div>
+              <Package className="h-5 w-5 shrink-0" />
+              <span>Pedido <span className="font-extrabold">{order.number}</span></span>
+              <span className="text-[13px] font-normal text-muted-foreground ml-1">— {formatDate(order.date)}</span>
             </DialogTitle>
           </DialogHeader>
 
