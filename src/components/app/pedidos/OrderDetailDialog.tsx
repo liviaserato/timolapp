@@ -196,14 +196,17 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                         </div>
                         <div className="text-right whitespace-nowrap">
                           {item.discountedTotal != null ? (
-                            <>
-                              <span className="text-sm text-muted-foreground line-through decoration-[1.5px] decoration-red-400/70">
+                            <div className="flex flex-col items-end">
+                              <span className="relative text-sm text-muted-foreground">
                                 {formatCurrency(lineTotal)}
+                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                  <span className="block w-[110%] h-[1.5px] bg-red-400/70 rotate-[-12deg]" />
+                                </span>
                               </span>
-                              <span className="text-sm font-bold text-emerald-600 ml-1.5">
+                              <span className="text-sm font-bold text-foreground">
                                 {formatCurrency(item.discountedTotal)}
                               </span>
-                            </>
+                            </div>
                           ) : (
                             <span className="text-sm font-bold text-foreground">
                               {formatCurrency(lineTotal)}
