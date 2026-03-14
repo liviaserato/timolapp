@@ -77,12 +77,12 @@ export interface Order {
 
 /* ── Helpers ── */
 
-const statusConfig: Record<OrderStatus, { label: string; textColor: string }> = {
-  pendente:   { label: "Pendente",   textColor: "text-gray-500" },
-  confirmado: { label: "Confirmado", textColor: "text-blue-600" },
-  enviado:    { label: "Enviado",    textColor: "text-emerald-600" },
-  entregue:   { label: "Entregue",   textColor: "text-[#003885]" },
-  cancelado:  { label: "Cancelado",  textColor: "text-red-600" },
+const statusConfig: Record<OrderStatus, { label: string; textColor: string; bgColor: string; borderColor: string }> = {
+  pendente:   { label: "Pendente",   textColor: "text-gray-600",       bgColor: "bg-gray-50",         borderColor: "border-gray-300" },
+  confirmado: { label: "Confirmado", textColor: "text-blue-600",       bgColor: "bg-blue-50",         borderColor: "border-blue-300" },
+  enviado:    { label: "Enviado",    textColor: "text-emerald-600",    bgColor: "bg-emerald-50",      borderColor: "border-emerald-300" },
+  entregue:   { label: "Entregue",   textColor: "text-[#003885]",      bgColor: "bg-blue-50",         borderColor: "border-[#003885]/30" },
+  cancelado:  { label: "Cancelado",  textColor: "text-red-600",        bgColor: "bg-red-50",          borderColor: "border-red-300" },
 };
 
 const productImages: Record<string, string> = {
