@@ -6,6 +6,7 @@ import {
   Truck,
   Calendar,
   CheckSquare,
+  Star,
   Plus,
   CreditCard,
   Landmark,
