@@ -229,12 +229,12 @@ export default function Pedidos() {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos</SelectItem>
-                <SelectItem value="pendente">Pendente</SelectItem>
-                <SelectItem value="confirmado">Confirmado</SelectItem>
-                <SelectItem value="enviado">Enviado</SelectItem>
-                <SelectItem value="entregue">Entregue</SelectItem>
-                <SelectItem value="cancelado">Cancelado</SelectItem>
+                <SelectItem value="todos" className="hover:bg-muted/60 cursor-pointer">Todos</SelectItem>
+                <SelectItem value="pendente" className="hover:bg-muted/60 cursor-pointer">Pendente</SelectItem>
+                <SelectItem value="confirmado" className="hover:bg-muted/60 cursor-pointer">Confirmado</SelectItem>
+                <SelectItem value="enviado" className="hover:bg-muted/60 cursor-pointer">Enviado</SelectItem>
+                <SelectItem value="entregue" className="hover:bg-muted/60 cursor-pointer">Entregue</SelectItem>
+                <SelectItem value="cancelado" className="hover:bg-muted/60 cursor-pointer">Cancelado</SelectItem>
               </SelectContent>
             </Select>
           </div>
