@@ -89,7 +89,36 @@ const mockOrders: Order[] = [
     items: [{ name: "Combo Mega", qty: 1, price: 189.9 }],
     total: 189.9, status: "cancelado",
   },
-];
+  {
+    id: "6", number: "#4940", date: "2026-02-20",
+    items: [{ name: "Filtro Premium", qty: 3, price: 79.9 }],
+    total: 239.7, status: "pendente",
+  },
+  {
+    id: "7", number: "#4932", date: "2026-02-18",
+    items: [{ name: "Combo Mini", qty: 2, price: 99.9 }, { name: "Refil Alcalino", qty: 1, price: 59.9 }],
+    total: 259.7, status: "enviado", tracking: "BR987654321",
+  },
+  {
+    id: "8", number: "#4920", date: "2026-02-14",
+    items: [{ name: "Galão Ionizado", qty: 4, price: 45.0 }],
+    total: 180.0, status: "entregue",
+  },
+  {
+    id: "9", number: "#4905", date: "2026-02-10",
+    items: [{ name: "Combo Mega", qty: 1, price: 189.9 }, { name: "Combo Mini", qty: 1, price: 99.9 }],
+    total: 289.8, status: "confirmado",
+  },
+  {
+    id: "10", number: "#4890", date: "2026-02-05",
+    items: [{ name: "Produtos Separados", qty: 6, price: 49.9 }],
+    total: 299.4, status: "cancelado",
+  },
+  {
+    id: "11", number: "#4878", date: "2026-01-28",
+    items: [{ name: "Loader Transparente", qty: 10, price: 29.9 }],
+    total: 299.0, status: "entregue",
+  },
 
 const statusConfig: Record<OrderStatus, { label: string; icon: React.ElementType; textColor: string; borderColor: string }> = {
   pendente:   { label: "Pendente",   icon: Clock,        textColor: "text-gray-500",       borderColor: "border-l-gray-400" },
