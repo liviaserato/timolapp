@@ -89,11 +89,11 @@ const mockOrders: Order[] = [
 ];
 
 const statusConfig: Record<OrderStatus, { label: string; icon: React.ElementType; textColor: string; borderColor: string }> = {
-  pendente:   { label: "Pendente",   icon: Clock,        textColor: "text-amber-600",   borderColor: "border-l-gray-400" },
-  confirmado: { label: "Confirmado", icon: CheckCircle2,  textColor: "text-blue-600",    borderColor: "border-l-blue-500" },
-  enviado:    { label: "Enviado",    icon: Truck,         textColor: "text-amber-600",   borderColor: "border-l-amber-400" },
-  entregue:   { label: "Entregue",   icon: CheckCircle2,  textColor: "text-emerald-600", borderColor: "border-l-emerald-500" },
-  cancelado:  { label: "Cancelado",  icon: XCircle,       textColor: "text-red-600",     borderColor: "border-l-red-500" },
+  pendente:   { label: "Pendente",   icon: Clock,        textColor: "text-gray-500",       borderColor: "border-l-gray-400" },
+  confirmado: { label: "Confirmado", icon: CheckCircle2,  textColor: "text-blue-600",       borderColor: "border-l-blue-500" },
+  enviado:    { label: "Enviado",    icon: Truck,         textColor: "text-emerald-600",    borderColor: "border-l-emerald-500" },
+  entregue:   { label: "Entregue",   icon: CheckCircle2,  textColor: "text-[#003885]",      borderColor: "border-l-[#003885]" },
+  cancelado:  { label: "Cancelado",  icon: XCircle,       textColor: "text-red-600",        borderColor: "border-l-red-500" },
 };
 
 function StatusBadge({ status }: { status: OrderStatus }) {
@@ -252,7 +252,7 @@ export default function Pedidos() {
                       <div
                         key={order.id}
                         className={cn(
-                          "rounded-lg border border-app-card-border bg-card cursor-pointer hover:bg-muted/40 transition-colors overflow-hidden border-l-4",
+                          "rounded-r-lg rounded-l-none border border-app-card-border bg-card cursor-pointer hover:bg-muted/40 transition-colors overflow-hidden border-l-4",
                           statusConfig[order.status].borderColor,
                         )}
                         onClick={() => setDetailOrder(order)}
@@ -275,7 +275,7 @@ export default function Pedidos() {
                             {order.status === "enviado" && order.tracking && (
                               <button
                                 onClick={(e) => handleTrackingClick(e, order.tracking!)}
-                                className="flex items-center gap-0.5 text-primary hover:text-primary/80 transition-colors sm:order-none order-last ml-auto sm:ml-0"
+                                className="flex items-center gap-0.5 text-muted-foreground hover:text-foreground transition-colors sm:order-none order-last ml-auto sm:ml-0"
                                 title="Rastrear pedido"
                               >
                                 <span className="text-[11px] font-mono">{order.tracking}</span>
