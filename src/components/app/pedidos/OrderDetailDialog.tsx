@@ -108,7 +108,7 @@ function canReturn(order: Order): boolean {
   return diffDays <= 7;
 }
 
-const Separator = () => <div className="border-t border-border/50 my-3" />;
+const Separator = () => <div className="border-t border-border/40 my-2" />;
 
 /* ── Component ── */
 
