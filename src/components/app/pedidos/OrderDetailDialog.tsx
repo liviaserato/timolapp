@@ -223,22 +223,21 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
 
           {/* Points banner */}
           {(order.pointsUnilevel || order.pointsBinary) && (
-            <div className="rounded-lg bg-primary/5 border border-primary/20 px-3 py-2.5 text-center">
-              <p className="text-xs text-muted-foreground">
+            <div className="rounded-lg bg-sky-50 border border-sky-200 px-3 py-2.5 flex items-center gap-2">
+              <Star className="h-4 w-4 text-sky-500 shrink-0" />
+              <p className="text-xs text-sky-700">
                 Com este pedido, você acumulou{" "}
                 {order.pointsUnilevel != null && (
-                  <span className="font-bold text-primary">{order.pointsUnilevel} pontos Unilevel</span>
+                  <span className="font-bold text-sky-600">{order.pointsUnilevel} pontos Unilevel</span>
                 )}
                 {order.pointsUnilevel != null && order.pointsBinary != null && " e "}
                 {order.pointsBinary != null && (
-                  <span className="font-bold text-primary">{order.pointsBinary} pontos Binário</span>
+                  <span className="font-bold text-sky-600">{order.pointsBinary} pontos Binário</span>
                 )}
                 .
               </p>
             </div>
           )}
-
-          <Separator />
 
           {/* ── Forma de Pagamento ── */}
           {order.payments && order.payments.length > 0 && (
