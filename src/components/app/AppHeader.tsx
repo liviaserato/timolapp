@@ -20,7 +20,7 @@ export function AppHeader() {
   const { profiles, selected, setSelectedId, hasMultiple } = useFranchise();
 
   return (
-    <header className="shrink-0 z-30 flex h-[70px] items-center justify-between gap-4 bg-gradient-to-b from-app-header to-app-header-gradient px-5 pr-6 shadow-sm">
+    <header style={{ paddingTop: "env(safe-area-inset-top, 0px)" }} className="shrink-0 z-30 flex min-h-[70px] items-center justify-between gap-4 bg-gradient-to-b from-app-header to-app-header-gradient px-5 pr-6 shadow-sm">
       {/* Left: toggle + logo */}
       <div className="flex items-center gap-4">
         {/* Desktop/Tablet sidebar toggle - hidden on mobile */}
