@@ -259,7 +259,7 @@ export default function Pedidos() {
                       <div
                         key={order.id}
                         className={cn(
-                          "rounded-r-lg rounded-l-none border border-app-card-border bg-card cursor-pointer hover:bg-muted/40 transition-colors overflow-hidden border-l-[5px]",
+                          "rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card cursor-pointer hover:bg-muted/40 transition-colors overflow-hidden border-l-[5px]",
                           statusConfig[order.status].borderColor,
                         )}
                         onClick={() => setDetailOrder(order)}
