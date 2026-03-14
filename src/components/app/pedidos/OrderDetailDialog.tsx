@@ -352,8 +352,20 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                   </div>
                 )}
 
+                {/* Friendly message for confirmed orders */}
+                {order.status === "confirmado" && order.delivery.type === "entrega" && (
+                  <p className="text-xs text-blue-600 bg-blue-50 border border-blue-200 rounded-md px-3 py-2 mt-2">
+                    📦 Seu pedido foi confirmado e está sendo preparado. Assim que sair para entrega, você receberá o código de rastreio.
+                  </p>
+                )}
+                {order.status === "confirmado" && order.delivery.type === "retirada" && (
+                  <p className="text-xs text-blue-600 bg-blue-50 border border-blue-200 rounded-md px-3 py-2 mt-2">
+                    📦 Seu pedido foi confirmado e está sendo preparado. Assim que estiver disponível para retirada, você será notificado.
+                  </p>
+                )}
+
                 {/* Delivery info - for "entrega" type */}
-                {order.delivery.type === "entrega" && (
+                {order.delivery.type === "entrega" && (order.delivery.deliveryDate || order.delivery.tracking || order.delivery.deliveredTo) && (
                   <div className="mt-3 space-y-1.5">
                     <div className="flex items-center gap-1.5">
                       <ClipboardList className="h-4 w-4 text-muted-foreground shrink-0" />
