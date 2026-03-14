@@ -16,6 +16,7 @@ import {
   ChevronRight,
   MoreHorizontal,
 } from "lucide-react";
+import { OrderDetailDialog, type Order, type OrderStatus } from "@/components/app/pedidos/OrderDetailDialog";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
