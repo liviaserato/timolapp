@@ -30,7 +30,7 @@ import loaderImg from "@/assets/produtos-loader-transparent.png";
 
 /* ── Types ── */
 
-export type OrderStatus = "pendente" | "confirmado" | "enviado" | "entregue" | "cancelado";
+export type OrderStatus = "pendente" | "confirmado" | "enviado" | "entregue" | "cancelado" | "disponivel_retirada";
 
 export interface OrderItem {
   name: string;
@@ -81,11 +81,12 @@ export interface Order {
 /* ── Helpers ── */
 
 const statusConfig: Record<OrderStatus, { label: string; textColor: string; bgColor: string; borderColor: string }> = {
-  pendente:   { label: "Pendente",   textColor: "text-gray-600",       bgColor: "bg-gray-50",         borderColor: "border-gray-300" },
-  confirmado: { label: "Confirmado", textColor: "text-blue-600",       bgColor: "bg-blue-50",         borderColor: "border-blue-300" },
-  enviado:    { label: "Enviado",    textColor: "text-emerald-600",    bgColor: "bg-emerald-50",      borderColor: "border-emerald-300" },
-  entregue:   { label: "Entregue",   textColor: "text-[#003885]",      bgColor: "bg-blue-50",         borderColor: "border-[#003885]/30" },
-  cancelado:  { label: "Cancelado",  textColor: "text-red-600",        bgColor: "bg-red-50",          borderColor: "border-red-300" },
+  pendente:              { label: "Pendente",                textColor: "text-gray-600",       bgColor: "bg-gray-50",         borderColor: "border-gray-300" },
+  confirmado:            { label: "Confirmado",              textColor: "text-blue-600",       bgColor: "bg-blue-50",         borderColor: "border-blue-300" },
+  enviado:               { label: "Enviado",                 textColor: "text-emerald-600",    bgColor: "bg-emerald-50",      borderColor: "border-emerald-300" },
+  disponivel_retirada:   { label: "Disponível p/ Retirada",  textColor: "text-emerald-600",    bgColor: "bg-emerald-50",      borderColor: "border-emerald-300" },
+  entregue:              { label: "Entregue",                textColor: "text-[#003885]",      bgColor: "bg-blue-50",         borderColor: "border-[#003885]/30" },
+  cancelado:             { label: "Cancelado",               textColor: "text-red-600",        bgColor: "bg-red-50",          borderColor: "border-red-300" },
 };
 
 const productImages: Record<string, string> = {
@@ -255,7 +256,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
 
           {/* Points banner */}
           {(order.pointsUnilevel || order.pointsBinary) && (
-            <div className="rounded-lg bg-sky-50 border border-sky-200 px-3 py-2.5 flex flex-col items-center text-center gap-1.5">
+            <div className="rounded-lg bg-sky-50 border border-sky-200 px-3 py-2.5 flex items-center gap-2">
               <Star className="h-5 w-5 text-sky-700 shrink-0" />
               <p className="text-xs text-sky-700">
                 Com este pedido, você acumulou
@@ -351,8 +352,20 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                   </div>
                 )}
 
+                {/* Friendly message for confirmed orders */}
+                {order.status === "confirmado" && order.delivery.type === "entrega" && (
+                  <p className="text-xs text-blue-600 bg-blue-50 border border-blue-200 rounded-md px-3 py-2 mt-2">
+                    📦 Seu pedido foi confirmado e está sendo preparado. Assim que sair para entrega, você receberá o código de rastreio.
+                  </p>
+                )}
+                {order.status === "confirmado" && order.delivery.type === "retirada" && (
+                  <p className="text-xs text-blue-600 bg-blue-50 border border-blue-200 rounded-md px-3 py-2 mt-2">
+                    📦 Seu pedido foi confirmado e está sendo preparado. Assim que estiver disponível para retirada, você será notificado.
+                  </p>
+                )}
+
                 {/* Delivery info - for "entrega" type */}
-                {order.delivery.type === "entrega" && (
+                {order.delivery.type === "entrega" && (order.delivery.deliveryDate || order.delivery.tracking || order.delivery.deliveredTo) && (
                   <div className="mt-3 space-y-1.5">
                     <div className="flex items-center gap-1.5">
                       <ClipboardList className="h-4 w-4 text-muted-foreground shrink-0" />

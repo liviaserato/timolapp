@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MoreHorizontal,
+  PackageCheck,
 } from "lucide-react";
 import { OrderDetailDialog, type Order, type OrderStatus } from "@/components/app/pedidos/OrderDetailDialog";
 import { DashboardCard } from "@/components/app/DashboardCard";
@@ -204,11 +205,12 @@ const mockOrders: Order[] = [
 ];
 
 const statusConfig: Record<OrderStatus, { label: string; icon: React.ElementType; textColor: string; borderColor: string }> = {
-  pendente:   { label: "Pendente",   icon: Clock,        textColor: "text-gray-500",       borderColor: "border-l-gray-400" },
-  confirmado: { label: "Confirmado", icon: CheckCircle2,  textColor: "text-blue-600",       borderColor: "border-l-blue-500" },
-  enviado:    { label: "Enviado",    icon: Truck,         textColor: "text-emerald-600",    borderColor: "border-l-emerald-500" },
-  entregue:   { label: "Entregue",   icon: CheckCircle2,  textColor: "text-[#003885]",      borderColor: "border-l-[#003885]" },
-  cancelado:  { label: "Cancelado",  icon: XCircle,       textColor: "text-red-600",        borderColor: "border-l-red-500" },
+  pendente:            { label: "Pendente",               icon: Clock,        textColor: "text-gray-500",       borderColor: "border-l-gray-400" },
+  confirmado:          { label: "Confirmado",             icon: CheckCircle2,  textColor: "text-blue-600",       borderColor: "border-l-blue-500" },
+  enviado:             { label: "Enviado",                icon: Truck,         textColor: "text-emerald-600",    borderColor: "border-l-emerald-500" },
+  disponivel_retirada: { label: "Disp. p/ Retirada",     icon: PackageCheck,  textColor: "text-emerald-600",    borderColor: "border-l-emerald-500" },
+  entregue:            { label: "Entregue",               icon: CheckCircle2,  textColor: "text-[#003885]",      borderColor: "border-l-[#003885]" },
+  cancelado:           { label: "Cancelado",              icon: XCircle,       textColor: "text-red-600",        borderColor: "border-l-red-500" },
 };
 
 function StatusBadge({ status }: { status: OrderStatus }) {
@@ -375,6 +377,7 @@ export default function Pedidos() {
                 <SelectItem value="pendente" className="hover:bg-muted/60 cursor-pointer">Pendente</SelectItem>
                 <SelectItem value="confirmado" className="hover:bg-muted/60 cursor-pointer">Confirmado</SelectItem>
                 <SelectItem value="enviado" className="hover:bg-muted/60 cursor-pointer">Enviado</SelectItem>
+                <SelectItem value="disponivel_retirada" className="hover:bg-muted/60 cursor-pointer">Disp. p/ Retirada</SelectItem>
                 <SelectItem value="entregue" className="hover:bg-muted/60 cursor-pointer">Entregue</SelectItem>
                 <SelectItem value="cancelado" className="hover:bg-muted/60 cursor-pointer">Cancelado</SelectItem>
               </SelectContent>
