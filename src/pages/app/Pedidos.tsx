@@ -52,17 +52,7 @@ const mockBanners = [
   { id: 3, title: "🎁 Compre 3, Leve 4", subtitle: "Promoção exclusiva para franqueados", bg: "from-amber-600/80 to-amber-500/60" },
 ];
 
-type OrderStatus = "pendente" | "confirmado" | "enviado" | "entregue" | "cancelado";
-
-interface Order {
-  id: string;
-  number: string;
-  date: string;
-  items: { name: string; qty: number; price: number }[];
-  total: number;
-  status: OrderStatus;
-  tracking?: string;
-}
+// Types imported from OrderDetailDialog
 
 const mockOrders: Order[] = [
   {
