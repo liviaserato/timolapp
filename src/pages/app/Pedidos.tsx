@@ -12,6 +12,9 @@ import {
   Users,
   BookOpen,
   ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
 } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
