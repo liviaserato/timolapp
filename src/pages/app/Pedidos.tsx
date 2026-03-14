@@ -180,8 +180,8 @@ export default function Pedidos() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="left-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-black/5 text-white/70 drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
-              <CarouselNext className="right-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-black/5 text-white/70 drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
+              <CarouselPrevious className="left-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-transparent text-white/50 hover:text-white drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
+              <CarouselNext className="right-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-transparent text-white/50 hover:text-white drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
             </Carousel>
           </div>
         </DashboardCard>
