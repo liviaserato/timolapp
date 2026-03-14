@@ -249,7 +249,7 @@ export default function Pedidos() {
               <Input
                 placeholder="Buscar por nº, produto ou data..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="h-8 pl-8 text-xs rounded-md"
               />
             </div>
