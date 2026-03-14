@@ -12,6 +12,7 @@ import {
   Landmark,
   Wallet,
   Ticket,
+  ClipboardList,
 } from "lucide-react";
 import {
   Dialog,
@@ -150,11 +151,9 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
         <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-primary">
-              <Package className="h-5 w-5" />
-              <div>
-                <div>Pedido {order.number}</div>
-                <span className="text-[13px] font-normal text-muted-foreground">{formatDate(order.date)}</span>
-              </div>
+              <Package className="h-5 w-5 shrink-0" />
+              <span>Pedido <span className="font-extrabold">{order.number}</span></span>
+              <span className="text-[13px] font-normal text-muted-foreground ml-1">— {formatDate(order.date)}</span>
             </DialogTitle>
           </DialogHeader>
 
@@ -239,10 +238,11 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
 
           {/* Points banner */}
           {(order.pointsUnilevel || order.pointsBinary) && (
-            <div className="rounded-lg bg-sky-50 border border-sky-200 px-3 py-2.5 flex items-center gap-2">
-              <Star className="h-4 w-4 text-sky-500 shrink-0" />
+            <div className="rounded-lg bg-sky-50 border border-sky-200 px-3 py-2.5 flex items-start gap-2">
+              <Star className="h-4 w-4 text-sky-500 shrink-0 mt-0.5" />
               <p className="text-xs text-sky-700">
-                Com este pedido, você acumulou{" "}
+                Com este pedido, você acumulou
+                <br />
                 {order.pointsUnilevel != null && (
                   <span className="font-bold text-sky-600">{order.pointsUnilevel} pontos Unilevel</span>
                 )}
@@ -334,31 +334,45 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                   </div>
                 )}
 
-                {/* Delivery info - only for "entrega" type */}
+                {/* Delivery info - for "entrega" type */}
                 {order.delivery.type === "entrega" && (
                   <div className="mt-3 space-y-1.5">
-                    <p className="text-sm font-semibold text-foreground">Informações da Entrega</p>
+                    <div className="flex items-center gap-1.5">
+                      <ClipboardList className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <p className="text-sm font-semibold text-foreground">Informações da Entrega</p>
+                    </div>
                     {order.delivery.deliveryDate && (
-                      <div className="flex items-center gap-2 text-xs">
+                      <div className="flex items-center gap-2 text-xs ml-5">
                         <Calendar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="text-muted-foreground">Data da Entrega:</span>
                         <span className="font-medium">{formatDate(order.delivery.deliveryDate)}</span>
                       </div>
                     )}
                     {order.delivery.tracking && (
-                      <div className="flex items-center gap-2 text-xs">
+                      <div className="flex items-center gap-2 text-xs ml-5">
                         <Truck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="text-muted-foreground">Rastreio:</span>
                         <span className="font-mono font-medium text-primary">{order.delivery.tracking}</span>
                       </div>
                     )}
                     {order.delivery.deliveredTo && (
-                      <div className="flex items-center gap-2 text-xs">
-                        <CheckSquare className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                      <div className="flex items-center gap-2 text-xs ml-5">
+                        <CheckSquare className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="text-muted-foreground">Entrega</span>
                         <span className="font-medium">Entregue para {order.delivery.deliveredTo}</span>
                       </div>
                     )}
+                  </div>
+                )}
+
+                {/* Tracking for non-entrega types (retirada, etc.) */}
+                {order.delivery.type !== "entrega" && order.delivery.tracking && (
+                  <div className="mt-3 space-y-1.5">
+                    <div className="flex items-center gap-2 text-xs">
+                      <Truck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <span className="text-muted-foreground">Rastreio:</span>
+                      <span className="font-mono font-medium text-primary">{order.delivery.tracking}</span>
+                    </div>
                   </div>
                 )}
               </div>
