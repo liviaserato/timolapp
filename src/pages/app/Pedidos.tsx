@@ -478,50 +478,7 @@ export default function Pedidos() {
       </section>
 
       {/* Dialog de detalhes do pedido */}
-      <Dialog open={!!detailOrder} onOpenChange={(open) => !open && setDetailOrder(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-primary">
-              <Package className="h-5 w-5" />
-              Pedido {detailOrder?.number}
-            </DialogTitle>
-          </DialogHeader>
-          {detailOrder && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Data: {formatDate(detailOrder.date)}</span>
-                <StatusBadge status={detailOrder.status} />
-              </div>
-
-              {detailOrder.tracking && (
-                <div className="rounded-md border border-app-card-border p-3 bg-muted/30">
-                  <p className="text-xs text-muted-foreground">Código de rastreio</p>
-                  <p className="text-sm font-mono font-semibold text-primary">{detailOrder.tracking}</p>
-                </div>
-              )}
-
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground mb-2">Itens do pedido</p>
-                <div className="space-y-2">
-                  {detailOrder.items.map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between text-sm">
-                      <span>
-                        {item.qty}x {item.name}
-                      </span>
-                      <span className="font-medium">{formatCurrency(item.price * item.qty)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between border-t border-app-card-border pt-3">
-                <span className="text-sm font-bold">Total</span>
-                <span className="text-lg font-bold text-primary">{formatCurrency(detailOrder.total)}</span>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <OrderDetailDialog order={detailOrder} onClose={() => setDetailOrder(null)} />
     </div>
   );
 }
