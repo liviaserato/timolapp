@@ -240,13 +240,15 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
             </div>
           )}
 
+          <Separator />
+
           {/* ── Forma de Pagamento ── */}
           {order.payments && order.payments.length > 0 && (
             <>
               <div>
                 <p className="text-sm font-bold text-foreground mb-2">Forma de Pagamento</p>
                 <div className="space-y-1.5 text-sm">
-                  {order.payments.map((p, idx) => (
+                  {sortPayments(order.payments).map((p, idx) => (
                     <div key={idx}>
                       <div className="flex justify-between">
                         <div className="flex items-center gap-1.5">
@@ -259,7 +261,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                         <span>{formatCurrency(p.value)}</span>
                       </div>
                       {p.installments && (
-                        <p className="text-[11px] text-muted-foreground italic ml-5">{p.installments}</p>
+                        <p className="text-[11px] text-muted-foreground italic ml-5">({p.installments})</p>
                       )}
                     </div>
                   ))}
