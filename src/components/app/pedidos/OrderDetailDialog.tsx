@@ -111,7 +111,7 @@ function canReturn(order: Order): boolean {
   return diffDays <= 7;
 }
 
-const Separator = () => <div className="border-t border-border/40 my-2" />;
+const Separator = () => <div className="border-t border-border/40 my-1.5" />;
 
 const paymentOrder: Record<string, number> = {
   "saldo": 0, "banco": 0,
