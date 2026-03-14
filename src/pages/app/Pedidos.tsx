@@ -278,7 +278,6 @@ export default function Pedidos() {
                                 className="flex items-center gap-0.5 text-primary hover:text-primary/80 transition-colors sm:order-none order-last ml-auto sm:ml-0"
                                 title="Rastrear pedido"
                               >
-                                <Truck className="h-4 w-4" />
                                 <span className="text-[11px] font-mono">{order.tracking}</span>
                                 <ExternalLink className="h-3 w-3" />
                               </button>
