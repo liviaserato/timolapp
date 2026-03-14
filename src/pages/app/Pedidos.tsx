@@ -133,7 +133,8 @@ export default function Pedidos() {
     .filter((o) => {
       const matchSearch =
         o.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        o.items.some((i) => i.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        o.items.some((i) => i.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        formatDate(o.date).includes(searchTerm);
       const matchStatus = statusFilter === "todos" || o.status === statusFilter;
       return matchSearch && matchStatus;
     })
@@ -216,7 +217,7 @@ export default function Pedidos() {
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
-                placeholder="Buscar por nº ou produto..."
+                placeholder="Buscar por nº, produto ou data..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="h-8 pl-8 text-xs rounded-md"
@@ -228,12 +229,12 @@ export default function Pedidos() {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos</SelectItem>
-                <SelectItem value="pendente">Pendente</SelectItem>
-                <SelectItem value="confirmado">Confirmado</SelectItem>
-                <SelectItem value="enviado">Enviado</SelectItem>
-                <SelectItem value="entregue">Entregue</SelectItem>
-                <SelectItem value="cancelado">Cancelado</SelectItem>
+                <SelectItem value="todos" className="hover:bg-muted/60 cursor-pointer">Todos</SelectItem>
+                <SelectItem value="pendente" className="hover:bg-muted/60 cursor-pointer">Pendente</SelectItem>
+                <SelectItem value="confirmado" className="hover:bg-muted/60 cursor-pointer">Confirmado</SelectItem>
+                <SelectItem value="enviado" className="hover:bg-muted/60 cursor-pointer">Enviado</SelectItem>
+                <SelectItem value="entregue" className="hover:bg-muted/60 cursor-pointer">Entregue</SelectItem>
+                <SelectItem value="cancelado" className="hover:bg-muted/60 cursor-pointer">Cancelado</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -252,7 +253,7 @@ export default function Pedidos() {
                       <div
                         key={order.id}
                         className={cn(
-                          "rounded-r-lg rounded-l-none border border-app-card-border bg-card cursor-pointer hover:bg-muted/40 transition-colors overflow-hidden border-l-4",
+                          "rounded-r-lg rounded-l-none border border-app-card-border bg-card cursor-pointer hover:bg-muted/40 transition-colors overflow-hidden border-l-[5px]",
                           statusConfig[order.status].borderColor,
                         )}
                         onClick={() => setDetailOrder(order)}
