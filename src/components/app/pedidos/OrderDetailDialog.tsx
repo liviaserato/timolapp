@@ -374,20 +374,20 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                     {order.delivery.deliveryDate && (
                       <div className="flex items-center gap-2 text-xs ml-5">
                         <span className="text-muted-foreground">Data da Entrega:</span>
-                        <span className="font-medium">{formatDate(order.delivery.deliveryDate)}</span>
+                        <span className="text-foreground">{formatDate(order.delivery.deliveryDate)}</span>
                       </div>
                     )}
                      {order.delivery.tracking && (
                       <div className="flex items-center gap-2 text-xs ml-5">
                         <span className="text-muted-foreground">Rastreio:</span>
                         <Truck className="h-3.5 w-3.5 text-primary shrink-0 -mr-1" />
-                        <span className="font-mono font-medium text-primary">{order.delivery.tracking}</span>
+                        <span className="font-mono text-primary">{order.delivery.tracking}</span>
                       </div>
                     )}
                     {order.delivery.deliveredTo && (
                       <div className="flex items-center gap-2 text-xs ml-5">
                         <span className="text-muted-foreground">Entrega</span>
-                        <span className="font-medium">Entregue para {order.delivery.deliveredTo}</span>
+                        <span className="text-foreground">Entregue para {order.delivery.deliveredTo}</span>
                       </div>
                     )}
                   </div>
