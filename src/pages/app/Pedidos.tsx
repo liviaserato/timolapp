@@ -377,6 +377,7 @@ export default function Pedidos() {
                 <SelectItem value="pendente" className="hover:bg-muted/60 cursor-pointer">Pendente</SelectItem>
                 <SelectItem value="confirmado" className="hover:bg-muted/60 cursor-pointer">Confirmado</SelectItem>
                 <SelectItem value="enviado" className="hover:bg-muted/60 cursor-pointer">Enviado</SelectItem>
+                <SelectItem value="disponivel_retirada" className="hover:bg-muted/60 cursor-pointer">Disp. p/ Retirada</SelectItem>
                 <SelectItem value="entregue" className="hover:bg-muted/60 cursor-pointer">Entregue</SelectItem>
                 <SelectItem value="cancelado" className="hover:bg-muted/60 cursor-pointer">Cancelado</SelectItem>
               </SelectContent>
