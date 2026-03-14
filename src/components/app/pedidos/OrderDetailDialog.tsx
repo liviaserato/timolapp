@@ -30,7 +30,7 @@ import loaderImg from "@/assets/produtos-loader-transparent.png";
 
 /* ── Types ── */
 
-export type OrderStatus = "pendente" | "confirmado" | "enviado" | "entregue" | "cancelado";
+export type OrderStatus = "pendente" | "confirmado" | "enviado" | "entregue" | "cancelado" | "disponivel_retirada";
 
 export interface OrderItem {
   name: string;
