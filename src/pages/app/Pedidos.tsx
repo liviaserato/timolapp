@@ -133,7 +133,8 @@ export default function Pedidos() {
     .filter((o) => {
       const matchSearch =
         o.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        o.items.some((i) => i.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        o.items.some((i) => i.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        formatDate(o.date).includes(searchTerm);
       const matchStatus = statusFilter === "todos" || o.status === statusFilter;
       return matchSearch && matchStatus;
     })
