@@ -111,7 +111,7 @@ function canReturn(order: Order): boolean {
   return diffDays <= 7;
 }
 
-const Separator = () => <div className="border-t border-border/40 my-2" />;
+const Separator = () => <div className="border-t border-border/40 my-1.5" />;
 
 const paymentOrder: Record<string, number> = {
   "saldo": 0, "banco": 0,
@@ -196,14 +196,17 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                         </div>
                         <div className="text-right whitespace-nowrap">
                           {item.discountedTotal != null ? (
-                            <>
-                              <span className="text-sm text-muted-foreground line-through decoration-[1.5px] decoration-red-400/70">
+                            <div className="flex flex-col items-end">
+                              <span className="relative text-sm text-muted-foreground">
                                 {formatCurrency(lineTotal)}
+                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                  <span className="block w-[110%] h-[1.5px] bg-red-400/70 rotate-[-12deg]" />
+                                </span>
                               </span>
-                              <span className="text-sm font-bold text-emerald-600 ml-1.5">
+                              <span className="text-sm font-bold text-foreground">
                                 {formatCurrency(item.discountedTotal)}
                               </span>
-                            </>
+                            </div>
                           ) : (
                             <span className="text-sm font-bold text-foreground">
                               {formatCurrency(lineTotal)}
@@ -362,10 +365,10 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                         <span className="font-medium">{formatDate(order.delivery.deliveryDate)}</span>
                       </div>
                     )}
-                    {order.delivery.tracking && (
+                     {order.delivery.tracking && (
                       <div className="flex items-center gap-2 text-xs ml-5">
-                        <Truck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="text-muted-foreground">Rastreio:</span>
+                        <Truck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="font-mono font-medium text-primary">{order.delivery.tracking}</span>
                       </div>
                     )}
@@ -383,8 +386,8 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                 {order.delivery.type !== "entrega" && order.delivery.tracking && (
                   <div className="mt-3 space-y-1.5">
                     <div className="flex items-center gap-2 text-xs">
-                      <Truck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                       <span className="text-muted-foreground">Rastreio:</span>
+                      <Truck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                       <span className="font-mono font-medium text-primary">{order.delivery.tracking}</span>
                     </div>
                   </div>
