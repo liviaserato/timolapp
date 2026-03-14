@@ -12,6 +12,9 @@ import {
   Users,
   BookOpen,
   ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
 } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
@@ -129,6 +132,9 @@ export default function Pedidos() {
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [detailOrder, setDetailOrder] = useState<Order | null>(null);
 
+  const ITEMS_PER_PAGE = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+
   const filtered = mockOrders
     .filter((o) => {
       const matchSearch =
@@ -140,8 +146,15 @@ export default function Pedidos() {
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  // Group by month
-  const grouped = filtered.reduce<Record<string, Order[]>>((acc, order) => {
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const paginatedOrders = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+  // Reset page when filters change
+  const handleSearchChange = (value: string) => { setSearchTerm(value); setCurrentPage(1); };
+  const handleStatusChange = (value: string) => { setStatusFilter(value); setCurrentPage(1); };
+
+  // Group by month (paginated)
+  const grouped = paginatedOrders.reduce<Record<string, Order[]>>((acc, order) => {
     const d = new Date(order.date + "T00:00:00");
     const monthName = d.toLocaleDateString("pt-BR", { month: "long" });
     const key = `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} ${d.getFullYear()}`;
@@ -149,6 +162,23 @@ export default function Pedidos() {
     acc[key].push(order);
     return acc;
   }, {});
+
+  // Pagination helpers
+  const getPageNumbers = () => {
+    const pages: (number | "ellipsis")[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push("ellipsis");
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (currentPage < totalPages - 2) pages.push("ellipsis");
+      pages.push(totalPages);
+    }
+    return pages;
+  };
 
   return (
     <div>
@@ -219,11 +249,11 @@ export default function Pedidos() {
               <Input
                 placeholder="Buscar por nº, produto ou data..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="h-8 pl-8 text-xs rounded-md"
               />
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select value={statusFilter} onValueChange={handleStatusChange}>
               <SelectTrigger className="h-8 w-full sm:w-[160px] text-xs">
                 <Filter className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
                 <SelectValue placeholder="Status" />
@@ -253,7 +283,7 @@ export default function Pedidos() {
                       <div
                         key={order.id}
                         className={cn(
-                          "rounded-r-lg rounded-l-none border border-app-card-border bg-card cursor-pointer hover:bg-muted/40 transition-colors overflow-hidden border-l-[5px]",
+                          "rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card cursor-pointer hover:bg-muted/40 transition-colors overflow-hidden border-l-[5px]",
                           statusConfig[order.status].borderColor,
                         )}
                         onClick={() => setDetailOrder(order)}
@@ -294,6 +324,46 @@ export default function Pedidos() {
             ))}
             {filtered.length === 0 && (
               <p className="text-center text-sm text-muted-foreground py-6">Nenhum pedido encontrado.</p>
+            )}
+
+            {/* Paginação */}
+            {totalPages > 1 && (
+              <nav className="flex items-center justify-center gap-1 pt-4">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="flex h-8 w-8 items-center justify-center rounded border border-border text-muted-foreground hover:bg-muted/60 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                {getPageNumbers().map((p, idx) =>
+                  p === "ellipsis" ? (
+                    <span key={`e-${idx}`} className="flex h-8 w-8 items-center justify-center text-muted-foreground">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </span>
+                  ) : (
+                    <button
+                      key={p}
+                      onClick={() => setCurrentPage(p)}
+                      className={cn(
+                        "flex h-8 w-8 items-center justify-center rounded text-sm font-medium transition-colors",
+                        currentPage === p
+                          ? "bg-primary text-primary-foreground"
+                          : "border border-border text-foreground hover:bg-muted/60"
+                      )}
+                    >
+                      {p}
+                    </button>
+                  )
+                )}
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="flex h-8 w-8 items-center justify-center rounded border border-border text-muted-foreground hover:bg-muted/60 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </nav>
             )}
           </div>
         </DashboardCard>
