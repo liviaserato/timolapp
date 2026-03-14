@@ -253,7 +253,7 @@ export default function Pedidos() {
                 className="h-8 pl-8 text-xs rounded-md"
               />
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select value={statusFilter} onValueChange={handleStatusChange}>
               <SelectTrigger className="h-8 w-full sm:w-[160px] text-xs">
                 <Filter className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
                 <SelectValue placeholder="Status" />
