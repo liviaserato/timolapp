@@ -12,6 +12,7 @@ import {
   Landmark,
   Wallet,
   Ticket,
+  ClipboardList,
 } from "lucide-react";
 import {
   Dialog,
