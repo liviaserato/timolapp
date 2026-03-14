@@ -16,6 +16,7 @@ import {
   ChevronRight,
   MoreHorizontal,
 } from "lucide-react";
+import { OrderDetailDialog, type Order, type OrderStatus } from "@/components/app/pedidos/OrderDetailDialog";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,73 +52,150 @@ const mockBanners = [
   { id: 3, title: "🎁 Compre 3, Leve 4", subtitle: "Promoção exclusiva para franqueados", bg: "from-amber-600/80 to-amber-500/60" },
 ];
 
-type OrderStatus = "pendente" | "confirmado" | "enviado" | "entregue" | "cancelado";
-
-interface Order {
-  id: string;
-  number: string;
-  date: string;
-  items: { name: string; qty: number; price: number }[];
-  total: number;
-  status: OrderStatus;
-  tracking?: string;
-}
+// Types imported from OrderDetailDialog
 
 const mockOrders: Order[] = [
   {
     id: "1", number: "#5001", date: "2026-03-10",
     items: [{ name: "Combo Mega", qty: 2, price: 189.9 }, { name: "Combo Mini", qty: 1, price: 99.9 }, { name: "Refil Alcalino", qty: 3, price: 59.9 }],
-    total: 479.7, status: "enviado", tracking: "BR123456789",
+    total: 649.4, status: "enviado", tracking: "BR123456789",
+    subtotal: 659.4, freight: 0, coupon: { name: "PROMO10", discount: 10 },
+    pointsUnilevel: 132, pointsBinary: 28,
+    payments: [
+      { method: "PIX", value: 500 },
+      { method: "Crédito", label: "•••• 1234", value: 149.4, installments: "em 2 parcelas de R$ 74,70" },
+    ],
+    delivery: {
+      type: "entrega",
+      address: "Av. Dom Pedro II 841, apto 1234, bloco 3",
+      city: "Alto Umuarama — Uberlândia, MG",
+      zip: "38405-280",
+      note: "Rua de esquina sem saída",
+      tracking: "BR123456789",
+    },
   },
   {
     id: "2", number: "#4998", date: "2026-03-07",
     items: [{ name: "Loader Transparente", qty: 5, price: 29.9 }, { name: "Filtro Premium", qty: 2, price: 79.9 }],
-    total: 149.5, status: "entregue",
+    total: 309.3, status: "entregue",
+    subtotal: 309.3, freight: 0,
+    pointsUnilevel: 62, pointsBinary: 14,
+    payments: [{ method: "PIX", value: 309.3 }],
+    delivery: {
+      type: "retirada",
+      pickupLocation: "Unidade Salvador, BA",
+      deliveryDate: "2026-03-12",
+      deliveredTo: "João",
+    },
   },
   {
     id: "3", number: "#4985", date: "2026-03-03",
     items: [{ name: "Combo Mega", qty: 1, price: 189.9 }, { name: "Produtos Separados", qty: 3, price: 49.9 }, { name: "Galão Ionizado", qty: 2, price: 45.0 }],
-    total: 339.6, status: "confirmado",
+    total: 429.6, status: "confirmado",
+    subtotal: 429.6, freight: 0,
+    payments: [{ method: "Saldo Banco Timol", value: 15 }, { method: "PIX", value: 414.6 }],
+    delivery: {
+      type: "entrega",
+      address: "Rua das Flores 123",
+      city: "Belo Horizonte, MG",
+      zip: "30100-000",
+    },
   },
   {
     id: "4", number: "#4970", date: "2026-03-01",
     items: [{ name: "Combo Mini", qty: 4, price: 99.9 }],
     total: 399.6, status: "entregue",
+    subtotal: 399.6, freight: 0,
+    pointsUnilevel: 80, pointsBinary: 18,
+    payments: [{ method: "Crédito", label: "•••• 5678", value: 399.6, installments: "em 3 parcelas de R$ 133,20" }],
+    delivery: {
+      type: "entrega",
+      address: "Av. Paulista 1000, sala 501",
+      city: "São Paulo, SP",
+      zip: "01310-100",
+      deliveryDate: "2026-03-08",
+      tracking: "BR555444333",
+      deliveredTo: "Maria",
+    },
   },
   {
     id: "5", number: "#4955", date: "2026-02-25",
     items: [{ name: "Combo Mega", qty: 1, price: 189.9 }],
     total: 189.9, status: "cancelado",
+    subtotal: 189.9, freight: 0,
+    payments: [{ method: "PIX", value: 189.9 }],
   },
   {
     id: "6", number: "#4940", date: "2026-02-20",
     items: [{ name: "Filtro Premium", qty: 3, price: 79.9 }],
     total: 239.7, status: "pendente",
+    subtotal: 239.7, freight: 0,
+    delivery: {
+      type: "retirada",
+      pickupLocation: "Unidade Uberlândia, MG",
+    },
   },
   {
     id: "7", number: "#4932", date: "2026-02-18",
     items: [{ name: "Combo Mini", qty: 2, price: 99.9 }, { name: "Refil Alcalino", qty: 1, price: 59.9 }],
     total: 259.7, status: "enviado", tracking: "BR987654321",
+    subtotal: 259.7, freight: 0,
+    payments: [{ method: "PIX", value: 259.7 }],
+    delivery: {
+      type: "entrega",
+      address: "Rua XV de Novembro 200",
+      city: "Curitiba, PR",
+      zip: "80020-310",
+      tracking: "BR987654321",
+    },
   },
   {
     id: "8", number: "#4920", date: "2026-02-14",
     items: [{ name: "Galão Ionizado", qty: 4, price: 45.0 }],
     total: 180.0, status: "entregue",
+    subtotal: 180.0, freight: 0,
+    payments: [{ method: "Voucher", label: "BEMVINDO", value: 10 }, { method: "PIX", value: 170 }],
+    delivery: {
+      type: "entrega",
+      address: "Rua do Comércio 50",
+      city: "Recife, PE",
+      zip: "50010-000",
+      deliveryDate: "2026-02-20",
+      deliveredTo: "Carlos",
+    },
   },
   {
     id: "9", number: "#4905", date: "2026-02-10",
     items: [{ name: "Combo Mega", qty: 1, price: 189.9 }, { name: "Combo Mini", qty: 1, price: 99.9 }],
     total: 289.8, status: "confirmado",
+    subtotal: 289.8, freight: 0,
+    payments: [{ method: "Crédito", label: "•••• 9012", value: 289.8 }],
+    delivery: {
+      type: "retirada",
+      pickupLocation: "Unidade Rio de Janeiro, RJ",
+    },
   },
   {
     id: "10", number: "#4890", date: "2026-02-05",
     items: [{ name: "Produtos Separados", qty: 6, price: 49.9 }],
     total: 299.4, status: "cancelado",
+    subtotal: 299.4, freight: 0,
   },
   {
     id: "11", number: "#4878", date: "2026-01-28",
     items: [{ name: "Loader Transparente", qty: 10, price: 29.9 }],
     total: 299.0, status: "entregue",
+    subtotal: 299.0, freight: 0,
+    payments: [{ method: "PIX", value: 299 }],
+    delivery: {
+      type: "entrega",
+      address: "Av. Brasil 3000",
+      city: "Goiânia, GO",
+      zip: "74000-000",
+      deliveryDate: "2026-02-03",
+      tracking: "BR111222333",
+      deliveredTo: "Ana",
+    },
   },
 ];
 
@@ -400,50 +478,7 @@ export default function Pedidos() {
       </section>
 
       {/* Dialog de detalhes do pedido */}
-      <Dialog open={!!detailOrder} onOpenChange={(open) => !open && setDetailOrder(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-primary">
-              <Package className="h-5 w-5" />
-              Pedido {detailOrder?.number}
-            </DialogTitle>
-          </DialogHeader>
-          {detailOrder && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Data: {formatDate(detailOrder.date)}</span>
-                <StatusBadge status={detailOrder.status} />
-              </div>
-
-              {detailOrder.tracking && (
-                <div className="rounded-md border border-app-card-border p-3 bg-muted/30">
-                  <p className="text-xs text-muted-foreground">Código de rastreio</p>
-                  <p className="text-sm font-mono font-semibold text-primary">{detailOrder.tracking}</p>
-                </div>
-              )}
-
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground mb-2">Itens do pedido</p>
-                <div className="space-y-2">
-                  {detailOrder.items.map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between text-sm">
-                      <span>
-                        {item.qty}x {item.name}
-                      </span>
-                      <span className="font-medium">{formatCurrency(item.price * item.qty)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between border-t border-app-card-border pt-3">
-                <span className="text-sm font-bold">Total</span>
-                <span className="text-lg font-bold text-primary">{formatCurrency(detailOrder.total)}</span>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <OrderDetailDialog order={detailOrder} onClose={() => setDetailOrder(null)} />
     </div>
   );
 }
