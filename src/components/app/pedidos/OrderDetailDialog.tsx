@@ -373,7 +373,6 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                     </div>
                     {order.delivery.deliveryDate && (
                       <div className="flex items-center gap-2 text-xs ml-5">
-                        <Calendar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="text-muted-foreground">Data da Entrega:</span>
                         <span className="font-medium">{formatDate(order.delivery.deliveryDate)}</span>
                       </div>
@@ -387,7 +386,6 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                     )}
                     {order.delivery.deliveredTo && (
                       <div className="flex items-center gap-2 text-xs ml-5">
-                        <CheckSquare className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="text-muted-foreground">Entrega</span>
                         <span className="font-medium">Entregue para {order.delivery.deliveredTo}</span>
                       </div>
