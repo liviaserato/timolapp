@@ -57,12 +57,16 @@ const mockBanners = [
 const mockOrders: Order[] = [
   {
     id: "1", number: "#5001", date: "2026-03-10",
-    items: [{ name: "Combo Mega", qty: 2, price: 189.9 }, { name: "Combo Mini", qty: 1, price: 99.9 }, { name: "Refil Alcalino", qty: 3, price: 59.9 }],
-    total: 649.4, status: "enviado", tracking: "BR123456789",
-    subtotal: 659.4, freight: 0, coupon: { name: "PROMO10", discount: 10 },
+    items: [
+      { name: "Combo Mega", qty: 2, price: 189.9 },
+      { name: "Combo Mini", qty: 1, price: 99.9 },
+      { name: "Refil Alcalino", qty: 3, price: 59.9, discountedTotal: 119.8 },
+    ],
+    total: 599.5, status: "enviado", tracking: "BR123456789",
+    subtotal: 659.4, freight: 0, coupon: { name: "COMPRE3PAGUE2", discount: 59.9 },
     pointsUnilevel: 132, pointsBinary: 28,
     payments: [
-      { method: "PIX", value: 500 },
+      { method: "PIX", value: 450.1 },
       { method: "Crédito", label: "•••• 1234", value: 149.4, installments: "em 2 parcelas de R$ 74,70" },
     ],
     delivery: {

@@ -36,6 +36,7 @@ export interface OrderItem {
   name: string;
   qty: number;
   price: number; // unit price
+  discountedTotal?: number; // if coupon applies, the new line total (replaces price * qty)
 }
 
 export interface OrderDelivery {
@@ -193,9 +194,22 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                             {formatCurrency(item.price)} /unidade
                           </p>
                         </div>
-                        <span className="text-sm font-bold text-foreground whitespace-nowrap">
-                          {formatCurrency(lineTotal)}
-                        </span>
+                        <div className="text-right whitespace-nowrap">
+                          {item.discountedTotal != null ? (
+                            <>
+                              <span className="text-sm text-muted-foreground line-through decoration-[1.5px] decoration-red-400/70">
+                                {formatCurrency(lineTotal)}
+                              </span>
+                              <span className="text-sm font-bold text-emerald-600 ml-1.5">
+                                {formatCurrency(item.discountedTotal)}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-sm font-bold text-foreground">
+                              {formatCurrency(lineTotal)}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         {item.qty} {item.qty === 1 ? "unidade" : "unidades"}
