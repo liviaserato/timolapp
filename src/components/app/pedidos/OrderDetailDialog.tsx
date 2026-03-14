@@ -387,7 +387,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                   <div className="mt-3 space-y-1.5">
                     <div className="flex items-center gap-2 text-xs">
                       <span className="text-muted-foreground">Rastreio:</span>
-                      <Truck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <Truck className="h-3.5 w-3.5 text-primary shrink-0 -mr-1" />
                       <span className="font-mono font-medium text-primary">{order.delivery.tracking}</span>
                     </div>
                   </div>
