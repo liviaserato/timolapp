@@ -119,6 +119,7 @@ const mockOrders: Order[] = [
     items: [{ name: "Loader Transparente", qty: 10, price: 29.9 }],
     total: 299.0, status: "entregue",
   },
+];
 
 const statusConfig: Record<OrderStatus, { label: string; icon: React.ElementType; textColor: string; borderColor: string }> = {
   pendente:   { label: "Pendente",   icon: Clock,        textColor: "text-gray-500",       borderColor: "border-l-gray-400" },
