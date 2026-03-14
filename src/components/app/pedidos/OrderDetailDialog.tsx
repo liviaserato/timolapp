@@ -255,8 +255,8 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
 
           {/* Points banner */}
           {(order.pointsUnilevel || order.pointsBinary) && (
-            <div className="rounded-lg bg-sky-50 border border-sky-200 px-3 py-2.5 flex items-start gap-2">
-              <Star className="h-4 w-4 text-sky-500 shrink-0 mt-0.5" />
+            <div className="rounded-lg bg-sky-50 border border-sky-200 px-3 py-2.5 flex flex-col items-center text-center gap-1.5">
+              <Star className="h-5 w-5 text-sky-700 shrink-0" />
               <p className="text-xs text-sky-700">
                 Com este pedido, você acumulou
                 <br />
