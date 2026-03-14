@@ -312,31 +312,33 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                   </div>
                 )}
 
-                {/* Delivery info */}
-                <div className="mt-3 space-y-1.5">
-                  <p className="text-sm font-semibold text-foreground">Informações da Entrega</p>
-                  {order.delivery.deliveryDate && (
-                    <div className="flex items-center gap-2 text-xs">
-                      <Calendar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                      <span className="text-muted-foreground">Data da Entrega:</span>
-                      <span className="font-medium">{formatDate(order.delivery.deliveryDate)}</span>
-                    </div>
-                  )}
-                  {order.delivery.tracking && (
-                    <div className="flex items-center gap-2 text-xs">
-                      <Truck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                      <span className="text-muted-foreground">Rastreio:</span>
-                      <span className="font-mono font-medium text-primary">{order.delivery.tracking}</span>
-                    </div>
-                  )}
-                  {order.delivery.deliveredTo && (
-                    <div className="flex items-center gap-2 text-xs">
-                      <CheckSquare className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                      <span className="text-muted-foreground">Entrega</span>
-                      <span className="font-medium">Entregue para {order.delivery.deliveredTo}</span>
-                    </div>
-                  )}
-                </div>
+                {/* Delivery info - only for "entrega" type */}
+                {order.delivery.type === "entrega" && (
+                  <div className="mt-3 space-y-1.5">
+                    <p className="text-sm font-semibold text-foreground">Informações da Entrega</p>
+                    {order.delivery.deliveryDate && (
+                      <div className="flex items-center gap-2 text-xs">
+                        <Calendar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        <span className="text-muted-foreground">Data da Entrega:</span>
+                        <span className="font-medium">{formatDate(order.delivery.deliveryDate)}</span>
+                      </div>
+                    )}
+                    {order.delivery.tracking && (
+                      <div className="flex items-center gap-2 text-xs">
+                        <Truck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        <span className="text-muted-foreground">Rastreio:</span>
+                        <span className="font-mono font-medium text-primary">{order.delivery.tracking}</span>
+                      </div>
+                    )}
+                    {order.delivery.deliveredTo && (
+                      <div className="flex items-center gap-2 text-xs">
+                        <CheckSquare className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                        <span className="text-muted-foreground">Entrega</span>
+                        <span className="font-medium">Entregue para {order.delivery.deliveredTo}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <Separator />
