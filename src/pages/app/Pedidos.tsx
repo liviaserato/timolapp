@@ -136,6 +136,7 @@ const mockOrders: Order[] = [
     items: [{ name: "Filtro Premium", qty: 3, price: 79.9 }],
     total: 239.7, status: "pendente",
     subtotal: 239.7, freight: 0,
+    pointsUnilevel: 48, pointsBinary: 10,
     delivery: {
       type: "retirada",
       pickupLocation: "Unidade Uberlândia, MG",
