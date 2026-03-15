@@ -98,6 +98,7 @@ const mockOrders: Order[] = [
     items: [{ name: "Combo Mega", qty: 1, price: 189.9 }, { name: "Produtos Separados", qty: 3, price: 49.9 }, { name: "Galão Ionizado", qty: 2, price: 45.0 }],
     total: 429.6, status: "confirmado",
     subtotal: 429.6, freight: 0,
+    pointsUnilevel: 86, pointsBinary: 20,
     payments: [{ method: "Saldo Banco Timol", value: 15 }, { method: "PIX", value: 414.6 }],
     delivery: {
       type: "entrega",
@@ -135,6 +136,7 @@ const mockOrders: Order[] = [
     items: [{ name: "Filtro Premium", qty: 3, price: 79.9 }],
     total: 239.7, status: "pendente",
     subtotal: 239.7, freight: 0,
+    pointsUnilevel: 48, pointsBinary: 10,
     delivery: {
       type: "retirada",
       pickupLocation: "Unidade Uberlândia, MG",
@@ -174,6 +176,7 @@ const mockOrders: Order[] = [
     items: [{ name: "Combo Mega", qty: 1, price: 189.9 }, { name: "Combo Mini", qty: 1, price: 99.9 }],
     total: 289.8, status: "confirmado",
     subtotal: 289.8, freight: 0,
+    pointsUnilevel: 58, pointsBinary: 12,
     payments: [{ method: "Crédito", label: "•••• 9012", value: 289.8 }],
     delivery: {
       type: "retirada",
