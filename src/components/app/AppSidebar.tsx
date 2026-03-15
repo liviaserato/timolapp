@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebarState } from "@/pages/AppLayout";
 import { logout } from "@/lib/api";
+import { IndicarFranquiaDialog } from "@/components/app/IndicarFranquiaDialog";
+import iconFranquia from "@/assets/icon-sidebar-franquia.svg";
 
 import iconPainelInicial from "@/assets/icon-sidebar-painel-inicial.svg";
 import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
