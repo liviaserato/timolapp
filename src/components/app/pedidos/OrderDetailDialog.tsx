@@ -271,6 +271,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                 )}
                 .
               </p>
+              </div>
             </div>
           )}
 
