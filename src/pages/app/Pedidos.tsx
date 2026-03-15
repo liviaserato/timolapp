@@ -176,6 +176,7 @@ const mockOrders: Order[] = [
     items: [{ name: "Combo Mega", qty: 1, price: 189.9 }, { name: "Combo Mini", qty: 1, price: 99.9 }],
     total: 289.8, status: "confirmado",
     subtotal: 289.8, freight: 0,
+    pointsUnilevel: 58, pointsBinary: 12,
     payments: [{ method: "Crédito", label: "•••• 9012", value: 289.8 }],
     delivery: {
       type: "retirada",
