@@ -155,21 +155,19 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
             <DialogTitle className="flex items-center gap-2 text-primary">
               <Package className="h-5 w-5 shrink-0" />
               <span>Pedido {order.number}</span>
-              <span className="text-[13px] font-normal text-muted-foreground ml-1">|&nbsp; {formatDate(order.date)}</span>
             </DialogTitle>
           </DialogHeader>
 
-          {/* Status badge */}
-          <div className="-mt-1">
+          {/* Date + Status badge row */}
+          <div className="-mt-2 flex items-center justify-between pl-7">
+            <span className="text-[13px] text-muted-foreground">Data: {formatDate(order.date)}</span>
             <span className={cn(
-              "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold border",
+              "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border",
               cfg.textColor, cfg.bgColor, cfg.borderColor
             )}>
               {cfg.label}
             </span>
           </div>
-
-          <Separator />
 
           {/* ── Produtos ── */}
           <div>
@@ -258,7 +256,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
 
           {/* Points banner */}
           {(order.pointsUnilevel || order.pointsBinary) && (
-            <div className="rounded-lg bg-sky-50 border border-sky-200 px-3 py-2.5 flex items-center gap-2">
+            <div className="rounded-lg bg-sky-50 border border-sky-200 px-3 py-2.5 flex flex-col items-center justify-center text-center gap-1">
               <Star className="h-5 w-5 text-sky-700 shrink-0" />
               <p className="text-xs text-sky-700">
                 Com este pedido, você acumulou
