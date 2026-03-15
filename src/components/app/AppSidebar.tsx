@@ -46,6 +46,7 @@ interface AppSidebarNavProps {
 export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavProps) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const [indicarOpen, setIndicarOpen] = useState(false);
 
   const isActive = (path: string) => {
     if (path === "/app") return pathname === "/app";
@@ -79,8 +80,26 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
         {navItems.map(renderLink)}
       </nav>
 
-      {/* Bottom section: Configurações + Sair */}
+      {/* Bottom section */}
       <div className="mt-auto">
+        {/* Indicar Franquia button */}
+        <div className="mx-3 mb-2">
+          <button
+            onClick={() => {
+              onNavigate?.();
+              setIndicarOpen(true);
+            }}
+            title={collapsed ? "Indicar" : undefined}
+            className={cn(
+              "flex w-full items-center gap-2 rounded-lg bg-primary-foreground/15 px-3 py-2.5 text-[13px] font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/25",
+              collapsed && "justify-center px-2"
+            )}
+          >
+            <img src={iconFranquia} alt="" className="h-4 w-4 shrink-0" />
+            {!collapsed && <span>Indicar Franquia</span>}
+          </button>
+        </div>
+
         {/* Separator */}
         <div className="mx-3 border-t border-primary-foreground/20" />
 
@@ -102,6 +121,8 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
           </button>
         </nav>
       </div>
+
+      <IndicarFranquiaDialog open={indicarOpen} onOpenChange={setIndicarOpen} />
     </div>
   );
 }
