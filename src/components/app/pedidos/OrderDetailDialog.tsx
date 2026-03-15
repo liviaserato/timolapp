@@ -256,9 +256,10 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
 
           {/* Points banner */}
           {(order.pointsUnilevel || order.pointsBinary) && (
-            <div className="rounded-lg bg-sky-50 border border-sky-200 px-3 py-2.5 flex items-center justify-center gap-2">
-              <Star className="h-5 w-5 text-sky-700 shrink-0" />
-              <p className="text-xs text-sky-700 text-center">
+            <div className="rounded-lg bg-sky-50 border border-sky-200 px-3 py-2.5 flex justify-center">
+              <div className="flex items-center gap-2">
+                <Star className="h-5 w-5 text-sky-700 shrink-0" />
+                <p className="text-xs text-sky-700 text-left">
                 Com este pedido, você acumulou
                 <br />
                 {order.pointsUnilevel != null && (
@@ -270,6 +271,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                 )}
                 .
               </p>
+              </div>
             </div>
           )}
 
