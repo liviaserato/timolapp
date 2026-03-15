@@ -98,6 +98,7 @@ const mockOrders: Order[] = [
     items: [{ name: "Combo Mega", qty: 1, price: 189.9 }, { name: "Produtos Separados", qty: 3, price: 49.9 }, { name: "Galão Ionizado", qty: 2, price: 45.0 }],
     total: 429.6, status: "confirmado",
     subtotal: 429.6, freight: 0,
+    pointsUnilevel: 86, pointsBinary: 20,
     payments: [{ method: "Saldo Banco Timol", value: 15 }, { method: "PIX", value: 414.6 }],
     delivery: {
       type: "entrega",
