@@ -122,10 +122,15 @@ export function CartDrawer({
     }
     setShippingLoading(true);
     setShippingError("");
+    setShippingOptions([]);
+    setSelectedShipping(null);
     setTimeout(() => {
-      setShippingCost(18.9);
-      setShippingLabel("PAC · 5 a 8 dias úteis");
-      setShippingError("");
+      setShippingOptions([
+        { id: "pac", label: "PAC", detail: "5 a 8 dias úteis", cost: 18.9, icon: <Package className="h-3.5 w-3.5" /> },
+        { id: "sedex", label: "SEDEX", detail: "1 a 3 dias úteis", cost: 32.5, icon: <Zap className="h-3.5 w-3.5" /> },
+        { id: "retirada", label: "Retirar na Timol", detail: "Unidade mais próxima", cost: 0, icon: <Store className="h-3.5 w-3.5" /> },
+      ]);
+      setSelectedShipping("pac");
       setShippingLoading(false);
     }, 1000);
   };
