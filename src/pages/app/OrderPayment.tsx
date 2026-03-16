@@ -89,6 +89,7 @@ interface PaymentState {
   grandTotal: number;
   paymentMethod: "pix" | "boleto" | "credit";
   pixDiscount: number;
+  pickupUnit: string | null;
 }
 
 /* ─── component ─── */
