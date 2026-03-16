@@ -72,7 +72,14 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
       {/* Info */}
       <div className="flex flex-col flex-1 p-3 gap-2">
         <div>
-          <p className="text-xs text-muted-foreground">{product.subcategory}</p>
+          <div className="flex items-center justify-between gap-1">
+            <p className="text-xs text-muted-foreground">{product.subcategory}</p>
+            {product.activatable && (
+              <span className="shrink-0 rounded-full bg-primary/10 border border-primary/30 text-primary text-[9px] font-bold px-1.5 py-0.5 leading-none">
+                Ativável
+              </span>
+            )}
+          </div>
           <h3 className="text-sm font-bold text-foreground leading-tight">{product.name}</h3>
           {product.description && (
             <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">{product.description}</p>
@@ -87,13 +94,16 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           <span className="text-base font-bold text-primary">{formatCurrency(product.price)}</span>
         </div>
 
-        {/* Points */}
+        {/* Points alert */}
         {(product.pointsUnilevel || product.pointsBinary) && (
-          <div className="flex items-center gap-1 text-[10px] text-muted-foreground flex-wrap">
-            <Star className="h-3 w-3 text-warning shrink-0" />
-            {product.pointsUnilevel && <span>{product.pointsUnilevel} pontos Unilevel</span>}
-            {product.pointsUnilevel && product.pointsBinary && <span>·</span>}
-            {product.pointsBinary && <span>{product.pointsBinary} pontos Binário</span>}
+          <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/10 px-2 py-1.5">
+            <Star className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
+            <p className="text-[10px] font-medium text-foreground leading-relaxed">
+              {product.pointsUnilevel && <span>{product.pointsUnilevel} pts Unilevel</span>}
+              {product.pointsUnilevel && product.pointsBinary && <span className="inline max-[399px]:hidden"> · </span>}
+              {product.pointsUnilevel && product.pointsBinary && <br className="hidden max-[399px]:block" />}
+              {product.pointsBinary && <span>{product.pointsBinary} pts Binário</span>}
+            </p>
           </div>
         )}
 

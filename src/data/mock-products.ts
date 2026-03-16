@@ -10,6 +10,7 @@ export interface Product {
   image?: string;
   price: number;
   oldPrice?: number;
+  activatable?: boolean;
   category: string;
   subcategory: string;
   description?: string;
@@ -54,6 +55,7 @@ export const products: Product[] = [
     id: "p1",
     name: "Combo Mega",
     price: 189.9,
+    activatable: true,
     category: "purificadores",
     subcategory: "Combos",
     description: "Kit completo com purificador + 2 refis + instalação",
@@ -69,6 +71,7 @@ export const products: Product[] = [
     id: "p2",
     name: "Combo Mini",
     price: 99.9,
+    activatable: true,
     category: "purificadores",
     subcategory: "Combos",
     description: "Kit compacto ideal para apartamentos",
@@ -85,6 +88,7 @@ export const products: Product[] = [
     id: "p3",
     name: "Purificador Premium",
     price: 249.9,
+    activatable: true,
     oldPrice: 299.9,
     category: "purificadores",
     subcategory: "Avulsos",
