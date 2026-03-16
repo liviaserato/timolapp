@@ -176,7 +176,7 @@ export function CartDrawer({
         voucherDiscount,
         shippingCost,
         shippingLabel,
-        pickupUnit: selectedPickupUnit ? PICKUP_UNITS.find(u => u.id === selectedPickupUnit)?.name : null,
+        pickupUnit: selectedPickupUnit ? pickupUnits.find(u => u.id === selectedPickupUnit)?.name : null,
         cep: cleanCep,
         grandTotal,
       },
