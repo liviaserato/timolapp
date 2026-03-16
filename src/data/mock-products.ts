@@ -55,6 +55,7 @@ export const products: Product[] = [
     id: "p1",
     name: "Combo Mega",
     price: 189.9,
+    activatable: true,
     category: "purificadores",
     subcategory: "Combos",
     description: "Kit completo com purificador + 2 refis + instalação",
