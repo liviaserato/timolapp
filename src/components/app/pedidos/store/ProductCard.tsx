@@ -49,6 +49,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     onAddToCart(product.id, product.name, product.price, qty, { ...selections });
     setQty(1);
     setSelections({});
+    setJustAdded(true);
+    clearTimeout(addTimerRef.current);
+    addTimerRef.current = setTimeout(() => setJustAdded(false), 1500);
   };
 
   const handleSelectVariation = (type: string, opt: string) => {
