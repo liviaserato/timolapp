@@ -116,21 +116,21 @@ export function IndicarFranquiaDialog({ open, onOpenChange }: IndicarFranquiaDia
 
             {/* Referral URL display */}
             <div className="space-y-1">
-              <div className="flex items-center gap-2 rounded-lg bg-background border border-border px-3 py-2 justify-center">
+              <div
+                onClick={handleCopyReferral}
+                className="flex items-center gap-2 rounded-lg bg-background border border-border px-3 py-2 justify-center cursor-pointer hover:border-primary transition-colors"
+                title="Clique para copiar o link"
+              >
                 <span className="text-xs font-medium text-foreground truncate">
                   {referralLink}
                 </span>
-                <button
-                  onClick={handleCopyReferral}
-                  className="shrink-0 text-muted-foreground hover:text-primary transition-colors"
-                  title="Copiar link"
-                >
+                <span className="shrink-0 text-muted-foreground">
                   {copiedReferral ? (
                     <Check className="h-4 w-4 text-emerald-600" />
                   ) : (
                     <Copy className="h-4 w-4" />
                   )}
-                </button>
+                </span>
               </div>
             </div>
 
