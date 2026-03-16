@@ -230,7 +230,7 @@ export function CartDrawer({
                   </div>
                 ) : showCoupon ? (
                   <>
-                    <button onClick={() => setShowCoupon(false)} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors mb-1">
+                    <button onClick={() => { setShowCoupon(false); setCouponError(""); }} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors mb-1">
                       <Tag className="h-3 w-3" /> Cupom de desconto <ChevronUp className="h-3 w-3" />
                     </button>
                     <div className="flex gap-1.5">
@@ -270,7 +270,7 @@ export function CartDrawer({
                   </div>
                 ) : showVoucher ? (
                   <>
-                    <button onClick={() => setShowVoucher(false)} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors mb-1">
+                    <button onClick={() => { setShowVoucher(false); setVoucherError(""); }} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors mb-1">
                       <Ticket className="h-3 w-3" /> Voucher <ChevronUp className="h-3 w-3" />
                     </button>
                     <div className="flex gap-1.5">
