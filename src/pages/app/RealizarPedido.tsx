@@ -1,11 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
   Search,
   ShoppingCart,
-  LayoutGrid,
-  List,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,9 +31,9 @@ export default function RealizarPedido() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("todos");
   const [searchTerm, setSearchTerm] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
-  const [layoutOverride, setLayoutOverride] = useState<"grid" | "list" | null>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
-  const layout = layoutOverride ?? (isMobile ? "list" : "grid");
+  const layout = isMobile ? "list" : "grid";
 
   const activeCategory = categories.find((c) => c.id === selectedCategory);
   const subcategories = activeCategory?.subcategories ?? [];
@@ -84,36 +83,31 @@ export default function RealizarPedido() {
         </div>
       </header>
 
-      {/* Search + Layout toggle */}
-      <div className="mb-3 flex items-center gap-2">
-        <div className="relative flex-1">
+      {/* Search */}
+      <div className="mb-3">
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
+            ref={searchRef}
             placeholder="Buscar produtos..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 h-9 text-sm"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                e.preventDefault();
+                searchRef.current?.select();
+              }
+            }}
+            className="pl-9 pr-8 h-9 text-sm"
           />
-        </div>
-        <div className="flex items-center border border-border rounded-md shrink-0">
-          <button
-            onClick={() => setLayoutOverride("grid")}
-            className={cn(
-              "h-9 w-9 flex items-center justify-center transition-colors rounded-l-md",
-              layout === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <LayoutGrid className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => setLayoutOverride("list")}
-            className={cn(
-              "h-9 w-9 flex items-center justify-center transition-colors rounded-r-md",
-              layout === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <List className="h-4 w-4" />
-          </button>
+          {searchTerm && (
+            <button
+              onClick={() => { setSearchTerm(""); searchRef.current?.focus(); }}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
 
