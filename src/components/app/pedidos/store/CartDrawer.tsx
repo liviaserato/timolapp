@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Minus, Plus, Trash2, ShoppingBag, Tag, Ticket, MapPin, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Tag, Ticket, MapPin, Loader2, ChevronDown, ChevronUp, Package, Zap, Store } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -54,11 +54,13 @@ export function CartDrawer({
   const [voucherError, setVoucherError] = useState("");
 
   const [cep, setCep] = useState("");
-  const [shippingCost, setShippingCost] = useState<number | null>(null);
+  const [shippingOptions, setShippingOptions] = useState<{ id: string; label: string; detail: string; cost: number; icon: React.ReactNode }[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<string | null>(null);
   const [shippingLoading, setShippingLoading] = useState(false);
   const [shippingError, setShippingError] = useState("");
-  const [shippingLabel, setShippingLabel] = useState("");
 
+  const shippingCost = shippingOptions.find(o => o.id === selectedShipping)?.cost ?? null;
+  const shippingLabel = shippingOptions.find(o => o.id === selectedShipping)?.label ?? "";
   const totalDiscounts = couponDiscount + voucherDiscount;
   const shipping = shippingCost ?? 0;
   const grandTotal = Math.max(0, totalPrice - totalDiscounts + shipping);
@@ -120,10 +122,15 @@ export function CartDrawer({
     }
     setShippingLoading(true);
     setShippingError("");
+    setShippingOptions([]);
+    setSelectedShipping(null);
     setTimeout(() => {
-      setShippingCost(18.9);
-      setShippingLabel("PAC · 5 a 8 dias úteis");
-      setShippingError("");
+      setShippingOptions([
+        { id: "pac", label: "PAC", detail: "5 a 8 dias úteis", cost: 18.9, icon: <Package className="h-3.5 w-3.5" /> },
+        { id: "sedex", label: "SEDEX", detail: "1 a 3 dias úteis", cost: 32.5, icon: <Zap className="h-3.5 w-3.5" /> },
+        { id: "retirada", label: "Retirar na Timol", detail: "Unidade mais próxima", cost: 0, icon: <Store className="h-3.5 w-3.5" /> },
+      ]);
+      setSelectedShipping("pac");
       setShippingLoading(false);
     }, 1000);
   };
@@ -288,7 +295,7 @@ export function CartDrawer({
                 <div className="flex gap-1.5">
                   <Input
                     value={cep}
-                    onChange={(e) => { setCep(formatCep(e.target.value)); setShippingError(""); }}
+                    onChange={(e) => { setCep(formatCep(e.target.value)); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); }}
                     placeholder="00000-000"
                     className="h-8 text-xs flex-1"
                     maxLength={9}
@@ -298,8 +305,29 @@ export function CartDrawer({
                   </Button>
                 </div>
                 {shippingError && <p className="text-[11px] text-destructive mt-0.5">{shippingError}</p>}
-                {shippingLabel && shippingCost !== null && (
-                  <p className="text-[11px] text-muted-foreground mt-1">{shippingLabel}</p>
+                {shippingOptions.length > 0 && (
+                  <div className="mt-2 space-y-1.5">
+                    {shippingOptions.map((opt) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => setSelectedShipping(opt.id)}
+                        className={`w-full flex items-center gap-2 rounded border px-2.5 py-2 text-left transition-colors ${
+                          selectedShipping === opt.id
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-muted-foreground/30"
+                        }`}
+                      >
+                        <span className={selectedShipping === opt.id ? "text-primary" : "text-muted-foreground"}>{opt.icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <span className={`text-[11px] font-semibold ${selectedShipping === opt.id ? "text-primary" : "text-foreground"}`}>{opt.label}</span>
+                          <span className="text-[10px] text-muted-foreground ml-1.5">{opt.detail}</span>
+                        </div>
+                        <span className={`text-[11px] font-bold ${selectedShipping === opt.id ? "text-primary" : "text-foreground"}`}>
+                          {opt.cost === 0 ? "Grátis" : formatCurrency(opt.cost)}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
