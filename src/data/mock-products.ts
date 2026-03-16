@@ -28,24 +28,24 @@ export interface Category {
 
 export const categories: Category[] = [
   {
-    id: "purificadores",
-    name: "Purificadores",
-    subcategories: ["Combos", "Avulsos", "Peças e Acessórios"],
+    id: "agua-saudavel",
+    name: "Água Saudável",
+    subcategories: ["Purificadores", "Refis e Filtros", "Ionizadores", "Acessórios"],
   },
   {
-    id: "refis",
-    name: "Refis e Filtros",
-    subcategories: ["Refis Alcalinos", "Filtros de Carvão", "Membranas"],
+    id: "beleza",
+    name: "Beleza & Auto Cuidado",
+    subcategories: ["Cuidados com a Pele", "Cabelos", "Bem-Estar"],
   },
   {
-    id: "ionizadores",
-    name: "Ionizadores",
-    subcategories: ["Portáteis", "De mesa", "Galões"],
+    id: "dia-a-dia",
+    name: "Dia a Dia",
+    subcategories: ["Casa", "Limpeza", "Utilidades"],
   },
   {
-    id: "acessorios",
-    name: "Acessórios",
-    subcategories: ["Torneiras", "Mangueiras", "Conexões"],
+    id: "impressos",
+    name: "Impressos",
+    subcategories: ["Catálogos", "Material de Apoio", "Cartões"],
   },
 ];
 
