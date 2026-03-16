@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Plus, Minus, ShoppingCart, Star } from "lucide-react";
+import { useState, useRef } from "react";
+import { Plus, Minus, ShoppingCart, Star, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/data/mock-products";
