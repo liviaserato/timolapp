@@ -10,6 +10,7 @@ import {
   Check,
   Edit2,
   Store,
+  Package,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
