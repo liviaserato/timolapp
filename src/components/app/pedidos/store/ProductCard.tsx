@@ -130,7 +130,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         )}
 
         {/* Quantity + Add */}
-        <div ref={actionRowRef} className="mt-auto pt-2 flex items-center gap-1.5">
+        <div className="mt-auto pt-2 flex items-center gap-1.5">
           <div className={cn("flex items-center border border-border rounded shrink-0", !product.inStock && "opacity-40 pointer-events-none")}>
             <button
               onClick={() => setQty((q) => Math.max(1, q - 1))}
@@ -154,9 +154,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             disabled={!product.inStock}
             onClick={handleAdd}
           >
-            <Plus className={cn("h-3 w-3 shrink-0", !useCompactAddButton && "hidden")} />
+            <Plus className="h-3 w-3 shrink-0 md:hidden" />
             <ShoppingCart className="h-3 w-3 shrink-0" />
-            <span className={cn("truncate", useCompactAddButton && "hidden")}>Adicionar</span>
+            <span className="truncate hidden md:inline">Adicionar</span>
           </Button>
         </div>
       </div>
