@@ -62,10 +62,6 @@ export default function RealizarPedido() {
 
   const handleAddToCart = (productId: string, name: string, price: number, qty: number, selections: Record<string, string>) => {
     cart.addItem(productId, name, price, qty, selections);
-    const selStr = Object.values(selections).filter(Boolean).join(", ");
-    toast.success(`${name} adicionado!`, {
-      description: `${qty}x ${selStr ? `(${selStr})` : ""} — ${formatCurrency(price * qty)}`,
-    });
   };
 
   return (
