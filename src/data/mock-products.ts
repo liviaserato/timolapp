@@ -18,6 +18,11 @@ export interface Product {
   inStock: boolean;
   pointsUnilevel?: number;
   pointsBinary?: number;
+  benefits?: string;
+  instructions?: string;
+  warranty?: string;
+  composition?: string;
+  manufacturer?: string;
 }
 
 export interface Category {
@@ -66,6 +71,11 @@ export const products: Product[] = [
     inStock: true,
     pointsUnilevel: 38,
     pointsBinary: 8,
+    benefits: "Água purificada com pH equilibrado para toda a família.\nReduz cloro, metais pesados e impurezas em até 99%.\nMaior durabilidade do refil comparado a modelos convencionais.",
+    instructions: "Instale em superfície plana próxima a ponto de água.\nTroque o refil a cada 6 meses ou 3.000 litros.\nLimpe a parte externa com pano úmido semanalmente.",
+    warranty: "12 meses de garantia contra defeitos de fabricação.\nAssistência técnica em todo o Brasil.",
+    composition: "Corpo em ABS de alta resistência, filtro de carvão ativado, membrana de ultrafiltração e refil alcalino mineral.",
+    manufacturer: "Timol Indústria e Comércio Ltda.\nCNPJ: 00.000.000/0001-00\nSão Paulo – SP",
   },
   {
     id: "p2",
@@ -82,6 +92,10 @@ export const products: Product[] = [
     inStock: true,
     pointsUnilevel: 20,
     pointsBinary: 4,
+    benefits: "Purificação completa em formato compacto.\nIdeal para espaços reduzidos como apartamentos e escritórios.",
+    instructions: "Conecte diretamente à torneira ou ponto de água.\nTroque o refil a cada 4 meses ou 2.000 litros.",
+    warranty: "12 meses de garantia contra defeitos de fabricação.",
+    manufacturer: "Timol Indústria e Comércio Ltda.\nSão Paulo – SP",
   },
   {
     id: "p3",
@@ -99,6 +113,11 @@ export const products: Product[] = [
     inStock: true,
     pointsUnilevel: 50,
     pointsBinary: 12,
+    benefits: "5 estágios de filtragem para água ultra-purificada.\nAlta vazão de até 3L por minuto.\nDesign premium para cozinhas modernas.",
+    instructions: "Requer instalação profissional (inclusa no combo).\nTroque os refis conforme indicação do painel digital.\nNão expor à luz solar direta.",
+    warranty: "24 meses de garantia.\nAssistência técnica prioritária.",
+    composition: "Corpo em aço inox, membranas de nanofiltração, carvão ativado de coco, mineralizador alcalino e lâmpada UV.",
+    manufacturer: "Timol Indústria e Comércio Ltda.\nSão Paulo – SP",
   },
   // Água Saudável > Refis e Filtros
   {

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/data/mock-products";
 import type { CartItemSelection } from "@/hooks/useCart";
+import { ProductDetailDialog } from "./ProductDetailDialog";
 
 import comboMegaImg from "@/assets/produto-combo-mega.png";
 import comboMiniImg from "@/assets/produto-combo-mini.png";
@@ -31,6 +32,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const [selections, setSelections] = useState<CartItemSelection>({});
   const [errors, setErrors] = useState<string[]>([]);
   const [justAdded, setJustAdded] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
   const addTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const img = productImages[product.name];
@@ -68,66 +70,69 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
       "flex flex-col rounded-lg border border-border bg-card overflow-hidden transition-shadow hover:shadow-md",
       !product.inStock && "opacity-60"
     )}>
-      {/* Image */}
-      <div className="relative h-36 bg-muted/30 flex items-center justify-center">
-        {img ? (
-          <img src={img} alt={product.name} className="h-28 w-28 object-contain" />
-        ) : (
-          <div className="h-28 w-28 rounded-lg bg-muted/50 flex items-center justify-center">
-            <ShoppingCart className="h-10 w-10 text-muted-foreground/30" />
-          </div>
-        )}
-        {product.oldPrice && (
-          <span className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-[10px] font-bold px-1.5 py-0.5 rounded">
-            {Math.round((1 - product.price / product.oldPrice) * 100)}% OFF
-          </span>
-        )}
-        {!product.inStock && (
-          <span className="absolute top-2 right-2 bg-muted-foreground text-background text-[10px] font-bold px-1.5 py-0.5 rounded">
-            Indisponível
-          </span>
-        )}
-      </div>
+      {/* Clickable area: image + basic info */}
+      <div className="cursor-pointer" onClick={() => setDetailOpen(true)}>
+        {/* Image */}
+        <div className="relative h-36 bg-muted/30 flex items-center justify-center">
+          {img ? (
+            <img src={img} alt={product.name} className="h-28 w-28 object-contain" />
+          ) : (
+            <div className="h-28 w-28 rounded-lg bg-muted/50 flex items-center justify-center">
+              <ShoppingCart className="h-10 w-10 text-muted-foreground/30" />
+            </div>
+          )}
+          {product.oldPrice && (
+            <span className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-[10px] font-bold px-1.5 py-0.5 rounded">
+              {Math.round((1 - product.price / product.oldPrice) * 100)}% OFF
+            </span>
+          )}
+          {!product.inStock && (
+            <span className="absolute top-2 right-2 bg-muted-foreground text-background text-[10px] font-bold px-1.5 py-0.5 rounded">
+              Indisponível
+            </span>
+          )}
+        </div>
 
-      {/* Info */}
-      <div className="flex flex-col flex-1 p-3 gap-2">
-        <div>
-          <div className="flex items-center justify-between gap-1">
-            <p className="text-xs text-muted-foreground">{product.subcategory}</p>
-            {product.activatable && (
-              <span className="shrink-0 rounded-full bg-primary/10 border border-primary/30 text-primary text-[9px] font-bold px-1.5 py-0.5 leading-none">
-                Ativável
-              </span>
+        {/* Info */}
+        <div className="p-3 pb-0 space-y-2">
+          <div>
+            <div className="flex items-center justify-between gap-1">
+              <p className="text-xs text-muted-foreground">{product.subcategory}</p>
+              {product.activatable && (
+                <span className="shrink-0 rounded-full bg-primary/10 border border-primary/30 text-primary text-[9px] font-bold px-1.5 py-0.5 leading-none">
+                  Ativável
+                </span>
+              )}
+            </div>
+            <h3 className="text-sm font-bold text-foreground leading-tight">{product.name}</h3>
+            {product.description && (
+              <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">{product.description}</p>
             )}
           </div>
-          <h3 className="text-sm font-bold text-foreground leading-tight">{product.name}</h3>
-          {product.description && (
-            <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">{product.description}</p>
-          )}
-        </div>
 
-        {/* Price */}
-        <div className="flex items-baseline gap-1.5">
-          {product.oldPrice && (
-            <span className="text-xs text-muted-foreground line-through">{formatCurrency(product.oldPrice)}</span>
-          )}
-          <span className="text-base font-bold text-primary">{formatCurrency(product.price)}</span>
-        </div>
-
-        {/* Points alert */}
-        {(product.pointsUnilevel || product.pointsBinary) && (
-          <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/10 px-2 py-1.5">
-            <Star className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
-            <p className="text-[10px] font-medium text-foreground leading-relaxed">
-              {product.pointsUnilevel && <span>{product.pointsUnilevel} pts Unilevel</span>}
-              {product.pointsUnilevel && product.pointsBinary && <span className="inline max-[399px]:hidden"> · </span>}
-              {product.pointsUnilevel && product.pointsBinary && <br className="hidden max-[399px]:block" />}
-              {product.pointsBinary && <span>{product.pointsBinary} pts Binário</span>}
-            </p>
+          <div className="flex items-baseline gap-1.5">
+            {product.oldPrice && (
+              <span className="text-xs text-muted-foreground line-through">{formatCurrency(product.oldPrice)}</span>
+            )}
+            <span className="text-base font-bold text-primary">{formatCurrency(product.price)}</span>
           </div>
-        )}
 
-        {/* Variations */}
+          {(product.pointsUnilevel || product.pointsBinary) && (
+            <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/10 px-2 py-1.5">
+              <Star className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
+              <p className="text-[10px] font-medium text-foreground leading-relaxed">
+                {product.pointsUnilevel && <span>{product.pointsUnilevel} pts Unilevel</span>}
+                {product.pointsUnilevel && product.pointsBinary && <span className="inline max-[399px]:hidden"> · </span>}
+                {product.pointsUnilevel && product.pointsBinary && <br className="hidden max-[399px]:block" />}
+                {product.pointsBinary && <span>{product.pointsBinary} pts Binário</span>}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Interactive area: variations + qty + add */}
+      <div className="flex flex-col flex-1 p-3 pt-2 gap-2">
         {product.variations && product.variations.length > 0 && (
           <div className="space-y-1.5">
             {product.variations.map((variation) => {
@@ -165,7 +170,6 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           </div>
         )}
 
-        {/* Quantity + Add */}
         <div className="mt-auto pt-2 flex items-center gap-1.5">
           <div className={cn("flex items-center border border-border rounded shrink-0", !product.inStock && "opacity-40 pointer-events-none")}>
             <button
@@ -208,6 +212,8 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           </Button>
         </div>
       </div>
+
+      <ProductDetailDialog product={product} open={detailOpen} onOpenChange={setDetailOpen} />
     </div>
   );
 }

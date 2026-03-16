@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/data/mock-products";
 import type { CartItemSelection } from "@/hooks/useCart";
+import { ProductDetailDialog } from "./ProductDetailDialog";
 
 import comboMegaImg from "@/assets/produto-combo-mega.png";
 import comboMiniImg from "@/assets/produto-combo-mini.png";
@@ -31,6 +32,7 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
   const [selections, setSelections] = useState<CartItemSelection>({});
   const [errors, setErrors] = useState<string[]>([]);
   const [justAdded, setJustAdded] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
   const addTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const img = productImages[product.name];
@@ -72,8 +74,8 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
         !product.inStock && "opacity-60"
       )}
     >
-      {/* Row 1: Image (col1) + Info (col2) */}
-      <div className="flex flex-1">
+      {/* Row 1: Image (col1) + Info (col2) – clickable */}
+      <div className="flex flex-1 cursor-pointer" onClick={() => setDetailOpen(true)}>
         {/* Col 1 – Image */}
         <div className="relative shrink-0 w-28 sm:w-36 bg-muted/30 flex items-center justify-center p-2">
           {img ? (
@@ -97,7 +99,6 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
 
         {/* Col 2 – Product info */}
         <div className="flex flex-col flex-1 min-w-0 p-3 gap-1">
-          {/* Subcategory + Activatable */}
           <div className="flex items-center justify-between gap-1.5">
             <p className="text-xs text-muted-foreground truncate">{product.subcategory}</p>
             {product.activatable && (
@@ -106,24 +107,16 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
               </span>
             )}
           </div>
-
-          {/* Name */}
           <h3 className="text-sm font-bold text-foreground leading-tight">{product.name}</h3>
-
-          {/* Description */}
           {product.description && (
             <p className="text-[11px] text-muted-foreground line-clamp-2">{product.description}</p>
           )}
-
-          {/* Price – aligned right */}
           <div className="flex items-baseline gap-1.5">
             {product.oldPrice && (
               <span className="text-xs text-muted-foreground line-through">{formatCurrency(product.oldPrice)}</span>
             )}
             <span className="text-base font-bold text-primary">{formatCurrency(product.price)}</span>
           </div>
-
-          {/* Points */}
           {(product.pointsUnilevel || product.pointsBinary) && (
             <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/10 px-2 py-1">
               <Star className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
@@ -232,6 +225,7 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
           </Button>
         </div>
       </div>
+      <ProductDetailDialog product={product} open={detailOpen} onOpenChange={setDetailOpen} />
     </div>
   );
 }
