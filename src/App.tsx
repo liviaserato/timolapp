@@ -16,6 +16,7 @@ import Cadastro from "./pages/app/Cadastro";
 import Financeiro from "./pages/app/Financeiro";
 import Suporte from "./pages/app/Suporte";
 import Pedidos from "./pages/app/Pedidos";
+import RealizarPedido from "./pages/app/RealizarPedido";
 import SectionPlaceholder from "./pages/app/SectionPlaceholder";
 import EmailPreviews from "./pages/app/EmailPreviews";
 import NotFound from "./pages/NotFound";
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="cadastro" element={<Cadastro />} />
               <Route path="financeiro" element={<Financeiro />} />
               <Route path="pedidos" element={<Pedidos />} />
+              <Route path="pedidos/realizar" element={<RealizarPedido />} />
               <Route path="suporte" element={<Suporte />} />
               <Route path="configuracoes/emails" element={<EmailPreviews />} />
               <Route path=":section" element={<SectionPlaceholder />} />

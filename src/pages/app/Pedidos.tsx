@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ShoppingCart,
   Package,
@@ -237,6 +238,7 @@ function handleTrackingClick(e: React.MouseEvent, tracking: string) {
 /* ── Component ── */
 
 export default function Pedidos() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [detailOrder, setDetailOrder] = useState<Order | null>(null);
@@ -339,7 +341,7 @@ export default function Pedidos() {
               Acesse o catálogo, faça seu pedido ou indique uma nova franquia.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <Button className="gap-2 w-full">
+              <Button className="gap-2 w-full" onClick={() => navigate("/app/pedidos/realizar")}>
                 <ShoppingCart className="h-4 w-4" />
                 Realizar Pedido
               </Button>
