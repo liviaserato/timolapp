@@ -142,7 +142,19 @@ export function CartDrawer({
     return digits;
   };
 
+  const [finalizeError, setFinalizeError] = useState("");
+
   const handleFinalize = () => {
+    const cleanCep = cep.replace(/\D/g, "");
+    if (cleanCep.length < 8 || selectedShipping === null) {
+      setFinalizeError(
+        cleanCep.length < 8
+          ? "Preencha o CEP e calcule o frete"
+          : "Escolha uma forma de envio"
+      );
+      return;
+    }
+    setFinalizeError("");
     onOpenChange(false);
     navigate("/app/pedidos/checkout", {
       state: {
@@ -154,7 +166,7 @@ export function CartDrawer({
         voucherDiscount,
         shippingCost,
         shippingLabel,
-        cep: cep.replace(/\D/g, ""),
+        cep: cleanCep,
         grandTotal,
       },
     });
@@ -313,7 +325,7 @@ export function CartDrawer({
                   <div className="relative flex-1">
                     <Input
                       value={cep}
-                      onChange={(e) => { setCep(formatCep(e.target.value)); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); }}
+                      onChange={(e) => { setCep(formatCep(e.target.value)); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); setFinalizeError(""); }}
                       placeholder="00000-000"
                       className="h-8 text-xs pr-7"
                       maxLength={9}
@@ -334,7 +346,7 @@ export function CartDrawer({
                     {shippingOptions.map((opt) => (
                       <button
                         key={opt.id}
-                        onClick={() => setSelectedShipping(opt.id)}
+                        onClick={() => { setSelectedShipping(opt.id); setFinalizeError(""); }}
                         className={`w-full flex items-center gap-2 rounded border px-2.5 py-2 text-left transition-colors ${
                           selectedShipping === opt.id
                             ? "border-primary bg-primary/5"
@@ -390,6 +402,7 @@ export function CartDrawer({
                 <span className="font-bold text-primary text-base">{formatCurrency(grandTotal)}</span>
               </div>
 
+              {finalizeError && <p className="text-[11px] text-destructive text-center">{finalizeError}</p>}
               <Button className="w-full gap-2" size="lg" onClick={handleFinalize}>
                 <ShoppingBag className="h-4 w-4" />
                 Finalizar Pedido
