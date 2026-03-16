@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import OrderPaymentConfirmed from "@/components/app/pedidos/OrderPaymentConfirmed";
+import OrderPaymentPending from "@/components/app/pedidos/OrderPaymentPending";
 import {
   ChevronLeft,
   QrCode,
