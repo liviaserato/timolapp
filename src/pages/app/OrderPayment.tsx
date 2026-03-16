@@ -193,7 +193,6 @@ export default function OrderPayment() {
           </button>
           <div>
             <h1 className="text-2xl font-bold text-primary">Pagamento</h1>
-            <p className="text-sm text-muted-foreground">{methodLabel}</p>
           </div>
         </div>
       </header>
