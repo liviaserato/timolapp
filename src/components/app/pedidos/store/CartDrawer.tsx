@@ -301,6 +301,8 @@ export function CartDrawer({
                 {voucherError && <p className="text-[11px] text-destructive mt-0.5">{voucherError}</p>}
               </div>
 
+              <Separator />
+
               {/* CEP */}
               <div>
                 <label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1 mb-1">
