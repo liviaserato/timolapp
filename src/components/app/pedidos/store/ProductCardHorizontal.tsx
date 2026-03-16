@@ -63,6 +63,8 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
     });
   };
 
+  const hasVariations = product.variations && product.variations.length > 0;
+
   return (
     <div
       className={cn(
@@ -71,7 +73,7 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
       )}
     >
       {/* Row 1: Image (col1) + Info (col2) */}
-      <div className="flex">
+      <div className="flex flex-1">
         {/* Col 1 – Image */}
         <div className="relative shrink-0 w-28 sm:w-36 bg-muted/30 flex items-center justify-center p-2">
           {img ? (
@@ -96,7 +98,7 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
         {/* Col 2 – Product info */}
         <div className="flex flex-col flex-1 min-w-0 p-3 gap-1">
           {/* Subcategory + Activatable */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center justify-between gap-1.5">
             <p className="text-xs text-muted-foreground truncate">{product.subcategory}</p>
             {product.activatable && (
               <span className="shrink-0 rounded-full bg-primary/10 border border-primary/30 text-primary text-[9px] font-bold px-1.5 py-0.5 leading-none">
@@ -113,8 +115,8 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
             <p className="text-[11px] text-muted-foreground line-clamp-2">{product.description}</p>
           )}
 
-          {/* Price */}
-          <div className="flex items-baseline gap-1.5">
+          {/* Price – aligned right */}
+          <div className="flex items-baseline justify-end gap-1.5">
             {product.oldPrice && (
               <span className="text-xs text-muted-foreground line-through">{formatCurrency(product.oldPrice)}</span>
             )}
@@ -135,12 +137,11 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
         </div>
       </div>
 
-      {/* Row 2 (col3): Variations + Qty/Add – full width */}
-      <div className="px-3 pb-3 pt-1.5 flex flex-col gap-2 border-t border-border/50">
-        {/* Variations */}
-        {product.variations && product.variations.length > 0 && (
+      {/* Variations (only if they exist) */}
+      {hasVariations && (
+        <div className="px-3 pb-2 pt-1.5 border-t border-border/50">
           <div className="flex flex-wrap gap-x-4 gap-y-1.5">
-            {product.variations.map((variation) => {
+            {product.variations!.map((variation) => {
               const hasError = errors.includes(variation.label);
               return (
                 <div key={variation.type} className="min-w-0">
@@ -175,36 +176,43 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
               );
             })}
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Quantity + Add */}
-        <div className="flex items-center gap-1.5">
+      {/* Row 3: Qty (col1 width) + Add button (col2 width) – always at bottom */}
+      <div className="mt-auto flex">
+        {/* Qty – same width as image column */}
+        <div className="shrink-0 w-28 sm:w-36 flex items-center justify-center px-2 pb-3 pt-1.5">
           <div
             className={cn(
-              "flex items-center border border-border rounded shrink-0",
+              "flex items-center border border-border rounded w-full justify-center",
               !product.inStock && "opacity-40 pointer-events-none"
             )}
           >
             <button
               onClick={() => setQty((q) => Math.max(1, q - 1))}
               disabled={!product.inStock}
-              className="h-7 w-6 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors disabled:pointer-events-none"
+              className="h-7 w-7 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors disabled:pointer-events-none"
             >
               <Minus className="h-3 w-3" />
             </button>
-            <span className="w-5 text-center text-xs font-semibold text-foreground">{qty}</span>
+            <span className="w-6 text-center text-xs font-semibold text-foreground">{qty}</span>
             <button
               onClick={() => setQty((q) => q + 1)}
               disabled={!product.inStock}
-              className="h-7 w-6 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors disabled:pointer-events-none"
+              className="h-7 w-7 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors disabled:pointer-events-none"
             >
               <Plus className="h-3 w-3" />
             </button>
           </div>
+        </div>
+
+        {/* Add button – same width as info column */}
+        <div className="flex-1 min-w-0 flex items-center px-3 pb-3 pt-1.5">
           <Button
             size="sm"
             className={cn(
-              "flex-1 min-w-0 gap-1 text-[11px] h-7 px-2 transition-colors",
+              "w-full gap-1 text-[11px] h-7 transition-colors",
               justAdded && "bg-green-600 hover:bg-green-600 text-white"
             )}
             disabled={!product.inStock || justAdded}
