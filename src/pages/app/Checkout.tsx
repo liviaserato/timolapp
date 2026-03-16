@@ -10,20 +10,17 @@ import {
   Truck,
   Check,
   Edit2,
+  Store,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { CartItem } from "@/hooks/useCart";
-
-import creditCardVisa from "@/assets/credit-card-visa.svg";
-import creditCardMaster from "@/assets/credit-card-master.svg";
-import creditCardElo from "@/assets/credit-card-elo.svg";
 
 function formatCurrency(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -38,6 +35,7 @@ interface CheckoutState {
   voucherDiscount: number;
   shippingCost: number | null;
   shippingLabel: string;
+  pickupUnit: string | null;
   cep: string;
   grandTotal: number;
 }
@@ -46,6 +44,7 @@ export default function Checkout() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as CheckoutState | null;
+  const isMobile = useIsMobile();
 
   const [paymentMethod, setPaymentMethod] = useState("pix");
   const [editingAddress, setEditingAddress] = useState(false);
@@ -75,12 +74,21 @@ export default function Checkout() {
     );
   }
 
-  const { items, subtotal, coupon, couponDiscount, voucher, voucherDiscount, shippingCost, shippingLabel, grandTotal } = state;
+  const { items, subtotal, coupon, couponDiscount, voucher, voucherDiscount, shippingCost, shippingLabel, pickupUnit, grandTotal } = state;
+
+  const isPickup = !!pickupUnit;
 
   const pixDiscount = paymentMethod === "pix" ? grandTotal * 0.05 : 0;
   const finalTotal = grandTotal - pixDiscount;
 
   const handleSaveAddress = () => {
+    // Validate required fields
+    const required = ["street", "number", "neighborhood", "city", "state", "cep"] as const;
+    const hasEmpty = required.some((f) => !editAddress[f].trim());
+    if (hasEmpty) {
+      toast.error("Preencha todos os campos obrigatórios do endereço");
+      return;
+    }
     setAddress({ ...editAddress });
     setEditingAddress(false);
   };
@@ -134,15 +142,24 @@ export default function Checkout() {
           </CardContent>
         </Card>
 
-        {/* Address */}
+        {/* Address / Pickup */}
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-                <Truck className="h-4 w-4" />
-                Endereço de Entrega
+                {isPickup ? (
+                  <>
+                    <Store className="h-4 w-4" />
+                    Endereço de Retirada
+                  </>
+                ) : (
+                  <>
+                    <Truck className="h-4 w-4" />
+                    Endereço de Entrega
+                  </>
+                )}
               </CardTitle>
-              {!editingAddress && (
+              {!isPickup && !editingAddress && (
                 <button onClick={() => { setEditAddress({ ...address }); setEditingAddress(true); }} className="text-primary hover:underline text-xs flex items-center gap-1">
                   <Edit2 className="h-3 w-3" /> Alterar
                 </button>
@@ -150,19 +167,29 @@ export default function Checkout() {
             </div>
           </CardHeader>
           <CardContent>
-            {editingAddress ? (
+            {isPickup ? (
+              <div className="text-sm text-foreground space-y-1.5">
+                <p className="font-medium flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5 text-primary" />
+                  {pickupUnit}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  O endereço completo da unidade será disponibilizado após a aprovação do pedido.
+                </p>
+              </div>
+            ) : editingAddress ? (
               <div className="space-y-2">
                 <div className="grid grid-cols-3 gap-2">
                   <Input
                     value={editAddress.street}
                     onChange={(e) => setEditAddress({ ...editAddress, street: e.target.value })}
-                    placeholder="Rua"
+                    placeholder="Rua *"
                     className="col-span-2 h-8 text-xs"
                   />
                   <Input
                     value={editAddress.number}
                     onChange={(e) => setEditAddress({ ...editAddress, number: e.target.value })}
-                    placeholder="Nº"
+                    placeholder="Nº *"
                     className="h-8 text-xs"
                   />
                 </div>
@@ -176,28 +203,28 @@ export default function Checkout() {
                   <Input
                     value={editAddress.neighborhood}
                     onChange={(e) => setEditAddress({ ...editAddress, neighborhood: e.target.value })}
-                    placeholder="Bairro"
+                    placeholder="Bairro *"
                     className="h-8 text-xs"
                   />
                 </div>
-                <div className="grid grid-cols-5 gap-2">
+                <div className={cn("grid gap-2", isMobile ? "grid-cols-2" : "grid-cols-5")}>
                   <Input
                     value={editAddress.city}
                     onChange={(e) => setEditAddress({ ...editAddress, city: e.target.value })}
-                    placeholder="Cidade"
-                    className="col-span-3 h-8 text-xs"
+                    placeholder="Cidade *"
+                    className={cn("h-8 text-xs", isMobile ? "col-span-1" : "col-span-3")}
                   />
                   <Input
                     value={editAddress.state}
                     onChange={(e) => setEditAddress({ ...editAddress, state: e.target.value })}
-                    placeholder="UF"
+                    placeholder="UF *"
                     className="h-8 text-xs"
                   />
                   <Input
                     value={editAddress.cep}
                     onChange={(e) => setEditAddress({ ...editAddress, cep: e.target.value })}
-                    placeholder="CEP"
-                    className="h-8 text-xs"
+                    placeholder="CEP *"
+                    className={cn("h-8 text-xs", isMobile && "col-span-2")}
                   />
                 </div>
                 <div className="flex gap-2 pt-1">
@@ -270,11 +297,7 @@ export default function Checkout() {
                 )}
               >
                 <RadioGroupItem value="credit" id="credit" />
-                <div className="flex items-center gap-1">
-                  <img src={creditCardVisa} alt="Visa" className="h-5" />
-                  <img src={creditCardMaster} alt="Master" className="h-5" />
-                  <img src={creditCardElo} alt="Elo" className="h-5" />
-                </div>
+                <CreditCard className="h-5 w-5 text-primary" />
                 <div className="flex-1">
                   <p className="text-sm font-medium text-foreground">Cartão de Crédito</p>
                   <p className="text-[11px] text-muted-foreground">Até 12x sem juros</p>
@@ -290,7 +313,7 @@ export default function Checkout() {
           <CardContent className="pt-4 space-y-2">
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Subtotal</span>
-              <span>{formatCurrency(subtotal)}</span>
+              <span>{formatCurrency(subtotal - couponDiscount - voucherDiscount)}</span>
             </div>
             {couponDiscount > 0 && (
               <div className="flex justify-between text-xs text-green-600">
