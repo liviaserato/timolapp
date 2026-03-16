@@ -113,6 +113,11 @@ export const products: Product[] = [
     inStock: true,
     pointsUnilevel: 50,
     pointsBinary: 12,
+    benefits: "5 estágios de filtragem para água ultra-purificada.\nAlta vazão de até 3L por minuto.\nDesign premium para cozinhas modernas.",
+    instructions: "Requer instalação profissional (inclusa no combo).\nTroque os refis conforme indicação do painel digital.\nNão expor à luz solar direta.",
+    warranty: "24 meses de garantia.\nAssistência técnica prioritária.",
+    composition: "Corpo em aço inox, membranas de nanofiltração, carvão ativado de coco, mineralizador alcalino e lâmpada UV.",
+    manufacturer: "Timol Indústria e Comércio Ltda.\nSão Paulo – SP",
   },
   // Água Saudável > Refis e Filtros
   {
