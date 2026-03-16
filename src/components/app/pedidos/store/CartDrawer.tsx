@@ -231,7 +231,7 @@ export function CartDrawer({
                 ) : showCoupon ? (
                   <>
                     <button onClick={() => setShowCoupon(false)} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors mb-1">
-                      <ChevronUp className="h-3 w-3" /> Cupom de desconto
+                      <Tag className="h-3 w-3" /> Cupom de desconto <ChevronUp className="h-3 w-3" />
                     </button>
                     <div className="flex gap-1.5">
                       <Input
