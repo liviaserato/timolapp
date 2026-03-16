@@ -250,10 +250,10 @@ export default function Checkout() {
               <div className="text-sm text-foreground space-y-0.5">
                 <p>{address.street}, {address.number}{address.complement ? ` · ${address.complement}` : ""}</p>
                 <p>{address.neighborhood} · {address.city} – {address.state}</p>
-                <p className="text-muted-foreground text-xs">CEP {address.cep}</p>
+                <p>CEP {address.cep}</p>
                 {shippingLabel && (
-                  <p className="text-xs text-primary mt-1.5 flex items-center gap-1">
-                    <MapPin className="h-3 w-3" /> {shippingLabel}
+                  <p className="text-xs text-primary mt-3 flex items-center gap-1">
+                    <Truck className="h-3 w-3" /> {shippingLabel} · Prazo estimado: 5 a 10 dias úteis
                   </p>
                 )}
               </div>
