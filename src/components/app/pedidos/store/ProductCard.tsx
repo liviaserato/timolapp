@@ -28,19 +28,34 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const [qty, setQty] = useState(1);
-  const [selections, setSelections] = useState<CartItemSelection>(() => {
-    const initial: CartItemSelection = {};
-    product.variations?.forEach((v) => {
-      initial[v.type] = v.options[0];
-    });
-    return initial;
-  });
+  const [selections, setSelections] = useState<CartItemSelection>({});
+  const [errors, setErrors] = useState<string[]>([]);
 
   const img = productImages[product.name];
 
   const handleAdd = () => {
+    if (product.variations && product.variations.length > 0) {
+      const missing = product.variations
+        .filter((v) => !selections[v.type])
+        .map((v) => v.label);
+      if (missing.length > 0) {
+        setErrors(missing);
+        return;
+      }
+    }
+    setErrors([]);
     onAddToCart(product.id, product.name, product.price, qty, { ...selections });
     setQty(1);
+    setSelections({});
+  };
+
+  const handleSelectVariation = (type: string, opt: string) => {
+    setSelections((s) => ({ ...s, [type]: opt }));
+    setErrors((prev) => {
+      const variation = product.variations?.find((v) => v.type === type);
+      if (variation) return prev.filter((e) => e !== variation.label);
+      return prev;
+    });
   };
 
   return (
@@ -110,27 +125,38 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         {/* Variations */}
         {product.variations && product.variations.length > 0 && (
           <div className="space-y-1.5">
-            {product.variations.map((variation) => (
-              <div key={variation.type}>
-                <p className="text-[11px] font-medium text-muted-foreground mb-1">{variation.label}</p>
-                <div className="flex flex-wrap gap-1">
-                  {variation.options.map((opt) => (
-                    <button
-                      key={opt}
-                      onClick={() => setSelections((s) => ({ ...s, [variation.type]: opt }))}
-                      className={cn(
-                        "px-2 py-0.5 text-[11px] rounded border transition-colors",
-                        selections[variation.type] === opt
-                          ? "border-primary bg-primary/10 text-primary font-semibold"
-                          : "border-border text-muted-foreground hover:border-primary/50"
-                      )}
-                    >
-                      {opt}
-                    </button>
-                  ))}
+            {product.variations.map((variation) => {
+              const hasError = errors.includes(variation.label);
+              return (
+                <div key={variation.type}>
+                  <p className={cn(
+                    "text-[11px] font-medium mb-1",
+                    hasError ? "text-destructive" : "text-muted-foreground"
+                  )}>
+                    {variation.label}
+                    {hasError && <span className="ml-1 font-normal">— selecione</span>}
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {variation.options.map((opt) => (
+                      <button
+                        key={opt}
+                        onClick={() => handleSelectVariation(variation.type, opt)}
+                        className={cn(
+                          "px-2 py-0.5 text-[11px] rounded border transition-colors",
+                          selections[variation.type] === opt
+                            ? "border-primary bg-primary/10 text-primary font-semibold"
+                            : hasError
+                              ? "border-destructive/50 text-muted-foreground hover:border-destructive"
+                              : "border-border text-muted-foreground hover:border-primary/50"
+                        )}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
@@ -159,9 +185,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             disabled={!product.inStock}
             onClick={handleAdd}
           >
-            <Plus className="h-3 w-3 shrink-0 md:hidden" />
+            <Plus className="h-3 w-3 shrink-0 sm:hidden" />
             <ShoppingCart className="h-3 w-3 shrink-0" />
-            <span className="truncate hidden md:inline">Adicionar</span>
+            <span className="truncate hidden sm:inline">Adicionar</span>
           </Button>
         </div>
       </div>
