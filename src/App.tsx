@@ -18,6 +18,7 @@ import Suporte from "./pages/app/Suporte";
 import Pedidos from "./pages/app/Pedidos";
 import RealizarPedido from "./pages/app/RealizarPedido";
 import Checkout from "./pages/app/Checkout";
+import OrderPayment from "./pages/app/OrderPayment";
 import SectionPlaceholder from "./pages/app/SectionPlaceholder";
 import EmailPreviews from "./pages/app/EmailPreviews";
 import NotFound from "./pages/NotFound";
