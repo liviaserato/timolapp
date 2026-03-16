@@ -186,9 +186,23 @@ export default function OrderPayment() {
   const methodLabel =
     paymentMethod === "pix" ? "PIX" : paymentMethod === "boleto" ? "Boleto Bancário" : "Cartão de Crédito";
 
+  if (screen === "confirmed") {
+    return <OrderPaymentConfirmed finalTotal={finalTotal} paymentMethod={paymentMethod} pickupUnit={pickupUnit} />;
+  }
+
+  if (screen === "pending") {
+    return (
+      <OrderPaymentPending
+        finalTotal={finalTotal}
+        paymentMethod={paymentMethod}
+        pickupUnit={pickupUnit}
+        onChangePayment={() => setScreen("form")}
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col h-full max-w-md mx-auto">
-      {/* Header */}
       <header className="mb-5">
         <div className="flex items-center gap-2">
           <button
