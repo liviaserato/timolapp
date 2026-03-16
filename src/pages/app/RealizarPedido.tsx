@@ -4,6 +4,8 @@ import {
   ChevronLeft,
   Search,
   ShoppingCart,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +15,7 @@ import { toast } from "sonner";
 import { categories, products } from "@/data/mock-products";
 import { useCart } from "@/hooks/useCart";
 import { ProductCard } from "@/components/app/pedidos/store/ProductCard";
+import { ProductCardHorizontal } from "@/components/app/pedidos/store/ProductCardHorizontal";
 import { CartDrawer } from "@/components/app/pedidos/store/CartDrawer";
 
 function formatCurrency(v: number) {
@@ -27,6 +30,7 @@ export default function RealizarPedido() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("todos");
   const [searchTerm, setSearchTerm] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
+  const [layout, setLayout] = useState<"grid" | "list">("grid");
 
   const activeCategory = categories.find((c) => c.id === selectedCategory);
   const subcategories = activeCategory?.subcategories ?? [];
@@ -76,9 +80,9 @@ export default function RealizarPedido() {
         </div>
       </header>
 
-      {/* Search */}
-      <div className="mb-3">
-        <div className="relative">
+      {/* Search + Layout toggle */}
+      <div className="mb-3 flex items-center gap-2">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Buscar produtos..."
@@ -86,6 +90,26 @@ export default function RealizarPedido() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9 h-9 text-sm"
           />
+        </div>
+        <div className="flex items-center border border-border rounded-md shrink-0">
+          <button
+            onClick={() => setLayout("grid")}
+            className={cn(
+              "h-9 w-9 flex items-center justify-center transition-colors rounded-l-md",
+              layout === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setLayout("list")}
+            className={cn(
+              "h-9 w-9 flex items-center justify-center transition-colors rounded-r-md",
+              layout === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <List className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
@@ -160,15 +184,27 @@ export default function RealizarPedido() {
             <p className="text-sm">Nenhum produto encontrado</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {filtered.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={handleAddToCart}
-              />
-            ))}
-          </div>
+          layout === "grid" ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {filtered.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {filtered.map((product) => (
+                <ProductCardHorizontal
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                />
+              ))}
+            </div>
+          )
         )}
       </div>
 
