@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { Minus, Plus, Trash2, ShoppingBag, Tag, Ticket, MapPin, Loader2, ChevronDown, ChevronUp, Package, Zap, Store, X } from "lucide-react";
 import {
@@ -356,7 +357,7 @@ export function CartDrawer({
             </div>
 
             {/* Totals */}
-            <div className="border-t border-border pt-3 space-y-2">
+            <div className={cn("pt-3 space-y-2", (couponDiscount > 0 || voucherDiscount > 0 || shippingCost !== null) && "border-t border-border")}>
               {(couponDiscount > 0 || voucherDiscount > 0 || shippingCost !== null) && (
                 <>
                   <div className="flex justify-between text-xs text-muted-foreground">
