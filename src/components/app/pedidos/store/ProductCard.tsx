@@ -70,26 +70,28 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
       "flex flex-col rounded-lg border border-border bg-card overflow-hidden transition-shadow hover:shadow-md",
       !product.inStock && "opacity-60"
     )}>
-      {/* Image */}
-      <div className="relative h-36 bg-muted/30 flex items-center justify-center">
-        {img ? (
-          <img src={img} alt={product.name} className="h-28 w-28 object-contain" />
-        ) : (
-          <div className="h-28 w-28 rounded-lg bg-muted/50 flex items-center justify-center">
-            <ShoppingCart className="h-10 w-10 text-muted-foreground/30" />
-          </div>
-        )}
-        {product.oldPrice && (
-          <span className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-[10px] font-bold px-1.5 py-0.5 rounded">
-            {Math.round((1 - product.price / product.oldPrice) * 100)}% OFF
-          </span>
-        )}
-        {!product.inStock && (
-          <span className="absolute top-2 right-2 bg-muted-foreground text-background text-[10px] font-bold px-1.5 py-0.5 rounded">
-            Indisponível
-          </span>
-        )}
-      </div>
+      {/* Clickable area: image + info */}
+      <div className="cursor-pointer" onClick={() => setDetailOpen(true)}>
+        {/* Image */}
+        <div className="relative h-36 bg-muted/30 flex items-center justify-center">
+          {img ? (
+            <img src={img} alt={product.name} className="h-28 w-28 object-contain" />
+          ) : (
+            <div className="h-28 w-28 rounded-lg bg-muted/50 flex items-center justify-center">
+              <ShoppingCart className="h-10 w-10 text-muted-foreground/30" />
+            </div>
+          )}
+          {product.oldPrice && (
+            <span className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-[10px] font-bold px-1.5 py-0.5 rounded">
+              {Math.round((1 - product.price / product.oldPrice) * 100)}% OFF
+            </span>
+          )}
+          {!product.inStock && (
+            <span className="absolute top-2 right-2 bg-muted-foreground text-background text-[10px] font-bold px-1.5 py-0.5 rounded">
+              Indisponível
+            </span>
+          )}
+        </div>
 
       {/* Info */}
       <div className="flex flex-col flex-1 p-3 gap-2">
