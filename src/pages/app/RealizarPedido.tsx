@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import { categories, products } from "@/data/mock-products";
 import { useCart } from "@/hooks/useCart";
@@ -25,12 +26,15 @@ function formatCurrency(v: number) {
 export default function RealizarPedido() {
   const navigate = useNavigate();
   const cart = useCart();
+  const isMobile = useIsMobile();
 
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("todos");
   const [searchTerm, setSearchTerm] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
-  const [layout, setLayout] = useState<"grid" | "list">("grid");
+  const [layoutOverride, setLayoutOverride] = useState<"grid" | "list" | null>(null);
+
+  const layout = layoutOverride ?? (isMobile ? "list" : "grid");
 
   const activeCategory = categories.find((c) => c.id === selectedCategory);
   const subcategories = activeCategory?.subcategories ?? [];
