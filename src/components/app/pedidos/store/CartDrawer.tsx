@@ -264,7 +264,7 @@ export function CartDrawer({
                 ) : showVoucher ? (
                   <>
                     <button onClick={() => setShowVoucher(false)} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors mb-1">
-                      <ChevronUp className="h-3 w-3" /> Voucher
+                      <Ticket className="h-3 w-3" /> Voucher <ChevronUp className="h-3 w-3" />
                     </button>
                     <div className="flex gap-1.5">
                       <Input
