@@ -116,7 +116,7 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
           )}
 
           {/* Price – aligned right */}
-          <div className="flex items-baseline justify-end gap-1.5">
+          <div className="flex items-baseline gap-1.5">
             {product.oldPrice && (
               <span className="text-xs text-muted-foreground line-through">{formatCurrency(product.oldPrice)}</span>
             )}
