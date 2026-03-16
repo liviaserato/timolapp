@@ -380,26 +380,38 @@ export function CartDrawer({
                         {/* Pickup unit selector */}
                         {opt.id === "retirada" && selectedShipping === "retirada" && (
                           <div className="ml-5 mt-1 mb-0.5 space-y-1">
-                            {PICKUP_UNITS.map((unit) => (
-                              <button
-                                key={unit.id}
-                                onClick={() => { setSelectedPickupUnit(unit.id); setFinalizeError(""); }}
-                                className={`w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left transition-colors ${
-                                  selectedPickupUnit === unit.id
-                                    ? "bg-primary/10 text-primary"
-                                    : "hover:bg-muted text-muted-foreground"
-                                }`}
-                              >
-                                {selectedPickupUnit === unit.id ? (
-                                  <Check className="h-3 w-3 text-primary" />
-                                ) : (
-                                  <Store className="h-3 w-3 opacity-40" />
-                                )}
-                                <span className={`text-[11px] ${selectedPickupUnit === unit.id ? "font-semibold" : ""}`}>
-                                  {unit.name}
-                                </span>
-                              </button>
-                            ))}
+                            {pickupLoading ? (
+                              <div className="flex items-center gap-2 px-2.5 py-1.5 text-muted-foreground">
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                                <span className="text-[11px]">Calculando distâncias...</span>
+                              </div>
+                            ) : pickupUnits.length > 0 ? (
+                              pickupUnits.map((unit) => (
+                                <button
+                                  key={unit.id}
+                                  onClick={() => { setSelectedPickupUnit(unit.id); setFinalizeError(""); }}
+                                  className={`w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left transition-colors ${
+                                    selectedPickupUnit === unit.id
+                                      ? "bg-primary/10 text-primary"
+                                      : "hover:bg-muted text-muted-foreground"
+                                  }`}
+                                >
+                                  {selectedPickupUnit === unit.id ? (
+                                    <Check className="h-3 w-3 text-primary" />
+                                  ) : (
+                                    <Store className="h-3 w-3 opacity-40" />
+                                  )}
+                                  <span className={`text-[11px] flex-1 ${selectedPickupUnit === unit.id ? "font-semibold" : ""}`}>
+                                    {unit.name}
+                                  </span>
+                                  {unit.distanceKm != null && (
+                                    <span className={`text-[10px] ${selectedPickupUnit === unit.id ? "text-primary/70" : "text-muted-foreground"}`}>
+                                      ~{unit.distanceKm.toLocaleString("pt-BR")}km
+                                    </span>
+                                  )}
+                                </button>
+                              ))
+                            ) : null}
                           </div>
                         )}
                       </div>
