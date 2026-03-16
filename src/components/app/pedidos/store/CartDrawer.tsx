@@ -346,7 +346,7 @@ export function CartDrawer({
                     {shippingOptions.map((opt) => (
                       <button
                         key={opt.id}
-                        onClick={() => setSelectedShipping(opt.id)}
+                        onClick={() => { setSelectedShipping(opt.id); setFinalizeError(""); }}
                         className={`w-full flex items-center gap-2 rounded border px-2.5 py-2 text-left transition-colors ${
                           selectedShipping === opt.id
                             ? "border-primary bg-primary/5"
