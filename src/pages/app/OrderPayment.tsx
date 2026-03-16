@@ -102,6 +102,7 @@ export default function OrderPayment() {
   const [loading, setLoading] = useState(false);
   const [pixCopied, setPixCopied] = useState(false);
   const [boletoCopied, setBoletoCopied] = useState(false);
+  const [screen, setScreen] = useState<"form" | "confirmed" | "pending">("form");
 
   // Credit card fields
   const [cardNumber, setCardNumber] = useState("");
