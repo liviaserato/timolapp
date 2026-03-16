@@ -142,7 +142,19 @@ export function CartDrawer({
     return digits;
   };
 
+  const [finalizeError, setFinalizeError] = useState("");
+
   const handleFinalize = () => {
+    const cleanCep = cep.replace(/\D/g, "");
+    if (cleanCep.length < 8 || selectedShipping === null) {
+      setFinalizeError(
+        cleanCep.length < 8
+          ? "Preencha o CEP e calcule o frete"
+          : "Escolha uma forma de envio"
+      );
+      return;
+    }
+    setFinalizeError("");
     onOpenChange(false);
     navigate("/app/pedidos/checkout", {
       state: {
@@ -154,7 +166,7 @@ export function CartDrawer({
         voucherDiscount,
         shippingCost,
         shippingLabel,
-        cep: cep.replace(/\D/g, ""),
+        cep: cleanCep,
         grandTotal,
       },
     });
