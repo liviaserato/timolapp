@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Plus, Minus, ShoppingCart, Star } from "lucide-react";
+import { useState, useRef } from "react";
+import { Plus, Minus, ShoppingCart, Star, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/data/mock-products";
@@ -30,6 +30,8 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const [qty, setQty] = useState(1);
   const [selections, setSelections] = useState<CartItemSelection>({});
   const [errors, setErrors] = useState<string[]>([]);
+  const [justAdded, setJustAdded] = useState(false);
+  const addTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const img = productImages[product.name];
 
@@ -47,6 +49,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     onAddToCart(product.id, product.name, product.price, qty, { ...selections });
     setQty(1);
     setSelections({});
+    setJustAdded(true);
+    clearTimeout(addTimerRef.current);
+    addTimerRef.current = setTimeout(() => setJustAdded(false), 1500);
   };
 
   const handleSelectVariation = (type: string, opt: string) => {
@@ -181,13 +186,25 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           </div>
           <Button
             size="sm"
-            className="flex-1 min-w-0 gap-1 text-[11px] h-7 px-2"
-            disabled={!product.inStock}
+            className={cn(
+              "flex-1 min-w-0 gap-1 text-[11px] h-7 px-2 transition-colors",
+              justAdded && "bg-green-600 hover:bg-green-600 text-white"
+            )}
+            disabled={!product.inStock || justAdded}
             onClick={handleAdd}
           >
-            <Plus className="h-3 w-3 shrink-0 sm:hidden" />
-            <ShoppingCart className="h-3 w-3 shrink-0" />
-            <span className="truncate hidden sm:inline">Adicionar</span>
+            {justAdded ? (
+              <>
+                <Check className="h-3 w-3 shrink-0" />
+                <span className="truncate hidden sm:inline">Adicionado</span>
+              </>
+            ) : (
+              <>
+                <Plus className="h-3 w-3 shrink-0 sm:hidden" />
+                <ShoppingCart className="h-3 w-3 shrink-0" />
+                <span className="truncate hidden sm:inline">Adicionar</span>
+              </>
+            )}
           </Button>
         </div>
       </div>
