@@ -46,6 +46,7 @@ export function CartDrawer({
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
 
+  const [showVoucher, setShowVoucher] = useState(false);
   const [voucher, setVoucher] = useState("");
   const [appliedVoucher, setAppliedVoucher] = useState<string | null>(null);
   const [voucherDiscount, setVoucherDiscount] = useState(0);
