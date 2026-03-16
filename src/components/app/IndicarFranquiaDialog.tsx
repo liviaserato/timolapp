@@ -74,9 +74,9 @@ export function IndicarFranquiaDialog({ open, onOpenChange }: IndicarFranquiaDia
               Envie o link de cadastro
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Peça para a pessoa acessar o site
+              Peça para a pessoa acessar o site abaixo e
               <br />
-              abaixo e digitar o seu ID
+              digitar o seu ID
               {" "}
               <span className="font-bold text-foreground">{franchiseId}</span>
               {" "}
