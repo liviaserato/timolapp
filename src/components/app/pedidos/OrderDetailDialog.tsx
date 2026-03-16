@@ -153,9 +153,9 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
       <Dialog open={!!order} onOpenChange={(open) => !open && onClose()}>
         <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           {/* Blue header area */}
-          <div className="-mx-6 -mt-6 px-6 pt-6 pb-3 bg-sidebar rounded-t-lg">
+          <div className="-mx-6 -mt-6 px-6 pt-6 pb-3 bg-primary rounded-t-lg">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-sidebar-foreground">
+              <DialogTitle className="flex items-center gap-2 text-primary-foreground">
                 <Package className="h-5 w-5 shrink-0" />
                 <span>Pedido {order.number}</span>
               </DialogTitle>
@@ -163,7 +163,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
 
             {/* Date + Status badge row */}
             <div className="mt-1 flex items-center justify-between pl-7">
-              <span className="text-[13px] text-sidebar-foreground/70">Data: {formatDate(order.date)}</span>
+              <span className="text-[13px] text-primary-foreground/70">Data: {formatDate(order.date)}</span>
               <span className={cn(
                 "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border",
                 cfg.textColor, cfg.bgColor, cfg.borderColor
