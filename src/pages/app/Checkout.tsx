@@ -362,9 +362,9 @@ export default function Checkout() {
         </Card>
 
         {/* Confirm */}
-        <Button className="w-full gap-2" size="lg" onClick={handleConfirmOrder}>
-          <Check className="h-5 w-5" />
-          Confirmar Pedido
+        <Button className="w-full gap-2" size="lg" onClick={handleGoToPayment}>
+          <CreditCard className="h-5 w-5" />
+          Efetuar Pagamento
         </Button>
       </div>
     </div>
