@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useFranchise } from "@/contexts/FranchiseContext";
-import { useIsMobile } from "@/hooks/use-mobile";
 import timolLogo from "@/assets/logo-timol-azul-escuro.svg";
 
 interface IndicarFranquiaDialogProps {
