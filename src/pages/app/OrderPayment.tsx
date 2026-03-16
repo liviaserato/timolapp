@@ -125,7 +125,7 @@ export default function OrderPayment() {
     );
   }
 
-  const { finalTotal, paymentMethod, pixDiscount } = state;
+  const { finalTotal, paymentMethod, pixDiscount, pickupUnit } = state;
   const brand = detectCardBrand(cardNumber);
   const installmentOptions = getInstallmentOptions(finalTotal);
 
