@@ -93,11 +93,25 @@ export default function Checkout() {
     setEditingAddress(false);
   };
 
-  const handleConfirmOrder = () => {
-    toast.success("Pedido realizado com sucesso!", {
-      description: `Total: ${formatCurrency(finalTotal)}`,
+  const handleGoToPayment = () => {
+    navigate("/app/pedidos/pagamento", {
+      state: {
+        items,
+        subtotal,
+        coupon,
+        couponDiscount,
+        voucher,
+        voucherDiscount,
+        shippingCost,
+        shippingLabel,
+        pickupUnit,
+        grandTotal,
+        finalTotal,
+        paymentMethod,
+        pixDiscount,
+        cep: address.cep,
+      },
     });
-    navigate("/app/pedidos");
   };
 
   return (
@@ -348,9 +362,9 @@ export default function Checkout() {
         </Card>
 
         {/* Confirm */}
-        <Button className="w-full gap-2" size="lg" onClick={handleConfirmOrder}>
-          <Check className="h-5 w-5" />
-          Confirmar Pedido
+        <Button className="w-full gap-2" size="lg" onClick={handleGoToPayment}>
+          <CreditCard className="h-5 w-5" />
+          Efetuar Pagamento
         </Button>
       </div>
     </div>
