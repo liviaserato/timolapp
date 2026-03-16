@@ -341,7 +341,7 @@ export default function Pedidos() {
               Acesse o catálogo, faça seu pedido ou indique uma nova franquia.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <Button className="gap-2 w-full">
+              <Button className="gap-2 w-full" onClick={() => navigate("/app/pedidos/realizar")}>
                 <ShoppingCart className="h-4 w-4" />
                 Realizar Pedido
               </Button>
