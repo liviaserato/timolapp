@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+
 import { useIsMobile } from "@/hooks/use-mobile";
 
 import { categories, products } from "@/data/mock-products";
