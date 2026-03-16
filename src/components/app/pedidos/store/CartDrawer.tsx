@@ -141,6 +141,7 @@ export function CartDrawer({
         { id: "retirada", label: "Retirar na Timol", detail: "Unidade mais próxima", cost: 0, icon: <Store className="h-3.5 w-3.5" /> },
       ]);
       setSelectedShipping("pac");
+      setSelectedPickupUnit(null);
       setShippingLoading(false);
     }, 1000);
   };
