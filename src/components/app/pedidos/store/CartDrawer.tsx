@@ -307,13 +307,20 @@ export function CartDrawer({
                   <MapPin className="h-3 w-3" /> Calcular frete
                 </label>
                 <div className="flex gap-1.5">
-                  <Input
-                    value={cep}
-                    onChange={(e) => { setCep(formatCep(e.target.value)); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); }}
-                    placeholder="00000-000"
-                    className="h-8 text-xs flex-1"
-                    maxLength={9}
-                  />
+                  <div className="relative flex-1">
+                    <Input
+                      value={cep}
+                      onChange={(e) => { setCep(formatCep(e.target.value)); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); }}
+                      placeholder="00000-000"
+                      className="h-8 text-xs pr-7"
+                      maxLength={9}
+                    />
+                    {cep && (
+                      <button onClick={() => { setCep(""); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); }} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
                   <Button size="sm" variant="outline" className="h-8 text-xs px-3" onClick={handleCalcShipping} disabled={shippingLoading || cep.replace(/\D/g, "").length < 8}>
                     {shippingLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Calcular"}
                   </Button>
