@@ -139,17 +139,15 @@ export function IndicarFranquiaDialog({ open, onOpenChange }: IndicarFranquiaDia
               )}
             </div>
 
-            {/* Share button — only on mobile/tablet */}
-            {!isMobile ? null : (
-              <Button
-                onClick={handleShare}
-                className="w-full gap-2 rounded-xl"
-                size="default"
-              >
-                <Share2 className="h-4 w-4" />
-                Compartilhar link
-              </Button>
-            )}
+            {/* Share button — hidden on desktop (lg+), visible on mobile/tablet */}
+            <Button
+              onClick={handleShare}
+              className="w-full gap-2 rounded-xl lg:hidden"
+              size="default"
+            >
+              <Share2 className="h-4 w-4" />
+              Compartilhar link
+            </Button>
           </div>
         </div>
       </DialogContent>
