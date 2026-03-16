@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { Minus, Plus, Trash2, ShoppingBag, Tag, Ticket, MapPin, Loader2, ChevronDown, ChevronUp, Package, Zap, Store, X, Check } from "lucide-react";
@@ -60,16 +60,12 @@ export function CartDrawer({
   const [shippingLoading, setShippingLoading] = useState(false);
   const [shippingError, setShippingError] = useState("");
   const [selectedPickupUnit, setSelectedPickupUnit] = useState<string | null>(null);
-
-  const PICKUP_UNITS = [
-    { id: "salvador", name: "Unidade Salvador" },
-    { id: "sao-paulo", name: "Unidade São Paulo" },
-    { id: "uberlandia", name: "Unidade Uberlândia" },
-  ];
+  const [pickupUnits, setPickupUnits] = useState<{ id: string; name: string; distanceKm?: number }[]>([]);
+  const [pickupLoading, setPickupLoading] = useState(false);
 
   const shippingCost = shippingOptions.find(o => o.id === selectedShipping)?.cost ?? null;
   const shippingLabel = selectedShipping === "retirada" && selectedPickupUnit
-    ? `Retirar na Timol - ${PICKUP_UNITS.find(u => u.id === selectedPickupUnit)?.name ?? ""}`
+    ? `Retirar na Timol - ${pickupUnits.find(u => u.id === selectedPickupUnit)?.name ?? ""}`
     : shippingOptions.find(o => o.id === selectedShipping)?.label ?? "";
   const totalDiscounts = couponDiscount + voucherDiscount;
   const shipping = shippingCost ?? 0;
@@ -124,7 +120,7 @@ export function CartDrawer({
     setVoucherError("");
   };
 
-  const handleCalcShipping = () => {
+  const handleCalcShipping = async () => {
     const cleanCep = cep.replace(/\D/g, "");
     if (cleanCep.length !== 8) {
       setShippingError("CEP inválido");
@@ -134,16 +130,55 @@ export function CartDrawer({
     setShippingError("");
     setShippingOptions([]);
     setSelectedShipping(null);
-    setTimeout(() => {
-      setShippingOptions([
-        { id: "pac", label: "PAC", detail: "5 a 8 dias úteis", cost: 18.9, icon: <Package className="h-3.5 w-3.5" /> },
-        { id: "sedex", label: "SEDEX", detail: "1 a 3 dias úteis", cost: 32.5, icon: <Zap className="h-3.5 w-3.5" /> },
-        { id: "retirada", label: "Retirar na Timol", detail: "Unidade mais próxima", cost: 0, icon: <Store className="h-3.5 w-3.5" /> },
+    setPickupUnits([]);
+    setSelectedPickupUnit(null);
+
+    // Fetch pickup distances in parallel with mock shipping delay
+    const distancePromise = (async () => {
+      try {
+        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+        const res = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/calculate-pickup-distances`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cep: cleanCep }),
+          }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          return data.units as { id: string; name: string; distanceKm: number }[];
+        }
+      } catch (e) {
+        console.error("Error fetching pickup distances:", e);
+      }
+      return null;
+    })();
+
+    // Mock shipping options (will be replaced with real API)
+    await new Promise((r) => setTimeout(r, 1000));
+    setShippingOptions([
+      { id: "pac", label: "PAC", detail: "5 a 8 dias úteis", cost: 18.9, icon: <Package className="h-3.5 w-3.5" /> },
+      { id: "sedex", label: "SEDEX", detail: "1 a 3 dias úteis", cost: 32.5, icon: <Zap className="h-3.5 w-3.5" /> },
+      { id: "retirada", label: "Retirar na Timol", detail: "Escolha a unidade", cost: 0, icon: <Store className="h-3.5 w-3.5" /> },
+    ]);
+    setSelectedShipping("pac");
+    setShippingLoading(false);
+
+    // Resolve distances (may already be done or still loading)
+    setPickupLoading(true);
+    const units = await distancePromise;
+    if (units) {
+      setPickupUnits(units);
+    } else {
+      // Fallback without distances
+      setPickupUnits([
+        { id: "salvador", name: "Unidade Salvador" },
+        { id: "sao-paulo", name: "Unidade São Paulo" },
+        { id: "uberlandia", name: "Unidade Uberlândia" },
       ]);
-      setSelectedShipping("pac");
-      setSelectedPickupUnit(null);
-      setShippingLoading(false);
-    }, 1000);
+    }
+    setPickupLoading(false);
   };
 
   const formatCep = (value: string) => {
@@ -180,7 +215,7 @@ export function CartDrawer({
         voucherDiscount,
         shippingCost,
         shippingLabel,
-        pickupUnit: selectedPickupUnit ? PICKUP_UNITS.find(u => u.id === selectedPickupUnit)?.name : null,
+        pickupUnit: selectedPickupUnit ? pickupUnits.find(u => u.id === selectedPickupUnit)?.name : null,
         cep: cleanCep,
         grandTotal,
       },
@@ -384,26 +419,38 @@ export function CartDrawer({
                         {/* Pickup unit selector */}
                         {opt.id === "retirada" && selectedShipping === "retirada" && (
                           <div className="ml-5 mt-1 mb-0.5 space-y-1">
-                            {PICKUP_UNITS.map((unit) => (
-                              <button
-                                key={unit.id}
-                                onClick={() => { setSelectedPickupUnit(unit.id); setFinalizeError(""); }}
-                                className={`w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left transition-colors ${
-                                  selectedPickupUnit === unit.id
-                                    ? "bg-primary/10 text-primary"
-                                    : "hover:bg-muted text-muted-foreground"
-                                }`}
-                              >
-                                {selectedPickupUnit === unit.id ? (
-                                  <Check className="h-3 w-3 text-primary" />
-                                ) : (
-                                  <Store className="h-3 w-3 opacity-40" />
-                                )}
-                                <span className={`text-[11px] ${selectedPickupUnit === unit.id ? "font-semibold" : ""}`}>
-                                  {unit.name}
-                                </span>
-                              </button>
-                            ))}
+                            {pickupLoading ? (
+                              <div className="flex items-center gap-2 px-2.5 py-1.5 text-muted-foreground">
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                                <span className="text-[11px]">Calculando distâncias...</span>
+                              </div>
+                            ) : pickupUnits.length > 0 ? (
+                              pickupUnits.map((unit) => (
+                                <button
+                                  key={unit.id}
+                                  onClick={() => { setSelectedPickupUnit(unit.id); setFinalizeError(""); }}
+                                  className={`w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left transition-colors ${
+                                    selectedPickupUnit === unit.id
+                                      ? "bg-primary/10 text-primary"
+                                      : "hover:bg-muted text-muted-foreground"
+                                  }`}
+                                >
+                                  {selectedPickupUnit === unit.id ? (
+                                    <Check className="h-3 w-3 text-primary" />
+                                  ) : (
+                                    <Store className="h-3 w-3 opacity-40" />
+                                  )}
+                                  <span className={`text-[11px] flex-1 ${selectedPickupUnit === unit.id ? "font-semibold" : ""}`}>
+                                    {unit.name}
+                                  </span>
+                                  {unit.distanceKm != null && (
+                                    <span className={`text-[10px] ${selectedPickupUnit === unit.id ? "text-primary/70" : "text-muted-foreground"}`}>
+                                      ~{unit.distanceKm.toLocaleString("pt-BR")}km
+                                    </span>
+                                  )}
+                                </button>
+                              ))
+                            ) : null}
                           </div>
                         )}
                       </div>
