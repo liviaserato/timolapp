@@ -234,13 +234,20 @@ export function CartDrawer({
                       <Tag className="h-3 w-3" /> Cupom de desconto <ChevronUp className="h-3 w-3" />
                     </button>
                     <div className="flex gap-1.5">
-                      <Input
-                        value={coupon}
-                        onChange={(e) => { setCoupon(e.target.value.toUpperCase()); setCouponError(""); }}
-                        placeholder="Código do cupom"
-                        className="h-8 text-xs flex-1"
-                        autoFocus
-                      />
+                      <div className="relative flex-1">
+                        <Input
+                          value={coupon}
+                          onChange={(e) => { setCoupon(e.target.value.toUpperCase()); setCouponError(""); }}
+                          placeholder="Código do cupom"
+                          className="h-8 text-xs pr-7"
+                          autoFocus
+                        />
+                        {coupon && (
+                          <button onClick={() => { setCoupon(""); setCouponError(""); }} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                            <X className="h-3 w-3" />
+                          </button>
+                        )}
+                      </div>
                       <Button size="sm" variant="outline" className="h-8 text-xs px-3" onClick={handleApplyCoupon} disabled={couponLoading || !coupon.trim()}>
                         {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
                       </Button>
