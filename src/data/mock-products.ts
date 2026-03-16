@@ -92,6 +92,10 @@ export const products: Product[] = [
     inStock: true,
     pointsUnilevel: 20,
     pointsBinary: 4,
+    benefits: "Purificação completa em formato compacto.\nIdeal para espaços reduzidos como apartamentos e escritórios.",
+    instructions: "Conecte diretamente à torneira ou ponto de água.\nTroque o refil a cada 4 meses ou 2.000 litros.",
+    warranty: "12 meses de garantia contra defeitos de fabricação.",
+    manufacturer: "Timol Indústria e Comércio Ltda.\nSão Paulo – SP",
   },
   {
     id: "p3",
