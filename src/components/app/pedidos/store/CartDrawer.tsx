@@ -281,7 +281,7 @@ export function CartDrawer({
                   </>
                 ) : (
                   <button onClick={() => setShowVoucher(true)} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    <ChevronDown className="h-3 w-3" /> Adicionar voucher
+                    <Ticket className="h-3 w-3" /> Adicionar voucher <ChevronDown className="h-3 w-3" />
                   </button>
                 )}
                 {voucherError && <p className="text-[11px] text-destructive mt-0.5">{voucherError}</p>}
