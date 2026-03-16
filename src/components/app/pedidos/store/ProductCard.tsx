@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/data/mock-products";
 import type { CartItemSelection } from "@/hooks/useCart";
+import { ProductDetailDialog } from "./ProductDetailDialog";
 
 import comboMegaImg from "@/assets/produto-combo-mega.png";
 import comboMiniImg from "@/assets/produto-combo-mini.png";
