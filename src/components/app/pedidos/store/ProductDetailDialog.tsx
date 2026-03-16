@@ -28,7 +28,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: ProductDeta
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm p-0 gap-0 rounded-lg overflow-hidden">
+      <DialogContent className="max-w-sm p-0 gap-0 rounded-lg overflow-hidden border-primary [&>button]:text-primary-foreground">
         {/* Header */}
         <DialogHeader className="bg-primary px-4 py-3 space-y-0.5 [&>button]:text-primary-foreground">
           <DialogDescription className="text-primary-foreground/70 text-xs font-medium m-0">
