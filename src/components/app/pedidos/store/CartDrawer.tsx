@@ -120,7 +120,7 @@ export function CartDrawer({
     setVoucherError("");
   };
 
-  const handleCalcShipping = () => {
+  const handleCalcShipping = async () => {
     const cleanCep = cep.replace(/\D/g, "");
     if (cleanCep.length !== 8) {
       setShippingError("CEP inválido");
@@ -130,16 +130,55 @@ export function CartDrawer({
     setShippingError("");
     setShippingOptions([]);
     setSelectedShipping(null);
-    setTimeout(() => {
-      setShippingOptions([
-        { id: "pac", label: "PAC", detail: "5 a 8 dias úteis", cost: 18.9, icon: <Package className="h-3.5 w-3.5" /> },
-        { id: "sedex", label: "SEDEX", detail: "1 a 3 dias úteis", cost: 32.5, icon: <Zap className="h-3.5 w-3.5" /> },
-        { id: "retirada", label: "Retirar na Timol", detail: "Unidade mais próxima", cost: 0, icon: <Store className="h-3.5 w-3.5" /> },
+    setPickupUnits([]);
+    setSelectedPickupUnit(null);
+
+    // Fetch pickup distances in parallel with mock shipping delay
+    const distancePromise = (async () => {
+      try {
+        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+        const res = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/calculate-pickup-distances`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cep: cleanCep }),
+          }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          return data.units as { id: string; name: string; distanceKm: number }[];
+        }
+      } catch (e) {
+        console.error("Error fetching pickup distances:", e);
+      }
+      return null;
+    })();
+
+    // Mock shipping options (will be replaced with real API)
+    await new Promise((r) => setTimeout(r, 1000));
+    setShippingOptions([
+      { id: "pac", label: "PAC", detail: "5 a 8 dias úteis", cost: 18.9, icon: <Package className="h-3.5 w-3.5" /> },
+      { id: "sedex", label: "SEDEX", detail: "1 a 3 dias úteis", cost: 32.5, icon: <Zap className="h-3.5 w-3.5" /> },
+      { id: "retirada", label: "Retirar na Timol", detail: "Escolha a unidade", cost: 0, icon: <Store className="h-3.5 w-3.5" /> },
+    ]);
+    setSelectedShipping("pac");
+    setShippingLoading(false);
+
+    // Resolve distances (may already be done or still loading)
+    setPickupLoading(true);
+    const units = await distancePromise;
+    if (units) {
+      setPickupUnits(units);
+    } else {
+      // Fallback without distances
+      setPickupUnits([
+        { id: "salvador", name: "Unidade Salvador" },
+        { id: "sao-paulo", name: "Unidade São Paulo" },
+        { id: "uberlandia", name: "Unidade Uberlândia" },
       ]);
-      setSelectedShipping("pac");
-      setSelectedPickupUnit(null);
-      setShippingLoading(false);
-    }, 1000);
+    }
+    setPickupLoading(false);
   };
 
   const formatCep = (value: string) => {
