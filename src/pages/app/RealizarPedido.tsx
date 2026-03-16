@@ -177,7 +177,7 @@ export default function RealizarPedido() {
       <button
         onClick={() => setCartOpen(true)}
         className={cn(
-          "fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full px-5 py-3 shadow-lg transition-all",
+          "fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2 rounded-full px-5 py-3 shadow-lg transition-all",
           "bg-primary text-primary-foreground hover:bg-primary/90",
           cart.totalItems > 0 && "animate-in fade-in slide-in-from-bottom-2"
         )}

@@ -89,11 +89,11 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
         {/* Points */}
         {(product.pointsUnilevel || product.pointsBinary) && (
-          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <Star className="h-3 w-3 text-warning" />
-            {product.pointsUnilevel && <span>{product.pointsUnilevel} pts Uni</span>}
+          <div className="flex items-center gap-1 text-[10px] text-muted-foreground flex-wrap">
+            <Star className="h-3 w-3 text-warning shrink-0" />
+            {product.pointsUnilevel && <span>{product.pointsUnilevel} pontos Unilevel</span>}
             {product.pointsUnilevel && product.pointsBinary && <span>·</span>}
-            {product.pointsBinary && <span>{product.pointsBinary} pts Bin</span>}
+            {product.pointsBinary && <span>{product.pointsBinary} pontos Binário</span>}
           </div>
         )}
 
@@ -126,17 +126,19 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
         {/* Quantity + Add */}
         <div className="mt-auto pt-2 flex items-center gap-1.5">
-          <div className="flex items-center border border-border rounded shrink-0">
+          <div className={cn("flex items-center border border-border rounded shrink-0", !product.inStock && "opacity-40 pointer-events-none")}>
             <button
               onClick={() => setQty((q) => Math.max(1, q - 1))}
-              className="h-7 w-6 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              disabled={!product.inStock}
+              className="h-7 w-6 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors disabled:pointer-events-none"
             >
               <Minus className="h-3 w-3" />
             </button>
             <span className="w-5 text-center text-xs font-semibold text-foreground">{qty}</span>
             <button
               onClick={() => setQty((q) => q + 1)}
-              className="h-7 w-6 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              disabled={!product.inStock}
+              className="h-7 w-6 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors disabled:pointer-events-none"
             >
               <Plus className="h-3 w-3" />
             </button>
@@ -147,8 +149,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             disabled={!product.inStock}
             onClick={handleAdd}
           >
+            <Plus className="h-3 w-3 shrink-0 sm:hidden" />
             <ShoppingCart className="h-3 w-3 shrink-0" />
-            <span className="truncate">Adicionar</span>
+            <span className="truncate hidden sm:inline">Adicionar</span>
           </Button>
         </div>
       </div>
