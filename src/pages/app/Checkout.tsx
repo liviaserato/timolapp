@@ -183,7 +183,7 @@ export default function Checkout() {
             {isPickup ? (
               <div className="text-sm text-foreground space-y-1.5">
                 <p className="font-medium flex items-center gap-1.5">
-                  <MapPin className="h-3.5 w-3.5 text-primary" />
+                  <Store className="h-3.5 w-3.5 text-primary" />
                   {pickupUnit}
                 </p>
                 <p className="text-xs text-muted-foreground">
