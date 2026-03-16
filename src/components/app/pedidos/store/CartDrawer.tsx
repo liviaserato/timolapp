@@ -60,12 +60,8 @@ export function CartDrawer({
   const [shippingLoading, setShippingLoading] = useState(false);
   const [shippingError, setShippingError] = useState("");
   const [selectedPickupUnit, setSelectedPickupUnit] = useState<string | null>(null);
-
-  const PICKUP_UNITS = [
-    { id: "salvador", name: "Unidade Salvador" },
-    { id: "sao-paulo", name: "Unidade São Paulo" },
-    { id: "uberlandia", name: "Unidade Uberlândia" },
-  ];
+  const [pickupUnits, setPickupUnits] = useState<{ id: string; name: string; distanceKm?: number }[]>([]);
+  const [pickupLoading, setPickupLoading] = useState(false);
 
   const shippingCost = shippingOptions.find(o => o.id === selectedShipping)?.cost ?? null;
   const shippingLabel = selectedShipping === "retirada" && selectedPickupUnit
