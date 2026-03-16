@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import OrderPaymentConfirmed from "@/components/app/pedidos/OrderPaymentConfirmed";
+import OrderPaymentPending from "@/components/app/pedidos/OrderPaymentPending";
 import {
   ChevronLeft,
   QrCode,
@@ -23,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "sonner";
+
 
 import visaIcon from "@/assets/credit-card-visa.svg";
 import masterIcon from "@/assets/credit-card-master.svg";
@@ -89,6 +91,7 @@ interface PaymentState {
   grandTotal: number;
   paymentMethod: "pix" | "boleto" | "credit";
   pixDiscount: number;
+  pickupUnit: string | null;
 }
 
 /* ─── component ─── */
@@ -101,6 +104,7 @@ export default function OrderPayment() {
   const [loading, setLoading] = useState(false);
   const [pixCopied, setPixCopied] = useState(false);
   const [boletoCopied, setBoletoCopied] = useState(false);
+  const [screen, setScreen] = useState<"form" | "confirmed" | "pending">("form");
 
   // Credit card fields
   const [cardNumber, setCardNumber] = useState("");
@@ -123,7 +127,7 @@ export default function OrderPayment() {
     );
   }
 
-  const { finalTotal, paymentMethod, pixDiscount } = state;
+  const { finalTotal, paymentMethod, pixDiscount, pickupUnit } = state;
   const brand = detectCardBrand(cardNumber);
   const installmentOptions = getInstallmentOptions(finalTotal);
 
@@ -171,18 +175,34 @@ export default function OrderPayment() {
     await new Promise((r) => setTimeout(r, 1500));
     setLoading(false);
 
-    toast.success("Pedido realizado com sucesso!", {
-      description: `Total: ${formatCurrency(finalTotal)}`,
-    });
-    navigate("/app/pedidos");
+    // Credit card: simulate success; PIX/Boleto: pending
+    if (paymentMethod === "credit") {
+      setScreen("confirmed");
+    } else {
+      setScreen("pending");
+    }
   };
 
   const methodLabel =
     paymentMethod === "pix" ? "PIX" : paymentMethod === "boleto" ? "Boleto Bancário" : "Cartão de Crédito";
 
+  if (screen === "confirmed") {
+    return <OrderPaymentConfirmed finalTotal={finalTotal} paymentMethod={paymentMethod} pickupUnit={pickupUnit} />;
+  }
+
+  if (screen === "pending") {
+    return (
+      <OrderPaymentPending
+        finalTotal={finalTotal}
+        paymentMethod={paymentMethod}
+        pickupUnit={pickupUnit}
+        onChangePayment={() => setScreen("form")}
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col h-full max-w-md mx-auto">
-      {/* Header */}
       <header className="mb-5">
         <div className="flex items-center gap-2">
           <button
