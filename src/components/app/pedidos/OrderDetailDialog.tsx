@@ -7,7 +7,7 @@ import {
   Calendar,
   CheckSquare,
   Star,
-  Plus,
+  RotateCcw,
   CreditCard,
   Landmark,
   Wallet,
@@ -35,8 +35,8 @@ export type OrderStatus = "pendente" | "confirmado" | "enviado" | "entregue" | "
 export interface OrderItem {
   name: string;
   qty: number;
-  price: number; // unit price
-  discountedTotal?: number; // if coupon applies, the new line total (replaces price * qty)
+  price: number;
+  discountedTotal?: number;
 }
 
 export interface OrderDelivery {
@@ -45,7 +45,7 @@ export interface OrderDelivery {
   city?: string;
   state?: string;
   zip?: string;
-  note?: string; // e.g. "Rua de esquina sem saída"
+  note?: string;
   pickupLocation?: string;
   deliveryDate?: string;
   tracking?: string;
@@ -53,11 +53,11 @@ export interface OrderDelivery {
 }
 
 export interface OrderPayment {
-  method: string; // "PIX", "Crédito", "Saldo Banco Timol", "Voucher"
-  label?: string; // e.g. "•••• 1234", "NOME_VOUCHER"
+  method: string;
+  label?: string;
   value: number;
-  installments?: string; // e.g. "em 2 parcelas de R$ 992,50"
-  flag?: string; // "mastercard", "visa", etc
+  installments?: string;
+  flag?: string;
 }
 
 export interface Order {
@@ -68,9 +68,8 @@ export interface Order {
   total: number;
   status: OrderStatus;
   tracking?: string;
-  // New fields
   subtotal?: number;
-  freight?: number; // 0 = Grátis
+  freight?: number;
   coupon?: { name: string; discount: number };
   pointsUnilevel?: number;
   pointsBinary?: number;
@@ -129,6 +128,8 @@ function sortPayments(payments: OrderPayment[]) {
   });
 }
 
+const sectionTitleClass = "text-sm font-bold text-primary mb-2";
+
 /* ── Component ── */
 
 interface OrderDetailDialogProps {
@@ -151,34 +152,36 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
     <>
       <Dialog open={!!order} onOpenChange={(open) => !open && onClose()}>
         <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-primary">
-              <Package className="h-5 w-5 shrink-0" />
-              <span>Pedido {order.number}</span>
-            </DialogTitle>
-          </DialogHeader>
+          {/* Blue header area */}
+          <div className="-mx-6 -mt-6 px-6 pt-6 pb-3 bg-primary/10 rounded-t-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-primary">
+                <Package className="h-5 w-5 shrink-0" />
+                <span>Pedido {order.number}</span>
+              </DialogTitle>
+            </DialogHeader>
 
-          {/* Date + Status badge row */}
-          <div className="-mt-2 flex items-center justify-between pl-7">
-            <span className="text-[13px] text-muted-foreground">Data: {formatDate(order.date)}</span>
-            <span className={cn(
-              "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border",
-              cfg.textColor, cfg.bgColor, cfg.borderColor
-            )}>
-              {cfg.label}
-            </span>
+            {/* Date + Status badge row */}
+            <div className="mt-1 flex items-center justify-between pl-7">
+              <span className="text-[13px] text-muted-foreground">Data: {formatDate(order.date)}</span>
+              <span className={cn(
+                "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border",
+                cfg.textColor, cfg.bgColor, cfg.borderColor
+              )}>
+                {cfg.label}
+              </span>
+            </div>
           </div>
 
           {/* ── Produtos ── */}
           <div>
-            <p className="text-sm font-bold text-foreground mb-2">Produtos</p>
+            <p className={sectionTitleClass}>Produtos</p>
             <div className="space-y-3">
               {order.items.map((item, idx) => {
                 const img = productImages[item.name];
                 const lineTotal = item.price * item.qty;
                 return (
                   <div key={idx} className="flex gap-3 items-start">
-                    {/* Product image */}
                     <div className="h-14 w-14 rounded-md border border-border bg-muted/30 flex items-center justify-center shrink-0 overflow-hidden">
                       {img ? (
                         <img src={img} alt={item.name} className="h-12 w-12 object-contain" />
@@ -186,7 +189,6 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                         <Package className="h-6 w-6 text-muted-foreground/50" />
                       )}
                     </div>
-                    {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div>
@@ -229,7 +231,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
 
           {/* ── Resumo de Valores ── */}
           <div>
-            <p className="text-sm font-bold text-foreground mb-2">Resumo de Valores</p>
+            <p className={sectionTitleClass}>Resumo de Valores</p>
             <div className="space-y-1.5 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Pedido</span>
@@ -281,7 +283,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
           {order.payments && order.payments.length > 0 && (
             <>
               <div>
-                <p className="text-sm font-bold text-foreground mb-2">Forma de Pagamento</p>
+                <p className={sectionTitleClass}>Forma de Pagamento</p>
                 <div className="space-y-1.5 text-sm">
                   {sortPayments(order.payments).map((p, idx) => (
                     <div key={idx}>
@@ -315,7 +317,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
           {order.delivery && (
             <>
               <div>
-                <p className="text-sm font-bold text-foreground mb-2">Logística</p>
+                <p className={sectionTitleClass}>Logística</p>
 
                 {order.delivery.type === "entrega" && (
                   <div className="space-y-1">
@@ -354,7 +356,6 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                   </div>
                 )}
 
-                {/* Friendly message for confirmed orders */}
                 {order.status === "confirmado" && order.delivery.type === "entrega" && (
                   <p className="text-xs text-blue-600 bg-blue-50 border border-blue-200 rounded-md px-3 py-2 mt-2">
                     📦 Seu pedido foi confirmado e está sendo preparado. Assim que sair para entrega, você receberá o código de rastreio.
@@ -366,7 +367,6 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                   </p>
                 )}
 
-                {/* Delivery info - for "entrega" type */}
                 {order.delivery.type === "entrega" && (order.delivery.deliveryDate || order.delivery.tracking || order.delivery.deliveredTo) && (
                   <div className="mt-3 space-y-1.5">
                     <div className="flex items-center gap-1.5">
@@ -395,7 +395,6 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
                   </div>
                 )}
 
-                {/* Tracking for non-entrega types (retirada, etc.) */}
                 {order.delivery.type !== "entrega" && order.delivery.tracking && (
                   <div className="mt-3 space-y-1.5">
                     <div className="flex items-center gap-2 text-xs">
@@ -418,7 +417,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
               className="w-full gap-2 text-muted-foreground"
               onClick={() => setShowReturnDialog(true)}
             >
-              <Plus className="h-4 w-4" />
+              <RotateCcw className="h-4 w-4" />
               Desisti da compra, quero devolver
             </Button>
           )}
