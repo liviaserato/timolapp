@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Minus, Plus, Trash2, ShoppingBag, Tag, Ticket, MapPin, Loader2, ChevronDown, ChevronUp, Package, Zap, Store } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Tag, Ticket, MapPin, Loader2, ChevronDown, ChevronUp, Package, Zap, Store, X } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -234,13 +234,20 @@ export function CartDrawer({
                       <Tag className="h-3 w-3" /> Cupom de desconto <ChevronUp className="h-3 w-3" />
                     </button>
                     <div className="flex gap-1.5">
-                      <Input
-                        value={coupon}
-                        onChange={(e) => { setCoupon(e.target.value.toUpperCase()); setCouponError(""); }}
-                        placeholder="Código do cupom"
-                        className="h-8 text-xs flex-1"
-                        autoFocus
-                      />
+                      <div className="relative flex-1">
+                        <Input
+                          value={coupon}
+                          onChange={(e) => { setCoupon(e.target.value.toUpperCase()); setCouponError(""); }}
+                          placeholder="Código do cupom"
+                          className="h-8 text-xs pr-7"
+                          autoFocus
+                        />
+                        {coupon && (
+                          <button onClick={() => { setCoupon(""); setCouponError(""); }} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                            <X className="h-3 w-3" />
+                          </button>
+                        )}
+                      </div>
                       <Button size="sm" variant="outline" className="h-8 text-xs px-3" onClick={handleApplyCoupon} disabled={couponLoading || !coupon.trim()}>
                         {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
                       </Button>
@@ -267,13 +274,20 @@ export function CartDrawer({
                       <Ticket className="h-3 w-3" /> Voucher <ChevronUp className="h-3 w-3" />
                     </button>
                     <div className="flex gap-1.5">
-                      <Input
-                        value={voucher}
-                        onChange={(e) => { setVoucher(e.target.value.toUpperCase()); setVoucherError(""); }}
-                        placeholder="Código do voucher"
-                        className="h-8 text-xs flex-1"
-                        autoFocus
-                      />
+                      <div className="relative flex-1">
+                        <Input
+                          value={voucher}
+                          onChange={(e) => { setVoucher(e.target.value.toUpperCase()); setVoucherError(""); }}
+                          placeholder="Código do voucher"
+                          className="h-8 text-xs pr-7"
+                          autoFocus
+                        />
+                        {voucher && (
+                          <button onClick={() => { setVoucher(""); setVoucherError(""); }} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                            <X className="h-3 w-3" />
+                          </button>
+                        )}
+                      </div>
                       <Button size="sm" variant="outline" className="h-8 text-xs px-3" onClick={handleApplyVoucher} disabled={voucherLoading || !voucher.trim()}>
                         {voucherLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
                       </Button>
@@ -293,13 +307,20 @@ export function CartDrawer({
                   <MapPin className="h-3 w-3" /> Calcular frete
                 </label>
                 <div className="flex gap-1.5">
-                  <Input
-                    value={cep}
-                    onChange={(e) => { setCep(formatCep(e.target.value)); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); }}
-                    placeholder="00000-000"
-                    className="h-8 text-xs flex-1"
-                    maxLength={9}
-                  />
+                  <div className="relative flex-1">
+                    <Input
+                      value={cep}
+                      onChange={(e) => { setCep(formatCep(e.target.value)); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); }}
+                      placeholder="00000-000"
+                      className="h-8 text-xs pr-7"
+                      maxLength={9}
+                    />
+                    {cep && (
+                      <button onClick={() => { setCep(""); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); }} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
                   <Button size="sm" variant="outline" className="h-8 text-xs px-3" onClick={handleCalcShipping} disabled={shippingLoading || cep.replace(/\D/g, "").length < 8}>
                     {shippingLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Calcular"}
                   </Button>
