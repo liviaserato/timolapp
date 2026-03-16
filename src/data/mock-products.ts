@@ -18,6 +18,11 @@ export interface Product {
   inStock: boolean;
   pointsUnilevel?: number;
   pointsBinary?: number;
+  benefits?: string;
+  instructions?: string;
+  warranty?: string;
+  composition?: string;
+  manufacturer?: string;
 }
 
 export interface Category {
