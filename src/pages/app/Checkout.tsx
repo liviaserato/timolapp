@@ -298,7 +298,7 @@ export default function Checkout() {
                 <Building2 className="h-5 w-5 text-primary" />
                 <div className="flex-1">
                   <p className="text-sm font-medium text-foreground">Boleto Bancário</p>
-                  <p className="text-[11px] text-muted-foreground">Vencimento em 3 dias úteis</p>
+                  <p className="text-[11px] text-muted-foreground">Vencimento em 3 dias</p>
                 </div>
                 <span className="text-sm font-bold text-foreground">{formatCurrency(grandTotal)}</span>
               </label>
