@@ -80,9 +80,9 @@ export default function OrderPaymentConfirmed({ finalTotal, paymentMethod, picku
             <div className="flex items-start gap-2.5 bg-accent/50 rounded-lg p-3 text-left w-full">
               <Package className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Seu pedido será enviado em breve!
+                Seu pedido será enviado/disponibilizado em breve!
                 <br />
-                Acompanhe o status da entrega diretamente pelo app.
+                Acompanhe o status da entrega/retirada diretamente pelo app.
               </p>
             </div>
           )}
