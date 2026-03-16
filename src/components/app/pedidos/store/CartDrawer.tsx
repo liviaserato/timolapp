@@ -216,52 +216,66 @@ export function CartDrawer({
             <div className="border-t border-border pt-3 space-y-3 -mx-6 px-6">
               {/* Cupom */}
               <div>
-                <label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1 mb-1">
-                  <Tag className="h-3 w-3" /> Cupom de desconto
-                </label>
                 {appliedCoupon ? (
                   <div className="flex items-center justify-between bg-primary/5 rounded px-2.5 py-1.5">
-                    <span className="text-xs font-semibold text-primary">{appliedCoupon}</span>
+                    <span className="text-xs font-semibold text-primary flex items-center gap-1"><Tag className="h-3 w-3" />{appliedCoupon}</span>
                     <button onClick={handleRemoveCoupon} className="text-[11px] text-destructive hover:underline">Remover</button>
                   </div>
+                ) : showCoupon ? (
+                  <>
+                    <label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1 mb-1">
+                      <Tag className="h-3 w-3" /> Cupom de desconto
+                    </label>
+                    <div className="flex gap-1.5">
+                      <Input
+                        value={coupon}
+                        onChange={(e) => { setCoupon(e.target.value.toUpperCase()); setCouponError(""); }}
+                        placeholder="Código do cupom"
+                        className="h-8 text-xs flex-1"
+                        autoFocus
+                      />
+                      <Button size="sm" variant="outline" className="h-8 text-xs px-3" onClick={handleApplyCoupon} disabled={couponLoading || !coupon.trim()}>
+                        {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
+                      </Button>
+                    </div>
+                  </>
                 ) : (
-                  <div className="flex gap-1.5">
-                    <Input
-                      value={coupon}
-                      onChange={(e) => { setCoupon(e.target.value.toUpperCase()); setCouponError(""); }}
-                      placeholder="Código do cupom"
-                      className="h-8 text-xs flex-1"
-                    />
-                    <Button size="sm" variant="outline" className="h-8 text-xs px-3" onClick={handleApplyCoupon} disabled={couponLoading || !coupon.trim()}>
-                      {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
-                    </Button>
-                  </div>
+                  <button onClick={() => setShowCoupon(true)} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    <ChevronDown className="h-3 w-3" /> Adicionar cupom de desconto
+                  </button>
                 )}
                 {couponError && <p className="text-[11px] text-destructive mt-0.5">{couponError}</p>}
               </div>
 
               {/* Voucher */}
               <div>
-                <label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1 mb-1">
-                  <Ticket className="h-3 w-3" /> Voucher
-                </label>
                 {appliedVoucher ? (
                   <div className="flex items-center justify-between bg-primary/5 rounded px-2.5 py-1.5">
-                    <span className="text-xs font-semibold text-primary">{appliedVoucher}</span>
+                    <span className="text-xs font-semibold text-primary flex items-center gap-1"><Ticket className="h-3 w-3" />{appliedVoucher}</span>
                     <button onClick={handleRemoveVoucher} className="text-[11px] text-destructive hover:underline">Remover</button>
                   </div>
+                ) : showVoucher ? (
+                  <>
+                    <label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1 mb-1">
+                      <Ticket className="h-3 w-3" /> Voucher
+                    </label>
+                    <div className="flex gap-1.5">
+                      <Input
+                        value={voucher}
+                        onChange={(e) => { setVoucher(e.target.value.toUpperCase()); setVoucherError(""); }}
+                        placeholder="Código do voucher"
+                        className="h-8 text-xs flex-1"
+                        autoFocus
+                      />
+                      <Button size="sm" variant="outline" className="h-8 text-xs px-3" onClick={handleApplyVoucher} disabled={voucherLoading || !voucher.trim()}>
+                        {voucherLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
+                      </Button>
+                    </div>
+                  </>
                 ) : (
-                  <div className="flex gap-1.5">
-                    <Input
-                      value={voucher}
-                      onChange={(e) => { setVoucher(e.target.value.toUpperCase()); setVoucherError(""); }}
-                      placeholder="Código do voucher"
-                      className="h-8 text-xs flex-1"
-                    />
-                    <Button size="sm" variant="outline" className="h-8 text-xs px-3" onClick={handleApplyVoucher} disabled={voucherLoading || !voucher.trim()}>
-                      {voucherLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
-                    </Button>
-                  </div>
+                  <button onClick={() => setShowVoucher(true)} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    <ChevronDown className="h-3 w-3" /> Adicionar voucher
+                  </button>
                 )}
                 {voucherError && <p className="text-[11px] text-destructive mt-0.5">{voucherError}</p>}
               </div>
