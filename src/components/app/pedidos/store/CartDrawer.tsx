@@ -163,6 +163,10 @@ export function CartDrawer({
       );
       return;
     }
+    if (selectedShipping === "retirada" && !selectedPickupUnit) {
+      setFinalizeError("Escolha uma unidade para retirada");
+      return;
+    }
     setFinalizeError("");
     onOpenChange(false);
     navigate("/app/pedidos/checkout", {
