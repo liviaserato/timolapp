@@ -325,7 +325,7 @@ export function CartDrawer({
                   <div className="relative flex-1">
                     <Input
                       value={cep}
-                      onChange={(e) => { setCep(formatCep(e.target.value)); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); }}
+                      onChange={(e) => { setCep(formatCep(e.target.value)); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); setFinalizeError(""); }}
                       placeholder="00000-000"
                       className="h-8 text-xs pr-7"
                       maxLength={9}
