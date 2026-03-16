@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
-import { Minus, Plus, Trash2, ShoppingBag, Tag, Ticket, MapPin, Loader2, ChevronDown, ChevronUp, Package, Zap, Store, X } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Tag, Ticket, MapPin, Loader2, ChevronDown, ChevronUp, Package, Zap, Store, X, Check } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -59,9 +59,18 @@ export function CartDrawer({
   const [selectedShipping, setSelectedShipping] = useState<string | null>(null);
   const [shippingLoading, setShippingLoading] = useState(false);
   const [shippingError, setShippingError] = useState("");
+  const [selectedPickupUnit, setSelectedPickupUnit] = useState<string | null>(null);
+
+  const PICKUP_UNITS = [
+    { id: "salvador", name: "Unidade Salvador" },
+    { id: "sao-paulo", name: "Unidade São Paulo" },
+    { id: "uberlandia", name: "Unidade Uberlândia" },
+  ];
 
   const shippingCost = shippingOptions.find(o => o.id === selectedShipping)?.cost ?? null;
-  const shippingLabel = shippingOptions.find(o => o.id === selectedShipping)?.label ?? "";
+  const shippingLabel = selectedShipping === "retirada" && selectedPickupUnit
+    ? `Retirar na Timol - ${PICKUP_UNITS.find(u => u.id === selectedPickupUnit)?.name ?? ""}`
+    : shippingOptions.find(o => o.id === selectedShipping)?.label ?? "";
   const totalDiscounts = couponDiscount + voucherDiscount;
   const shipping = shippingCost ?? 0;
   const grandTotal = Math.max(0, totalPrice - totalDiscounts + shipping);
@@ -132,6 +141,7 @@ export function CartDrawer({
         { id: "retirada", label: "Retirar na Timol", detail: "Unidade mais próxima", cost: 0, icon: <Store className="h-3.5 w-3.5" /> },
       ]);
       setSelectedShipping("pac");
+      setSelectedPickupUnit(null);
       setShippingLoading(false);
     }, 1000);
   };
@@ -154,6 +164,10 @@ export function CartDrawer({
       );
       return;
     }
+    if (selectedShipping === "retirada" && !selectedPickupUnit) {
+      setFinalizeError("Escolha uma unidade para retirada");
+      return;
+    }
     setFinalizeError("");
     onOpenChange(false);
     navigate("/app/pedidos/checkout", {
@@ -166,6 +180,7 @@ export function CartDrawer({
         voucherDiscount,
         shippingCost,
         shippingLabel,
+        pickupUnit: selectedPickupUnit ? PICKUP_UNITS.find(u => u.id === selectedPickupUnit)?.name : null,
         cep: cleanCep,
         grandTotal,
       },
@@ -344,24 +359,54 @@ export function CartDrawer({
                 {shippingOptions.length > 0 && (
                   <div className="mt-2 space-y-1.5">
                     {shippingOptions.map((opt) => (
-                      <button
-                        key={opt.id}
-                        onClick={() => { setSelectedShipping(opt.id); setFinalizeError(""); }}
-                        className={`w-full flex items-center gap-2 rounded border px-2.5 py-2 text-left transition-colors ${
-                          selectedShipping === opt.id
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:border-muted-foreground/30"
-                        }`}
-                      >
-                        <span className={selectedShipping === opt.id ? "text-primary" : "text-muted-foreground"}>{opt.icon}</span>
-                        <div className="flex-1 min-w-0">
-                          <span className={`text-[11px] font-semibold ${selectedShipping === opt.id ? "text-primary" : "text-foreground"}`}>{opt.label}</span>
-                          <span className="text-[10px] text-muted-foreground ml-1.5">{opt.detail}</span>
-                        </div>
-                        <span className={`text-[11px] font-bold ${selectedShipping === opt.id ? "text-primary" : "text-foreground"}`}>
-                          {opt.cost === 0 ? "Grátis" : formatCurrency(opt.cost)}
-                        </span>
-                      </button>
+                      <div key={opt.id}>
+                        <button
+                          onClick={() => {
+                            setSelectedShipping(opt.id);
+                            if (opt.id !== "retirada") setSelectedPickupUnit(null);
+                            setFinalizeError("");
+                          }}
+                          className={`w-full flex items-center gap-2 rounded border px-2.5 py-2 text-left transition-colors ${
+                            selectedShipping === opt.id
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-muted-foreground/30"
+                          }`}
+                        >
+                          <span className={selectedShipping === opt.id ? "text-primary" : "text-muted-foreground"}>{opt.icon}</span>
+                          <div className="flex-1 min-w-0">
+                            <span className={`text-[11px] font-semibold ${selectedShipping === opt.id ? "text-primary" : "text-foreground"}`}>{opt.label}</span>
+                            <span className="text-[10px] text-muted-foreground ml-1.5">{opt.detail}</span>
+                          </div>
+                          <span className={`text-[11px] font-bold ${selectedShipping === opt.id ? "text-primary" : "text-foreground"}`}>
+                            {opt.cost === 0 ? "Grátis" : formatCurrency(opt.cost)}
+                          </span>
+                        </button>
+                        {/* Pickup unit selector */}
+                        {opt.id === "retirada" && selectedShipping === "retirada" && (
+                          <div className="ml-5 mt-1 mb-0.5 space-y-1">
+                            {PICKUP_UNITS.map((unit) => (
+                              <button
+                                key={unit.id}
+                                onClick={() => { setSelectedPickupUnit(unit.id); setFinalizeError(""); }}
+                                className={`w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left transition-colors ${
+                                  selectedPickupUnit === unit.id
+                                    ? "bg-primary/10 text-primary"
+                                    : "hover:bg-muted text-muted-foreground"
+                                }`}
+                              >
+                                {selectedPickupUnit === unit.id ? (
+                                  <Check className="h-3 w-3 text-primary" />
+                                ) : (
+                                  <Store className="h-3 w-3 opacity-40" />
+                                )}
+                                <span className={`text-[11px] ${selectedPickupUnit === unit.id ? "font-semibold" : ""}`}>
+                                  {unit.name}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
                 )}
