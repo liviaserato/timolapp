@@ -32,7 +32,7 @@ export default function OrderPaymentConfirmed({ finalTotal, paymentMethod, picku
           </div>
 
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
-            Que ótimo! Seu pedido foi realizado com sucesso. 🎉
+            Que ótimo! Seu pedido foi realizado com sucesso.
             <br />
             Agora é só aguardar — você pode acompanhar tudo pelo app.
           </p>
@@ -42,6 +42,10 @@ export default function OrderPaymentConfirmed({ finalTotal, paymentMethod, picku
             <DataRow
               label="Status"
               value={<span className="font-semibold text-green-600">Aprovado</span>}
+            />
+            <DataRow
+              label="Nº do Pedido"
+              value={<span className="font-semibold">#TML-{Math.floor(100000 + Math.random() * 900000)}</span>}
             />
             <DataRow
               label="Valor Total"
@@ -76,9 +80,9 @@ export default function OrderPaymentConfirmed({ finalTotal, paymentMethod, picku
             <div className="flex items-start gap-2.5 bg-accent/50 rounded-lg p-3 text-left w-full">
               <Package className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Seu pedido será enviado em breve!
+                Seu pedido será enviado/disponibilizado em breve!
                 <br />
-                Acompanhe o status da entrega diretamente pelo app.
+                Acompanhe o status da entrega/retirada diretamente pelo app.
               </p>
             </div>
           )}
