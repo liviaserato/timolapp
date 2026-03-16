@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Minus, Plus, Trash2, ShoppingBag, Tag, Ticket, MapPin, Loader2, ChevronDown } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Tag, Ticket, MapPin, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -223,9 +223,9 @@ export function CartDrawer({
                   </div>
                 ) : showCoupon ? (
                   <>
-                    <label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1 mb-1">
-                      <Tag className="h-3 w-3" /> Cupom de desconto
-                    </label>
+                    <button onClick={() => setShowCoupon(false)} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors mb-1">
+                      <ChevronUp className="h-3 w-3" /> Cupom de desconto
+                    </button>
                     <div className="flex gap-1.5">
                       <Input
                         value={coupon}
@@ -256,9 +256,9 @@ export function CartDrawer({
                   </div>
                 ) : showVoucher ? (
                   <>
-                    <label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1 mb-1">
-                      <Ticket className="h-3 w-3" /> Voucher
-                    </label>
+                    <button onClick={() => setShowVoucher(false)} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors mb-1">
+                      <ChevronUp className="h-3 w-3" /> Voucher
+                    </button>
                     <div className="flex gap-1.5">
                       <Input
                         value={voucher}
