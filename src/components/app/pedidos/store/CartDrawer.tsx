@@ -248,7 +248,7 @@ export function CartDrawer({
                   </>
                 ) : (
                   <button onClick={() => setShowCoupon(true)} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    <ChevronDown className="h-3 w-3" /> Adicionar cupom de desconto
+                    <Tag className="h-3 w-3" /> Adicionar cupom de desconto <ChevronDown className="h-3 w-3" />
                   </button>
                 )}
                 {couponError && <p className="text-[11px] text-destructive mt-0.5">{couponError}</p>}
