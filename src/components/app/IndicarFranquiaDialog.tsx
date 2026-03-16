@@ -63,7 +63,7 @@ export function IndicarFranquiaDialog({ open, onOpenChange }: IndicarFranquiaDia
         <div className="space-y-5 mt-1">
           {/* Friendly intro */}
           <p className="text-sm text-muted-foreground text-center leading-relaxed">
-            Que legal que você quer indicar alguém! 🎉
+            Que legal que você quer indicar alguém!
             <br />
             Escolha a forma mais fácil para você:
           </p>
@@ -132,9 +132,6 @@ export function IndicarFranquiaDialog({ open, onOpenChange }: IndicarFranquiaDia
                   )}
                 </button>
               </div>
-              {copiedReferral && (
-                <p className="text-[11px] text-emerald-600 font-medium">Link copiado!</p>
-              )}
             </div>
 
             {/* Share button — hidden on desktop (lg+), visible on mobile/tablet */}
