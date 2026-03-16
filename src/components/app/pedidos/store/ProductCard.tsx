@@ -93,7 +93,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           )}
         </div>
 
-      {/* Info */}
+      {/* Info – clickable area */}
       <div className="flex flex-col flex-1 p-3 gap-2">
         <div>
           <div className="flex items-center justify-between gap-1">
