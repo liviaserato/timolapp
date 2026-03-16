@@ -402,6 +402,7 @@ export function CartDrawer({
                 <span className="font-bold text-primary text-base">{formatCurrency(grandTotal)}</span>
               </div>
 
+              {finalizeError && <p className="text-[11px] text-destructive text-center">{finalizeError}</p>}
               <Button className="w-full gap-2" size="lg" onClick={handleFinalize}>
                 <ShoppingBag className="h-4 w-4" />
                 Finalizar Pedido
