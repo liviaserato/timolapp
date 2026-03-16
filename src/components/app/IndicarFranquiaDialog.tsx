@@ -132,9 +132,6 @@ export function IndicarFranquiaDialog({ open, onOpenChange }: IndicarFranquiaDia
                   )}
                 </button>
               </div>
-              {copiedReferral && (
-                <p className="text-[11px] text-emerald-600 font-medium">Link copiado!</p>
-              )}
             </div>
 
             {/* Share button — hidden on desktop (lg+), visible on mobile/tablet */}
