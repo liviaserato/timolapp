@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   ShoppingCart,
   Package,
@@ -8,7 +8,6 @@ import {
   Truck,
   Search,
   Filter,
-  Megaphone,
   Users,
   BookOpen,
   ExternalLink,
@@ -18,16 +17,17 @@ import {
   PackageCheck,
 } from "lucide-react";
 import { OrderDetailDialog, type Order, type OrderStatus } from "@/components/app/pedidos/OrderDetailDialog";
+import { IndicarFranquiaDialog } from "@/components/app/IndicarFranquiaDialog";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import {
   Select,
@@ -36,12 +36,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -52,8 +46,6 @@ const mockBanners = [
   { id: 2, title: "🚀 Lançamento Linha Premium", subtitle: "Novos produtos disponíveis", bg: "from-emerald-600/80 to-emerald-500/60" },
   { id: 3, title: "🎁 Compre 3, Leve 4", subtitle: "Promoção exclusiva para franqueados", bg: "from-amber-600/80 to-amber-500/60" },
 ];
-
-// Types imported from OrderDetailDialog
 
 const mockOrders: Order[] = [
   {
@@ -248,9 +240,20 @@ export default function Pedidos() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [detailOrder, setDetailOrder] = useState<Order | null>(null);
+  const [indicarOpen, setIndicarOpen] = useState(false);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
 
   const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Auto-advance carousel every 5 seconds
+  useEffect(() => {
+    if (!carouselApi) return;
+    const interval = setInterval(() => {
+      carouselApi.scrollNext();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [carouselApi]);
 
   const filtered = mockOrders
     .filter((o) => {
@@ -266,11 +269,9 @@ export default function Pedidos() {
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginatedOrders = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
-  // Reset page when filters change
   const handleSearchChange = (value: string) => { setSearchTerm(value); setCurrentPage(1); };
   const handleStatusChange = (value: string) => { setStatusFilter(value); setCurrentPage(1); };
 
-  // Group by month (paginated)
   const grouped = paginatedOrders.reduce<Record<string, Order[]>>((acc, order) => {
     const d = new Date(order.date + "T00:00:00");
     const monthName = d.toLocaleDateString("pt-BR", { month: "long" });
@@ -280,7 +281,6 @@ export default function Pedidos() {
     return acc;
   }, {});
 
-  // Pagination helpers
   const getPageNumbers = () => {
     const pages: (number | "ellipsis")[] = [];
     if (totalPages <= 7) {
@@ -306,33 +306,31 @@ export default function Pedidos() {
 
       <section className="flex flex-col gap-2">
 
-        {/* Banners de promoção */}
-        <DashboardCard icon={Megaphone} title="Promoções">
-          <div className="mt-2 relative">
-            <Carousel className="w-full" opts={{ loop: true }}>
-              <CarouselContent>
-                {mockBanners.map((b) => (
-                  <CarouselItem key={b.id}>
-                    <div
-                      className={cn(
-                        "flex min-h-[140px] flex-col items-center justify-center rounded-lg bg-gradient-to-r text-primary-foreground px-6 py-8 text-center",
-                        b.bg,
-                      )}
-                    >
-                      <p className="text-xl font-bold">{b.title}</p>
-                      <p className="text-sm mt-1 opacity-90">{b.subtitle}</p>
-                      <Button size="sm" variant="secondary" className="mt-3 text-xs font-semibold">
-                        Ver oferta
-                      </Button>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-transparent text-white/50 hover:text-white drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
-              <CarouselNext className="right-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-transparent text-white/50 hover:text-white drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
-            </Carousel>
-          </div>
-        </DashboardCard>
+        {/* Banners de promoção — sem card, direto na página */}
+        <div className="relative">
+          <Carousel className="w-full" opts={{ loop: true }} setApi={setCarouselApi}>
+            <CarouselContent>
+              {mockBanners.map((b) => (
+                <CarouselItem key={b.id}>
+                  <div
+                    className={cn(
+                      "flex min-h-[140px] flex-col items-center justify-center rounded-lg bg-gradient-to-r text-primary-foreground px-6 py-8 text-center",
+                      b.bg,
+                    )}
+                  >
+                    <p className="text-xl font-bold">{b.title}</p>
+                    <p className="text-sm mt-1 opacity-90">{b.subtitle}</p>
+                    <Button size="sm" variant="secondary" className="mt-3 text-xs font-semibold">
+                      Ver oferta
+                    </Button>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-transparent text-white/50 hover:text-white drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
+            <CarouselNext className="right-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-transparent text-white/50 hover:text-white drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
+          </Carousel>
+        </div>
 
         {/* Realizar Pedido */}
         <DashboardCard icon={ShoppingCart} title="Novo Pedido">
@@ -345,7 +343,7 @@ export default function Pedidos() {
                 <ShoppingCart className="h-4 w-4" />
                 Realizar Pedido
               </Button>
-              <Button variant="outline" className="gap-2 w-full">
+              <Button variant="outline" className="gap-2 w-full" onClick={() => setIndicarOpen(true)}>
                 <Users className="h-4 w-4" />
                 Indicar Franquia
               </Button>
@@ -359,19 +357,10 @@ export default function Pedidos() {
 
         {/* Pedidos em Cards */}
         <DashboardCard icon={Package} title="Pedidos">
-          {/* Filtros */}
+          {/* Filtros — mobile: filter first, search second */}
           <div className="mt-2 flex flex-col sm:flex-row gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por nº, produto ou data..."
-                value={searchTerm}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                className="h-8 pl-8 text-xs rounded-md"
-              />
-            </div>
             <Select value={statusFilter} onValueChange={handleStatusChange}>
-              <SelectTrigger className="h-8 w-full sm:w-[160px] text-xs">
+              <SelectTrigger className="h-8 w-full sm:w-[160px] sm:order-2 text-xs">
                 <Filter className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -385,6 +374,15 @@ export default function Pedidos() {
                 <SelectItem value="cancelado" className="hover:bg-muted/60 cursor-pointer">Cancelado</SelectItem>
               </SelectContent>
             </Select>
+            <div className="relative flex-1 sm:order-1">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por nº, produto ou data..."
+                value={searchTerm}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="h-8 pl-8 text-xs rounded-md"
+              />
+            </div>
           </div>
 
           {/* Cards agrupados por mês */}
@@ -407,7 +405,6 @@ export default function Pedidos() {
                         onClick={() => setDetailOrder(order)}
                       >
                         <div className="p-3 flex flex-col gap-1">
-                          {/* Row 1: #pedido + data | resumo (desktop) / valor (mobile) */}
                           <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2 min-w-0">
                               <span className="text-base font-extrabold text-foreground">{order.number}</span>
@@ -416,9 +413,7 @@ export default function Pedidos() {
                             <p className="hidden sm:block text-xs text-muted-foreground truncate max-w-[50%] text-right">{itemsSummary}</p>
                             <span className="sm:hidden text-sm font-bold whitespace-nowrap">{formatCurrency(order.total)}</span>
                           </div>
-                          {/* Mobile only: resumo */}
                           <p className="sm:hidden text-xs text-muted-foreground truncate mb-1">{itemsSummary}</p>
-                          {/* Row 2: status + tracking | valor */}
                           <div className="flex items-center justify-between gap-2">
                             <StatusBadge status={order.status} />
                             {order.status === "enviado" && order.tracking && (
@@ -489,6 +484,9 @@ export default function Pedidos() {
 
       {/* Dialog de detalhes do pedido */}
       <OrderDetailDialog order={detailOrder} onClose={() => setDetailOrder(null)} />
+
+      {/* Dialog Indicar Franquia */}
+      <IndicarFranquiaDialog open={indicarOpen} onOpenChange={setIndicarOpen} />
     </div>
   );
 }
