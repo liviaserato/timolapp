@@ -45,7 +45,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
   return (
     <div className={cn(
-      "flex flex-col rounded-lg border border-border bg-card overflow-hidden transition-shadow hover:shadow-md",
+      "flex flex-col rounded-lg border border-border bg-card overflow-hidden transition-shadow hover:shadow-md @container",
       !product.inStock && "opacity-60"
     )}>
       {/* Image */}
