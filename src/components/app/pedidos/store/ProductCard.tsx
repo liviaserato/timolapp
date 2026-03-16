@@ -32,6 +32,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const [selections, setSelections] = useState<CartItemSelection>({});
   const [errors, setErrors] = useState<string[]>([]);
   const [justAdded, setJustAdded] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
   const addTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const img = productImages[product.name];
