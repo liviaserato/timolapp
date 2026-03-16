@@ -244,6 +244,21 @@ export function CartDrawer({
                     <ChevronDown className="h-3 w-3" /> Adicionar cupom de desconto
                   </button>
                 )}
+              </div>
+
+              {/* Voucher */}
+              <div>
+                {appliedVoucher ? (
+                  <div className="flex items-center justify-between bg-primary/5 rounded px-2.5 py-1.5">
+                    <span className="text-xs font-semibold text-primary flex items-center gap-1"><Ticket className="h-3 w-3" />{appliedVoucher}</span>
+                    <button onClick={handleRemoveVoucher} className="text-[11px] text-destructive hover:underline">Remover</button>
+                  </div>
+                ) : showVoucher ? (
+                  <>
+                    <button onClick={() => setShowVoucher(false)} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors mb-1">
+                      <ChevronUp className="h-3 w-3" /> Voucher
+                    </button>
+                )}
                 {couponError && <p className="text-[11px] text-destructive mt-0.5">{couponError}</p>}
               </div>
 
