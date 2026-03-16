@@ -357,29 +357,33 @@ export function CartDrawer({
 
             {/* Totals */}
             <div className="border-t border-border pt-3 space-y-2">
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Subtotal</span>
-                <span>{formatCurrency(totalPrice)}</span>
-              </div>
-              {couponDiscount > 0 && (
-                <div className="flex justify-between text-xs text-green-600">
-                  <span>Cupom ({appliedCoupon})</span>
-                  <span>-{formatCurrency(couponDiscount)}</span>
-                </div>
+              {(couponDiscount > 0 || voucherDiscount > 0 || shippingCost !== null) && (
+                <>
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Subtotal</span>
+                    <span>{formatCurrency(totalPrice)}</span>
+                  </div>
+                  {couponDiscount > 0 && (
+                    <div className="flex justify-between text-xs text-green-600">
+                      <span>Cupom ({appliedCoupon})</span>
+                      <span>-{formatCurrency(couponDiscount)}</span>
+                    </div>
+                  )}
+                  {voucherDiscount > 0 && (
+                    <div className="flex justify-between text-xs text-green-600">
+                      <span>Voucher ({appliedVoucher})</span>
+                      <span>-{formatCurrency(voucherDiscount)}</span>
+                    </div>
+                  )}
+                  {shippingCost !== null && (
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Frete</span>
+                      <span>{shippingCost === 0 ? "Grátis" : formatCurrency(shippingCost)}</span>
+                    </div>
+                  )}
+                  <Separator />
+                </>
               )}
-              {voucherDiscount > 0 && (
-                <div className="flex justify-between text-xs text-green-600">
-                  <span>Voucher ({appliedVoucher})</span>
-                  <span>-{formatCurrency(voucherDiscount)}</span>
-                </div>
-              )}
-              {shippingCost !== null && (
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Frete</span>
-                  <span>{shippingCost === 0 ? "Grátis" : formatCurrency(shippingCost)}</span>
-                </div>
-              )}
-              <Separator />
               <div className="flex justify-between text-sm">
                 <span className="font-semibold text-foreground">Total</span>
                 <span className="font-bold text-primary text-base">{formatCurrency(grandTotal)}</span>
