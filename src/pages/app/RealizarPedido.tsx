@@ -4,6 +4,8 @@ import {
   ChevronLeft,
   Search,
   ShoppingCart,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
