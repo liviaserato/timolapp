@@ -80,9 +80,9 @@ export default function RealizarPedido() {
         </div>
       </header>
 
-      {/* Search */}
-      <div className="mb-3">
-        <div className="relative">
+      {/* Search + Layout toggle */}
+      <div className="mb-3 flex items-center gap-2">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Buscar produtos..."
@@ -90,6 +90,26 @@ export default function RealizarPedido() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9 h-9 text-sm"
           />
+        </div>
+        <div className="flex items-center border border-border rounded-md shrink-0">
+          <button
+            onClick={() => setLayout("grid")}
+            className={cn(
+              "h-9 w-9 flex items-center justify-center transition-colors rounded-l-md",
+              layout === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setLayout("list")}
+            className={cn(
+              "h-9 w-9 flex items-center justify-center transition-colors rounded-r-md",
+              layout === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <List className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
