@@ -66,71 +66,77 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
   return (
     <div
       className={cn(
-        "flex rounded-lg border border-border bg-card overflow-hidden transition-shadow hover:shadow-md",
+        "flex flex-col rounded-lg border border-border bg-card overflow-hidden transition-shadow hover:shadow-md",
         !product.inStock && "opacity-60"
       )}
     >
-      {/* Image – left side */}
-      <div className="relative shrink-0 w-28 sm:w-36 bg-muted/30 flex items-center justify-center">
-        {img ? (
-          <img src={img} alt={product.name} className="h-24 w-24 sm:h-28 sm:w-28 object-contain" />
-        ) : (
-          <div className="h-24 w-24 rounded-lg bg-muted/50 flex items-center justify-center">
-            <ShoppingCart className="h-10 w-10 text-muted-foreground/30" />
-          </div>
-        )}
-        {product.oldPrice && (
-          <span className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-[10px] font-bold px-1.5 py-0.5 rounded">
-            {Math.round((1 - product.price / product.oldPrice) * 100)}% OFF
-          </span>
-        )}
-        {!product.inStock && (
-          <span className="absolute top-2 left-2 bg-muted-foreground text-background text-[10px] font-bold px-1.5 py-0.5 rounded">
-            Indisponível
-          </span>
-        )}
-      </div>
-
-      {/* Content – right side */}
-      <div className="flex flex-col flex-1 min-w-0 p-3 gap-1.5">
-        {/* Subcategory + Activatable tag */}
-        <div className="flex items-center gap-1.5">
-          <p className="text-xs text-muted-foreground truncate">{product.subcategory}</p>
-          {product.activatable && (
-            <span className="shrink-0 rounded-full bg-primary/10 border border-primary/30 text-primary text-[9px] font-bold px-1.5 py-0.5 leading-none">
-              Ativável
+      {/* Row 1: Image (col1) + Info (col2) */}
+      <div className="flex">
+        {/* Col 1 – Image */}
+        <div className="relative shrink-0 w-28 sm:w-36 bg-muted/30 flex items-center justify-center p-2">
+          {img ? (
+            <img src={img} alt={product.name} className="h-24 w-24 sm:h-28 sm:w-28 object-contain" />
+          ) : (
+            <div className="h-24 w-24 rounded-lg bg-muted/50 flex items-center justify-center">
+              <ShoppingCart className="h-10 w-10 text-muted-foreground/30" />
+            </div>
+          )}
+          {product.oldPrice && (
+            <span className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-[10px] font-bold px-1.5 py-0.5 rounded">
+              {Math.round((1 - product.price / product.oldPrice) * 100)}% OFF
+            </span>
+          )}
+          {!product.inStock && (
+            <span className="absolute top-2 left-2 bg-muted-foreground text-background text-[10px] font-bold px-1.5 py-0.5 rounded">
+              Indisponível
             </span>
           )}
         </div>
 
-        {/* Name */}
-        <h3 className="text-sm font-bold text-foreground leading-tight">{product.name}</h3>
-
-        {/* Description */}
-        {product.description && (
-          <p className="text-[11px] text-muted-foreground line-clamp-2">{product.description}</p>
-        )}
-
-        {/* Price */}
-        <div className="flex items-baseline gap-1.5">
-          {product.oldPrice && (
-            <span className="text-xs text-muted-foreground line-through">{formatCurrency(product.oldPrice)}</span>
-          )}
-          <span className="text-base font-bold text-primary">{formatCurrency(product.price)}</span>
-        </div>
-
-        {/* Points */}
-        {(product.pointsUnilevel || product.pointsBinary) && (
-          <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/10 px-2 py-1">
-            <Star className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
-            <p className="text-[10px] font-medium text-foreground leading-relaxed">
-              {product.pointsUnilevel && <span>{product.pointsUnilevel} pts Unilevel</span>}
-              {product.pointsUnilevel && product.pointsBinary && <span> · </span>}
-              {product.pointsBinary && <span>{product.pointsBinary} pts Binário</span>}
-            </p>
+        {/* Col 2 – Product info */}
+        <div className="flex flex-col flex-1 min-w-0 p-3 gap-1">
+          {/* Subcategory + Activatable */}
+          <div className="flex items-center gap-1.5">
+            <p className="text-xs text-muted-foreground truncate">{product.subcategory}</p>
+            {product.activatable && (
+              <span className="shrink-0 rounded-full bg-primary/10 border border-primary/30 text-primary text-[9px] font-bold px-1.5 py-0.5 leading-none">
+                Ativável
+              </span>
+            )}
           </div>
-        )}
 
+          {/* Name */}
+          <h3 className="text-sm font-bold text-foreground leading-tight">{product.name}</h3>
+
+          {/* Description */}
+          {product.description && (
+            <p className="text-[11px] text-muted-foreground line-clamp-2">{product.description}</p>
+          )}
+
+          {/* Price */}
+          <div className="flex items-baseline gap-1.5">
+            {product.oldPrice && (
+              <span className="text-xs text-muted-foreground line-through">{formatCurrency(product.oldPrice)}</span>
+            )}
+            <span className="text-base font-bold text-primary">{formatCurrency(product.price)}</span>
+          </div>
+
+          {/* Points */}
+          {(product.pointsUnilevel || product.pointsBinary) && (
+            <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/10 px-2 py-1">
+              <Star className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
+              <p className="text-[10px] font-medium text-foreground leading-relaxed">
+                {product.pointsUnilevel && <span>{product.pointsUnilevel} pts Unilevel</span>}
+                {product.pointsUnilevel && product.pointsBinary && <span> · </span>}
+                {product.pointsBinary && <span>{product.pointsBinary} pts Binário</span>}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Row 2 (col3): Variations + Qty/Add – full width */}
+      <div className="px-3 pb-3 pt-1.5 flex flex-col gap-2 border-t border-border/50">
         {/* Variations */}
         {product.variations && product.variations.length > 0 && (
           <div className="flex flex-wrap gap-x-4 gap-y-1.5">
@@ -172,7 +178,7 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
         )}
 
         {/* Quantity + Add */}
-        <div className="mt-auto pt-1.5 flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5">
           <div
             className={cn(
               "flex items-center border border-border rounded shrink-0",
