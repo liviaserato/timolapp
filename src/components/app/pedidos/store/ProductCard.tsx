@@ -89,11 +89,11 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
         {/* Points */}
         {(product.pointsUnilevel || product.pointsBinary) && (
-          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <Star className="h-3 w-3 text-warning" />
-            {product.pointsUnilevel && <span>{product.pointsUnilevel} pts Uni</span>}
+          <div className="flex items-center gap-1 text-[10px] text-muted-foreground flex-wrap">
+            <Star className="h-3 w-3 text-warning shrink-0" />
+            {product.pointsUnilevel && <span>{product.pointsUnilevel} pontos Unilevel</span>}
             {product.pointsUnilevel && product.pointsBinary && <span>·</span>}
-            {product.pointsBinary && <span>{product.pointsBinary} pts Bin</span>}
+            {product.pointsBinary && <span>{product.pointsBinary} pontos Binário</span>}
           </div>
         )}
 
