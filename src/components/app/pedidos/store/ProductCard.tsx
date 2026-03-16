@@ -43,11 +43,6 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     setQty(1);
   };
 
-  const handleAdd = () => {
-    onAddToCart(product.id, product.name, product.price, qty, { ...selections });
-    setQty(1);
-  };
-
   return (
     <div className={cn(
       "flex flex-col rounded-lg border border-border bg-card overflow-hidden transition-shadow hover:shadow-md",
