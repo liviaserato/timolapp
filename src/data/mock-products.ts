@@ -71,6 +71,7 @@ export const products: Product[] = [
     id: "p2",
     name: "Combo Mini",
     price: 99.9,
+    activatable: true,
     category: "purificadores",
     subcategory: "Combos",
     description: "Kit compacto ideal para apartamentos",
