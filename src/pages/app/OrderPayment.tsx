@@ -173,10 +173,12 @@ export default function OrderPayment() {
     await new Promise((r) => setTimeout(r, 1500));
     setLoading(false);
 
-    toast.success("Pedido realizado com sucesso!", {
-      description: `Total: ${formatCurrency(finalTotal)}`,
-    });
-    navigate("/app/pedidos");
+    // Credit card: simulate success; PIX/Boleto: pending
+    if (paymentMethod === "credit") {
+      setScreen("confirmed");
+    } else {
+      setScreen("pending");
+    }
   };
 
   const methodLabel =
