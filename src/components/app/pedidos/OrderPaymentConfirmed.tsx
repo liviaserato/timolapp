@@ -32,7 +32,7 @@ export default function OrderPaymentConfirmed({ finalTotal, paymentMethod, picku
           </div>
 
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
-            Que ótimo! Seu pedido foi realizado com sucesso. 🎉
+            Que ótimo! Seu pedido foi realizado com sucesso.
             <br />
             Agora é só aguardar — você pode acompanhar tudo pelo app.
           </p>
