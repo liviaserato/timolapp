@@ -90,8 +90,8 @@ export default function RealizarPedido() {
       </div>
 
       {/* Category tabs */}
-      <div className="mb-2 -mx-1 overflow-x-auto scrollbar-none">
-        <div className="flex gap-1.5 px-1 pb-1">
+      <div className="mb-2">
+        <div className="flex flex-wrap gap-1.5">
           <button
             onClick={() => handleCategoryChange("todos")}
             className={cn(
@@ -122,8 +122,8 @@ export default function RealizarPedido() {
 
       {/* Subcategory chips */}
       {selectedCategory !== "todos" && subcategories.length > 0 && (
-        <div className="mb-3 -mx-1 overflow-x-auto scrollbar-none">
-          <div className="flex gap-1.5 px-1 pb-1">
+        <div className="mb-3">
+          <div className="flex flex-wrap gap-1.5">
             <button
               onClick={() => setSelectedSubcategory("todos")}
               className={cn(
@@ -152,7 +152,6 @@ export default function RealizarPedido() {
           </div>
         </div>
       )}
-
       {/* Products grid */}
       <div className="flex-1 overflow-y-auto pb-20">
         {filtered.length === 0 ? (
