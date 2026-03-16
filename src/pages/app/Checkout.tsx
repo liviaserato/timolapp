@@ -10,6 +10,7 @@ import {
   Check,
   Edit2,
   Store,
+  Package,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -252,7 +253,7 @@ export default function Checkout() {
                 <p>CEP {address.cep}</p>
                 {shippingLabel && (
                   <p className="text-xs text-primary mt-3 flex items-center gap-1">
-                    <Truck className="h-3 w-3" /> {shippingLabel} · Prazo estimado: 5 a 10 dias úteis
+                    <Package className="h-3 w-3" /> {shippingLabel} · Prazo estimado: 5 a 10 dias úteis
                   </p>
                 )}
               </div>
