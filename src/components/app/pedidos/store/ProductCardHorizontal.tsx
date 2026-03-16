@@ -225,6 +225,7 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
           </Button>
         </div>
       </div>
+      <ProductDetailDialog product={product} open={detailOpen} onOpenChange={setDetailOpen} />
     </div>
   );
 }
