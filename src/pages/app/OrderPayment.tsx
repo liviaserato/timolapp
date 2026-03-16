@@ -200,6 +200,7 @@ export default function OrderPayment() {
       <div className="flex-1 overflow-y-auto space-y-4 pb-6">
         {/* Total */}
         <div className="text-center space-y-0.5">
+          <p className="text-sm text-muted-foreground">{methodLabel}</p>
           <p className="text-3xl font-extrabold text-foreground tracking-tight">
             {formatCurrency(finalTotal)}
           </p>
