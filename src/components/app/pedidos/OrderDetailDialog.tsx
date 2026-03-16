@@ -153,9 +153,9 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
       <Dialog open={!!order} onOpenChange={(open) => !open && onClose()}>
         <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           {/* Blue header area */}
-          <div className="-mx-6 -mt-6 px-6 pt-6 pb-3 bg-primary/10 rounded-t-lg">
+          <div className="-mx-6 -mt-6 px-6 pt-6 pb-3 bg-sidebar rounded-t-lg">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-primary">
+              <DialogTitle className="flex items-center gap-2 text-sidebar-foreground">
                 <Package className="h-5 w-5 shrink-0" />
                 <span>Pedido {order.number}</span>
               </DialogTitle>
