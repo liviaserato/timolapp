@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   ChevronLeft,
-  MapPin,
   CreditCard,
   Building2,
   QrCode,
@@ -184,7 +183,7 @@ export default function Checkout() {
             {isPickup ? (
               <div className="text-sm text-foreground space-y-1.5">
                 <p className="font-medium flex items-center gap-1.5">
-                  <MapPin className="h-3.5 w-3.5 text-primary" />
+                  <Store className="h-3.5 w-3.5 text-primary" />
                   {pickupUnit}
                 </p>
                 <p className="text-xs text-muted-foreground">
@@ -250,10 +249,10 @@ export default function Checkout() {
               <div className="text-sm text-foreground space-y-0.5">
                 <p>{address.street}, {address.number}{address.complement ? ` · ${address.complement}` : ""}</p>
                 <p>{address.neighborhood} · {address.city} – {address.state}</p>
-                <p className="text-muted-foreground text-xs">CEP {address.cep}</p>
+                <p>CEP {address.cep}</p>
                 {shippingLabel && (
-                  <p className="text-xs text-primary mt-1.5 flex items-center gap-1">
-                    <MapPin className="h-3 w-3" /> {shippingLabel}
+                  <p className="text-xs text-primary mt-3 flex items-center gap-1">
+                    <Truck className="h-3 w-3" /> {shippingLabel} · Prazo estimado: 5 a 10 dias úteis
                   </p>
                 )}
               </div>
@@ -298,7 +297,7 @@ export default function Checkout() {
                 <Building2 className="h-5 w-5 text-primary" />
                 <div className="flex-1">
                   <p className="text-sm font-medium text-foreground">Boleto Bancário</p>
-                  <p className="text-[11px] text-muted-foreground">Vencimento em 3 dias úteis</p>
+                  <p className="text-[11px] text-muted-foreground">Vencimento em 3 dias</p>
                 </div>
                 <span className="text-sm font-bold text-foreground">{formatCurrency(grandTotal)}</span>
               </label>
