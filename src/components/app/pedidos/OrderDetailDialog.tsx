@@ -163,7 +163,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
 
             {/* Date + Status badge row */}
             <div className="mt-1 flex items-center justify-between pl-7">
-              <span className="text-[13px] text-muted-foreground">Data: {formatDate(order.date)}</span>
+              <span className="text-[13px] text-sidebar-foreground/70">Data: {formatDate(order.date)}</span>
               <span className={cn(
                 "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border",
                 cfg.textColor, cfg.bgColor, cfg.borderColor
