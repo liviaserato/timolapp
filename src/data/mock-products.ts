@@ -71,6 +71,11 @@ export const products: Product[] = [
     inStock: true,
     pointsUnilevel: 38,
     pointsBinary: 8,
+    benefits: "Água purificada com pH equilibrado para toda a família.\nReduz cloro, metais pesados e impurezas em até 99%.\nMaior durabilidade do refil comparado a modelos convencionais.",
+    instructions: "Instale em superfície plana próxima a ponto de água.\nTroque o refil a cada 6 meses ou 3.000 litros.\nLimpe a parte externa com pano úmido semanalmente.",
+    warranty: "12 meses de garantia contra defeitos de fabricação.\nAssistência técnica em todo o Brasil.",
+    composition: "Corpo em ABS de alta resistência, filtro de carvão ativado, membrana de ultrafiltração e refil alcalino mineral.",
+    manufacturer: "Timol Indústria e Comércio Ltda.\nCNPJ: 00.000.000/0001-00\nSão Paulo – SP",
   },
   {
     id: "p2",
