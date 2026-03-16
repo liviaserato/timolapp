@@ -149,9 +149,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             disabled={!product.inStock}
             onClick={handleAdd}
           >
-            <Plus className="h-3 w-3 shrink-0 @[140px]:hidden" />
+            <Plus className="h-3 w-3 shrink-0 @[180px]:hidden" />
             <ShoppingCart className="h-3 w-3 shrink-0" />
-            <span className="truncate hidden @[140px]:inline">Adicionar</span>
+            <span className="truncate hidden @[180px]:inline">Adicionar</span>
           </Button>
         </div>
       </div>
