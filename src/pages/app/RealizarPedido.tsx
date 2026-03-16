@@ -30,6 +30,7 @@ export default function RealizarPedido() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("todos");
   const [searchTerm, setSearchTerm] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
+  const [layout, setLayout] = useState<"grid" | "list">("grid");
 
   const activeCategory = categories.find((c) => c.id === selectedCategory);
   const subcategories = activeCategory?.subcategories ?? [];
