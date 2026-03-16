@@ -17,7 +17,6 @@ interface IndicarFranquiaDialogProps {
 
 export function IndicarFranquiaDialog({ open, onOpenChange }: IndicarFranquiaDialogProps) {
   const { selected } = useFranchise();
-  const isMobile = useIsMobile();
   const franchiseId = selected?.franchiseId ?? "000000";
   const referralLink = `https://indiquei.timol/${franchiseId}`;
   const cadastroLink = "https://www.timol.com.br/cadastro-nova-franquia";
