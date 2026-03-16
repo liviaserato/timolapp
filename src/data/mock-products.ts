@@ -88,6 +88,7 @@ export const products: Product[] = [
     id: "p3",
     name: "Purificador Premium",
     price: 249.9,
+    activatable: true,
     oldPrice: 299.9,
     category: "purificadores",
     subcategory: "Avulsos",
