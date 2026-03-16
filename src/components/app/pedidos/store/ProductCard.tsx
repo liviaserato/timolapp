@@ -186,13 +186,25 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           </div>
           <Button
             size="sm"
-            className="flex-1 min-w-0 gap-1 text-[11px] h-7 px-2"
-            disabled={!product.inStock}
+            className={cn(
+              "flex-1 min-w-0 gap-1 text-[11px] h-7 px-2 transition-colors",
+              justAdded && "bg-green-600 hover:bg-green-600 text-white"
+            )}
+            disabled={!product.inStock || justAdded}
             onClick={handleAdd}
           >
-            <Plus className="h-3 w-3 shrink-0 sm:hidden" />
-            <ShoppingCart className="h-3 w-3 shrink-0" />
-            <span className="truncate hidden sm:inline">Adicionar</span>
+            {justAdded ? (
+              <>
+                <Check className="h-3 w-3 shrink-0" />
+                <span className="truncate hidden sm:inline">Adicionado</span>
+              </>
+            ) : (
+              <>
+                <Plus className="h-3 w-3 shrink-0 sm:hidden" />
+                <ShoppingCart className="h-3 w-3 shrink-0" />
+                <span className="truncate hidden sm:inline">Adicionar</span>
+              </>
+            )}
           </Button>
         </div>
       </div>
