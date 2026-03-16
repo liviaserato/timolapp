@@ -28,36 +28,36 @@ export interface Category {
 
 export const categories: Category[] = [
   {
-    id: "purificadores",
-    name: "Purificadores",
-    subcategories: ["Combos", "Avulsos", "Peças e Acessórios"],
+    id: "agua-saudavel",
+    name: "Água Saudável",
+    subcategories: ["Purificadores", "Refis e Filtros", "Ionizadores", "Acessórios"],
   },
   {
-    id: "refis",
-    name: "Refis e Filtros",
-    subcategories: ["Refis Alcalinos", "Filtros de Carvão", "Membranas"],
+    id: "beleza",
+    name: "Beleza & Auto Cuidado",
+    subcategories: ["Cuidados com a Pele", "Cabelos", "Bem-Estar"],
   },
   {
-    id: "ionizadores",
-    name: "Ionizadores",
-    subcategories: ["Portáteis", "De mesa", "Galões"],
+    id: "dia-a-dia",
+    name: "Dia a Dia",
+    subcategories: ["Casa", "Limpeza", "Utilidades"],
   },
   {
-    id: "acessorios",
-    name: "Acessórios",
-    subcategories: ["Torneiras", "Mangueiras", "Conexões"],
+    id: "impressos",
+    name: "Impressos",
+    subcategories: ["Catálogos", "Material de Apoio", "Cartões"],
   },
 ];
 
 export const products: Product[] = [
-  // Purificadores > Combos
+  // Água Saudável > Purificadores
   {
     id: "p1",
     name: "Combo Mega",
     price: 189.9,
     activatable: true,
-    category: "purificadores",
-    subcategory: "Combos",
+    category: "agua-saudavel",
+    subcategory: "Purificadores",
     description: "Kit completo com purificador + 2 refis + instalação",
     variations: [
       { type: "cor", label: "Cor", options: ["Branco", "Preto", "Prata"] },
@@ -72,8 +72,8 @@ export const products: Product[] = [
     name: "Combo Mini",
     price: 99.9,
     activatable: true,
-    category: "purificadores",
-    subcategory: "Combos",
+    category: "agua-saudavel",
+    subcategory: "Purificadores",
     description: "Kit compacto ideal para apartamentos",
     variations: [
       { type: "cor", label: "Cor", options: ["Branco", "Preto"] },
@@ -83,15 +83,14 @@ export const products: Product[] = [
     pointsUnilevel: 20,
     pointsBinary: 4,
   },
-  // Purificadores > Avulsos
   {
     id: "p3",
     name: "Purificador Premium",
     price: 249.9,
     activatable: true,
     oldPrice: 299.9,
-    category: "purificadores",
-    subcategory: "Avulsos",
+    category: "agua-saudavel",
+    subcategory: "Purificadores",
     description: "Purificador de alta vazão com 5 estágios de filtragem",
     variations: [
       { type: "cor", label: "Cor", options: ["Branco", "Preto", "Azul"] },
@@ -101,38 +100,13 @@ export const products: Product[] = [
     pointsUnilevel: 50,
     pointsBinary: 12,
   },
-  {
-    id: "p4",
-    name: "Purificador Slim",
-    price: 179.9,
-    category: "purificadores",
-    subcategory: "Avulsos",
-    description: "Design ultraslim para espaços reduzidos",
-    variations: [
-      { type: "cor", label: "Cor", options: ["Branco", "Prata"] },
-    ],
-    inStock: true,
-    pointsUnilevel: 36,
-    pointsBinary: 7,
-  },
-  // Purificadores > Peças e Acessórios
-  {
-    id: "p5",
-    name: "Kit Instalação Universal",
-    price: 39.9,
-    category: "purificadores",
-    subcategory: "Peças e Acessórios",
-    inStock: true,
-    pointsUnilevel: 8,
-    pointsBinary: 2,
-  },
-  // Refis e Filtros > Refis Alcalinos
+  // Água Saudável > Refis e Filtros
   {
     id: "p6",
     name: "Refil Alcalino Premium",
     price: 59.9,
-    category: "refis",
-    subcategory: "Refis Alcalinos",
+    category: "agua-saudavel",
+    subcategory: "Refis e Filtros",
     description: "Refil com 6 meses de durabilidade",
     variations: [
       { type: "tamanho", label: "Tamanho", options: ["Padrão", "Grande"] },
@@ -142,48 +116,24 @@ export const products: Product[] = [
     pointsBinary: 3,
   },
   {
-    id: "p7",
-    name: "Refil Alcalino Básico",
-    price: 39.9,
-    category: "refis",
-    subcategory: "Refis Alcalinos",
-    description: "Refil com 3 meses de durabilidade",
-    inStock: true,
-    pointsUnilevel: 8,
-    pointsBinary: 2,
-  },
-  // Refis e Filtros > Filtros de Carvão
-  {
     id: "p8",
     name: "Filtro Carvão Ativado",
     price: 79.9,
-    category: "refis",
-    subcategory: "Filtros de Carvão",
+    category: "agua-saudavel",
+    subcategory: "Refis e Filtros",
     description: "Remove cloro e impurezas com alta eficiência",
     inStock: true,
     pointsUnilevel: 16,
     pointsBinary: 4,
   },
-  // Refis e Filtros > Membranas
-  {
-    id: "p9",
-    name: "Membrana de Osmose Reversa",
-    price: 129.9,
-    category: "refis",
-    subcategory: "Membranas",
-    description: "Filtração de 0,0001 mícron",
-    inStock: true,
-    pointsUnilevel: 26,
-    pointsBinary: 6,
-  },
-  // Ionizadores > Portáteis
+  // Água Saudável > Ionizadores
   {
     id: "p10",
     name: "Ionizador Portátil Go",
     price: 149.9,
     oldPrice: 179.9,
-    category: "ionizadores",
-    subcategory: "Portáteis",
+    category: "agua-saudavel",
+    subcategory: "Ionizadores",
     description: "Garrafa ionizadora recarregável USB-C",
     variations: [
       { type: "cor", label: "Cor", options: ["Preto", "Azul", "Rosa"] },
@@ -193,13 +143,12 @@ export const products: Product[] = [
     pointsUnilevel: 30,
     pointsBinary: 7,
   },
-  // Ionizadores > De mesa
   {
     id: "p11",
     name: "Ionizador de Mesa Pro",
     price: 299.9,
-    category: "ionizadores",
-    subcategory: "De mesa",
+    category: "agua-saudavel",
+    subcategory: "Ionizadores",
     description: "Ionização em 7 níveis de pH",
     variations: [
       { type: "cor", label: "Cor", options: ["Branco", "Preto"] },
@@ -209,35 +158,23 @@ export const products: Product[] = [
     pointsUnilevel: 60,
     pointsBinary: 14,
   },
-  // Ionizadores > Galões
+  // Água Saudável > Acessórios
   {
-    id: "p12",
-    name: "Galão Ionizado 20L",
-    price: 45.0,
-    category: "ionizadores",
-    subcategory: "Galões",
-    description: "Água alcalina ionizada pronta para consumo",
+    id: "p5",
+    name: "Kit Instalação Universal",
+    price: 39.9,
+    category: "agua-saudavel",
+    subcategory: "Acessórios",
     inStock: true,
-    pointsUnilevel: 9,
+    pointsUnilevel: 8,
     pointsBinary: 2,
   },
-  {
-    id: "p13",
-    name: "Galão Ionizado 10L",
-    price: 28.0,
-    category: "ionizadores",
-    subcategory: "Galões",
-    inStock: true,
-    pointsUnilevel: 6,
-    pointsBinary: 1,
-  },
-  // Acessórios > Torneiras
   {
     id: "p14",
     name: "Torneira Inox Longa",
     price: 69.9,
-    category: "acessorios",
-    subcategory: "Torneiras",
+    category: "agua-saudavel",
+    subcategory: "Acessórios",
     variations: [
       { type: "cor", label: "Acabamento", options: ["Cromado", "Escovado", "Preto Fosco"] },
     ],
@@ -245,27 +182,126 @@ export const products: Product[] = [
     pointsUnilevel: 14,
     pointsBinary: 3,
   },
-  // Acessórios > Mangueiras
+  // Beleza & Auto Cuidado > Cuidados com a Pele
   {
-    id: "p15",
-    name: "Mangueira Flexível 1,5m",
+    id: "p17",
+    name: "Sérum Facial Hidratante",
+    price: 89.9,
+    category: "beleza",
+    subcategory: "Cuidados com a Pele",
+    description: "Sérum com ácido hialurônico e vitamina C",
+    inStock: true,
+    pointsUnilevel: 18,
+    pointsBinary: 4,
+  },
+  {
+    id: "p18",
+    name: "Creme Anti-Idade",
+    price: 119.9,
+    category: "beleza",
+    subcategory: "Cuidados com a Pele",
+    description: "Redução de linhas de expressão em 30 dias",
+    inStock: true,
+    pointsUnilevel: 24,
+    pointsBinary: 6,
+  },
+  // Beleza & Auto Cuidado > Cabelos
+  {
+    id: "p19",
+    name: "Shampoo Revitalizante",
+    price: 49.9,
+    category: "beleza",
+    subcategory: "Cabelos",
+    description: "Com queratina e água alcalina",
+    inStock: true,
+    pointsUnilevel: 10,
+    pointsBinary: 2,
+  },
+  // Beleza & Auto Cuidado > Bem-Estar
+  {
+    id: "p20",
+    name: "Óleo Essencial Relaxante",
+    price: 39.9,
+    category: "beleza",
+    subcategory: "Bem-Estar",
+    description: "Blend de lavanda e camomila",
+    inStock: true,
+    pointsUnilevel: 8,
+    pointsBinary: 2,
+  },
+  // Dia a Dia > Casa
+  {
+    id: "p21",
+    name: "Detergente Concentrado",
+    price: 24.9,
+    category: "dia-a-dia",
+    subcategory: "Casa",
+    description: "Rende até 5x mais que o convencional",
+    inStock: true,
+    pointsUnilevel: 5,
+    pointsBinary: 1,
+  },
+  // Dia a Dia > Limpeza
+  {
+    id: "p22",
+    name: "Multiuso Biodegradável",
     price: 19.9,
-    category: "acessorios",
-    subcategory: "Mangueiras",
+    category: "dia-a-dia",
+    subcategory: "Limpeza",
+    description: "Fórmula ecológica para todas as superfícies",
     inStock: true,
     pointsUnilevel: 4,
     pointsBinary: 1,
   },
-  // Acessórios > Conexões
+  // Dia a Dia > Utilidades
   {
-    id: "p16",
-    name: "Kit Conexões Rápidas",
-    price: 24.9,
-    category: "acessorios",
-    subcategory: "Conexões",
-    description: "Kit com 6 conexões universais",
-    inStock: false,
-    pointsUnilevel: 5,
+    id: "p23",
+    name: "Garrafa Térmica 1L",
+    price: 59.9,
+    category: "dia-a-dia",
+    subcategory: "Utilidades",
+    description: "Mantém a temperatura por até 12 horas",
+    variations: [
+      { type: "cor", label: "Cor", options: ["Preto", "Branco", "Azul"] },
+    ],
+    inStock: true,
+    pointsUnilevel: 12,
+    pointsBinary: 3,
+  },
+  // Impressos > Catálogos
+  {
+    id: "p24",
+    name: "Catálogo de Produtos",
+    price: 15.0,
+    category: "impressos",
+    subcategory: "Catálogos",
+    description: "Catálogo completo com todos os produtos da linha",
+    inStock: true,
+    pointsUnilevel: 3,
     pointsBinary: 1,
+  },
+  // Impressos > Material de Apoio
+  {
+    id: "p25",
+    name: "Kit Folders Apresentação",
+    price: 29.9,
+    category: "impressos",
+    subcategory: "Material de Apoio",
+    description: "10 folders para apresentação do negócio",
+    inStock: true,
+    pointsUnilevel: 6,
+    pointsBinary: 1,
+  },
+  // Impressos > Cartões
+  {
+    id: "p26",
+    name: "Cartões de Visita (100un)",
+    price: 35.0,
+    category: "impressos",
+    subcategory: "Cartões",
+    description: "Cartões personalizados com seus dados",
+    inStock: false,
+    pointsUnilevel: 7,
+    pointsBinary: 2,
   },
 ];
