@@ -295,7 +295,7 @@ export function CartDrawer({
                 <div className="flex gap-1.5">
                   <Input
                     value={cep}
-                    onChange={(e) => { setCep(formatCep(e.target.value)); setShippingError(""); }}
+                    onChange={(e) => { setCep(formatCep(e.target.value)); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); }}
                     placeholder="00000-000"
                     className="h-8 text-xs flex-1"
                     maxLength={9}
@@ -305,8 +305,29 @@ export function CartDrawer({
                   </Button>
                 </div>
                 {shippingError && <p className="text-[11px] text-destructive mt-0.5">{shippingError}</p>}
-                {shippingLabel && shippingCost !== null && (
-                  <p className="text-[11px] text-muted-foreground mt-1">{shippingLabel}</p>
+                {shippingOptions.length > 0 && (
+                  <div className="mt-2 space-y-1.5">
+                    {shippingOptions.map((opt) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => setSelectedShipping(opt.id)}
+                        className={`w-full flex items-center gap-2 rounded border px-2.5 py-2 text-left transition-colors ${
+                          selectedShipping === opt.id
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-muted-foreground/30"
+                        }`}
+                      >
+                        <span className={selectedShipping === opt.id ? "text-primary" : "text-muted-foreground"}>{opt.icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <span className={`text-[11px] font-semibold ${selectedShipping === opt.id ? "text-primary" : "text-foreground"}`}>{opt.label}</span>
+                          <span className="text-[10px] text-muted-foreground ml-1.5">{opt.detail}</span>
+                        </div>
+                        <span className={`text-[11px] font-bold ${selectedShipping === opt.id ? "text-primary" : "text-foreground"}`}>
+                          {opt.cost === 0 ? "Grátis" : formatCurrency(opt.cost)}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
