@@ -93,11 +93,25 @@ export default function Checkout() {
     setEditingAddress(false);
   };
 
-  const handleConfirmOrder = () => {
-    toast.success("Pedido realizado com sucesso!", {
-      description: `Total: ${formatCurrency(finalTotal)}`,
+  const handleGoToPayment = () => {
+    navigate("/app/pedidos/pagamento", {
+      state: {
+        items,
+        subtotal,
+        coupon,
+        couponDiscount,
+        voucher,
+        voucherDiscount,
+        shippingCost,
+        shippingLabel,
+        pickupUnit,
+        grandTotal,
+        finalTotal,
+        paymentMethod,
+        pixDiscount,
+        cep: address.cep,
+      },
     });
-    navigate("/app/pedidos");
   };
 
   return (
