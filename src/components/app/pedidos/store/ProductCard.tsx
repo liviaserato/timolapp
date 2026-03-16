@@ -125,30 +125,30 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         )}
 
         {/* Quantity + Add */}
-        <div className="mt-auto pt-2 flex items-center gap-2">
-          <div className="flex items-center border border-border rounded">
+        <div className="mt-auto pt-2 flex items-center gap-1.5">
+          <div className="flex items-center border border-border rounded shrink-0">
             <button
               onClick={() => setQty((q) => Math.max(1, q - 1))}
-              className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              className="h-7 w-6 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
             >
-              <Minus className="h-3.5 w-3.5" />
+              <Minus className="h-3 w-3" />
             </button>
-            <span className="w-8 text-center text-sm font-semibold text-foreground">{qty}</span>
+            <span className="w-5 text-center text-xs font-semibold text-foreground">{qty}</span>
             <button
               onClick={() => setQty((q) => q + 1)}
-              className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              className="h-7 w-6 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-3 w-3" />
             </button>
           </div>
           <Button
             size="sm"
-            className="flex-1 gap-1.5 text-xs h-8"
+            className="flex-1 min-w-0 gap-1 text-[11px] h-7 px-2"
             disabled={!product.inStock}
             onClick={handleAdd}
           >
-            <ShoppingCart className="h-3.5 w-3.5" />
-            Adicionar
+            <ShoppingCart className="h-3 w-3 shrink-0" />
+            <span className="truncate">Adicionar</span>
           </Button>
         </div>
       </div>
