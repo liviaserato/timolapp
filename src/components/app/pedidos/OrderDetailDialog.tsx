@@ -153,7 +153,7 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
       <Dialog open={!!order} onOpenChange={(open) => !open && onClose()}>
         <DialogContent className="max-w-sm max-h-[85vh] overflow-y-auto border-primary [&>button]:text-primary-foreground [&>button]:hover:text-primary-foreground/80">
           {/* Blue header area */}
-          <div className="-mx-6 -mt-6 px-6 pt-6 pb-3 bg-primary rounded-t-lg">
+          <div className="-mx-6 -mt-6 px-6 pt-6 pb-3 bg-primary">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-primary-foreground">
                 <Package className="h-5 w-5 shrink-0" />
