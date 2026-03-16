@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import { categories, products } from "@/data/mock-products";
 import { useCart } from "@/hooks/useCart";
@@ -25,12 +26,15 @@ function formatCurrency(v: number) {
 export default function RealizarPedido() {
   const navigate = useNavigate();
   const cart = useCart();
+  const isMobile = useIsMobile();
 
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("todos");
   const [searchTerm, setSearchTerm] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
-  const [layout, setLayout] = useState<"grid" | "list">("grid");
+  const [layoutOverride, setLayoutOverride] = useState<"grid" | "list" | null>(null);
+
+  const layout = layoutOverride ?? (isMobile ? "list" : "grid");
 
   const activeCategory = categories.find((c) => c.id === selectedCategory);
   const subcategories = activeCategory?.subcategories ?? [];
@@ -93,7 +97,7 @@ export default function RealizarPedido() {
         </div>
         <div className="flex items-center border border-border rounded-md shrink-0">
           <button
-            onClick={() => setLayout("grid")}
+            onClick={() => setLayoutOverride("grid")}
             className={cn(
               "h-9 w-9 flex items-center justify-center transition-colors rounded-l-md",
               layout === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
@@ -102,7 +106,7 @@ export default function RealizarPedido() {
             <LayoutGrid className="h-4 w-4" />
           </button>
           <button
-            onClick={() => setLayout("list")}
+            onClick={() => setLayoutOverride("list")}
             className={cn(
               "h-9 w-9 flex items-center justify-center transition-colors rounded-r-md",
               layout === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
