@@ -196,7 +196,7 @@ export default function OrderPayment() {
         finalTotal={finalTotal}
         paymentMethod={paymentMethod}
         pickupUnit={pickupUnit}
-        onChangePayment={() => setScreen("form")}
+        onChangePayment={() => navigate(-1)}
       />
     );
   }
