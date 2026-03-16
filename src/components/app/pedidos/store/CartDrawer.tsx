@@ -39,6 +39,7 @@ export function CartDrawer({
 }: CartDrawerProps) {
   const navigate = useNavigate();
 
+  const [showCoupon, setShowCoupon] = useState(false);
   const [coupon, setCoupon] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [couponDiscount, setCouponDiscount] = useState(0);
