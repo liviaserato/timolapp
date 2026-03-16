@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { categories, products } from "@/data/mock-products";
 import { useCart } from "@/hooks/useCart";
 import { ProductCard } from "@/components/app/pedidos/store/ProductCard";
+import { ProductCardHorizontal } from "@/components/app/pedidos/store/ProductCardHorizontal";
 import { CartDrawer } from "@/components/app/pedidos/store/CartDrawer";
 
 function formatCurrency(v: number) {
