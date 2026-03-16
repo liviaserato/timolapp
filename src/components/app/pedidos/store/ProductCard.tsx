@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Plus, Minus, ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -37,6 +37,24 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   });
 
   const img = productImages[product.name];
+  const actionRowRef = useRef<HTMLDivElement | null>(null);
+  const [useCompactAddButton, setUseCompactAddButton] = useState(false);
+
+  useEffect(() => {
+    const element = actionRowRef.current;
+    if (!element || typeof ResizeObserver === "undefined") return;
+
+    const updateLayout = () => {
+      setUseCompactAddButton(element.clientWidth < 220);
+    };
+
+    updateLayout();
+
+    const observer = new ResizeObserver(updateLayout);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
 
   const handleAdd = () => {
     onAddToCart(product.id, product.name, product.price, qty, { ...selections });
@@ -45,7 +63,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
   return (
     <div className={cn(
-      "flex flex-col rounded-lg border border-border bg-card overflow-hidden transition-shadow hover:shadow-md @container",
+      "flex flex-col rounded-lg border border-border bg-card overflow-hidden transition-shadow hover:shadow-md",
       !product.inStock && "opacity-60"
     )}>
       {/* Image */}
@@ -125,7 +143,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         )}
 
         {/* Quantity + Add */}
-        <div className="mt-auto pt-2 flex items-center gap-1.5">
+        <div ref={actionRowRef} className="mt-auto pt-2 flex items-center gap-1.5">
           <div className={cn("flex items-center border border-border rounded shrink-0", !product.inStock && "opacity-40 pointer-events-none")}>
             <button
               onClick={() => setQty((q) => Math.max(1, q - 1))}
@@ -149,9 +167,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             disabled={!product.inStock}
             onClick={handleAdd}
           >
-            <Plus className="h-3 w-3 shrink-0 @[180px]:hidden" />
+            <Plus className={cn("h-3 w-3 shrink-0", !useCompactAddButton && "hidden")} />
             <ShoppingCart className="h-3 w-3 shrink-0" />
-            <span className="truncate hidden @[180px]:inline">Adicionar</span>
+            <span className={cn("truncate", useCompactAddButton && "hidden")}>Adicionar</span>
           </Button>
         </div>
       </div>
