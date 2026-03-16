@@ -54,11 +54,13 @@ export function CartDrawer({
   const [voucherError, setVoucherError] = useState("");
 
   const [cep, setCep] = useState("");
-  const [shippingCost, setShippingCost] = useState<number | null>(null);
+  const [shippingOptions, setShippingOptions] = useState<{ id: string; label: string; detail: string; cost: number; icon: React.ReactNode }[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<string | null>(null);
   const [shippingLoading, setShippingLoading] = useState(false);
   const [shippingError, setShippingError] = useState("");
-  const [shippingLabel, setShippingLabel] = useState("");
 
+  const shippingCost = shippingOptions.find(o => o.id === selectedShipping)?.cost ?? null;
+  const shippingLabel = shippingOptions.find(o => o.id === selectedShipping)?.label ?? "";
   const totalDiscounts = couponDiscount + voucherDiscount;
   const shipping = shippingCost ?? 0;
   const grandTotal = Math.max(0, totalPrice - totalDiscounts + shipping);
