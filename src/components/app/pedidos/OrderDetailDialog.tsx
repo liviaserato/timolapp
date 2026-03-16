@@ -155,21 +155,20 @@ export function OrderDetailDialog({ order, onClose }: OrderDetailDialogProps) {
           {/* Blue header area */}
           <div className="-mx-6 -mt-6 px-6 pt-6 pb-3 bg-primary">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-primary-foreground">
+              <DialogTitle className="flex items-center gap-2 text-primary-foreground pr-6">
                 <Package className="h-5 w-5 shrink-0" />
                 <span>Pedido {order.number}</span>
+                <span className={cn(
+                  "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ml-auto shrink-0",
+                  cfg.textColor, cfg.bgColor, cfg.borderColor
+                )}>
+                  {cfg.label}
+                </span>
               </DialogTitle>
             </DialogHeader>
 
-            {/* Date + Status badge row */}
-            <div className="mt-1 flex items-center justify-between pl-7">
+            <div className="mt-1 pl-7">
               <span className="text-[13px] text-primary-foreground/70">Data: {formatDate(order.date)}</span>
-              <span className={cn(
-                "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border",
-                cfg.textColor, cfg.bgColor, cfg.borderColor
-              )}>
-                {cfg.label}
-              </span>
             </div>
           </div>
 
