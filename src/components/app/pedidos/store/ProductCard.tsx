@@ -37,24 +37,11 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   });
 
   const img = productImages[product.name];
-  const actionRowRef = useRef<HTMLDivElement | null>(null);
-  const [useCompactAddButton, setUseCompactAddButton] = useState(false);
 
-  useEffect(() => {
-    const element = actionRowRef.current;
-    if (!element || typeof ResizeObserver === "undefined") return;
-
-    const updateLayout = () => {
-      setUseCompactAddButton(element.clientWidth < 220);
-    };
-
-    updateLayout();
-
-    const observer = new ResizeObserver(updateLayout);
-    observer.observe(element);
-
-    return () => observer.disconnect();
-  }, []);
+  const handleAdd = () => {
+    onAddToCart(product.id, product.name, product.price, qty, { ...selections });
+    setQty(1);
+  };
 
   const handleAdd = () => {
     onAddToCart(product.id, product.name, product.price, qty, { ...selections });
