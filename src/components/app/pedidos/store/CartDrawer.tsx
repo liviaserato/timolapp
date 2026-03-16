@@ -274,13 +274,20 @@ export function CartDrawer({
                       <Ticket className="h-3 w-3" /> Voucher <ChevronUp className="h-3 w-3" />
                     </button>
                     <div className="flex gap-1.5">
-                      <Input
-                        value={voucher}
-                        onChange={(e) => { setVoucher(e.target.value.toUpperCase()); setVoucherError(""); }}
-                        placeholder="Código do voucher"
-                        className="h-8 text-xs flex-1"
-                        autoFocus
-                      />
+                      <div className="relative flex-1">
+                        <Input
+                          value={voucher}
+                          onChange={(e) => { setVoucher(e.target.value.toUpperCase()); setVoucherError(""); }}
+                          placeholder="Código do voucher"
+                          className="h-8 text-xs pr-7"
+                          autoFocus
+                        />
+                        {voucher && (
+                          <button onClick={() => { setVoucher(""); setVoucherError(""); }} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                            <X className="h-3 w-3" />
+                          </button>
+                        )}
+                      </div>
                       <Button size="sm" variant="outline" className="h-8 text-xs px-3" onClick={handleApplyVoucher} disabled={voucherLoading || !voucher.trim()}>
                         {voucherLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
                       </Button>
