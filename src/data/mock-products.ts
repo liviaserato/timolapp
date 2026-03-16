@@ -10,6 +10,7 @@ export interface Product {
   image?: string;
   price: number;
   oldPrice?: number;
+  activatable?: boolean;
   category: string;
   subcategory: string;
   description?: string;
