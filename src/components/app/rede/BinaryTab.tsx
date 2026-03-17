@@ -402,11 +402,11 @@ function LegTable({ title, members, onNavigate }: { title: string; members: Netw
                   const isDirect = m.type === "direct";
                   const hasChildren = !!(m.left || m.right);
                   return (
-                    <TableRow key={m.id} className={cn(hasChildren && "cursor-pointer hover:bg-accent/40")} onClick={() => hasChildren && onNavigate(m.id)}>
+                    <TableRow key={m.id} className="cursor-pointer hover:bg-accent/40" onClick={() => onNavigate(m.id)}>
                       <TableCell className="px-2 py-1.5">
                         <div className={cn("h-2 w-2 rounded-full mx-auto", m.active ? "bg-success" : "bg-destructive")} />
                       </TableCell>
-                      <TableCell className={cn("px-2 py-1.5 text-[11px] tabular-nums", isDirect ? "font-bold" : "font-normal", hasChildren && "text-primary underline")}>
+                      <TableCell className={cn("px-2 py-1.5 text-[11px] tabular-nums", isDirect ? "font-bold" : "font-normal")}>
                         {m.id}
                       </TableCell>
                       <TableCell className={cn("px-2 py-1.5 text-[11px] truncate max-w-[100px]", isDirect ? "font-bold" : "font-normal")}>
