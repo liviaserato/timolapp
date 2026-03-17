@@ -174,9 +174,9 @@ export function BinaryTab() {
         {/* ═══ LEFT COLUMN: Tree ═══ */}
         <div className="space-y-3">
           {/* Tree drawing */}
-          <Card>
+          <Card className="min-h-[340px]">
             <CardContent className="px-2 py-4">
-              <h2 className="text-base font-bold text-foreground text-center mb-1">Rede Binária</h2>
+              <h2 className="text-base font-bold text-foreground text-center mb-4">Rede Binária</h2>
               {navHistory.length > 0 && (
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <Button variant="ghost" size="sm" onClick={navigateBack} className="gap-1 text-xs h-7 px-2">
