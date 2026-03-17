@@ -416,15 +416,7 @@ function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayIndex: n
         )}
 
         <div className="p-2.5 space-y-1.5 flex-1 flex flex-col">
-          <div className="flex flex-col gap-1">
-            <div className="flex justify-end">
-              <Badge className={`text-[10px] gap-1 shrink-0 ${cfg.badgeText} ${cfg.badgeBg} ${cfg.badgeBorder} border`}>
-                {cfg.icon}
-                {cfg.label}
-              </Badge>
-            </div>
-            <p className="text-xs font-semibold text-foreground leading-snug">{event.title}</p>
-          </div>
+          <p className="text-xs font-semibold text-foreground leading-snug">{event.title}</p>
 
           <div className="flex flex-col gap-0.5 text-[11px] text-muted-foreground">
             <span className="flex items-center gap-1">
