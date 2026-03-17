@@ -141,57 +141,10 @@ export function BinaryTab() {
     }
   }
 
-  /* ── Mobile layout ── */
-  if (isMobile) {
-    return (
-      <div className="space-y-4">
-        {/* Navigation */}
-        {rootId !== mockBinaryTree.id && (
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={navigateBack} className="gap-1 text-xs h-7 px-2">← Voltar</Button>
-            <Button variant="ghost" size="sm" onClick={resetToRoot} className="gap-1 text-xs h-7 px-2">
-              <RotateCcw className="h-3 w-3" /> Início
-            </Button>
-          </div>
-        )}
-
-        {/* Mobile tree cards */}
-        <div className="space-y-2">
-          <MobileNodeCard node={currentRoot} label="Você" onNavigate={navigateTo} isRoot />
-          {currentRoot.left && <MobileNodeCard node={currentRoot.left} label="Esquerda" onNavigate={navigateTo} />}
-          {currentRoot.right && <MobileNodeCard node={currentRoot.right} label="Direita" onNavigate={navigateTo} />}
-        </div>
-
-        {/* Summary cards */}
-        <div className="grid grid-cols-2 gap-2">
-          <SummaryCard side="left" volume={leftVolume} total={leftMembers.length} active={leftActive} inactive={leftMembers.length - leftActive} />
-          <SummaryCard side="right" volume={rightVolume} total={rightMembers.length} active={rightActive} inactive={rightMembers.length - rightActive} />
-        </div>
-
-        {/* Diagnostics */}
-        <DiagnosticCard weakerSide={weakerSide} diff={diff} />
-
-        {/* Search */}
-        <SearchInput value={searchId} onChange={setSearchId} onKeyDown={handleSearchKeyDown} />
-
-        {/* Sort */}
-        <SortSelector value={sortMode} onChange={setSortMode} />
-
-        {/* Tables */}
-        <LegTable title="Perna Esquerda" members={filteredLeft} onNavigate={navigateToId} />
-        <LegTable title="Perna Direita" members={filteredRight} onNavigate={navigateToId} />
-
-        {/* Bonus */}
-        <BonusSection onOpen={() => setBonusModalOpen(true)} />
-        <BonusDialog open={bonusModalOpen} onOpenChange={setBonusModalOpen} />
-      </div>
-    );
-  }
-
-  /* ── Desktop layout: 2 columns ── */
+  /* ── Layout: tree always visible, stacked on mobile/tablet, 2-col on lg+ ── */
   return (
     <div className="space-y-4">
-      <div className="grid gap-4" style={{ gridTemplateColumns: "35% 1fr" }}>
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-[35%_1fr]">
 
         {/* ═══ LEFT COLUMN: Tree ═══ */}
         <div className="space-y-3">
