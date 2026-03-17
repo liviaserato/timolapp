@@ -258,9 +258,41 @@ export default function Treinamentos() {
               <p className="text-sm text-muted-foreground text-center py-6">
                 Nenhum evento neste dia.
               </p>
+            ) : selectedDay === null ? (
+              /* Group by day with separator labels */
+              (() => {
+                const grouped = filteredEvents.reduce<Record<number, WeekEvent[]>>((acc, ev) => {
+                  (acc[ev.dayIndex] = acc[ev.dayIndex] || []).push(ev);
+                  return acc;
+                }, {});
+                return Object.entries(grouped)
+                  .sort(([a], [b]) => Number(a) - Number(b))
+                  .map(([dayIdx, events]) => {
+                    const idx = Number(dayIdx);
+                    const isToday = idx === todayIndex;
+                    return (
+                      <div key={dayIdx} className="flex gap-3">
+                        {/* Rotated day label */}
+                        <div className="flex flex-col items-center justify-center min-w-[36px] py-2">
+                          <span
+                            className={`text-[11px] font-bold uppercase tracking-wider whitespace-nowrap ${isToday ? "text-primary" : "text-muted-foreground/60"}`}
+                            style={{ writingMode: "vertical-rl", textOrientation: "mixed", transform: "rotate(180deg)" }}
+                          >
+                            {DAYS_FULL[idx]}
+                          </span>
+                        </div>
+                        <div className={`flex-1 space-y-2 border-l-2 pl-3 py-2 ${isToday ? "border-primary/40" : "border-border"}`}>
+                          {events.map((ev) => (
+                            <ScheduleEventRow key={ev.id} event={ev} showDay={false} todayIndex={todayIndex} />
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  });
+              })()
             ) : (
               filteredEvents.map((ev) => (
-                <ScheduleEventRow key={ev.id} event={ev} showDay={selectedDay === null} todayIndex={todayIndex} />
+                <ScheduleEventRow key={ev.id} event={ev} showDay={false} todayIndex={todayIndex} />
               ))
             )}
           </div>
