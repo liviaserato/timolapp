@@ -81,6 +81,10 @@ export default function OrderPaymentPending({ finalTotal, paymentMethod, pickupU
           {/* Order summary */}
           <div className="w-full bg-primary/5 rounded-xl p-4 space-y-2 text-sm">
             <DataRow
+              label="Pedido"
+              value={<span className="font-semibold">#TML-{Math.floor(100000 + Math.random() * 900000)}</span>}
+            />
+            <DataRow
               label="Valor Total"
               value={<span className="font-semibold">{formatCurrency(finalTotal)}</span>}
             />
