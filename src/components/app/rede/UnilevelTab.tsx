@@ -105,11 +105,31 @@ export function UnilevelTab({ searchQuery }: Props) {
   }, [filteredMembers]);
 
   // Summary stats
-  const totalMembers = allMembers.length;
-  const directMembers = allMembers.filter((m) => m.isDirect).length;
-  const activeMembers = allMembers.filter((m) => m.active).length;
+  const directList = allMembers.filter((m) => m.isDirect);
+  const directCount = directList.length;
+  const directActive = directList.filter((m) => m.active).length;
+  const directInactive = directCount - directActive;
+
+  const indirectList = allMembers.filter((m) => !m.isDirect);
+  const indirectCount = indirectList.length;
+  const indirectActive = indirectList.filter((m) => m.active).length;
+  const indirectInactive = indirectCount - indirectActive;
+
   const totalPoints = allMembers.reduce((sum, m) => sum + m.volume, 0);
-  const activeLevels = new Set(allMembers.map((m) => m.level)).size;
+
+  const today = new Date();
+  const isCurrentMonth = monthRef.getFullYear() === today.getFullYear() && monthRef.getMonth() === today.getMonth();
+
+  function prevMonth() {
+    setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
+  }
+  function nextMonth() {
+    if (!isCurrentMonth) {
+      setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+    }
+  }
+
+  const q = qualificationConfig[userQualification] ?? qualificationConfig.consultor;
 
   // ESC key resets
   useEffect(() => {
@@ -138,30 +158,70 @@ export function UnilevelTab({ searchQuery }: Props) {
     }
   }
 
-  const summaryItems = [
-    { label: "Total na Rede", value: totalMembers.toString(), icon: Users },
-    { label: "Diretos", value: directMembers.toString(), icon: UserCheck },
-    { label: "Pontos no Período", value: totalPoints.toLocaleString("pt-BR"), icon: Target },
-    { label: "Níveis Ativos", value: `${activeLevels} de ${maxLevel}`, icon: Layers },
-  ];
-
   return (
     <div className="space-y-4">
       {/* ═══ Summary cards ═══ */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {summaryItems.map((item) => (
-          <Card key={item.label}>
-            <CardContent className="p-3 flex items-center gap-3">
-              <div className="rounded-lg bg-primary/10 p-2 shrink-0">
-                <item.icon className="h-4 w-4 text-primary" />
+        {/* Diretos */}
+        <Card>
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
+              <UserCheck className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] text-muted-foreground truncate">Diretos</p>
+              <div className="flex items-baseline gap-1.5">
+                <p className="text-sm font-bold">{directCount}</p>
+                <span className="text-[10px] text-success">{directActive} ativos</span>
+                <span className="text-[10px] text-destructive">{directInactive} inat.</span>
               </div>
-              <div className="min-w-0">
-                <p className="text-[11px] text-muted-foreground truncate">{item.label}</p>
-                <p className="text-sm font-bold truncate">{item.value}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Pontos no período */}
+        <Card>
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
+              <Target className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] text-muted-foreground truncate">Pontos no Período</p>
+              <p className="text-sm font-bold truncate">{totalPoints.toLocaleString("pt-BR")}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Total indiretos */}
+        <Card>
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
+              <Users className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] text-muted-foreground truncate">Total Indiretos</p>
+              <div className="flex items-baseline gap-1.5">
+                <p className="text-sm font-bold">{indirectCount}</p>
+                <span className="text-[10px] text-success">{indirectActive} ativos</span>
+                <span className="text-[10px] text-destructive">{indirectInactive} inat.</span>
               </div>
-            </CardContent>
-          </Card>
-        ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Qualificação */}
+        <Card>
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
+              <Award className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] text-muted-foreground truncate">Qualificação</p>
+              <p className="text-sm font-bold truncate" style={{ color: q.color }}>{q.label}</p>
+              <p className="text-[10px] text-muted-foreground">{maxLevel}º nível</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* ═══ Filters ═══ */}
