@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Hand, DollarSign, Target, CalendarDays, Newspaper, ShoppingCart, Users, BookOpen, GraduationCap } from "lucide-react";
+import { Hand, DollarSign, Target, Newspaper, ShoppingCart, Users, BookOpen, GraduationCap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
