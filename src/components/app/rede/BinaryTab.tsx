@@ -26,15 +26,6 @@ function findNodeById(node: NetworkMember | null | undefined, id: string): Netwo
   return findNodeById(node.left, id) || findNodeById(node.right, id);
 }
 
-function collectAllIds(node: NetworkMember | null | undefined): { id: string; name: string }[] {
-  if (!node) return [];
-  return [
-    { id: node.id, name: node.name },
-    ...collectAllIds(node.left),
-    ...collectAllIds(node.right),
-  ];
-}
-
 type SortMode = "default" | "points" | "date" | "status";
 
 function sortMembers(members: NetworkMember[], mode: SortMode): NetworkMember[] {
@@ -49,7 +40,7 @@ function sortMembers(members: NetworkMember[], mode: SortMode): NetworkMember[] 
         if (a.active === b.active) return b.volume - a.volume;
         return a.active ? -1 : 1;
       });
-    default: // ativos primeiro, depois por pontos
+    default:
       return sorted.sort((a, b) => {
         if (a.active === b.active) return b.volume - a.volume;
         return a.active ? -1 : 1;
@@ -131,34 +122,18 @@ export function BinaryTab() {
   if (isMobile) {
     return (
       <div className="space-y-4">
-        {/* ID selector */}
-        <div className="flex items-center gap-2">
-          <Select value={rootId} onValueChange={(v) => { setNavHistory(prev => [...prev, rootId]); setRootId(v); }}>
-            <SelectTrigger className="h-8 text-xs flex-1">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {allNodes.map(n => (
-                <SelectItem key={n.id} value={n.id} className="text-xs">
-                  {n.id} — {n.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {rootId !== mockBinaryTree.id && (
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={resetToRoot}>
-              <RotateCcw className="h-3.5 w-3.5" />
+        {/* Navigation */}
+        {rootId !== mockBinaryTree.id && (
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={navigateBack} className="gap-1 text-xs h-7 px-2">← Voltar</Button>
+            <Button variant="ghost" size="sm" onClick={resetToRoot} className="gap-1 text-xs h-7 px-2">
+              <RotateCcw className="h-3 w-3" /> Início
             </Button>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Mobile tree cards */}
         <div className="space-y-2">
-          {navHistory.length > 0 && (
-            <Button variant="ghost" size="sm" onClick={navigateBack} className="gap-1 text-xs h-7 px-2">
-              ← Voltar
-            </Button>
-          )}
           <MobileNodeCard node={currentRoot} label="Você" onNavigate={navigateTo} isRoot />
           {currentRoot.left && <MobileNodeCard node={currentRoot.left} label="Esquerda" onNavigate={navigateTo} />}
           {currentRoot.right && <MobileNodeCard node={currentRoot.right} label="Direita" onNavigate={navigateTo} />}
@@ -180,13 +155,12 @@ export function BinaryTab() {
         <SortSelector value={sortMode} onChange={setSortMode} />
 
         {/* Tables */}
-        <LegTable title="Perna Esquerda" members={filteredLeft} onSelect={setSelectedMember} />
-        <LegTable title="Perna Direita" members={filteredRight} onSelect={setSelectedMember} />
+        <LegTable title="Perna Esquerda" members={filteredLeft} onNavigate={navigateToId} />
+        <LegTable title="Perna Direita" members={filteredRight} onNavigate={navigateToId} />
 
         {/* Bonus */}
         <BonusSection onOpen={() => setBonusModalOpen(true)} />
         <BonusDialog open={bonusModalOpen} onOpenChange={setBonusModalOpen} />
-        <MemberDetailDialog member={selectedMember} open={!!selectedMember} onOpenChange={(o) => !o && setSelectedMember(null)} />
       </div>
     );
   }
@@ -198,24 +172,10 @@ export function BinaryTab() {
 
         {/* ═══ LEFT COLUMN: Tree ═══ */}
         <div className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">Rede Binária</h2>
-
-          {/* ID selector + reset */}
-          <div className="flex items-center gap-2">
-            <Select value={rootId} onValueChange={(v) => { setNavHistory(prev => [...prev, rootId]); setRootId(v); }}>
-              <SelectTrigger className="h-8 text-xs flex-1">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {allNodes.map(n => (
-                  <SelectItem key={n.id} value={n.id} className="text-xs">
-                    {n.id} — {n.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-foreground">Rede Binária</h2>
             {rootId !== mockBinaryTree.id && (
-              <Button variant="ghost" size="sm" className="h-8 gap-1 text-xs shrink-0" onClick={resetToRoot}>
+              <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs shrink-0" onClick={resetToRoot}>
                 <RotateCcw className="h-3 w-3" /> Voltar ao início
               </Button>
             )}
@@ -236,17 +196,14 @@ export function BinaryTab() {
 
                   {(currentRoot.left || currentRoot.right) && (
                     <>
-                      {/* Connector root → children */}
                       <svg width="240" height="32" className="shrink-0">
                         <line x1="120" y1="0" x2="60" y2="32" stroke="hsl(var(--border))" strokeWidth="1.5" />
                         <line x1="120" y1="0" x2="180" y2="32" stroke="hsl(var(--border))" strokeWidth="1.5" />
                       </svg>
 
-                      {/* Children */}
                       <div className="flex gap-8">
                         <div className="flex flex-col items-center">
                           <BinaryTreeNode node={currentRoot.left ?? null} side="left" onSelect={navigateTo} hasChildren={!!(currentRoot.left?.left || currentRoot.left?.right)} />
-
                           {currentRoot.left && (currentRoot.left.left || currentRoot.left.right) && (
                             <>
                               <svg width="120" height="28" className="shrink-0">
@@ -263,7 +220,6 @@ export function BinaryTab() {
 
                         <div className="flex flex-col items-center">
                           <BinaryTreeNode node={currentRoot.right ?? null} side="right" onSelect={navigateTo} hasChildren={!!(currentRoot.right?.left || currentRoot.right?.right)} />
-
                           {currentRoot.right && (currentRoot.right.left || currentRoot.right.right) && (
                             <>
                               <svg width="120" height="28" className="shrink-0">
@@ -288,9 +244,6 @@ export function BinaryTab() {
 
           {/* Search */}
           <SearchInput value={searchId} onChange={setSearchId} onKeyDown={handleSearchKeyDown} inputRef={searchRef} />
-
-          {/* Diagnostic */}
-          <DiagnosticCard weakerSide={weakerSide} diff={diff} />
         </div>
 
         {/* ═══ RIGHT COLUMN: Analytics ═══ */}
@@ -306,22 +259,23 @@ export function BinaryTab() {
             <SummaryCard side="left" volume={leftVolume} total={leftMembers.length} active={leftActive} inactive={leftMembers.length - leftActive} />
             <SummaryCard side="right" volume={rightVolume} total={rightMembers.length} active={rightActive} inactive={rightMembers.length - rightActive} />
           </div>
-
-          {/* Sort */}
-          <SortSelector value={sortMode} onChange={setSortMode} />
-
-          {/* Tables side by side */}
-          <div className="grid grid-cols-2 gap-3">
-            <LegTable title="Perna Esquerda" members={filteredLeft} onSelect={setSelectedMember} />
-            <LegTable title="Perna Direita" members={filteredRight} onSelect={setSelectedMember} />
-          </div>
         </div>
+      </div>
+
+      {/* ═══ FULL WIDTH: Diagnostic ═══ */}
+      <DiagnosticCard weakerSide={weakerSide} diff={diff} />
+
+      {/* ═══ FULL WIDTH: Sort + Tables ═══ */}
+      <SortSelector value={sortMode} onChange={setSortMode} />
+
+      <div className="grid grid-cols-2 gap-3">
+        <LegTable title="Perna Esquerda" members={filteredLeft} onNavigate={navigateToId} />
+        <LegTable title="Perna Direita" members={filteredRight} onNavigate={navigateToId} />
       </div>
 
       {/* ═══ Bottom: Bonus section ═══ */}
       <BonusSection onOpen={() => setBonusModalOpen(true)} />
       <BonusDialog open={bonusModalOpen} onOpenChange={setBonusModalOpen} />
-      <MemberDetailDialog member={selectedMember} open={!!selectedMember} onOpenChange={(o) => !o && setSelectedMember(null)} />
     </div>
   );
 }
@@ -411,7 +365,7 @@ function SortSelector({ value, onChange }: { value: SortMode; onChange: (v: Sort
   );
 }
 
-function LegTable({ title, members, onSelect }: { title: string; members: NetworkMember[]; onSelect: (m: NetworkMember) => void }) {
+function LegTable({ title, members, onNavigate }: { title: string; members: NetworkMember[]; onNavigate: (id: string) => void }) {
   return (
     <Card>
       <CardHeader className="pb-2 px-4 pt-3">
@@ -439,12 +393,13 @@ function LegTable({ title, members, onSelect }: { title: string; members: Networ
                 {members.map((m) => {
                   const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
                   const isDirect = m.type === "direct";
+                  const hasChildren = !!(m.left || m.right);
                   return (
-                    <TableRow key={m.id} className="cursor-pointer hover:bg-accent/40" onClick={() => onSelect(m)}>
+                    <TableRow key={m.id} className={cn(hasChildren && "cursor-pointer hover:bg-accent/40")} onClick={() => hasChildren && onNavigate(m.id)}>
                       <TableCell className="px-2 py-1.5">
                         <div className={cn("h-2 w-2 rounded-full mx-auto", m.active ? "bg-success" : "bg-destructive")} />
                       </TableCell>
-                      <TableCell className={cn("px-2 py-1.5 text-[11px] tabular-nums", isDirect ? "font-bold" : "font-normal")}>
+                      <TableCell className={cn("px-2 py-1.5 text-[11px] tabular-nums", isDirect ? "font-bold" : "font-normal", hasChildren && "text-primary underline")}>
                         {m.id}
                       </TableCell>
                       <TableCell className={cn("px-2 py-1.5 text-[11px] truncate max-w-[100px]", isDirect ? "font-bold" : "font-normal")}>
