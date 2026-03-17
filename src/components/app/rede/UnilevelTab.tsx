@@ -19,7 +19,8 @@ import { MemberDetailDialog } from "./MemberDetailDialog";
 import { UnilevelOrgChart } from "./UnilevelOrgChart";
 import {
   mockUnilevelTree, flattenUnilevelTree, qualificationLevelLimits,
-  levelPointsTable, FlatUnilevelMember,
+  levelPointsTable, extraBonus, diamanteLevelTable, diamanteLabels, diamanteExtraBonus,
+  FlatUnilevelMember,
 } from "./unilevel-mock-data";
 import { useIsMobile } from "@/hooks/use-mobile";
 
