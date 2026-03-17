@@ -12,7 +12,7 @@ export const weekEvents: WeekEvent[] = [
   { id: "2", dayIndex: 0, time: "20:30", endTime: "21:30", title: "Treinamento: Primeiros Passos", type: "treinamento", host: "Maria Souza", youtubeUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw" },
   { id: "10", dayIndex: 1, time: "14:00", endTime: "15:00", title: "Live Especial – Novidades 2025", type: "especial", host: "Fernanda Lima", bannerUrl: bannerMock, youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
   { id: "11", dayIndex: 1, time: "16:00", endTime: "17:00", title: "Negócio: Expansão Regional", type: "negocio", host: "Carlos Lima", bannerUrl: bannerMock2, youtubeUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw" },
-  { id: "3", dayIndex: 1, time: "00:00", endTime: "23:59", title: "Aulas de produtos e franquias", type: "negocio", host: "Lucas Rocha", bannerUrl: bannerMock },
+  { id: "3", dayIndex: 1, time: "00:00", endTime: "23:59", title: "Aulas de produtos e franquias", type: "negocio", host: "Lucas Rocha", bannerUrl: bannerMock, youtubeUrl: "https://www.youtube.com/watch?v=Yn7y1w25tFY" },
   { id: "4", dayIndex: 1, time: "20:30", endTime: "21:30", title: "Construindo uma Rede Forte", type: "especial", host: "Ana Costa", bannerUrl: bannerMock2, youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
   { id: "5", dayIndex: 2, time: "19:00", endTime: "20:00", title: "Treinamento: Técnicas de Venda", type: "treinamento", host: "Pedro Alves", youtubeUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw" },
   { id: "6", dayIndex: 3, time: "19:00", endTime: "20:00", title: "Live Produto – Linha Premium", type: "produto", host: "João Silva" },
