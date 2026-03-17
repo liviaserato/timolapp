@@ -277,10 +277,10 @@ function DiagnosticCard({ weakerSide, diff }: { weakerSide: string; diff: number
         ) : (
           <>
             <p className="text-sm leading-snug">
-              A perna <strong>{weakerSide}</strong> está <strong>{diff.toLocaleString("pt-BR")} pontos</strong> abaixo da {strongerSide}.
+              A perna menor neste momento é a <strong>{weakerSide}</strong> com <strong>{diff.toLocaleString("pt-BR")} pontos</strong> a menos que a {strongerSide}.
             </p>
             <p className="text-[11px] text-muted-foreground mt-1.5">
-              Os bônus são gerados a partir da pontuação da perna menor. Todo o volume da perna menor pode gerar bônus para você.
+              Os bônus são gerados a partir da pontuação da perna menor.
             </p>
           </>
         )}
