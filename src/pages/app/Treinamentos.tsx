@@ -354,7 +354,7 @@ function TodayEventRow({ event, todayIndex }: { event: WeekEvent; todayIndex: nu
             <span>gravação</span>
           </Button>
         ) : (
-          <Badge variant="outline" className={`${cfg.badgeClass} text-[10px] gap-1`}>
+          <Badge variant="outline" className="text-[10px] gap-1 text-muted-foreground border-muted-foreground/30">
             {cfg.icon}
             {cfg.label}
           </Badge>
