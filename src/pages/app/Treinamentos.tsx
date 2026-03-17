@@ -397,6 +397,9 @@ function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex
         )}
       </div>
 
+      {/* Divider */}
+      <div className="w-px h-8 bg-border" />
+
       {/* Action / Badge */}
       <div className="shrink-0 hidden sm:flex">
         {status === "live" ? (
@@ -405,9 +408,10 @@ function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex
             Ao vivo
           </Badge>
         ) : status === "past" ? (
-          <Button size="sm" variant="ghost" className="gap-1 text-xs text-muted-foreground h-7 px-2">
-            <Play className="h-3 w-3" />
-            Gravação
+          <Button size="sm" variant="ghost" className="gap-0.5 text-xs text-muted-foreground h-auto px-2 flex flex-col items-center leading-tight py-1">
+            <Play className="h-3 w-3 mb-0.5" />
+            <span>Assistir</span>
+            <span>gravação</span>
           </Button>
         ) : (
           <Badge variant="outline" className={`${cfg.badgeClass} text-[10px] gap-1`}>
