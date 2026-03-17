@@ -56,7 +56,7 @@ export function BinaryTab() {
   const [navHistory, setNavHistory] = useState<string[]>([]);
   const [bonusModalOpen, setBonusModalOpen] = useState(false);
   const [searchId, setSearchId] = useState("");
-  const [sortMode, setSortMode] = useState<SortMode>("default");
+  const [sortMode, setSortMode] = useState<SortMode | "">("");
   const searchRef = useRef<HTMLInputElement>(null);
 
   const currentRoot = findNodeById(mockBinaryTree, rootId) ?? mockBinaryTree;
