@@ -49,6 +49,9 @@ const mockOrders = [
 ];
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const [indicarOpen, setIndicarOpen] = useState(false);
+
   return (
     <div>
       <header className="mb-4">
