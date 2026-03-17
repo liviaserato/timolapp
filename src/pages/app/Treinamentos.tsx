@@ -381,8 +381,8 @@ function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex
             {DAYS[event.dayIndex]}
           </span>
         )}
-        {dayDate !== null && (
-          <span className="text-lg font-bold text-foreground leading-tight">{dayDate}</span>
+        {dayDateLabel !== null && (
+          <span className="text-[10px] text-muted-foreground leading-tight">{dayDateLabel}</span>
         )}
         <span className="text-sm font-bold text-foreground flex items-center gap-1">
           <Clock className="h-3 w-3 text-muted-foreground" />
