@@ -70,28 +70,24 @@ export function ScheduleEventCard({ event, todayIndex }: { event: WeekEvent; tod
   const dateLabel = `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
 
   return (
-    <div className={`rounded-r-lg rounded-l-[2px] border border-border bg-card overflow-hidden border-l-[5px] ${cfg.borderColor} p-3 space-y-2 transition-colors`}>
+    <div className={`rounded-r-lg rounded-l-[2px] border border-border bg-card overflow-hidden border-l-[5px] ${cfg.borderColor} p-3 space-y-1.5 transition-colors`}>
       <div>
         <p className="text-sm font-semibold text-foreground leading-snug">{event.title}</p>
         {event.host && (
           <p className="text-xs text-muted-foreground leading-tight">com {event.host}</p>
         )}
       </div>
-      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-        <span className="flex items-center gap-1">
-          <Calendar className="h-3 w-3" />
-          {dateLabel}
-        </span>
-        <span className="flex items-center gap-1">
-          <Clock className="h-3 w-3" />
-          {event.time}{event.endTime ? ` – ${event.endTime}` : ""}
-        </span>
-      </div>
-      <div className="flex items-center justify-between">
-        <Badge className={`${cfg.badgeBg} ${cfg.badgeText} border ${cfg.badgeBorder} text-[10px] gap-1`}>
-          {cfg.icon}
-          {cfg.label}
-        </Badge>
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1">
+            <Calendar className="h-3 w-3" />
+            {dateLabel}
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            {event.time}
+          </span>
+        </div>
         {status === "live" ? (
           <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse">
             <Radio className="h-3 w-3" />
