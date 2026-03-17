@@ -53,6 +53,7 @@ const App = () => (
               <Route path="treinamentos" element={<Treinamentos />} />
               <Route path="treinamentos/ao-vivo/:eventId" element={<AssistirAoVivo />} />
               <Route path="suporte" element={<Suporte />} />
+              <Route path="rede" element={<Rede />} />
               <Route path="configuracoes/emails" element={<EmailPreviews />} />
               <Route path=":section" element={<SectionPlaceholder />} />
             </Route>
