@@ -242,8 +242,6 @@ export function BinaryTab() {
             </CardContent>
           </Card>
 
-          {/* Search */}
-          <SearchInput value={searchId} onChange={setSearchId} onKeyDown={handleSearchKeyDown} inputRef={searchRef} />
         </div>
 
         {/* ═══ RIGHT COLUMN: Analytics ═══ */}
