@@ -1,4 +1,5 @@
-import { Hand, DollarSign, Target, CalendarDays, Newspaper, ShoppingCart, Users, BookOpen } from "lucide-react";
+import { useMemo } from "react";
+import { Hand, DollarSign, Target, CalendarDays, Newspaper, ShoppingCart, Users, BookOpen, GraduationCap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
@@ -6,6 +7,10 @@ import { OrderSummaryCard } from "@/components/app/pedidos/OrderSummaryCard";
 import { IndicarFranquiaDialog } from "@/components/app/IndicarFranquiaDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { TodayCarousel } from "@/components/app/treinamentos/TodayCarousel";
+import { weekEvents } from "@/components/app/treinamentos/constants";
+import { getEventStatus } from "@/components/app/treinamentos/helpers";
+import { DAYS_FULL } from "@/components/app/treinamentos/constants";
 import {
   Carousel,
   CarouselContent,
@@ -52,6 +57,25 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [indicarOpen, setIndicarOpen] = useState(false);
 
+  const today = new Date();
+  const todayDow = today.getDay();
+  const todayIndex = todayDow === 0 ? 6 : todayDow - 1;
+
+  const todayEvents = useMemo(() => {
+    const events = weekEvents.filter((e) => e.dayIndex === todayIndex);
+    return events.sort((a, b) => {
+      const statusA = getEventStatus(a, todayIndex);
+      const statusB = getEventStatus(b, todayIndex);
+      const order = { live: 0, upcoming: 1, past: 2 } as const;
+      if (order[statusA] !== order[statusB]) return order[statusA] - order[statusB];
+      const [ah, am] = a.time.split(":").map(Number);
+      const [bh, bm] = b.time.split(":").map(Number);
+      return (ah * 60 + am) - (bh * 60 + bm);
+    });
+  }, [todayIndex]);
+
+  const todayLabel = `Hoje – ${DAYS_FULL[todayIndex]}, ${today.toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}`;
+
   return (
     <div>
       <header className="mb-4">
@@ -82,6 +106,15 @@ export default function Dashboard() {
             </div>
           </div>
         </DashboardCard>
+
+        {/* Treinamentos - Hoje */}
+        {todayEvents.length > 0 && (
+          <DashboardCard icon={GraduationCap} title={todayLabel}>
+            <div className="mt-2">
+              <TodayCarousel events={todayEvents} todayIndex={todayIndex} />
+            </div>
+          </DashboardCard>
+        )}
 
         {/* Movimentação de Pedidos */}
         <OrderSummaryCard orders={mockOrders} />
