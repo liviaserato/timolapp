@@ -18,6 +18,7 @@ import {
   Sparkles,
   Play,
   Radio,
+  Hourglass,
 } from "lucide-react";
 import iconWhatsapp from "@/assets/icon-logo-whatsapp.svg";
 
