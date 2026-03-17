@@ -9,6 +9,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BinaryTreeNode } from "./BinaryTreeNode";
+import { BinaryTreeLayout } from "./BinaryTreeLayout";
 import { mockBinaryTree, NetworkMember, qualificationConfig } from "./mock-data";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
