@@ -249,19 +249,18 @@ export function BinaryTab() {
         {/* ═══ RIGHT COLUMN: Analytics ═══ */}
         <div className="space-y-3">
           {/* Current root info */}
-          <div>
-            <h2 className="text-lg font-bold text-foreground">{currentRoot.name}</h2>
-            <p className="text-xs text-muted-foreground">ID {currentRoot.id}</p>
-          </div>
+          <Card className="bg-primary/5 border-primary/20">
+            <CardContent className="p-4 text-center">
+              <h2 className="text-lg font-bold text-foreground">{currentRoot.name}</h2>
+              <p className="text-xs text-muted-foreground">ID {currentRoot.id}</p>
+            </CardContent>
+          </Card>
 
           {/* Summary cards */}
           <div className="grid grid-cols-2 gap-3">
             <SummaryCard side="left" volume={leftVolume} total={leftMembers.length} active={leftActive} inactive={leftMembers.length - leftActive} />
             <SummaryCard side="right" volume={rightVolume} total={rightMembers.length} active={rightActive} inactive={rightMembers.length - rightActive} />
           </div>
-
-          {/* Diagnostic */}
-          <DiagnosticCard weakerSide={weakerSide} diff={diff} />
 
           {/* Search + Sort — equal width */}
           <div className="grid grid-cols-2 gap-3">
