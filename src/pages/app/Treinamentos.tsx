@@ -21,6 +21,7 @@ import {
   Hourglass,
 } from "lucide-react";
 import iconWhatsapp from "@/assets/icon-logo-whatsapp.svg";
+import bannerMock from "@/assets/banner-treinamento-mock.png";
 
 /* ------------------------------------------------------------------ */
 /*  Types & constants                                                  */
@@ -36,6 +37,7 @@ interface WeekEvent {
   title: string;
   type: EventType;
   host?: string;
+  bannerUrl?: string;      // banner image URL (from DB)
 }
 
 const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
@@ -44,8 +46,8 @@ const DAYS_FULL = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feir
 const weekEvents: WeekEvent[] = [
   { id: "1", dayIndex: 0, time: "08:50", endTime: "10:00", title: "Aulas de produtos e franquias", type: "produto", host: "Lucas Rocha" },
   { id: "2", dayIndex: 0, time: "20:30", endTime: "21:30", title: "Treinamento: Primeiros Passos", type: "treinamento", host: "Maria Souza" },
-  { id: "3", dayIndex: 1, time: "19:20", endTime: "20:20", title: "Aulas de produtos e franquias", type: "negocio", host: "Lucas Rocha" },
-  { id: "4", dayIndex: 1, time: "20:30", endTime: "21:30", title: "Live Especial: Fechamento de Mês", type: "especial", host: "Ana Costa" },
+  { id: "3", dayIndex: 1, time: "19:20", endTime: "20:20", title: "Aulas de produtos e franquias", type: "negocio", host: "Lucas Rocha", bannerUrl: bannerMock },
+  { id: "4", dayIndex: 1, time: "20:30", endTime: "21:30", title: "Live Especial: Fechamento de Mês", type: "especial", host: "Ana Costa", bannerUrl: bannerMock },
   { id: "5", dayIndex: 2, time: "19:00", endTime: "20:00", title: "Treinamento: Técnicas de Venda", type: "treinamento", host: "Pedro Alves" },
   { id: "6", dayIndex: 3, time: "19:00", endTime: "20:00", title: "Live Produto – Linha Premium", type: "produto", host: "João Silva" },
   { id: "7", dayIndex: 3, time: "20:30", endTime: "21:30", title: "Live Negócio – Marketing Digital", type: "negocio", host: "Carlos Lima" },
@@ -182,17 +184,19 @@ export default function Treinamentos() {
 
       {/* Today highlight */}
       {todayEvents.length > 0 && (
-        <Card className="border-primary/30 bg-gradient-to-br from-primary/5 via-primary/[0.02] to-transparent">
+        <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Star className="h-4 w-4 text-primary fill-primary/20" />
-              Hoje – {DAYS_FULL[todayIndex]}
+              Hoje – {DAYS_FULL[todayIndex]}, {formatDateBR(today)}
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {todayEvents.map((ev) => (
-              <TodayEventRow key={ev.id} event={ev} todayIndex={todayIndex} />
-            ))}
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {todayEvents.map((ev) => (
+                <TodayEventCard key={ev.id} event={ev} todayIndex={todayIndex} />
+              ))}
+            </div>
           </CardContent>
         </Card>
       )}
@@ -307,27 +311,26 @@ export default function Treinamentos() {
 /*  Today Event Row (enhanced)                                         */
 /* ------------------------------------------------------------------ */
 
-function TodayEventRow({ event, todayIndex }: { event: WeekEvent; todayIndex: number }) {
+function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayIndex: number }) {
   const cfg = typeConfig[event.type];
   const status = getEventStatus(event, todayIndex);
+  const eventDate = getDateForDayIndex(event.dayIndex);
+  const dateStr = eventDate.toLocaleDateString("pt-BR", { day: "2-digit", month: "long" });
 
   return (
-    <div className={`flex items-center gap-3 rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] ${cfg.borderColor} p-3 shadow-sm`}>
-      {/* Time */}
-      <div className="flex flex-col items-center min-w-[48px]">
-        <span className="text-sm font-bold text-foreground flex items-center gap-1">
-          <Clock className="h-3 w-3 text-muted-foreground" />
-          {event.time}
-        </span>
-      </div>
-
-      {/* Divider */}
-      <div className="w-px h-10 bg-border" />
+    <div className="rounded-lg border border-app-card-border bg-card overflow-hidden shadow-sm">
+      {/* Banner image */}
+      {event.bannerUrl && (
+        <img src={event.bannerUrl} alt={event.title} className="w-full aspect-[4/5] object-cover" />
+      )}
 
       {/* Info */}
-      <div className="flex-1 min-w-0">
+      <div className="p-3 space-y-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <p className="text-sm font-semibold text-foreground">{event.title}</p>
+          <Badge variant="outline" className={`text-[10px] gap-1 ${cfg.iconColor} border-current/30`}>
+            {cfg.icon}
+            {cfg.label}
+          </Badge>
           {status === "live" && (
             <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse">
               <Radio className="h-3 w-3" />
@@ -335,30 +338,43 @@ function TodayEventRow({ event, todayIndex }: { event: WeekEvent; todayIndex: nu
             </Badge>
           )}
         </div>
-        {event.host && (
-          <p className="text-xs text-muted-foreground mt-0.5">com {event.host}</p>
-        )}
-      </div>
 
-      {/* Action */}
-      <div className="shrink-0">
-        {status === "live" ? (
-          <Button size="sm" className="gap-1.5 text-xs">
-            <Play className="h-3.5 w-3.5" />
-            Entrar na aula
-          </Button>
-        ) : status === "past" ? (
-          <Button size="sm" variant="outline" className="gap-0.5 text-xs flex flex-col items-center leading-tight h-auto py-1.5 px-3">
-            <Play className="h-3.5 w-3.5 mb-0.5" />
-            <span>Assistir</span>
-            <span>gravação</span>
-          </Button>
-        ) : (
-          <Badge variant="outline" className="text-[10px] gap-1 text-muted-foreground border-muted-foreground/30">
-            {cfg.icon}
-            {cfg.label}
-          </Badge>
+        <p className="text-sm font-semibold text-foreground leading-snug">{event.title}</p>
+
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <Calendar className="h-3 w-3" />
+            {dateStr}
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            {event.time}{event.endTime ? ` – ${event.endTime}` : ""}
+          </span>
+        </div>
+
+        {event.host && (
+          <p className="text-xs text-muted-foreground">com {event.host}</p>
         )}
+
+        {/* Action */}
+        <div className="pt-1">
+          {status === "live" ? (
+            <Button size="sm" className="gap-1.5 text-xs w-full">
+              <Play className="h-3.5 w-3.5" />
+              Entrar na aula
+            </Button>
+          ) : status === "past" ? (
+            <Button size="sm" variant="outline" className="gap-1.5 text-xs w-full">
+              <Play className="h-3.5 w-3.5" />
+              Assistir gravação
+            </Button>
+          ) : (
+            <Button size="sm" variant="outline" className="gap-1.5 text-xs w-full" disabled>
+              <Hourglass className="h-3.5 w-3.5" />
+              Em breve
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
