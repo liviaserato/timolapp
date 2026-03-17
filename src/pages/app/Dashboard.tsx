@@ -57,6 +57,25 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [indicarOpen, setIndicarOpen] = useState(false);
 
+  const today = new Date();
+  const todayDow = today.getDay();
+  const todayIndex = todayDow === 0 ? 6 : todayDow - 1;
+
+  const todayEvents = useMemo(() => {
+    const events = weekEvents.filter((e) => e.dayIndex === todayIndex);
+    return events.sort((a, b) => {
+      const statusA = getEventStatus(a, todayIndex);
+      const statusB = getEventStatus(b, todayIndex);
+      const order = { live: 0, upcoming: 1, past: 2 } as const;
+      if (order[statusA] !== order[statusB]) return order[statusA] - order[statusB];
+      const [ah, am] = a.time.split(":").map(Number);
+      const [bh, bm] = b.time.split(":").map(Number);
+      return (ah * 60 + am) - (bh * 60 + bm);
+    });
+  }, [todayIndex]);
+
+  const todayLabel = `Hoje – ${DAYS_FULL[todayIndex]}, ${today.toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}`;
+
   return (
     <div>
       <header className="mb-4">
