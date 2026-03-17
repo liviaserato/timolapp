@@ -1,7 +1,11 @@
-import { Hand, DollarSign, Target, CalendarDays, Newspaper } from "lucide-react";
+import { Hand, DollarSign, Target, CalendarDays, Newspaper, ShoppingCart, Users, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { OrderSummaryCard } from "@/components/app/pedidos/OrderSummaryCard";
+import { IndicarFranquiaDialog } from "@/components/app/IndicarFranquiaDialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
