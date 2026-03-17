@@ -182,17 +182,19 @@ export default function Treinamentos() {
 
       {/* Today highlight */}
       {todayEvents.length > 0 && (
-        <Card className="border-primary/30 bg-gradient-to-br from-primary/5 via-primary/[0.02] to-transparent">
+        <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Star className="h-4 w-4 text-primary fill-primary/20" />
-              Hoje – {DAYS_FULL[todayIndex]}
+              Hoje – {DAYS_FULL[todayIndex]}, {formatDateBR(today)}
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {todayEvents.map((ev) => (
-              <TodayEventRow key={ev.id} event={ev} todayIndex={todayIndex} />
-            ))}
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {todayEvents.map((ev) => (
+                <TodayEventCard key={ev.id} event={ev} todayIndex={todayIndex} />
+              ))}
+            </div>
           </CardContent>
         </Card>
       )}
