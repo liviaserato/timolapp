@@ -289,7 +289,7 @@ export default function Treinamentos() {
               })()
             ) : (
               filteredEvents.map((ev) => (
-                <ScheduleEventRow key={ev.id} event={ev} showDay={false} todayIndex={todayIndex} />
+                <ScheduleEventRow key={ev.id} event={ev} showDay={false} showDate todayIndex={todayIndex} />
               ))
             )}
           </div>
