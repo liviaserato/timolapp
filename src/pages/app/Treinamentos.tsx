@@ -386,7 +386,7 @@ function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex
           <span className="text-xs text-muted-foreground leading-tight">{dayDateLabel}</span>
         )}
         <span className="text-sm font-bold text-foreground flex items-center gap-1">
-          <Clock className="h-3 w-3 text-muted-foreground" />
+          <Clock className="h-3 w-3 text-foreground" />
           {event.time}
         </span>
       </div>
