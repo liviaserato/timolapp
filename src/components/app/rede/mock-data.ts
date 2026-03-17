@@ -36,6 +36,7 @@ export const mockBinaryTree: NetworkMember = {
   joinDate: "2025-01-15",
   phone: "+55 11 99999-0000",
   city: "São Paulo, SP",
+  document: "123.456.789-00",
   type: "direct",
   left: {
     id: "200587",
