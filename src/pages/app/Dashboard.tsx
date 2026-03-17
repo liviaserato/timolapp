@@ -1,7 +1,11 @@
-import { Hand, DollarSign, Target, CalendarDays, Newspaper } from "lucide-react";
+import { Hand, DollarSign, Target, CalendarDays, Newspaper, ShoppingCart, Users, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { OrderSummaryCard } from "@/components/app/pedidos/OrderSummaryCard";
+import { IndicarFranquiaDialog } from "@/components/app/IndicarFranquiaDialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
@@ -45,6 +49,9 @@ const mockOrders = [
 ];
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const [indicarOpen, setIndicarOpen] = useState(false);
+
   return (
     <div>
       <header className="mb-4">
@@ -53,6 +60,29 @@ export default function Dashboard() {
       </header>
 
       <section className="flex flex-col gap-2">
+        {/* Novo Pedido */}
+        <DashboardCard icon={ShoppingCart} title="Novo Pedido">
+          <div className="mt-2 flex flex-col gap-3">
+            <p className="text-sm text-muted-foreground">
+              Acesse o catálogo, faça seu pedido ou indique uma nova franquia.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <Button className="gap-2 w-full" onClick={() => navigate("/app/pedidos/realizar")}>
+                <ShoppingCart className="h-4 w-4" />
+                Realizar Pedido
+              </Button>
+              <Button variant="outline" className="gap-2 w-full" onClick={() => setIndicarOpen(true)}>
+                <Users className="h-4 w-4" />
+                Indicar Franquia
+              </Button>
+              <Button variant="outline" className="gap-2 w-full truncate">
+                <BookOpen className="h-4 w-4 shrink-0" />
+                <span className="truncate">Catálogo Produtos</span>
+              </Button>
+            </div>
+          </div>
+        </DashboardCard>
+
         {/* Movimentação de Pedidos */}
         <OrderSummaryCard orders={mockOrders} />
 
@@ -124,6 +154,8 @@ export default function Dashboard() {
           </div>
         </DashboardCard>
       </section>
+
+      <IndicarFranquiaDialog open={indicarOpen} onOpenChange={setIndicarOpen} />
     </div>
   );
 }
