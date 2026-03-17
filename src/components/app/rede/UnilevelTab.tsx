@@ -162,19 +162,15 @@ export function UnilevelTab({ searchQuery }: Props) {
     <div className="space-y-4">
       {/* ═══ Summary cards ═══ */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {/* Diretos */}
+        {/* Qualificação */}
         <Card>
           <CardContent className="p-3 flex items-center gap-3">
             <div className="rounded-lg bg-primary/10 p-2 shrink-0">
-              <UserCheck className="h-4 w-4 text-primary" />
+              <Award className="h-4 w-4 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] text-muted-foreground truncate">Diretos</p>
-              <div className="flex items-baseline gap-1.5">
-                <p className="text-sm font-bold">{directCount}</p>
-                <span className="text-[10px] text-success">{directActive} ativos</span>
-                <span className="text-[10px] text-destructive">{directInactive} inat.</span>
-              </div>
+              <p className="text-sm font-bold truncate" style={{ color: q.color }}>{q.label}</p>
+              <p className="text-[10px] text-muted-foreground">{maxLevel}º nível</p>
             </div>
           </CardContent>
         </Card>
@@ -186,39 +182,40 @@ export function UnilevelTab({ searchQuery }: Props) {
               <Target className="h-4 w-4 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] text-muted-foreground truncate">Pontos no Período</p>
-              <p className="text-sm font-bold truncate">{totalPoints.toLocaleString("pt-BR")}</p>
+              <p className="text-sm font-bold truncate">{totalPoints.toLocaleString("pt-BR")} pontos</p>
+              <p className="text-[10px] text-muted-foreground">no período</p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Total indiretos */}
+        {/* Diretos */}
+        <Card>
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
+              <UserCheck className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold truncate">{directCount} diretos</p>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-[10px] text-success">{directActive} ativos</span>
+                <span className="text-[10px] text-destructive">{directInactive} inativos</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Indiretos */}
         <Card>
           <CardContent className="p-3 flex items-center gap-3">
             <div className="rounded-lg bg-primary/10 p-2 shrink-0">
               <Users className="h-4 w-4 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] text-muted-foreground truncate">Total Indiretos</p>
+              <p className="text-sm font-bold truncate">{indirectCount} indiretos</p>
               <div className="flex items-baseline gap-1.5">
-                <p className="text-sm font-bold">{indirectCount}</p>
                 <span className="text-[10px] text-success">{indirectActive} ativos</span>
-                <span className="text-[10px] text-destructive">{indirectInactive} inat.</span>
+                <span className="text-[10px] text-destructive">{indirectInactive} inativos</span>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Qualificação */}
-        <Card>
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
-              <Award className="h-4 w-4 text-primary" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-[11px] text-muted-foreground truncate">Qualificação</p>
-              <p className="text-sm font-bold truncate" style={{ color: q.color }}>{q.label}</p>
-              <p className="text-[10px] text-muted-foreground">{maxLevel}º nível</p>
             </div>
           </CardContent>
         </Card>
