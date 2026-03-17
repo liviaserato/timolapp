@@ -60,6 +60,29 @@ export default function Dashboard() {
       </header>
 
       <section className="flex flex-col gap-2">
+        {/* Novo Pedido */}
+        <DashboardCard icon={ShoppingCart} title="Novo Pedido">
+          <div className="mt-2 flex flex-col gap-3">
+            <p className="text-sm text-muted-foreground">
+              Acesse o catálogo, faça seu pedido ou indique uma nova franquia.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <Button className="gap-2 w-full" onClick={() => navigate("/app/pedidos/realizar")}>
+                <ShoppingCart className="h-4 w-4" />
+                Realizar Pedido
+              </Button>
+              <Button variant="outline" className="gap-2 w-full" onClick={() => setIndicarOpen(true)}>
+                <Users className="h-4 w-4" />
+                Indicar Franquia
+              </Button>
+              <Button variant="outline" className="gap-2 w-full truncate">
+                <BookOpen className="h-4 w-4 shrink-0" />
+                <span className="truncate">Catálogo Produtos</span>
+              </Button>
+            </div>
+          </div>
+        </DashboardCard>
+
         {/* Movimentação de Pedidos */}
         <OrderSummaryCard orders={mockOrders} />
 
