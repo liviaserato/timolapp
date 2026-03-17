@@ -451,6 +451,11 @@ function LevelTable({
 
 function LevelInfoCard({ userQualification, maxLevel }: { userQualification: string; maxLevel: number }) {
   const q = qualificationConfig[userQualification] ?? qualificationConfig.consultor;
+  const qualColumns = ["consultor", "distribuidor", "lider", "rubi", "esmeralda", "diamante"] as const;
+  const qualLabels: Record<string, string> = {
+    consultor: "Consultor", distribuidor: "Distribuidor", lider: "Líder",
+    rubi: "Rubi", esmeralda: "Esmeralda", diamante: "Diamante",
+  };
 
   return (
     <Card className="border-primary/20 bg-primary/[0.02]">
@@ -463,26 +468,78 @@ function LevelInfoCard({ userQualification, maxLevel }: { userQualification: str
           Sua qualificação atual é <strong className="text-foreground" style={{ color: q.color }}>{q.label}</strong>, permitindo visualizar e pontuar até o <strong className="text-foreground">nível {maxLevel}</strong>.
           {" "}Conforme você avança de qualificação, mais níveis da rede ficam disponíveis.
         </p>
-        <div className="rounded-lg bg-muted/50 p-3">
+
+        {/* Main table */}
+        <div className="rounded-lg bg-muted/50 p-3 overflow-x-auto mb-3">
           <Table className="w-full">
             <TableHeader>
               <TableRow>
-                <TableHead className="text-[10px] px-2 py-1 h-6">Nível</TableHead>
-                <TableHead className="text-[10px] px-2 py-1 h-6">%</TableHead>
-                <TableHead className="text-[10px] px-2 py-1 h-6">Qualificação mín.</TableHead>
+                <TableHead className="text-[10px] px-2 py-1 h-6 font-bold">Nível</TableHead>
+                {qualColumns.map((col) => (
+                  <TableHead key={col} className="text-[10px] px-2 py-1 h-6 text-center font-bold">{qualLabels[col]}</TableHead>
+                ))}
               </TableRow>
             </TableHeader>
             <TableBody>
               {levelPointsTable.map((row) => (
-                <TableRow
-                  key={row.level}
-                  className={cn(row.level > maxLevel && "opacity-30")}
-                >
-                  <TableCell className="px-2 py-1 text-xs font-medium">{row.level}º</TableCell>
-                  <TableCell className="px-2 py-1 text-xs font-semibold text-primary">{row.percentage}</TableCell>
-                  <TableCell className="px-2 py-1 text-[11px] text-muted-foreground">{row.qualification}</TableCell>
+                <TableRow key={row.level}>
+                  <TableCell className="px-2 py-1 text-xs font-medium text-center">{row.level}º</TableCell>
+                  {qualColumns.map((col) => (
+                    <TableCell key={col} className={cn("px-2 py-1 text-xs text-center", row[col] ? "font-semibold" : "text-muted-foreground/30")}>
+                      {row[col] || ""}
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))}
+              {/* Extra row */}
+              <TableRow className="border-t-2 bg-primary/5">
+                <TableCell className="px-2 py-1.5 text-xs font-bold text-center">Extra</TableCell>
+                {qualColumns.map((col) => (
+                  <TableCell key={col} className={cn("px-2 py-1.5 text-xs text-center font-bold", extraBonus[col] !== "-" ? "text-primary" : "text-muted-foreground")}>
+                    {extraBonus[col]}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Plano Diamante */}
+        <div className="rounded-lg bg-foreground/[0.03] border border-foreground/10 p-3 overflow-x-auto">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-sm">◈</span>
+            <span className="text-xs font-bold text-foreground">Plano Diamante</span>
+            <span className="text-[10px] text-muted-foreground">Receba sempre o dobro dos seus ganhos</span>
+          </div>
+          <Table className="w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-[10px] px-2 py-1 h-6 font-bold">Nível</TableHead>
+                {diamanteLabels.map((d) => (
+                  <TableHead key={d.key} className="text-[10px] px-2 py-1 h-6 text-center font-bold">{d.label}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {diamanteLevelTable.map((row) => (
+                <TableRow key={row.level}>
+                  <TableCell className="px-2 py-1 text-xs font-medium text-center">{row.level}º</TableCell>
+                  {diamanteLabels.map((d) => (
+                    <TableCell key={d.key} className={cn("px-2 py-1 text-xs text-center", row[d.key] ? "font-semibold" : "text-muted-foreground/30")}>
+                      {row[d.key] || ""}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+              {/* Extra row */}
+              <TableRow className="border-t-2 bg-primary/5">
+                <TableCell className="px-2 py-1.5 text-xs font-bold text-center">Extra</TableCell>
+                {diamanteLabels.map((d) => (
+                  <TableCell key={d.key} className="px-2 py-1.5 text-xs text-center font-bold text-primary">
+                    {diamanteExtraBonus}
+                  </TableCell>
+                ))}
+              </TableRow>
             </TableBody>
           </Table>
         </div>
