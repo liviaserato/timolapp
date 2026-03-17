@@ -66,7 +66,7 @@ export function UnilevelTab({ searchQuery }: Props) {
   const [searchId, setSearchId] = useState("");
   const [sortMode, setSortMode] = useState<SortMode | "">("");
   const [filterMode, setFilterMode] = useState<FilterMode>("month");
-  const [selectedMonth, setSelectedMonth] = useState("2026-03");
+  const [monthRef, setMonthRef] = useState(() => new Date(2026, 2, 1));
   const [periodStart, setPeriodStart] = useState("");
   const [periodEnd, setPeriodEnd] = useState("");
   const [viewMode, setViewMode] = useState<"tree" | "list">(isMobile ? "list" : "tree");
