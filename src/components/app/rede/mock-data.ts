@@ -64,8 +64,35 @@ export const mockBinaryTree: NetworkMember = {
         volume: 210,
         joinDate: "2025-12-01",
         type: "network",
-        left: null,
-        right: null,
+        left: {
+          id: "700001", name: "Renata Souza", qualification: "consultor", active: true, volume: 150, joinDate: "2026-01-05", type: "network",
+          left: {
+            id: "800001", name: "Thiago Borges", qualification: "consultor", active: true, volume: 100, joinDate: "2026-02-10", type: "network",
+            left: {
+              id: "900001", name: "Vanessa Cruz", qualification: "consultor", active: false, volume: 60, joinDate: "2026-02-20", type: "network",
+              left: {
+                id: "910001", name: "Wesley Rocha", qualification: "consultor", active: true, volume: 45, joinDate: "2026-03-01", type: "network",
+                left: null, right: null,
+              },
+              right: {
+                id: "910002", name: "Bianca Melo", qualification: "consultor", active: true, volume: 55, joinDate: "2026-03-05", type: "network",
+                left: null, right: null,
+              },
+            },
+            right: {
+              id: "900002", name: "Igor Prado", qualification: "distribuidor", active: true, volume: 130, joinDate: "2026-02-25", type: "network",
+              left: null, right: null,
+            },
+          },
+          right: {
+            id: "800002", name: "Larissa Dias", qualification: "consultor", active: false, volume: 70, joinDate: "2026-02-15", type: "network",
+            left: null, right: null,
+          },
+        },
+        right: {
+          id: "700002", name: "Eduardo Gomes", qualification: "consultor", active: true, volume: 120, joinDate: "2026-01-10", type: "network",
+          left: null, right: null,
+        },
       },
       right: null,
     },
