@@ -163,58 +163,60 @@ export function UnilevelTab({ searchQuery }: Props) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {/* Qualificação */}
         <Card>
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
-              <Award className="h-4 w-4 text-primary" />
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center gap-2 mb-1.5">
+              <div className="rounded-lg bg-primary/10 p-1.5 shrink-0">
+                <Award className="h-4 w-4 text-primary" />
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="text-sm font-bold truncate" style={{ color: q.color }}>{q.label}</p>
-              <p className="text-[10px] text-muted-foreground">{maxLevel}º nível</p>
-            </div>
+            <p className="text-base sm:text-xl font-bold truncate">{q.label}</p>
+            <p className="text-[11px] text-muted-foreground">{maxLevel}º nível</p>
           </CardContent>
         </Card>
 
         {/* Pontos no período */}
         <Card>
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
-              <Target className="h-4 w-4 text-primary" />
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center gap-2 mb-1.5">
+              <div className="rounded-lg bg-primary/10 p-1.5 shrink-0">
+                <Target className="h-4 w-4 text-primary" />
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="text-sm font-bold truncate">{totalPoints.toLocaleString("pt-BR")} pontos</p>
-              <p className="text-[10px] text-muted-foreground">no período</p>
-            </div>
+            <p className="text-base sm:text-xl font-bold truncate">
+              {totalPoints.toLocaleString("pt-BR")} <span className="sm:hidden">pts</span><span className="hidden sm:inline">pontos</span>
+            </p>
+            <p className="text-[11px] text-muted-foreground">no período</p>
           </CardContent>
         </Card>
 
         {/* Diretos */}
         <Card>
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
-              <UserCheck className="h-4 w-4 text-primary" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-bold truncate">{directCount} diretos</p>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-[10px] text-success">{directActive} ativos</span>
-                <span className="text-[10px] text-destructive">{directInactive} inativos</span>
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center gap-2 mb-1.5">
+              <div className="rounded-lg bg-primary/10 p-1.5 shrink-0">
+                <UserCheck className="h-4 w-4 text-primary" />
               </div>
+            </div>
+            <p className="text-base sm:text-xl font-bold truncate">{directCount} diretos</p>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[11px] text-success">{directActive} ativos</span>
+              <span className="text-[11px] text-destructive">{directInactive} inativos</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Indiretos */}
         <Card>
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
-              <Users className="h-4 w-4 text-primary" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-bold truncate">{indirectCount} indiretos</p>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-[10px] text-success">{indirectActive} ativos</span>
-                <span className="text-[10px] text-destructive">{indirectInactive} inativos</span>
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center gap-2 mb-1.5">
+              <div className="rounded-lg bg-primary/10 p-1.5 shrink-0">
+                <Users className="h-4 w-4 text-primary" />
               </div>
+            </div>
+            <p className="text-base sm:text-xl font-bold truncate">{indirectCount} indiretos</p>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[11px] text-success">{indirectActive} ativos</span>
+              <span className="text-[11px] text-destructive">{indirectInactive} inativos</span>
             </div>
           </CardContent>
         </Card>
