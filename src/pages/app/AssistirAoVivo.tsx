@@ -73,7 +73,7 @@ export default function AssistirAoVivo() {
 
   return isMobile ? (
     /* ── Mobile: video pinned top, rest scrolls ── */
-    <div className="bg-[#0f1117] -m-6 flex flex-col" style={{ height: "calc(100vh - 64px)" }}>
+    <div className="bg-[#0f1117] flex flex-col" style={{ height: "calc(100vh - 64px)" }}>
       {/* Fixed top: header + video */}
       <div className="shrink-0 px-4 pt-4">
         <div className="flex items-center gap-3 mb-3">
