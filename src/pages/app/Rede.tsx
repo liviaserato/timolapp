@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BinaryTab } from "@/components/app/rede/BinaryTab";
 import { UnilevelTab } from "@/components/app/rede/UnilevelTab";
-import { QualificationLegend } from "@/components/app/rede/QualificationLegend";
 
 export default function Rede() {
   const [search, setSearch] = useState("");
@@ -28,8 +27,6 @@ export default function Rede() {
           <UnilevelTab searchQuery={search} />
         </TabsContent>
       </Tabs>
-
-      <QualificationLegend />
     </div>
   );
 }

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { BinaryTreeNode } from "./BinaryTreeNode";
 import { BinaryTreeLayout } from "./BinaryTreeLayout";
 import { mockBinaryTree, NetworkMember, qualificationConfig } from "./mock-data";
+import { QualificationLegend } from "./QualificationLegend";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
@@ -219,6 +220,9 @@ export function BinaryTab() {
             <LegTable title="Perna Esquerda" members={filteredLeft} onNavigate={navigateToId} />
             <LegTable title="Perna Direita" members={filteredRight} onNavigate={navigateToId} />
           </div>
+
+          {/* Qualification legend below tables */}
+          <QualificationLegend />
         </div>
       </div>
 
@@ -256,19 +260,30 @@ function SummaryCard({ side, volume, total, active, inactive }: { side: "left" |
 }
 
 function DiagnosticCard({ weakerSide, diff }: { weakerSide: string; diff: number }) {
+  const strongerSide = weakerSide === "esquerda" ? "direita" : "esquerda";
+  const isBalanced = diff === 0;
+
   return (
     <Card className="border-primary/20 bg-primary/[0.02]">
       <CardContent className="p-4">
         <div className="flex items-center gap-2 mb-1.5">
           <Lightbulb className="h-4 w-4 text-primary" />
-          <span className="text-xs font-semibold text-foreground">Diagnóstico</span>
+          <span className="text-xs font-semibold text-foreground">Perna Menor</span>
         </div>
-        <p className="text-sm leading-snug">
-          A perna <strong>{weakerSide}</strong> está com {diff.toLocaleString("pt-BR")} pts a menos.
-        </p>
-        <p className="text-[11px] text-muted-foreground mt-1">
-          Foque o desenvolvimento nesse lado para equilibrar o volume.
-        </p>
+        {isBalanced ? (
+          <p className="text-sm leading-snug text-muted-foreground">
+            No momento, as pernas estão equilibradas. As próximas movimentações definirão qual será a perna menor.
+          </p>
+        ) : (
+          <>
+            <p className="text-sm leading-snug">
+              A perna <strong>{weakerSide}</strong> está <strong>{diff.toLocaleString("pt-BR")} pontos</strong> abaixo da {strongerSide}.
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-1.5">
+              Os bônus são gerados a partir da pontuação da perna menor. Todo o volume da perna menor pode gerar bônus para você.
+            </p>
+          </>
+        )}
       </CardContent>
     </Card>
   );
@@ -325,37 +340,36 @@ function LegTable({ title, members, onNavigate }: { title: string; members: Netw
         {members.length === 0 ? (
           <p className="text-xs text-muted-foreground py-6 text-center">Nenhum membro encontrado</p>
         ) : (
-          <div className="max-h-[352px] overflow-y-auto">
-            <Table>
+          <div className="max-h-[352px] overflow-y-auto overflow-x-hidden">
+            <Table className="table-fixed w-full">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[24px] px-2"></TableHead>
-                  <TableHead className="text-[10px] px-2">ID</TableHead>
-                  <TableHead className="text-[10px] px-2">Nome</TableHead>
-                  <TableHead className="text-[10px] px-2 text-center w-[32px]">Qual.</TableHead>
-                  <TableHead className="text-[10px] px-2 text-right">Pontos</TableHead>
+                  <TableHead className="w-[24px] px-1"></TableHead>
+                  <TableHead className="text-[10px] px-1 w-[52px]">ID</TableHead>
+                  <TableHead className="text-[10px] px-1">Nome</TableHead>
+                  <TableHead className="text-[10px] px-1 text-center w-[28px]">Qual.</TableHead>
+                  <TableHead className="text-[10px] px-1 text-right w-[52px]">Pontos</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {members.map((m) => {
                   const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
                   const isDirect = m.type === "direct";
-                  const hasChildren = !!(m.left || m.right);
                   return (
                     <TableRow key={m.id} className="cursor-pointer hover:bg-accent/40" onClick={() => onNavigate(m.id)}>
-                      <TableCell className="px-2 py-1.5">
+                      <TableCell className="px-1 py-1.5">
                         <div className={cn("h-2 w-2 rounded-full mx-auto", m.active ? "bg-success" : "bg-destructive")} />
                       </TableCell>
-                      <TableCell className={cn("px-2 py-1.5 text-[11px] tabular-nums", isDirect ? "font-bold" : "font-normal")}>
+                      <TableCell className={cn("px-1 py-1.5 text-[11px] tabular-nums truncate", isDirect ? "font-bold" : "font-normal")}>
                         {m.id}
                       </TableCell>
-                      <TableCell className={cn("px-2 py-1.5 text-[11px] truncate max-w-[100px]", isDirect ? "font-bold" : "font-normal")}>
+                      <TableCell className={cn("px-1 py-1.5 text-[11px] truncate", isDirect ? "font-bold" : "font-normal")}>
                         {m.name}
                       </TableCell>
-                      <TableCell className="px-2 py-1.5 text-center">
+                      <TableCell className="px-1 py-1.5 text-center">
                         <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
                       </TableCell>
-                      <TableCell className="px-2 py-1.5 text-[11px] text-right tabular-nums font-medium">
+                      <TableCell className="px-1 py-1.5 text-[11px] text-right tabular-nums font-medium">
                         {m.volume.toLocaleString("pt-BR")}
                       </TableCell>
                     </TableRow>
