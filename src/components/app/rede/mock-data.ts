@@ -131,6 +131,7 @@ export const mockBinaryTree: NetworkMember = {
       volume: 1750,
       joinDate: "2025-04-05",
       city: "Brasília, DF",
+      document: "123.456.789-00",
       type: "network",
       left: null,
       right: null,
