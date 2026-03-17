@@ -259,18 +259,36 @@ export function BinaryTab() {
             <SummaryCard side="left" volume={leftVolume} total={leftMembers.length} active={leftActive} inactive={leftMembers.length - leftActive} />
             <SummaryCard side="right" volume={rightVolume} total={rightMembers.length} active={rightActive} inactive={rightMembers.length - rightActive} />
           </div>
+
+          {/* Diagnostic */}
+          <DiagnosticCard weakerSide={weakerSide} diff={diff} />
+
+          {/* Search + Sort */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por ID ou nome"
+                className="h-8 pl-8 pr-8 text-xs"
+                value={searchId}
+                onChange={(e) => setSearchId(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
+              />
+              {searchId && (
+                <button type="button" onClick={() => setSearchId("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+            <SortSelector value={sortMode} onChange={setSortMode} />
+          </div>
+
+          {/* Tables side by side */}
+          <div className="grid grid-cols-2 gap-3">
+            <LegTable title="Perna Esquerda" members={filteredLeft} onNavigate={navigateToId} />
+            <LegTable title="Perna Direita" members={filteredRight} onNavigate={navigateToId} />
+          </div>
         </div>
-      </div>
-
-      {/* ═══ FULL WIDTH: Diagnostic ═══ */}
-      <DiagnosticCard weakerSide={weakerSide} diff={diff} />
-
-      {/* ═══ FULL WIDTH: Sort + Tables ═══ */}
-      <SortSelector value={sortMode} onChange={setSortMode} />
-
-      <div className="grid grid-cols-2 gap-3">
-        <LegTable title="Perna Esquerda" members={filteredLeft} onNavigate={navigateToId} />
-        <LegTable title="Perna Direita" members={filteredRight} onNavigate={navigateToId} />
       </div>
 
       {/* ═══ Bottom: Bonus section ═══ */}
