@@ -272,8 +272,8 @@ export default function Treinamentos() {
                         {/* Rotated day label */}
                         <div className="flex flex-col items-center justify-center min-w-[36px] py-2">
                           <span
-                            className={`text-[11px] font-bold uppercase tracking-wider whitespace-nowrap ${isToday ? "text-primary" : "text-muted-foreground/60"}`}
-                            style={{ writingMode: "vertical-rl", textOrientation: "mixed", transform: "rotate(180deg)" }}
+                            className={`text-[11px] font-semibold tracking-widest whitespace-nowrap ${isToday ? "text-primary" : "text-muted-foreground/50"}`}
+                            style={{ writingMode: "vertical-rl", textOrientation: "mixed", transform: "rotate(180deg)", fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", letterSpacing: "0.15em" }}
                           >
                             {DAYS_FULL[idx]}
                           </span>
