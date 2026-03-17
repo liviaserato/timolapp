@@ -250,7 +250,7 @@ export default function Treinamentos() {
           </Tabs>
 
           {/* Events list */}
-          <div className="space-y-2">
+          <div className="space-y-2" style={{ minHeight: "340px" }}>
             {filteredEvents.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-6">
                 Nenhum evento neste dia.
