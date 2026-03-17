@@ -55,11 +55,11 @@ const weekEvents: WeekEvent[] = [
   { id: "9", dayIndex: 5, time: "10:00", endTime: "11:00", title: "Treinamento: Liderança", type: "treinamento", host: "Maria Souza" },
 ];
 
-const typeConfig: Record<EventType, { label: string; borderColor: string; iconColor: string; icon: React.ReactNode }> = {
-  produto:     { label: "Produto",     borderColor: "border-l-[#006DFF]",   iconColor: "text-[#006DFF]",   icon: <Presentation className="h-3.5 w-3.5" /> },
-  negocio:     { label: "Negócio",     borderColor: "border-l-[#003885]",   iconColor: "text-[#003885]",   icon: <Tv className="h-3.5 w-3.5" /> },
-  especial:    { label: "Especial",    borderColor: "border-l-amber-300",                  iconColor: "text-amber-400",                  icon: <Sparkles className="h-3.5 w-3.5" /> },
-  treinamento: { label: "Treinamento", borderColor: "border-l-emerald-400",                iconColor: "text-emerald-500",                icon: <GraduationCap className="h-3.5 w-3.5" /> },
+const typeConfig: Record<EventType, { label: string; borderColor: string; iconColor: string; badgeBg: string; badgeBorder: string; badgeText: string; icon: React.ReactNode }> = {
+  produto:     { label: "Produto",     borderColor: "border-l-[#006DFF]",   iconColor: "text-[#006DFF]",   badgeBg: "bg-[#006DFF]/10", badgeBorder: "border-[#006DFF]/30", badgeText: "text-[#006DFF]", icon: <Presentation className="h-3.5 w-3.5" /> },
+  negocio:     { label: "Negócio",     borderColor: "border-l-[#003885]",   iconColor: "text-[#003885]",   badgeBg: "bg-[#003885]/10", badgeBorder: "border-[#003885]/30", badgeText: "text-[#003885]", icon: <Tv className="h-3.5 w-3.5" /> },
+  especial:    { label: "Especial",    borderColor: "border-l-amber-300",   iconColor: "text-amber-400",   badgeBg: "bg-amber-400/10", badgeBorder: "border-amber-400/30", badgeText: "text-amber-500", icon: <Sparkles className="h-3.5 w-3.5" /> },
+  treinamento: { label: "Treinamento", borderColor: "border-l-emerald-400", iconColor: "text-emerald-500", badgeBg: "bg-emerald-500/10", badgeBorder: "border-emerald-500/30", badgeText: "text-emerald-600", icon: <GraduationCap className="h-3.5 w-3.5" /> },
 };
 
 const quickLinks = [
@@ -338,12 +338,14 @@ function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayIndex: n
 
       {/* Info */}
       <div className="p-3 space-y-2 flex-1 flex flex-col">
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex flex-col gap-1.5">
+          <div className="flex justify-end">
+            <Badge className={`text-[10px] gap-1 shrink-0 ${cfg.badgeText} ${cfg.badgeBg} ${cfg.badgeBorder} border`}>
+              {cfg.icon}
+              {cfg.label}
+            </Badge>
+          </div>
           <p className="text-sm font-semibold text-foreground leading-snug">{event.title}</p>
-          <Badge variant="outline" className={`text-[10px] gap-1 shrink-0 ${cfg.iconColor} border-current/30`}>
-            {cfg.icon}
-            {cfg.label}
-          </Badge>
         </div>
 
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
