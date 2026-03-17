@@ -21,7 +21,7 @@ export function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayI
 
   return (
     <>
-      <div className="rounded-lg border border-border bg-card overflow-hidden shadow-sm flex flex-col w-full sm:w-[200px] sm:min-w-[200px] sm:max-w-[200px]">
+      <div className="rounded-lg border border-border bg-card overflow-hidden shadow-sm flex flex-col w-full">
         {event.bannerUrl && (
           <div className="relative cursor-pointer" onClick={() => setImageOpen(true)}>
             <img src={event.bannerUrl} alt={event.title} className="w-full aspect-[4/5] object-cover" />

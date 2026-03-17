@@ -79,11 +79,10 @@ export function TodayCarousel({ events, todayIndex }: { events: WeekEvent[]; tod
       <div
         ref={scrollRefCb}
         onScroll={handleScroll}
-        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
-        style={{ scrollSnapType: "x mandatory", scrollbarWidth: "none", msOverflowStyle: "none" }}
+        className="grid grid-cols-1 sm:grid-cols-4 gap-4"
       >
         {events.map((ev) => (
-          <div key={ev.id} className="w-full sm:w-auto shrink-0" style={{ scrollSnapAlign: "start" }}>
+          <div key={ev.id}>
             <TodayEventCard event={ev} todayIndex={todayIndex} />
           </div>
         ))}
