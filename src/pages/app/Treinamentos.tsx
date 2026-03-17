@@ -21,6 +21,7 @@ import {
   Hourglass,
 } from "lucide-react";
 import iconWhatsapp from "@/assets/icon-logo-whatsapp.svg";
+import bannerMock from "@/assets/banner-treinamento-mock.png";
 
 /* ------------------------------------------------------------------ */
 /*  Types & constants                                                  */
