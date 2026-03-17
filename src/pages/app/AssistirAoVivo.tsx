@@ -110,7 +110,7 @@ export default function AssistirAoVivo() {
       </div>
 
       {/* Scrollable: description + chat */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
+      <div className="flex-1 overflow-y-auto px-4 pb-20">
         {descriptionBlock}
 
         {isLive && (
