@@ -175,7 +175,7 @@ export function BinaryTab() {
         <div className="space-y-3">
           {/* Tree drawing */}
           <Card className="min-h-[340px]">
-            <CardContent className="px-2 py-4">
+            <CardContent className="px-1 py-3">
               <h2 className="text-base font-bold text-foreground text-center mb-4">Rede Binária</h2>
               {navHistory.length > 0 && (
                 <div className="flex items-center justify-center gap-2 mb-2">

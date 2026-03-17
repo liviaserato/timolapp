@@ -18,7 +18,7 @@ export function BinaryTreeNode({ node, side, onSelect, isRoot, hasChildren, isMe
   if (!node) {
     return (
       <div className="flex flex-col items-center">
-        <div className="flex items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/20 bg-muted/10 h-10 w-10 text-muted-foreground/30">
+        <div className="flex items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/20 bg-muted/10 h-9 w-9 text-muted-foreground/30">
           <UserPlus className="h-3.5 w-3.5" />
         </div>
         <span className="text-[10px] text-muted-foreground/40 mt-1">
@@ -49,24 +49,24 @@ export function BinaryTreeNode({ node, side, onSelect, isRoot, hasChildren, isMe
               : isMineAlt
                 ? "bg-primary/20 text-primary ring-2 ring-primary/40 ring-offset-1 ring-offset-background"
                 : "bg-muted text-foreground",
-            isRoot ? "h-12 w-12 text-sm" : "h-10 w-10 text-xs"
+            isRoot ? "h-11 w-11 text-sm" : "h-9 w-9 text-xs"
           )}
         >
           {initial}
         </div>
 
         {/* Name */}
-        <span className="text-[11px] font-semibold text-foreground mt-1 max-w-[90px] truncate">
+        <span className="text-xs font-semibold text-foreground mt-1 max-w-[100px] truncate">
           {firstName}{isMe ? " (Eu)" : ""}
         </span>
 
         {/* ID */}
-        <span className="text-[9px] text-muted-foreground leading-none">
+        <span className="text-[10px] text-muted-foreground leading-none">
           ID {node.id}
         </span>
 
         {/* Qualification as text */}
-        <span className="text-[9px] text-muted-foreground leading-none">
+        <span className="text-[10px] text-muted-foreground leading-none">
           {q.label}
         </span>
       </button>
