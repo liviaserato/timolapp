@@ -88,7 +88,7 @@ export default function Treinamentos() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Star className="h-4 w-4 text-primary fill-primary/20" />
-              Hoje – {DAYS_FULL[todayIndex]}, {formatDateBR(today)}
+              Hoje – {DAYS_FULL[todayIndex]}, {today.toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}
             </CardTitle>
           </CardHeader>
           <CardContent>
