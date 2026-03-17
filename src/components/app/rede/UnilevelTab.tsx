@@ -542,5 +542,3 @@ function BonusDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: 
   );
 }
 
-/* ── Missing icons (imported at top via lucide) ── */
-import { ChevronDown, ChevronRight } from "lucide-react";
