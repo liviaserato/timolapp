@@ -1,29 +1,104 @@
-import { useState, useMemo } from "react";
-import { ChevronDown, ChevronRight, Users, Target, TrendingUp, UserCheck } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useMemo, useEffect } from "react";
+import {
+  Users, UserCheck, Target, TrendingUp, Layers, Search, X, ArrowUpDown,
+  PlayCircle, Lightbulb, List, GitBranch, RotateCcw, Calendar,
+  ChevronDown, ChevronRight,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { qualificationConfig, NetworkMember } from "./mock-data";
+import { QualificationLegend } from "./QualificationLegend";
 import { MemberDetailDialog } from "./MemberDetailDialog";
-import { mockUnilevelMembers, mockUnilevelSummary, NetworkMember, qualificationConfig } from "./mock-data";
+import { UnilevelOrgChart } from "./UnilevelOrgChart";
+import {
+  mockUnilevelTree, flattenUnilevelTree, qualificationLevelLimits,
+  levelPointsTable, FlatUnilevelMember,
+} from "./unilevel-mock-data";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+/* ── Sort ── */
+type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status";
+
+function sortMembers(members: FlatUnilevelMember[], mode: SortMode): FlatUnilevelMember[] {
+  const sorted = [...members];
+  switch (mode) {
+    case "points":
+      return sorted.sort((a, b) => b.volume - a.volume);
+    case "date_newest":
+      return sorted.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
+    case "date_oldest":
+      return sorted.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
+    case "status":
+    default:
+      return sorted.sort((a, b) => {
+        if (a.active === b.active) return b.volume - a.volume;
+        return a.active ? -1 : 1;
+      });
+  }
+}
+
+/* ── Filter mode ── */
+type FilterMode = "month" | "period";
+
+const monthOptions = [
+  { value: "2026-03", label: "Março 2026" },
+  { value: "2026-02", label: "Fevereiro 2026" },
+  { value: "2026-01", label: "Janeiro 2026" },
+  { value: "2025-12", label: "Dezembro 2025" },
+  { value: "2025-11", label: "Novembro 2025" },
+  { value: "2025-10", label: "Outubro 2025" },
+];
+
+/* ── Main component ── */
 
 interface Props {
   searchQuery: string;
 }
 
 export function UnilevelTab({ searchQuery }: Props) {
-  const [expandedLevels, setExpandedLevels] = useState<Set<number>>(new Set([1]));
+  const isMobile = useIsMobile();
   const [selectedMember, setSelectedMember] = useState<NetworkMember | null>(null);
+  const [bonusModalOpen, setBonusModalOpen] = useState(false);
+  const [searchId, setSearchId] = useState("");
+  const [sortMode, setSortMode] = useState<SortMode | "">("");
+  const [filterMode, setFilterMode] = useState<FilterMode>("month");
+  const [selectedMonth, setSelectedMonth] = useState("2026-03");
+  const [periodStart, setPeriodStart] = useState("");
+  const [periodEnd, setPeriodEnd] = useState("");
+  const [viewMode, setViewMode] = useState<"tree" | "list">(isMobile ? "list" : "tree");
 
+  // Current user's qualification determines max visible level
+  const userQualification = mockUnilevelTree.qualification;
+  const maxLevel = qualificationLevelLimits[userQualification] ?? 3;
+
+  // Flatten all members up to maxLevel
+  const allMembers = useMemo(
+    () => flattenUnilevelTree(mockUnilevelTree, 0, maxLevel),
+    [maxLevel]
+  );
+
+  // Filter + sort
   const filteredMembers = useMemo(() => {
-    if (!searchQuery.trim()) return mockUnilevelMembers;
-    const q = searchQuery.toLowerCase();
-    return mockUnilevelMembers.filter(
-      (m) => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q)
-    );
-  }, [searchQuery]);
+    let result = allMembers;
+    const q = (searchId || searchQuery || "").toLowerCase().trim();
+    if (q) {
+      result = result.filter(
+        (m) => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q)
+      );
+    }
+    return sortMembers(result, (sortMode || "default") as SortMode);
+  }, [allMembers, searchId, searchQuery, sortMode]);
 
-  const levels = useMemo(() => {
-    const map = new Map<number, NetworkMember[]>();
+  // Group by level
+  const levelGroups = useMemo(() => {
+    const map = new Map<number, FlatUnilevelMember[]>();
     filteredMembers.forEach((m) => {
       const lvl = m.level ?? 1;
       if (!map.has(lvl)) map.set(lvl, []);
@@ -32,30 +107,56 @@ export function UnilevelTab({ searchQuery }: Props) {
     return Array.from(map.entries()).sort(([a], [b]) => a - b);
   }, [filteredMembers]);
 
-  const toggleLevel = (lvl: number) => {
-    setExpandedLevels((prev) => {
-      const next = new Set(prev);
-      next.has(lvl) ? next.delete(lvl) : next.add(lvl);
-      return next;
-    });
-  };
+  // Summary stats
+  const totalMembers = allMembers.length;
+  const directMembers = allMembers.filter((m) => m.isDirect).length;
+  const activeMembers = allMembers.filter((m) => m.active).length;
+  const totalPoints = allMembers.reduce((sum, m) => sum + m.volume, 0);
+  const activeLevels = new Set(allMembers.map((m) => m.level)).size;
+
+  // ESC key resets
+  useEffect(() => {
+    function handleEsc(e: KeyboardEvent) {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setSearchId("");
+        setSortMode("");
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
+      }
+    }
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
+
+  function handleSearchKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
+      setSearchId("");
+      e.currentTarget.blur();
+    }
+  }
 
   const summaryItems = [
-    { label: "Total de Membros", value: mockUnilevelSummary.totalMembers.toString(), icon: Users },
-    { label: "Membros Ativos", value: mockUnilevelSummary.activeMembers.toString(), icon: UserCheck },
-    { label: "Pontos Acumulados", value: mockUnilevelSummary.accumulatedPoints.toLocaleString("pt-BR"), icon: Target },
-    { label: "Desempenho", value: mockUnilevelSummary.recentPerformance, icon: TrendingUp },
+    { label: "Total na Rede", value: totalMembers.toString(), icon: Users },
+    { label: "Diretos", value: directMembers.toString(), icon: UserCheck },
+    { label: "Pontos no Período", value: totalPoints.toLocaleString("pt-BR"), icon: Target },
+    { label: "Níveis Ativos", value: `${activeLevels} de ${maxLevel}`, icon: Layers },
   ];
 
   return (
     <div className="space-y-4">
-      {/* Summary */}
+      {/* ═══ Summary cards ═══ */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {summaryItems.map((item) => (
-          <Card key={item.label} className="overflow-hidden">
+          <Card key={item.label}>
             <CardContent className="p-3 flex items-center gap-3">
-              <div className="rounded-lg bg-muted p-2 text-primary">
-                <item.icon className="h-4 w-4" />
+              <div className="rounded-lg bg-primary/10 p-2 shrink-0">
+                <item.icon className="h-4 w-4 text-primary" />
               </div>
               <div className="min-w-0">
                 <p className="text-[11px] text-muted-foreground truncate">{item.label}</p>
@@ -66,58 +167,379 @@ export function UnilevelTab({ searchQuery }: Props) {
         ))}
       </div>
 
-      {/* Levels */}
-      <div className="space-y-2">
-        {levels.length === 0 && (
-          <Card><CardContent className="p-6 text-center text-sm text-muted-foreground">Nenhum membro encontrado.</CardContent></Card>
-        )}
-        {levels.map(([lvl, members]) => {
-          const isOpen = expandedLevels.has(lvl);
-          return (
-            <Card key={lvl}>
-              <button
-                onClick={() => toggleLevel(lvl)}
-                className="w-full flex items-center justify-between p-3 hover:bg-accent/50 transition-colors rounded-t-lg"
-              >
-                <div className="flex items-center gap-2">
-                  {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
-                  <span className="text-sm font-semibold">Nível {lvl}</span>
-                  <Badge variant="secondary" className="text-[10px]">{members.length}</Badge>
-                </div>
-              </button>
-              {isOpen && (
-                <CardContent className="p-0">
-                  <div className="divide-y">
-                    {members.map((m) => {
-                      const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
-                      return (
-                        <button
-                          key={m.id}
-                          onClick={() => setSelectedMember(m)}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-accent/40 transition-colors"
-                        >
-                          <span style={{ color: q.color }} className="text-sm font-bold shrink-0">{q.icon}</span>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-sm font-medium truncate">{m.name}</span>
-                              <Badge variant={m.active ? "default" : "secondary"} className={cn("text-[9px] px-1 py-0 h-4 shrink-0", m.active && "bg-success text-success-foreground")}>
-                                {m.active ? "Ativo" : "Inativo"}
-                              </Badge>
-                            </div>
-                            <span className="text-[11px] text-muted-foreground">ID {m.id} · {m.volume.toLocaleString("pt-BR")} pts</span>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </CardContent>
+      {/* ═══ Filters ═══ */}
+      <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] gap-3 items-end">
+        {/* Period filter */}
+        <div className="flex items-center gap-2">
+          <div className="flex rounded-md border border-input overflow-hidden h-8">
+            <button
+              onClick={() => setFilterMode("month")}
+              className={cn(
+                "px-3 text-xs transition-colors",
+                filterMode === "month"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background text-muted-foreground hover:bg-accent"
               )}
-            </Card>
-          );
-        })}
+            >
+              Mês
+            </button>
+            <button
+              onClick={() => setFilterMode("period")}
+              className={cn(
+                "px-3 text-xs transition-colors",
+                filterMode === "period"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background text-muted-foreground hover:bg-accent"
+              )}
+            >
+              Período
+            </button>
+          </div>
+
+          {filterMode === "month" ? (
+            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+              <SelectTrigger className="h-8 text-xs w-[160px]">
+                <Calendar className="h-3 w-3 mr-1 text-muted-foreground" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {monthOptions.map((mo) => (
+                  <SelectItem key={mo.value} value={mo.value} className="text-xs">
+                    {mo.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <div className="flex items-center gap-1.5">
+              <Input
+                type="date"
+                className="h-8 text-xs w-[130px]"
+                value={periodStart}
+                max={new Date().toISOString().split("T")[0]}
+                onChange={(e) => setPeriodStart(e.target.value)}
+              />
+              <span className="text-xs text-muted-foreground">a</span>
+              <Input
+                type="date"
+                className="h-8 text-xs w-[130px]"
+                value={periodEnd}
+                max={new Date().toISOString().split("T")[0]}
+                onChange={(e) => setPeriodEnd(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por ID ou nome"
+            className="h-8 pl-8 pr-8 text-xs"
+            value={searchId}
+            onChange={(e) => setSearchId(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+          />
+          {searchId && (
+            <button type="button" onClick={() => setSearchId("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+
+        {/* Sort + View toggle */}
+        <div className="flex items-center gap-2">
+          <Select value={sortMode || undefined} onValueChange={(v) => setSortMode(v as SortMode)}>
+            <SelectTrigger className="h-8 text-[11px] w-[140px]">
+              <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
+              <SelectValue placeholder="Classificar" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="default" className="text-xs">Ativos primeiro</SelectItem>
+              <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
+              <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
+              <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <div className="flex rounded-md border border-input overflow-hidden h-8">
+            <button
+              onClick={() => setViewMode("tree")}
+              className={cn(
+                "px-2 transition-colors",
+                viewMode === "tree"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background text-muted-foreground hover:bg-accent"
+              )}
+              title="Organograma"
+            >
+              <GitBranch className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={cn(
+                "px-2 transition-colors",
+                viewMode === "list"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background text-muted-foreground hover:bg-accent"
+              )}
+              title="Lista"
+            >
+              <List className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
       </div>
 
-      <MemberDetailDialog member={selectedMember} open={!!selectedMember} onOpenChange={(o) => !o && setSelectedMember(null)} />
+      {/* ═══ Main content ═══ */}
+      {viewMode === "tree" ? (
+        <Card>
+          <CardContent className="p-3 sm:p-4">
+            <h2 className="text-base font-bold text-foreground text-center mb-4">Rede Unilevel</h2>
+            <UnilevelOrgChart
+              root={mockUnilevelTree}
+              maxLevel={maxLevel}
+              onSelectMember={setSelectedMember}
+            />
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {/* ═══ Level Table ═══ */}
+      <div className="space-y-3">
+        {levelGroups.length === 0 && (
+          <Card>
+            <CardContent className="p-6 text-center text-sm text-muted-foreground">
+              Nenhum membro encontrado.
+            </CardContent>
+          </Card>
+        )}
+
+        {levelGroups.map(([lvl, members]) => (
+          <LevelTable
+            key={lvl}
+            level={lvl}
+            members={members}
+            onSelect={setSelectedMember}
+            isMobile={isMobile}
+          />
+        ))}
+      </div>
+
+      {/* Qualification legend */}
+      <QualificationLegend />
+
+      {/* ═══ Level info card ═══ */}
+      <LevelInfoCard userQualification={userQualification} maxLevel={maxLevel} />
+
+      {/* ═══ Bonus section ═══ */}
+      <BonusSection onOpen={() => setBonusModalOpen(true)} />
+      <BonusDialog open={bonusModalOpen} onOpenChange={setBonusModalOpen} />
+
+      {/* Member detail */}
+      <MemberDetailDialog
+        member={selectedMember}
+        open={!!selectedMember}
+        onOpenChange={(o) => !o && setSelectedMember(null)}
+      />
     </div>
   );
 }
+
+/* ── Sub-components ── */
+
+function LevelTable({
+  level,
+  members,
+  onSelect,
+  isMobile,
+}: {
+  level: number;
+  members: FlatUnilevelMember[];
+  onSelect: (m: NetworkMember) => void;
+  isMobile: boolean;
+}) {
+  const [collapsed, setCollapsed] = useState(level > 2);
+
+  return (
+    <Card>
+      <button
+        onClick={() => setCollapsed((p) => !p)}
+        className="w-full flex items-center justify-between p-3 hover:bg-accent/50 transition-colors rounded-t-lg"
+      >
+        <div className="flex items-center gap-2">
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          )}
+          <span className="text-sm font-semibold">Nível {level}</span>
+          <Badge variant="secondary" className="text-[10px]">{members.length}</Badge>
+          {level === 1 && (
+            <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 border-primary/30 text-primary">
+              Diretos
+            </Badge>
+          )}
+        </div>
+      </button>
+      {!collapsed && (
+        <CardContent className="px-0 pb-2">
+          <div className="max-h-[352px] overflow-y-auto overflow-x-hidden">
+            <Table className="table-fixed w-full">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[24px] px-1" />
+                  <TableHead className="text-[10px] px-1 w-[52px]">ID</TableHead>
+                  <TableHead className="text-[10px] px-1">Nome</TableHead>
+                  {!isMobile && (
+                    <TableHead className="text-[10px] px-1 w-[60px]">Tipo</TableHead>
+                  )}
+                  <TableHead className="text-[10px] px-1 text-center w-[28px]">Qual.</TableHead>
+                  <TableHead className="text-[10px] px-1 text-right w-[52px]">Pontos</TableHead>
+                  {!isMobile && (
+                    <TableHead className="text-[10px] px-1 text-right w-[76px]">Cadastro</TableHead>
+                  )}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {members.map((m) => {
+                  const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
+                  return (
+                    <TableRow
+                      key={m.id}
+                      className="cursor-pointer hover:bg-accent/40"
+                      onClick={() => onSelect(m)}
+                    >
+                      <TableCell className="px-1 py-1.5">
+                        <div className={cn("h-2 w-2 rounded-full mx-auto", m.active ? "bg-success" : "bg-destructive")} />
+                      </TableCell>
+                      <TableCell className={cn("px-1 py-1.5 text-[11px] tabular-nums truncate", m.isDirect && "font-bold")}>
+                        {m.id}
+                      </TableCell>
+                      <TableCell className={cn("px-1 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
+                        {m.name}
+                      </TableCell>
+                      {!isMobile && (
+                        <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground">
+                          {m.isDirect ? "Direto" : "Rede"}
+                        </TableCell>
+                      )}
+                      <TableCell className="px-1 py-1.5 text-center">
+                        <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
+                      </TableCell>
+                      <TableCell className="px-1 py-1.5 text-[11px] text-right tabular-nums font-medium">
+                        {m.volume.toLocaleString("pt-BR")}
+                      </TableCell>
+                      {!isMobile && (
+                        <TableCell className="px-1 py-1.5 text-[10px] text-right text-muted-foreground tabular-nums">
+                          {new Date(m.joinDate).toLocaleDateString("pt-BR")}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      )}
+    </Card>
+  );
+}
+
+function LevelInfoCard({ userQualification, maxLevel }: { userQualification: string; maxLevel: number }) {
+  const q = qualificationConfig[userQualification] ?? qualificationConfig.consultor;
+
+  return (
+    <Card className="border-primary/20 bg-primary/[0.02]">
+      <CardContent className="p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Lightbulb className="h-4 w-4 text-primary" />
+          <span className="text-xs font-semibold text-foreground">Pontuação por Níveis</span>
+        </div>
+        <p className="text-sm leading-snug text-muted-foreground mb-3">
+          Sua qualificação atual é <strong className="text-foreground" style={{ color: q.color }}>{q.label}</strong>, permitindo visualizar e pontuar até o <strong className="text-foreground">nível {maxLevel}</strong>.
+          {" "}Conforme você avança de qualificação, mais níveis da rede ficam disponíveis.
+        </p>
+        <div className="rounded-lg bg-muted/50 p-3">
+          <Table className="w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-[10px] px-2 py-1 h-6">Nível</TableHead>
+                <TableHead className="text-[10px] px-2 py-1 h-6">%</TableHead>
+                <TableHead className="text-[10px] px-2 py-1 h-6">Qualificação mín.</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {levelPointsTable.map((row) => (
+                <TableRow
+                  key={row.level}
+                  className={cn(row.level > maxLevel && "opacity-30")}
+                >
+                  <TableCell className="px-2 py-1 text-xs font-medium">{row.level}º</TableCell>
+                  <TableCell className="px-2 py-1 text-xs font-semibold text-primary">{row.percentage}</TableCell>
+                  <TableCell className="px-2 py-1 text-[11px] text-muted-foreground">{row.qualification}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function BonusSection({ onOpen }: { onOpen: () => void }) {
+  return (
+    <Card className="border-dashed">
+      <CardContent className="p-4 flex items-center gap-3">
+        <div className="rounded-lg bg-primary/10 p-2 shrink-0">
+          <PlayCircle className="h-5 w-5 text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold">Entenda seus bônus</p>
+          <p className="text-xs text-muted-foreground">Saiba como funciona a pontuação Unilevel e como maximizar seus resultados.</p>
+        </div>
+        <Button variant="outline" size="sm" className="shrink-0 text-xs" onClick={onOpen}>
+          Saiba mais
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function BonusDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <PlayCircle className="h-5 w-5 text-primary" />
+            Bônus Unilevel
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3 text-sm text-muted-foreground">
+          <p>O bônus Unilevel é calculado com base na <strong className="text-foreground">pontuação gerada por cada nível</strong> da sua rede, de acordo com a sua qualificação.</p>
+          <div className="rounded-lg bg-muted/50 p-3 space-y-2">
+            <p className="font-medium text-foreground">Como funciona:</p>
+            <ol className="list-decimal list-inside space-y-1 text-xs">
+              <li>Cada nível gera uma porcentagem de bônus sobre o volume produzido.</li>
+              <li>Sua qualificação determina até qual nível você recebe pontuação.</li>
+              <li>Quanto maior a qualificação, mais níveis e maior profundidade de ganhos.</li>
+              <li>O plano Diamante estende a pontuação até o 10º nível.</li>
+            </ol>
+          </div>
+          <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+            <p className="font-medium text-foreground text-xs">💡 Dica</p>
+            <p className="text-xs mt-1">
+              Incentive seus diretos a se qualificarem.
+              {"\n"}Quanto mais qualificada sua equipe, maior o volume gerado em cada nível.
+            </p>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
