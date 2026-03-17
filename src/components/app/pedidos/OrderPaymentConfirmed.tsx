@@ -44,7 +44,7 @@ export default function OrderPaymentConfirmed({ finalTotal, paymentMethod, picku
               value={<span className="font-semibold text-green-600">Aprovado</span>}
             />
             <DataRow
-              label="Nº do Pedido"
+              label="Pedido"
               value={<span className="font-semibold">#TML-{Math.floor(100000 + Math.random() * 900000)}</span>}
             />
             <DataRow
