@@ -63,14 +63,12 @@ export function BinaryTab() {
   const isMobile = useIsMobile();
   const [rootId, setRootId] = useState(mockBinaryTree.id);
   const [navHistory, setNavHistory] = useState<string[]>([]);
-  const [selectedMember, setSelectedMember] = useState<NetworkMember | null>(null);
   const [bonusModalOpen, setBonusModalOpen] = useState(false);
   const [searchId, setSearchId] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("default");
   const searchRef = useRef<HTMLInputElement>(null);
 
   const currentRoot = findNodeById(mockBinaryTree, rootId) ?? mockBinaryTree;
-  const allNodes = useMemo(() => collectAllIds(mockBinaryTree), []);
 
   const leftMembers = useMemo(() => flattenSide(currentRoot.left), [currentRoot]);
   const rightMembers = useMemo(() => flattenSide(currentRoot.right), [currentRoot]);
@@ -98,8 +96,14 @@ export function BinaryTab() {
     if (member.left || member.right) {
       setNavHistory(prev => [...prev, rootId]);
       setRootId(member.id);
-    } else {
-      setSelectedMember(member);
+    }
+  }
+
+  function navigateToId(id: string) {
+    const node = findNodeById(mockBinaryTree, id);
+    if (node && (node.left || node.right)) {
+      setNavHistory(prev => [...prev, rootId]);
+      setRootId(id);
     }
   }
 
