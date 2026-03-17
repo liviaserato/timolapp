@@ -174,7 +174,7 @@ export function BinaryTab() {
         {/* ═══ LEFT COLUMN: Tree ═══ */}
         <div className="space-y-3">
           {/* Tree drawing */}
-           <Card className="min-h-[450px] flex flex-col">
+           <Card className="min-h-[470px] flex flex-col">
             <CardContent className="px-1 py-3 flex-1 flex flex-col">
               <h2 className="text-base font-bold text-foreground text-center mb-6">Rede Binária</h2>
               <div className="flex flex-col items-center py-2 flex-1">
@@ -386,7 +386,7 @@ function LegTable({ title, members, onNavigate }: { title: string; members: Netw
         {members.length === 0 ? (
           <p className="text-xs text-muted-foreground py-6 text-center">Nenhum membro encontrado</p>
         ) : (
-          <div className="max-h-[340px] overflow-y-auto">
+          <div className="max-h-[352px] overflow-y-auto">
             <Table>
               <TableHeader>
                 <TableRow>
