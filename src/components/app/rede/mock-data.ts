@@ -8,6 +8,8 @@ export interface NetworkMember {
   phone?: string;
   city?: string;
   level?: number;
+  /** CPF / document of the owner */
+  document?: string;
   /** "direct" = cadastrado diretamente, "network" = derramamento */
   type?: "direct" | "network";
   left?: NetworkMember | null;
