@@ -88,6 +88,52 @@ export default function Dashboard() {
       </header>
 
       <section className="flex flex-col gap-2">
+        {/* Boas Vindas */}
+        <DashboardCard icon={Hand} title="Boas Vindas">
+          <p className="mt-1 text-sm">
+            Olá, <strong>Lívia Serato</strong>
+          </p>
+          <p className="text-sm text-muted-foreground italic mt-1">
+            "Faça hoje melhor do que ontem e amanhã melhor do que hoje!"
+          </p>
+        </DashboardCard>
+
+        {/* Resumo Financeiro */}
+        <DashboardCard icon={DollarSign} title="Resumo Financeiro">
+          <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="rounded-md border border-success/30 bg-success/5 p-3 text-center">
+              <p className="text-xs text-muted-foreground">Bônus a Receber</p>
+              <p className="text-lg font-bold text-success">{formatCurrency(mockBonusSummary.nextFriday, currency)}</p>
+            </div>
+            <div className="rounded-md border border-app-card-border p-3 text-center">
+              <p className="text-xs text-muted-foreground">Saldo Banco Timol</p>
+              <p className="text-lg font-bold text-primary">{formatCurrency(mockBancoTimol.available, currency)}</p>
+            </div>
+            <div className="rounded-md border border-app-card-border p-3 text-center">
+              <p className="text-xs text-muted-foreground">Pontos Unilevel</p>
+              <p className="text-lg font-bold text-primary">{mockUserQualification.totalPoints.toLocaleString("pt-BR")}</p>
+            </div>
+            <div className="rounded-md border border-app-card-border p-3 text-center">
+              <p className="text-xs text-muted-foreground">Qualificação Atual</p>
+              {q && (
+                <p className="text-sm font-semibold text-primary flex items-center justify-center gap-1.5 mt-1">
+                  <span className="text-base">{q.icon}</span>
+                  {q.label}
+                </p>
+              )}
+            </div>
+          </div>
+        </DashboardCard>
+
+        {/* Treinamentos - Hoje */}
+        {todayEvents.length > 0 && (
+          <DashboardCard icon={GraduationCap} title={todayLabel}>
+            <div className="mt-2">
+              <TodayCarousel events={todayEvents} todayIndex={todayIndex} />
+            </div>
+          </DashboardCard>
+        )}
+
         {/* Novo Pedido */}
         <DashboardCard icon={ShoppingCart} title="Novo Pedido">
           <div className="mt-2 flex flex-col gap-3">
@@ -111,54 +157,8 @@ export default function Dashboard() {
           </div>
         </DashboardCard>
 
-        {/* Treinamentos - Hoje */}
-        {todayEvents.length > 0 && (
-          <DashboardCard icon={GraduationCap} title={todayLabel}>
-            <div className="mt-2">
-              <TodayCarousel events={todayEvents} todayIndex={todayIndex} />
-            </div>
-          </DashboardCard>
-        )}
-
         {/* Movimentação de Pedidos */}
         <OrderSummaryCard orders={mockOrders} />
-
-        {/* Boas Vindas */}
-        <DashboardCard icon={Hand} title="Boas Vindas">
-          <p className="mt-1 text-sm">
-            Olá, <strong>Lívia Serato</strong>
-          </p>
-          <p className="text-sm text-muted-foreground italic mt-1">
-            "Faça hoje melhor do que ontem e amanhã melhor do que hoje!"
-          </p>
-        </DashboardCard>
-
-        {/* Resumo Financeiro */}
-        <DashboardCard icon={DollarSign} title="Resumo Financeiro">
-          <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="rounded-md border border-success/30 bg-success/5 p-3 text-center">
-              <p className="text-xs text-muted-foreground">Próximo Pagamento</p>
-              <p className="text-lg font-bold text-success">{formatCurrency(mockBonusSummary.nextFriday, currency)}</p>
-            </div>
-            <div className="rounded-md border border-app-card-border p-3 text-center">
-              <p className="text-xs text-muted-foreground">Saldo Banco</p>
-              <p className="text-lg font-bold text-primary">{formatCurrency(mockBancoTimol.available, currency)}</p>
-            </div>
-            <div className="rounded-md border border-app-card-border p-3 text-center">
-              <p className="text-xs text-muted-foreground">Pontos Unilevel</p>
-              <p className="text-lg font-bold text-primary">{mockUserQualification.totalPoints.toLocaleString("pt-BR")}</p>
-            </div>
-            <div className="rounded-md border border-app-card-border p-3 text-center">
-              <p className="text-xs text-muted-foreground">Qualificação Atual</p>
-              {q && (
-                <p className="text-sm font-semibold text-primary flex items-center justify-center gap-1.5 mt-1">
-                  <span className="text-base">{q.icon}</span>
-                  {q.label}
-                </p>
-              )}
-            </div>
-          </div>
-        </DashboardCard>
 
         {/* Metas e Desafios */}
         <DashboardCard icon={Target} title="Metas e Desafios">
@@ -170,13 +170,6 @@ export default function Dashboard() {
               </label>
             ))}
           </div>
-        </DashboardCard>
-
-        {/* Agenda Semanal */}
-        <DashboardCard icon={CalendarDays} title="Agenda Semanal de Treinamentos">
-          <p className="text-sm text-muted-foreground mt-1">
-            🔗 Links para os treinamentos serão exibidos aqui.
-          </p>
         </DashboardCard>
 
         {/* Timol News */}
