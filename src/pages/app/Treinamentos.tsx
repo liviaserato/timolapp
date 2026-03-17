@@ -409,7 +409,7 @@ function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex
       <div className="w-px h-8 bg-border" />
 
       {/* Status action */}
-      <div className="shrink-0 hidden sm:flex">
+      <div className="shrink-0 hidden sm:flex min-w-[72px] w-[72px] justify-center">
         {status === "live" ? (
           <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse">
             <Radio className="h-3 w-3" />
