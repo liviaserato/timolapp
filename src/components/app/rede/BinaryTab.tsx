@@ -118,11 +118,14 @@ export function BinaryTab() {
   useEffect(() => {
     function handleEsc(e: KeyboardEvent) {
       if (e.key === "Escape") {
-        // Don't hijack if user is inside an input/select
         const tag = (e.target as HTMLElement)?.tagName;
-        if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
+        if (tag === "INPUT" || tag === "TEXTAREA") return;
         e.preventDefault();
         resetToRoot();
+        // Remove focus from any element (e.g. Select triggers)
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
       }
     }
     window.addEventListener("keydown", handleEsc);
