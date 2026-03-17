@@ -18,7 +18,7 @@ export function BinaryTreeNode({ node, side, onSelect, isRoot, hasChildren, isMe
   if (!node) {
     return (
       <div className="flex flex-col items-center">
-        <div className="flex items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/20 bg-muted/10 h-10 w-10 text-muted-foreground/30">
+        <div className="flex items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/20 bg-muted/10 h-9 w-9 text-muted-foreground/30">
           <UserPlus className="h-3.5 w-3.5" />
         </div>
         <span className="text-[10px] text-muted-foreground/40 mt-1">
