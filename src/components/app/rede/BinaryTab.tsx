@@ -87,10 +87,8 @@ export function BinaryTab() {
   const diff = Math.abs(leftVolume - rightVolume);
 
   function navigateTo(member: NetworkMember) {
-    if (member.left || member.right) {
-      setNavHistory(prev => [...prev, rootId]);
-      setRootId(member.id);
-    }
+    setNavHistory(prev => [...prev, rootId]);
+    setRootId(member.id);
   }
 
   function navigateToId(id: string) {
