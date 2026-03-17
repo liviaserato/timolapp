@@ -367,7 +367,10 @@ function TodayEventRow({ event, todayIndex }: { event: WeekEvent; todayIndex: nu
 function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex }: { event: WeekEvent; showDay?: boolean; showDate?: boolean; todayIndex: number }) {
   const cfg = typeConfig[event.type];
   const status = getEventStatus(event, todayIndex);
-  const dayDate = showDate ? getDateForDayIndex(event.dayIndex).getDate() : null;
+  const dayDateLabel = showDate ? (() => {
+    const d = getDateForDayIndex(event.dayIndex);
+    return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+  })() : null;
 
   return (
     <div className={`flex items-center gap-3 rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] ${cfg.borderColor} p-3 hover:bg-muted/50 transition-colors`}>
