@@ -28,8 +28,8 @@ export default function AppLayout() {
           <AppHeader />
           <div className="flex flex-1 min-h-0">
             <AppSidebar />
-            <main className={`flex-1 ${isImmersive ? "overflow-hidden" : "overflow-y-auto p-6 pb-24 md:pb-6"}`}>
-              <div className={`w-full mx-auto ${isImmersive ? "h-full" : "max-w-[900px]"}`}>
+            <main className={`flex-1 ${isImmersive ? "overflow-hidden md:overflow-y-auto bg-[#0f1117]" : "overflow-y-auto p-6 pb-24 md:pb-6"}`}>
+              <div className={`w-full mx-auto ${isImmersive ? "h-full md:h-auto" : "max-w-[900px]"}`}>
                 <Outlet />
               </div>
             </main>
