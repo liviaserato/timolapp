@@ -60,6 +60,7 @@ export function BinaryTab() {
   const searchRef = useRef<HTMLInputElement>(null);
 
   const currentRoot = findNodeById(mockBinaryTree, rootId) ?? mockBinaryTree;
+  const myDocument = mockBinaryTree.document;
 
   const leftMembers = useMemo(() => flattenSide(currentRoot.left), [currentRoot]);
   const rightMembers = useMemo(() => flattenSide(currentRoot.right), [currentRoot]);
