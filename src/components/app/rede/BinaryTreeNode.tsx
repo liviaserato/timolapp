@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { ChevronDown, ChevronRight, UserPlus } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { User, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NetworkMember, qualificationConfig } from "./mock-data";
 
@@ -8,75 +6,71 @@ interface Props {
   node: NetworkMember | null;
   side?: "left" | "right";
   onSelect: (member: NetworkMember) => void;
-  depth?: number;
 }
 
-export function BinaryTreeNode({ node, side, onSelect, depth = 0 }: Props) {
-  const [expanded, setExpanded] = useState(depth < 2);
-
+export function BinaryTreeNode({ node, side, onSelect }: Props) {
   if (!node) {
     return (
       <div className="flex flex-col items-center">
-        <div className="flex items-center gap-1.5 rounded-lg border border-dashed border-muted-foreground/30 bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
-          <UserPlus className="h-3.5 w-3.5" />
-          <span>Vazio ({side === "left" ? "Esq." : "Dir."})</span>
+        <div className="flex flex-col items-center gap-1.5 rounded-xl border-2 border-dashed border-muted-foreground/25 bg-muted/30 px-4 py-3 text-muted-foreground/50">
+          <UserPlus className="h-6 w-6" />
+          <span className="text-[10px] font-medium">
+            {side === "left" ? "Esquerda" : "Direita"}
+          </span>
         </div>
       </div>
     );
   }
 
   const q = qualificationConfig[node.qualification] ?? qualificationConfig.consultor;
-  const hasChildren = node.left || node.right;
+  const initials = node.name
+    .split(" ")
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
   return (
-    <div className="flex flex-col items-center gap-1">
+    <div className="flex flex-col items-center">
       {/* Node card */}
       <button
         onClick={() => onSelect(node)}
         className={cn(
-          "flex items-center gap-2 rounded-lg border bg-card px-3 py-2 text-left shadow-sm transition-colors hover:bg-accent/50 cursor-pointer",
-          !node.active && "opacity-60"
+          "flex flex-col items-center gap-1.5 rounded-xl border-2 bg-card px-4 py-3 shadow-sm transition-all hover:shadow-md cursor-pointer min-w-[100px]",
+          node.active
+            ? "border-success"
+            : "border-destructive"
         )}
       >
-        <span style={{ color: q.color }} className="text-sm font-bold">{q.icon}</span>
-        <div className="min-w-0">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-semibold truncate max-w-[100px]">{node.name}</span>
-            <Badge variant={node.active ? "default" : "secondary"} className={cn("text-[9px] px-1 py-0 h-4", node.active && "bg-success text-success-foreground")}>
-              {node.active ? "Ativo" : "Inativo"}
-            </Badge>
-          </div>
-          <span className="text-[10px] text-muted-foreground">ID {node.id} · {node.volume.toLocaleString("pt-BR")} pts</span>
+        {/* Avatar circle */}
+        <div
+          className="flex items-center justify-center h-10 w-10 rounded-full"
+          style={{ backgroundColor: `${q.color}20`, color: q.color }}
+        >
+          <User className="h-5 w-5" />
         </div>
-        {hasChildren && (
-          <button
-            onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
-            className="ml-1 rounded p-0.5 hover:bg-muted"
-          >
-            {expanded ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
-          </button>
-        )}
-      </button>
 
-      {/* Children */}
-      {hasChildren && expanded && (
-        <>
-          {/* Connector line */}
-          <div className="w-px h-4 bg-border" />
-          <div className="flex gap-4 md:gap-8 relative">
-            {/* Horizontal connector */}
-            <div className="absolute top-0 left-1/4 right-1/4 h-px bg-border" />
-            <div className="flex flex-col items-center">
-              <div className="w-px h-4 bg-border" />
-              <BinaryTreeNode node={node.left ?? null} side="left" onSelect={onSelect} depth={depth + 1} />
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-px h-4 bg-border" />
-              <BinaryTreeNode node={node.right ?? null} side="right" onSelect={onSelect} depth={depth + 1} />
-            </div>
-          </div>
-        </>
-      )}
+        {/* Name & ID */}
+        <span className="text-xs font-semibold truncate max-w-[90px] text-foreground">
+          {node.name.split(" ")[0]}
+        </span>
+        <span className="text-[10px] text-muted-foreground leading-none">
+          ID {node.id}
+        </span>
+
+        {/* Qualification badge */}
+        <span
+          className="text-[10px] font-medium leading-none"
+          style={{ color: q.color }}
+        >
+          {q.icon} {q.label}
+        </span>
+
+        {/* Volume */}
+        <span className="text-[10px] text-muted-foreground leading-none">
+          {node.volume.toLocaleString("pt-BR")} pts
+        </span>
+      </button>
     </div>
   );
 }
