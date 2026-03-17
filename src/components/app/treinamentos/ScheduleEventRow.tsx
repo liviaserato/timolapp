@@ -6,6 +6,7 @@ import { typeConfig, DAYS } from "./constants";
 import { getEventStatus, getDateForDayIndex } from "./helpers";
 
 export function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex }: { event: WeekEvent; showDay?: boolean; showDate?: boolean; todayIndex: number }) {
+  const navigate = useNavigate();
   const cfg = typeConfig[event.type];
   const status = getEventStatus(event, todayIndex);
   const dayDateLabel = showDate ? (() => {
