@@ -382,8 +382,6 @@ export function UnilevelTab({ searchQuery }: Props) {
       {/* Qualification legend */}
       <QualificationLegend />
 
-      {/* ═══ Level info card ═══ */}
-      <LevelInfoCard userQualification={userQualification} maxLevel={maxLevel} />
 
       {/* ═══ Bonus section ═══ */}
       <BonusSection onOpen={() => setBonusModalOpen(true)} />
