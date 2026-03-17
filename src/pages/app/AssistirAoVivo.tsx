@@ -45,7 +45,7 @@ export default function AssistirAoVivo() {
   const isLive = status === "live";
   const embedDomain = window.location.hostname;
 
-  const playerUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+  const playerUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
   const chatUrl = `https://www.youtube.com/live_chat?v=${videoId}&embed_domain=${embedDomain}`;
 
   const descriptionBlock = (
