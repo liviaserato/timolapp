@@ -249,9 +249,9 @@ export function BinaryTab() {
         {/* ═══ RIGHT COLUMN: Analytics ═══ */}
         <div className="space-y-3">
           {/* Current root info */}
-          <Card className="bg-primary/5 border-primary/20">
+          <Card>
             <CardContent className="p-4 text-center">
-              <h2 className="text-lg font-bold text-foreground">{currentRoot.name}</h2>
+              <h2 className="text-lg font-bold" style={{ color: "#003885" }}>{currentRoot.name}</h2>
               <p className="text-xs text-muted-foreground">ID {currentRoot.id}</p>
             </CardContent>
           </Card>
