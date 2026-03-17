@@ -363,12 +363,12 @@ function SearchInput({ value, onChange, onKeyDown, inputRef }: { value: string; 
   );
 }
 
-function SortSelector({ value, onChange }: { value: SortMode; onChange: (v: SortMode) => void }) {
+function SortSelector({ value, onChange }: { value: SortMode | ""; onChange: (v: SortMode) => void }) {
   return (
-    <Select value={value} onValueChange={(v) => onChange(v as SortMode)}>
+    <Select value={value || undefined} onValueChange={(v) => onChange(v as SortMode)}>
       <SelectTrigger className="h-8 text-[11px] w-full">
         <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
-        <SelectValue />
+        <SelectValue placeholder="Classificar" />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
