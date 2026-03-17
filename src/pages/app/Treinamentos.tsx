@@ -137,13 +137,13 @@ export default function Treinamentos() {
             value={selectedDay !== null ? String(selectedDay) : "all"}
             onValueChange={(v) => setSelectedDay(v === "all" ? null : Number(v))}
           >
-            <TabsList className="flex flex-wrap h-auto gap-1">
-              <TabsTrigger value="all" className="text-xs px-3">Todos</TabsTrigger>
+            <TabsList className="flex w-full h-auto gap-0.5 p-0.5">
+              <TabsTrigger value="all" className="text-xs px-2 flex-1 min-w-0">Todos</TabsTrigger>
               {DAYS.map((d, i) => (
                 <TabsTrigger
                   key={i}
                   value={String(i)}
-                  className={`text-xs px-3 ${i === todayIndex ? "ring-1 ring-primary/40" : ""}`}
+                  className={`text-xs px-1.5 flex-1 min-w-0 ${i === todayIndex ? "ring-0 border-b-[3px] border-primary rounded-b-none" : ""}`}
                 >
                   {d}
                 </TabsTrigger>
