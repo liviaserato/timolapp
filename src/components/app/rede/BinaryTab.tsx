@@ -174,9 +174,9 @@ export function BinaryTab() {
         {/* ═══ LEFT COLUMN: Tree ═══ */}
         <div className="space-y-3">
           {/* Tree drawing */}
-          <Card>
+          <Card className="min-h-[340px]">
             <CardContent className="px-2 py-4">
-              <h2 className="text-base font-bold text-foreground text-center mb-1">Rede Binária</h2>
+              <h2 className="text-base font-bold text-foreground text-center mb-4">Rede Binária</h2>
               {navHistory.length > 0 && (
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <Button variant="ghost" size="sm" onClick={navigateBack} className="gap-1 text-xs h-7 px-2">
@@ -402,11 +402,11 @@ function LegTable({ title, members, onNavigate }: { title: string; members: Netw
                   const isDirect = m.type === "direct";
                   const hasChildren = !!(m.left || m.right);
                   return (
-                    <TableRow key={m.id} className={cn(hasChildren && "cursor-pointer hover:bg-accent/40")} onClick={() => hasChildren && onNavigate(m.id)}>
+                    <TableRow key={m.id} className="cursor-pointer hover:bg-accent/40" onClick={() => onNavigate(m.id)}>
                       <TableCell className="px-2 py-1.5">
                         <div className={cn("h-2 w-2 rounded-full mx-auto", m.active ? "bg-success" : "bg-destructive")} />
                       </TableCell>
-                      <TableCell className={cn("px-2 py-1.5 text-[11px] tabular-nums", isDirect ? "font-bold" : "font-normal", hasChildren && "text-primary underline")}>
+                      <TableCell className={cn("px-2 py-1.5 text-[11px] tabular-nums", isDirect ? "font-bold" : "font-normal")}>
                         {m.id}
                       </TableCell>
                       <TableCell className={cn("px-2 py-1.5 text-[11px] truncate max-w-[100px]", isDirect ? "font-bold" : "font-normal")}>
