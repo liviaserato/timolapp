@@ -19,8 +19,12 @@ export default function Rede() {
 
   return (
     <div className="space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold text-primary">Minha Rede</h1>
+        <p className="text-sm text-muted-foreground mt-1">Acompanhe a estrutura e o desempenho da sua rede de franqueados</p>
+      </div>
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h1 className="text-xl font-bold">Minha Rede</h1>
         <div className="relative w-full sm:w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
