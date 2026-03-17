@@ -8,9 +8,10 @@ import { IndicarFranquiaDialog } from "@/components/app/IndicarFranquiaDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { TodayCarousel } from "@/components/app/treinamentos/TodayCarousel";
-import { weekEvents } from "@/components/app/treinamentos/constants";
+import { weekEvents, DAYS_FULL } from "@/components/app/treinamentos/constants";
 import { getEventStatus } from "@/components/app/treinamentos/helpers";
-import { DAYS_FULL } from "@/components/app/treinamentos/constants";
+import { mockBonusSummary, mockBancoTimol, mockUserQualification, qualificationLabels } from "@/components/app/financeiro/mock-data";
+import { getCurrencyConfig, formatCurrency } from "@/components/app/financeiro/currency-helpers";
 import {
   Carousel,
   CarouselContent,
@@ -76,6 +77,9 @@ export default function Dashboard() {
 
   const todayLabel = `Hoje – ${DAYS_FULL[todayIndex]}, ${today.toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}`;
 
+  const currency = getCurrencyConfig("BR", "BRL");
+  const q = qualificationLabels[mockUserQualification.current];
+
   return (
     <div>
       <header className="mb-4">
@@ -131,17 +135,27 @@ export default function Dashboard() {
 
         {/* Resumo Financeiro */}
         <DashboardCard icon={DollarSign} title="Resumo Financeiro">
-          <p className="text-sm text-muted-foreground mt-1">
-            Clique em cada item para acessar seu extrato detalhado.
-          </p>
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <div className="rounded-md border border-app-card-border p-3 text-center">
-              <p className="text-xs text-muted-foreground">Saldo Disponível</p>
-              <p className="text-lg font-bold text-primary">R$ 0,00</p>
+          <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="rounded-md border border-success/30 bg-success/5 p-3 text-center">
+              <p className="text-xs text-muted-foreground">Próximo Pagamento</p>
+              <p className="text-lg font-bold text-success">{formatCurrency(mockBonusSummary.nextFriday, currency)}</p>
             </div>
             <div className="rounded-md border border-app-card-border p-3 text-center">
-              <p className="text-xs text-muted-foreground">Comissões do Mês</p>
-              <p className="text-lg font-bold text-primary">R$ 0,00</p>
+              <p className="text-xs text-muted-foreground">Saldo Banco</p>
+              <p className="text-lg font-bold text-primary">{formatCurrency(mockBancoTimol.available, currency)}</p>
+            </div>
+            <div className="rounded-md border border-app-card-border p-3 text-center">
+              <p className="text-xs text-muted-foreground">Pontos Unilevel</p>
+              <p className="text-lg font-bold text-primary">{mockUserQualification.totalPoints.toLocaleString("pt-BR")}</p>
+            </div>
+            <div className="rounded-md border border-app-card-border p-3 text-center">
+              <p className="text-xs text-muted-foreground">Qualificação Atual</p>
+              {q && (
+                <p className="text-sm font-semibold text-primary flex items-center justify-center gap-1.5 mt-1">
+                  <span className="text-base">{q.icon}</span>
+                  {q.label}
+                </p>
+              )}
             </div>
           </div>
         </DashboardCard>
