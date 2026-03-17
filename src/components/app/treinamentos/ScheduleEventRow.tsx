@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Play, Radio, Hourglass, Calendar } from "lucide-react";
 import type { WeekEvent } from "./types";
