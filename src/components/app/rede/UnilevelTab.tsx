@@ -354,6 +354,7 @@ export function UnilevelTab({ searchQuery }: Props) {
               root={mockUnilevelTree}
               maxLevel={maxLevel}
               onSelectMember={setSelectedMember}
+              searchQuery={searchId || searchQuery}
             />
           </CardContent>
         </Card>
