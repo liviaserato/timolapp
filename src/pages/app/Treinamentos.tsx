@@ -54,7 +54,7 @@ const weekEvents: WeekEvent[] = [
 ];
 
 const typeConfig: Record<EventType, { label: string; borderColor: string; iconColor: string; icon: React.ReactNode }> = {
-  produto:     { label: "Produto",     borderColor: "border-l-[hsl(var(--app-sidebar))]",  iconColor: "text-[hsl(var(--app-sidebar))]",  icon: <Presentation className="h-3.5 w-3.5" /> },
+  produto:     { label: "Produto",     borderColor: "border-l-[hsl(var(--loader-water))]",   iconColor: "text-[hsl(var(--loader-water))]",   icon: <Presentation className="h-3.5 w-3.5" /> },
   negocio:     { label: "Negócio",     borderColor: "border-l-[hsl(var(--app-header))]",   iconColor: "text-[hsl(var(--app-header))]",   icon: <Tv className="h-3.5 w-3.5" /> },
   especial:    { label: "Especial",    borderColor: "border-l-amber-300",                  iconColor: "text-amber-400",                  icon: <Sparkles className="h-3.5 w-3.5" /> },
   treinamento: { label: "Treinamento", borderColor: "border-l-emerald-400",                iconColor: "text-emerald-500",                icon: <GraduationCap className="h-3.5 w-3.5" /> },
