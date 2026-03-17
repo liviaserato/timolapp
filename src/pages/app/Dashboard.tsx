@@ -107,6 +107,15 @@ export default function Dashboard() {
           </div>
         </DashboardCard>
 
+        {/* Treinamentos - Hoje */}
+        {todayEvents.length > 0 && (
+          <DashboardCard icon={GraduationCap} title={todayLabel}>
+            <div className="mt-2">
+              <TodayCarousel events={todayEvents} todayIndex={todayIndex} />
+            </div>
+          </DashboardCard>
+        )}
+
         {/* Movimentação de Pedidos */}
         <OrderSummaryCard orders={mockOrders} />
 
