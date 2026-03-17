@@ -132,7 +132,11 @@ export default function Treinamentos() {
   const todayEvents = weekEvents.filter((e) => e.dayIndex === todayIndex);
 
   const selectedDateLabel = useMemo(() => {
-    if (selectedDay === null) return null;
+    if (selectedDay === null) {
+      const monday = getDateForDayIndex(0);
+      const sunday = getDateForDayIndex(6);
+      return `${formatDateBR(monday)} – ${formatDateBR(sunday)}`;
+    }
     const date = getDateForDayIndex(selectedDay);
     return `${DAYS_FULL[selectedDay]}, ${formatDateBR(date)}`;
   }, [selectedDay]);
