@@ -1,10 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Filter } from "lucide-react";
+import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Calendar,
   Youtube,
@@ -20,8 +20,13 @@ import {
   Radio,
   Hourglass,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 import iconWhatsapp from "@/assets/icon-logo-whatsapp.svg";
 import bannerMock from "@/assets/banner-treinamento-mock.png";
+import bannerMock2 from "@/assets/banner-treinamento-mock-2.png";
 
 /* ------------------------------------------------------------------ */
 /*  Types & constants                                                  */
@@ -31,13 +36,13 @@ type EventType = "produto" | "negocio" | "especial" | "treinamento";
 
 interface WeekEvent {
   id: string;
-  dayIndex: number;        // 0=Seg … 6=Dom
-  time: string;            // "19:00"
-  endTime?: string;        // "20:00" optional end time
+  dayIndex: number;
+  time: string;
+  endTime?: string;
   title: string;
   type: EventType;
   host?: string;
-  bannerUrl?: string;      // banner image URL (from DB)
+  bannerUrl?: string;
 }
 
 const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
@@ -47,7 +52,7 @@ const weekEvents: WeekEvent[] = [
   { id: "1", dayIndex: 0, time: "08:50", endTime: "10:00", title: "Aulas de produtos e franquias", type: "produto", host: "Lucas Rocha" },
   { id: "2", dayIndex: 0, time: "20:30", endTime: "21:30", title: "Treinamento: Primeiros Passos", type: "treinamento", host: "Maria Souza" },
   { id: "3", dayIndex: 1, time: "00:00", endTime: "23:59", title: "Aulas de produtos e franquias", type: "negocio", host: "Lucas Rocha", bannerUrl: bannerMock },
-  { id: "4", dayIndex: 1, time: "20:30", endTime: "21:30", title: "Live Especial: Fechamento de Mês", type: "especial", host: "Ana Costa", bannerUrl: bannerMock },
+  { id: "4", dayIndex: 1, time: "20:30", endTime: "21:30", title: "Construindo uma Rede Forte", type: "especial", host: "Ana Costa", bannerUrl: bannerMock2 },
   { id: "5", dayIndex: 2, time: "19:00", endTime: "20:00", title: "Treinamento: Técnicas de Venda", type: "treinamento", host: "Pedro Alves" },
   { id: "6", dayIndex: 3, time: "19:00", endTime: "20:00", title: "Live Produto – Linha Premium", type: "produto", host: "João Silva" },
   { id: "7", dayIndex: 3, time: "20:30", endTime: "21:30", title: "Live Negócio – Marketing Digital", type: "negocio", host: "Carlos Lima" },
@@ -75,7 +80,7 @@ const quickLinks = [
 
 function getMondayOfCurrentWeek(): Date {
   const now = new Date();
-  const day = now.getDay(); // 0=Sun
+  const day = now.getDay();
   const diff = day === 0 ? -6 : 1 - day;
   const monday = new Date(now);
   monday.setDate(now.getDate() + diff);
@@ -100,12 +105,11 @@ function getEventStatus(event: WeekEvent, todayIndex: number): EventStatus {
   if (event.dayIndex < todayIndex) return "past";
   if (event.dayIndex > todayIndex) return "upcoming";
 
-  // Same day — check time
   const now = new Date();
   const [startH, startM] = event.time.split(":").map(Number);
   const startMinutes = startH * 60 + startM;
 
-  let endMinutes = startMinutes + 60; // default 1h
+  let endMinutes = startMinutes + 60;
   if (event.endTime) {
     const [endH, endM] = event.endTime.split(":").map(Number);
     endMinutes = endH * 60 + endM;
@@ -140,7 +144,18 @@ export default function Treinamentos() {
     return events;
   }, [selectedDay, selectedType]);
 
-  const todayEvents = weekEvents.filter((e) => e.dayIndex === todayIndex);
+  const todayEvents = useMemo(() => {
+    const events = weekEvents.filter((e) => e.dayIndex === todayIndex);
+    return events.sort((a, b) => {
+      const statusA = getEventStatus(a, todayIndex);
+      const statusB = getEventStatus(b, todayIndex);
+      const order: Record<EventStatus, number> = { live: 0, upcoming: 1, past: 2 };
+      if (order[statusA] !== order[statusB]) return order[statusA] - order[statusB];
+      const [ah, am] = a.time.split(":").map(Number);
+      const [bh, bm] = b.time.split(":").map(Number);
+      return (ah * 60 + am) - (bh * 60 + bm);
+    });
+  }, [todayIndex]);
 
   const selectedDateLabel = useMemo(() => {
     if (selectedDay === null) {
@@ -157,7 +172,6 @@ export default function Treinamentos() {
 
   return (
     <div className="space-y-6">
-      {/* Page title */}
       <div>
         <h1 className="text-2xl font-bold text-primary">Treinamentos</h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -165,7 +179,6 @@ export default function Treinamentos() {
         </p>
       </div>
 
-      {/* Quick links */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {quickLinks.map((link) => (
           <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="group">
@@ -182,7 +195,6 @@ export default function Treinamentos() {
         ))}
       </div>
 
-      {/* Today highlight */}
       {todayEvents.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
@@ -192,16 +204,11 @@ export default function Treinamentos() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {todayEvents.map((ev) => (
-                <TodayEventCard key={ev.id} event={ev} todayIndex={todayIndex} />
-              ))}
-            </div>
+            <TodayCarousel events={todayEvents} todayIndex={todayIndex} />
           </CardContent>
         </Card>
       )}
 
-      {/* Weekly calendar */}
       <Card>
         <CardHeader className="pb-3">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
@@ -214,7 +221,6 @@ export default function Treinamentos() {
                 <p className="text-sm text-muted-foreground ml-6">{selectedDateLabel}</p>
               )}
             </div>
-            {/* Category filter dropdown */}
             <Select value={selectedType} onValueChange={(v) => setSelectedType(v as EventType | "all")}>
               <SelectTrigger className="w-auto h-8 text-xs gap-1.5 px-3 shrink-0">
                 <Filter className="h-3.5 w-3.5 text-muted-foreground" />
@@ -238,7 +244,6 @@ export default function Treinamentos() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Day filter tabs */}
           <Tabs
             value={selectedDay !== null ? String(selectedDay) : "all"}
             onValueChange={(v) => setSelectedDay(v === "all" ? null : Number(v))}
@@ -257,14 +262,12 @@ export default function Treinamentos() {
             </TabsList>
           </Tabs>
 
-          {/* Events list */}
           <div className="space-y-2" style={{ minHeight: "340px" }}>
             {filteredEvents.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-6">
                 Nenhum evento neste dia.
               </p>
             ) : selectedDay === null ? (
-              /* Group by day with separator labels */
               (() => {
                 const grouped = filteredEvents.reduce<Record<number, WeekEvent[]>>((acc, ev) => {
                   (acc[ev.dayIndex] = acc[ev.dayIndex] || []).push(ev);
@@ -277,7 +280,6 @@ export default function Treinamentos() {
                     const isToday = idx === todayIndex;
                     return (
                       <div key={dayIdx} className="flex gap-3 items-stretch">
-                        {/* Rotated day label */}
                         <div className="flex items-center min-w-[36px]">
                           <span
                             className={`text-[11px] font-semibold tracking-widest whitespace-nowrap ${isToday ? "text-primary" : "text-muted-foreground/50"}`}
@@ -308,7 +310,56 @@ export default function Treinamentos() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Today Event Row (enhanced)                                         */
+/*  Today Carousel                                                     */
+/* ------------------------------------------------------------------ */
+
+function TodayCarousel({ events, todayIndex }: { events: WeekEvent[]; todayIndex: number }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const showChevrons = events.length > 1;
+
+  const scroll = useCallback((dir: "left" | "right") => {
+    if (!scrollRef.current) return;
+    const cardWidth = 200 + 16;
+    scrollRef.current.scrollBy({ left: dir === "left" ? -cardWidth : cardWidth, behavior: "smooth" });
+  }, []);
+
+  return (
+    <div className="relative flex items-center gap-2">
+      {showChevrons && (
+        <button
+          onClick={() => scroll("left")}
+          className="shrink-0 h-8 w-8 rounded-full border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+      )}
+
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
+        style={{ scrollSnapType: "x mandatory" }}
+      >
+        {events.map((ev) => (
+          <div key={ev.id} style={{ scrollSnapAlign: "start" }}>
+            <TodayEventCard event={ev} todayIndex={todayIndex} />
+          </div>
+        ))}
+      </div>
+
+      {showChevrons && (
+        <button
+          onClick={() => scroll("right")}
+          className="shrink-0 h-8 w-8 rounded-full border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Today Event Card                                                   */
 /* ------------------------------------------------------------------ */
 
 function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayIndex: number }) {
@@ -316,76 +367,82 @@ function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayIndex: n
   const status = getEventStatus(event, todayIndex);
   const eventDate = getDateForDayIndex(event.dayIndex);
   const dateStr = eventDate.toLocaleDateString("pt-BR", { day: "2-digit", month: "long" });
+  const [imageOpen, setImageOpen] = useState(false);
 
   return (
-    <div className="rounded-lg border border-app-card-border bg-card overflow-hidden shadow-sm flex flex-col">
-      {/* Banner image */}
-      {event.bannerUrl && (
-        <div className="relative">
-          <img src={event.bannerUrl} alt={event.title} className="w-full aspect-[4/5] object-cover" />
-          {/* Live indicator dot on banner */}
-          {status === "live" && (
-            <span className="absolute top-2 left-2 flex items-center gap-1.5 bg-red-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+    <>
+      <div className="rounded-lg border border-border bg-card overflow-hidden shadow-sm flex flex-col w-[200px] min-w-[200px] max-w-[200px]">
+        {event.bannerUrl && (
+          <div className="relative cursor-pointer" onClick={() => setImageOpen(true)}>
+            <img src={event.bannerUrl} alt={event.title} className="w-full aspect-[4/5] object-cover" />
+            {status === "live" && (
+              <span className="absolute top-2 left-2 flex items-center gap-1.5 bg-red-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+                </span>
+                AO VIVO
               </span>
-              AO VIVO
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* Info */}
-      <div className="p-3 space-y-2 flex-1 flex flex-col">
-        <div className="flex flex-col gap-1.5">
-          <div className="flex justify-end">
-            <Badge className={`text-[10px] gap-1 shrink-0 ${cfg.badgeText} ${cfg.badgeBg} ${cfg.badgeBorder} border`}>
-              {cfg.icon}
-              {cfg.label}
-            </Badge>
+            )}
           </div>
-          <p className="text-sm font-semibold text-foreground leading-snug">{event.title}</p>
-        </div>
+        )}
 
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <Calendar className="h-3 w-3" />
-            {dateStr}
-          </span>
-          <span className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            {event.time}{event.endTime ? ` – ${event.endTime}` : ""}
-          </span>
-        </div>
+        <div className="p-2.5 space-y-1.5 flex-1 flex flex-col">
+          <div className="flex flex-col gap-1">
+            <div className="flex justify-end">
+              <Badge className={`text-[10px] gap-1 shrink-0 ${cfg.badgeText} ${cfg.badgeBg} ${cfg.badgeBorder} border`}>
+                {cfg.icon}
+                {cfg.label}
+              </Badge>
+            </div>
+            <p className="text-xs font-semibold text-foreground leading-snug">{event.title}</p>
+          </div>
 
-        {/* Spacer to push button to bottom */}
-        <div className="flex-1" />
+          <div className="flex flex-col gap-0.5 text-[11px] text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Calendar className="h-3 w-3 shrink-0" />
+              {dateStr}
+            </span>
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3 shrink-0" />
+              {event.time}{event.endTime ? ` – ${event.endTime}` : ""}
+            </span>
+          </div>
 
-        {/* Action */}
-        <div className="pt-1">
-          {status === "live" ? (
-            <Button size="sm" className="gap-1.5 text-xs w-full bg-red-600 hover:bg-red-700">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
-              </span>
-              Assista ao vivo
-            </Button>
-          ) : status === "past" ? (
-            <Button size="sm" variant="outline" className="gap-1.5 text-xs w-full">
-              <Play className="h-3.5 w-3.5" />
-              Assistir gravação
-            </Button>
-          ) : (
-            <Button size="sm" variant="outline" className="gap-1.5 text-xs w-full" disabled>
-              <Hourglass className="h-3.5 w-3.5" />
-              Em breve
-            </Button>
-          )}
+          <div className="flex-1" />
+
+          <div className="pt-1">
+            {status === "live" ? (
+              <Button size="sm" className="gap-1.5 text-[11px] w-full bg-red-600 hover:bg-red-700 h-7">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+                </span>
+                Assista ao vivo
+              </Button>
+            ) : status === "past" ? (
+              <Button size="sm" variant="outline" className="gap-1.5 text-[11px] w-full h-7">
+                <Play className="h-3 w-3" />
+                Assistir gravação
+              </Button>
+            ) : (
+              <Button size="sm" variant="outline" className="gap-1.5 text-[11px] w-full h-7" disabled>
+                <Hourglass className="h-3 w-3" />
+                Em breve
+              </Button>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      {event.bannerUrl && (
+        <Dialog open={imageOpen} onOpenChange={setImageOpen}>
+          <DialogContent className="max-w-lg p-2 bg-transparent border-0 shadow-none">
+            <img src={event.bannerUrl} alt={event.title} className="w-full rounded-lg" />
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 }
 
@@ -402,8 +459,7 @@ function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex
   })() : null;
 
   return (
-    <div className={`flex items-center gap-2 rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] ${cfg.borderColor} px-2 py-3 hover:bg-muted/50 transition-colors`}>
-      {/* Time */}
+    <div className={`flex items-center gap-2 rounded-r-lg rounded-l-[2px] border border-border bg-card overflow-hidden border-l-[5px] ${cfg.borderColor} px-2 py-3 hover:bg-muted/50 transition-colors`}>
       <div className="flex flex-col items-center min-w-[72px] w-[72px]">
         {showDay && (
           <span className="text-[10px] font-semibold text-muted-foreground uppercase">
@@ -419,10 +475,8 @@ function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex
         </span>
       </div>
 
-      {/* Divider */}
       <div className="w-px h-8 bg-border" />
 
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-foreground truncate">{event.title}</p>
         {event.host && (
@@ -430,10 +484,8 @@ function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex
         )}
       </div>
 
-      {/* Divider */}
       <div className="w-px h-8 bg-border" />
 
-      {/* Status action */}
       <div className="shrink-0 hidden sm:flex min-w-[72px] w-[72px] justify-center">
         {status === "live" ? (
           <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse">
