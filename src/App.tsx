@@ -15,6 +15,7 @@ import Dashboard from "./pages/app/Dashboard";
 import Cadastro from "./pages/app/Cadastro";
 import Financeiro from "./pages/app/Financeiro";
 import Suporte from "./pages/app/Suporte";
+import Treinamentos from "./pages/app/Treinamentos";
 import Pedidos from "./pages/app/Pedidos";
 import RealizarPedido from "./pages/app/RealizarPedido";
 import Checkout from "./pages/app/Checkout";
