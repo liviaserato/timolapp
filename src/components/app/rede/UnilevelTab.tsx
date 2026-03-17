@@ -254,19 +254,17 @@ export function UnilevelTab({ searchQuery }: Props) {
           </div>
 
           {filterMode === "month" ? (
-            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-              <SelectTrigger className="h-8 text-xs w-[160px]">
-                <Calendar className="h-3 w-3 mr-1 text-muted-foreground" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {monthOptions.map((mo) => (
-                  <SelectItem key={mo.value} value={mo.value} className="text-xs">
-                    {mo.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-0 shrink-0 h-8">
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={prevMonth}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-xs font-medium w-[120px] text-center whitespace-nowrap">
+                {getMonthLabel(monthRef)}
+              </span>
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth} disabled={isCurrentMonth}>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           ) : (
             <div className="flex items-center gap-1.5">
               <Input
