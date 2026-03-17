@@ -81,7 +81,7 @@ export default function AssistirAoVivo() {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-lg font-bold text-neutral-100 truncate">{event.title}</h1>
-            {isLive ? (
+            {!isMobile && (isLive ? (
               <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse shrink-0">
                 <Radio className="h-3 w-3" />
                 Ao Vivo
@@ -91,11 +91,24 @@ export default function AssistirAoVivo() {
                 <Play className="h-3 w-3" />
                 Gravação
               </Badge>
-            )}
+            ))}
           </div>
-          {event.host && (
-            <p className="text-sm text-neutral-500">com {event.host}</p>
-          )}
+          <div className="flex items-center justify-between">
+            {event.host && (
+              <p className="text-sm text-neutral-500">com {event.host}</p>
+            )}
+            {isMobile && (isLive ? (
+              <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse shrink-0">
+                <Radio className="h-3 w-3" />
+                Ao Vivo
+              </Badge>
+            ) : (
+              <Badge className="bg-neutral-700 text-neutral-300 border-0 text-[10px] gap-1 shrink-0">
+                <Play className="h-3 w-3" />
+                Gravação
+              </Badge>
+            ))}
+          </div>
         </div>
       </div>
 
