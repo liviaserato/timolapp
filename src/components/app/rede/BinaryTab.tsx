@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef } from "react";
-import { ArrowDownLeft, ArrowDownRight, Lightbulb, Search, ChevronLeft, ChevronRight, X, ArrowUp, PlayCircle, Users, Star } from "lucide-react";
+import { ArrowDownLeft, ArrowDownRight, Lightbulb, Search, ChevronLeft, ChevronRight, X, ArrowUp, PlayCircle, Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
