@@ -318,28 +318,33 @@ function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayIndex: n
   const dateStr = eventDate.toLocaleDateString("pt-BR", { day: "2-digit", month: "long" });
 
   return (
-    <div className="rounded-lg border border-app-card-border bg-card overflow-hidden shadow-sm">
+    <div className="rounded-lg border border-app-card-border bg-card overflow-hidden shadow-sm flex flex-col">
       {/* Banner image */}
       {event.bannerUrl && (
-        <img src={event.bannerUrl} alt={event.title} className="w-full aspect-[4/5] object-cover" />
+        <div className="relative">
+          <img src={event.bannerUrl} alt={event.title} className="w-full aspect-[4/5] object-cover" />
+          {/* Live indicator dot on banner */}
+          {status === "live" && (
+            <span className="absolute top-2 left-2 flex items-center gap-1.5 bg-red-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+              </span>
+              AO VIVO
+            </span>
+          )}
+        </div>
       )}
 
       {/* Info */}
-      <div className="p-3 space-y-2">
-        <div className="flex items-center gap-2 flex-wrap">
-          <Badge variant="outline" className={`text-[10px] gap-1 ${cfg.iconColor} border-current/30`}>
+      <div className="p-3 space-y-2 flex-1 flex flex-col">
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-sm font-semibold text-foreground leading-snug">{event.title}</p>
+          <Badge variant="outline" className={`text-[10px] gap-1 shrink-0 ${cfg.iconColor} border-current/30`}>
             {cfg.icon}
             {cfg.label}
           </Badge>
-          {status === "live" && (
-            <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse">
-              <Radio className="h-3 w-3" />
-              Ao vivo
-            </Badge>
-          )}
         </div>
-
-        <p className="text-sm font-semibold text-foreground leading-snug">{event.title}</p>
 
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
@@ -352,16 +357,18 @@ function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayIndex: n
           </span>
         </div>
 
-        {event.host && (
-          <p className="text-xs text-muted-foreground">com {event.host}</p>
-        )}
+        {/* Spacer to push button to bottom */}
+        <div className="flex-1" />
 
         {/* Action */}
         <div className="pt-1">
           {status === "live" ? (
-            <Button size="sm" className="gap-1.5 text-xs w-full">
-              <Play className="h-3.5 w-3.5" />
-              Entrar na aula
+            <Button size="sm" className="gap-1.5 text-xs w-full bg-red-600 hover:bg-red-700">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+              </span>
+              Assista ao vivo
             </Button>
           ) : status === "past" ? (
             <Button size="sm" variant="outline" className="gap-1.5 text-xs w-full">
