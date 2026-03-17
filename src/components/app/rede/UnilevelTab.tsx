@@ -183,7 +183,7 @@ export function UnilevelTab({ searchQuery }: Props) {
               </div>
             </div>
             <p className="text-base sm:text-xl font-bold truncate">
-              {totalPoints.toLocaleString("pt-BR")} <span className="sm:hidden">pts</span><span className="hidden sm:inline">pontos</span>
+              {totalPoints.toLocaleString("pt-BR")} pontos
             </p>
             <p className="text-[11px] text-muted-foreground">no período</p>
           </CardContent>
