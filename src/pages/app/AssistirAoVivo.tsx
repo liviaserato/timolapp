@@ -49,22 +49,20 @@ export default function AssistirAoVivo() {
   const chatUrl = `https://www.youtube.com/live_chat?v=${videoId}&embed_domain=${embedDomain}`;
 
   const descriptionBlock = (
-    <div className="space-y-4 pt-3">
+    <div className="space-y-3 pt-3">
       <div>
-        <h2 className="text-sm font-semibold text-neutral-200">Sobre esta aula</h2>
-        <p className="text-sm text-neutral-400 leading-relaxed mt-1">
+        <h2 className="text-xs font-semibold text-neutral-200">Sobre esta aula</h2>
+        <p className="text-xs text-neutral-400 leading-relaxed mt-1">
           Nesta aula exclusiva, vamos abordar os fundamentos essenciais dos nossos produtos e o funcionamento do modelo de franquias Timol.
-          Você vai aprender estratégias práticas de apresentação, entender os diferenciais competitivos da linha e descobrir como
-          potencializar seus resultados dentro da rede. Ideal para quem está começando ou deseja reciclar seus conhecimentos.
+          Você vai aprender estratégias práticas de apresentação e descobrir como potencializar seus resultados dentro da rede.
         </p>
       </div>
-      <div className="rounded-lg border border-neutral-700/60 bg-neutral-800/50 p-3 flex items-start gap-3">
-        <ClipboardList className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+      <div className="rounded-lg border border-neutral-700/60 bg-neutral-800/50 p-2.5 flex items-start gap-2.5">
+        <ClipboardList className="h-4 w-4 text-primary shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-medium text-neutral-200">Sua opinião é muito importante!</p>
-          <p className="text-xs text-neutral-400 leading-relaxed mt-0.5">
-            Ao final da aula, responda nossa pesquisa de satisfação e nos conte o que achou. Seu feedback nos ajuda a melhorar
-            cada vez mais o conteúdo e a experiência dos treinamentos. Leva menos de 1 minuto!
+          <p className="text-xs font-medium text-neutral-200">Sua opinião é muito importante!</p>
+          <p className="text-[11px] text-neutral-400 leading-relaxed mt-0.5">
+            Ao final da aula, responda nossa pesquisa de satisfação. Leva menos de 1 minuto!
           </p>
         </div>
       </div>
@@ -183,7 +181,7 @@ export default function AssistirAoVivo() {
         </div>
 
         {isLive && (
-          <div className="flex-[3] min-w-[280px] flex flex-col" style={{ height: "calc(100vh - 130px)" }}>
+          <div className="flex-[3] min-w-[280px] flex flex-col" style={{ height: "calc(100vh - 110px)" }}>
             <div className="flex-1 rounded-lg border border-neutral-700/60 overflow-hidden bg-neutral-900">
               <iframe
                 src={chatUrl}
