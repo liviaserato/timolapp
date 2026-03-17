@@ -77,6 +77,9 @@ export default function Dashboard() {
 
   const todayLabel = `Hoje – ${DAYS_FULL[todayIndex]}, ${today.toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}`;
 
+  const currency = getCurrencyConfig("BR", "BRL");
+  const q = qualificationLabels[mockUserQualification.current];
+
   return (
     <div>
       <header className="mb-4">
