@@ -79,10 +79,10 @@ export function BinaryTreeLayout({ root, treeRoot, onSelect }: Props) {
 
   // Vertical stubs for empty parent nodes
   if (!lc) {
-    connectors.push([L_X, CHILD_Y + EMPTY_LABEL_BOTTOM, L_X, CHILD_Y + CHILD_H + EXIT_OFFSET]);
+    connectors.push([L_X, CHILD_Y + EMPTY_LABEL_BOTTOM, L_X, CHILD_Y + CHILD_H + 4]);
   }
   if (!rc) {
-    connectors.push([R_X, CHILD_Y + EMPTY_LABEL_BOTTOM, R_X, CHILD_Y + CHILD_H + EXIT_OFFSET]);
+    connectors.push([R_X, CHILD_Y + EMPTY_LABEL_BOTTOM, R_X, CHILD_Y + CHILD_H + 4]);
   }
 
   return (
