@@ -1,4 +1,5 @@
-import { Hand, DollarSign, Target, CalendarDays, Newspaper, ShoppingCart, Users, BookOpen } from "lucide-react";
+import { useMemo } from "react";
+import { Hand, DollarSign, Target, CalendarDays, Newspaper, ShoppingCart, Users, BookOpen, GraduationCap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
@@ -6,6 +7,10 @@ import { OrderSummaryCard } from "@/components/app/pedidos/OrderSummaryCard";
 import { IndicarFranquiaDialog } from "@/components/app/IndicarFranquiaDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { TodayCarousel } from "@/components/app/treinamentos/TodayCarousel";
+import { weekEvents } from "@/components/app/treinamentos/constants";
+import { getEventStatus } from "@/components/app/treinamentos/helpers";
+import { DAYS_FULL } from "@/components/app/treinamentos/constants";
 import {
   Carousel,
   CarouselContent,
