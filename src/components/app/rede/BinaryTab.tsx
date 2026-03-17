@@ -9,7 +9,7 @@ import { getCurrencyConfig, formatCurrency } from "@/components/app/financeiro/c
 
 export function BinaryTab() {
   const [selectedMember, setSelectedMember] = useState<NetworkMember | null>(null);
-  const curr = getCurrencyConfig("BRL");
+  const curr = getCurrencyConfig("BR", "BRL");
 
   const summaryItems = [
     { label: "Perna Esquerda", value: `${mockBinarySummary.leftVolume.toLocaleString("pt-BR")} pts`, icon: ArrowDownLeft, color: "text-blue-500" },
