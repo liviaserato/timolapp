@@ -23,6 +23,7 @@ import OrderPayment from "./pages/app/OrderPayment";
 import SectionPlaceholder from "./pages/app/SectionPlaceholder";
 import EmailPreviews from "./pages/app/EmailPreviews";
 import AssistirAoVivo from "./pages/app/AssistirAoVivo";
+import Rede from "./pages/app/Rede";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
