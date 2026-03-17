@@ -379,7 +379,7 @@ function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex
   return (
     <div className={`flex items-center gap-3 rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] ${cfg.borderColor} p-3 hover:bg-muted/50 transition-colors`}>
       {/* Time */}
-      <div className="flex flex-col items-center min-w-[52px]">
+      <div className="flex flex-col items-center min-w-[72px] w-[72px]">
         {showDay && (
           <span className="text-[10px] font-semibold text-muted-foreground uppercase">
             {DAYS[event.dayIndex]}
@@ -409,7 +409,7 @@ function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex
       <div className="w-px h-8 bg-border" />
 
       {/* Status action */}
-      <div className="shrink-0 hidden sm:flex">
+      <div className="shrink-0 hidden sm:flex min-w-[72px] w-[72px] justify-center">
         {status === "live" ? (
           <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse">
             <Radio className="h-3 w-3" />
