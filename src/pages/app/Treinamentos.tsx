@@ -194,14 +194,42 @@ export default function Treinamentos() {
       {/* Weekly calendar */}
       <Card>
         <CardHeader className="pb-3">
-          <div className="flex flex-col gap-1">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-primary" />
-              Programação Semanal
-            </CardTitle>
-            {selectedDateLabel && (
-              <p className="text-sm text-muted-foreground ml-6">{selectedDateLabel}</p>
-            )}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+            <div className="flex flex-col gap-1">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-primary" />
+                Programação Semanal
+              </CardTitle>
+              {selectedDateLabel && (
+                <p className="text-sm text-muted-foreground ml-6">{selectedDateLabel}</p>
+              )}
+            </div>
+            {/* Category filter */}
+            <div className="flex flex-wrap gap-1.5 ml-6 sm:ml-0">
+              <Button
+                size="sm"
+                variant={selectedType === "all" ? "default" : "outline"}
+                className="h-7 text-[11px] px-2.5 rounded-full"
+                onClick={() => setSelectedType("all")}
+              >
+                Todos
+              </Button>
+              {(Object.keys(typeConfig) as EventType[]).map((type) => {
+                const cfg = typeConfig[type];
+                return (
+                  <Button
+                    key={type}
+                    size="sm"
+                    variant={selectedType === type ? "default" : "outline"}
+                    className={`h-7 text-[11px] px-2.5 rounded-full gap-1 ${selectedType !== type ? cfg.badgeClass + " hover:opacity-80" : ""}`}
+                    onClick={() => setSelectedType(type)}
+                  >
+                    {cfg.icon}
+                    {cfg.label}
+                  </Button>
+                );
+              })}
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
