@@ -98,6 +98,15 @@ export default function Dashboard() {
           </p>
         </DashboardCard>
 
+        {/* Treinamentos - Hoje */}
+        {todayEvents.length > 0 && (
+          <DashboardCard icon={GraduationCap} title={todayLabel}>
+            <div className="mt-2">
+              <TodayCarousel events={todayEvents} todayIndex={todayIndex} />
+            </div>
+          </DashboardCard>
+        )}
+
         {/* Resumo Financeiro */}
         <DashboardCard icon={DollarSign} title="Resumo Financeiro">
           <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -124,15 +133,6 @@ export default function Dashboard() {
             </div>
           </div>
         </DashboardCard>
-
-        {/* Treinamentos - Hoje */}
-        {todayEvents.length > 0 && (
-          <DashboardCard icon={GraduationCap} title={todayLabel}>
-            <div className="mt-2">
-              <TodayCarousel events={todayEvents} todayIndex={todayIndex} />
-            </div>
-          </DashboardCard>
-        )}
 
         {/* Novo Pedido */}
         <DashboardCard icon={ShoppingCart} title="Novo Pedido">
