@@ -223,7 +223,7 @@ export default function Treinamentos() {
                   return (
                     <SelectItem key={type} value={type}>
                       <span className="flex items-center gap-1.5">
-                        {cfg.icon}
+                        <span className={cfg.iconColor}>{cfg.icon}</span>
                         {cfg.label}
                       </span>
                     </SelectItem>
