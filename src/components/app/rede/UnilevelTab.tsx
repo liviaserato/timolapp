@@ -497,3 +497,56 @@ function LevelTable({
     </Card>
   );
 }
+
+function BonusSection({ onOpen }: { onOpen: () => void }) {
+  return (
+    <Card className="border-dashed">
+      <CardContent className="p-4 flex items-center gap-3">
+        <div className="rounded-lg bg-primary/10 p-2 shrink-0">
+          <PlayCircle className="h-5 w-5 text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold">Entenda seus bônus</p>
+          <p className="text-xs text-muted-foreground">Saiba como funciona a pontuação Unilevel e como maximizar seus resultados.</p>
+        </div>
+        <Button variant="outline" size="sm" className="shrink-0 text-xs" onClick={onOpen}>
+          Saiba mais
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function BonusDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <PlayCircle className="h-5 w-5 text-primary" />
+            Bônus Unilevel
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3 text-sm text-muted-foreground">
+          <p>O bônus Unilevel é calculado com base na <strong className="text-foreground">pontuação gerada por cada nível</strong> da sua rede, de acordo com a sua qualificação.</p>
+          <div className="rounded-lg bg-muted/50 p-3 space-y-2">
+            <p className="font-medium text-foreground">Como funciona:</p>
+            <ol className="list-decimal list-inside space-y-1 text-xs">
+              <li>Cada nível gera uma porcentagem de bônus sobre o volume produzido.</li>
+              <li>Sua qualificação determina até qual nível você recebe pontuação.</li>
+              <li>Quanto maior a qualificação, mais níveis e maior profundidade de ganhos.</li>
+              <li>O plano Diamante estende a pontuação até o 10º nível.</li>
+            </ol>
+          </div>
+          <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+            <p className="font-medium text-foreground text-xs">💡 Dica</p>
+            <p className="text-xs mt-1">
+              Incentive seus diretos a se qualificarem.
+              {"\n"}Quanto mais qualificada sua equipe, maior o volume gerado em cada nível.
+            </p>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
