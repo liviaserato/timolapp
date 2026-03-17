@@ -25,7 +25,7 @@ import { NetworkMember } from "./mock-data";
 const TREE_W = 260;
 const ROOT_H = 90;
 const CHILD_H = 80;
-const GAP = 32;
+const GAP = 36;
 
 const ROOT_Y = 0;
 const CHILD_Y = ROOT_H + GAP;            // 110
