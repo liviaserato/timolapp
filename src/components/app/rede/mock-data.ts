@@ -8,6 +8,8 @@ export interface NetworkMember {
   phone?: string;
   city?: string;
   level?: number;
+  /** CPF / document of the owner */
+  document?: string;
   /** "direct" = cadastrado diretamente, "network" = derramamento */
   type?: "direct" | "network";
   left?: NetworkMember | null;
@@ -34,6 +36,7 @@ export const mockBinaryTree: NetworkMember = {
   joinDate: "2025-01-15",
   phone: "+55 11 99999-0000",
   city: "São Paulo, SP",
+  document: "123.456.789-00",
   type: "direct",
   left: {
     id: "200587",
@@ -128,6 +131,7 @@ export const mockBinaryTree: NetworkMember = {
       volume: 1750,
       joinDate: "2025-04-05",
       city: "Brasília, DF",
+      document: "123.456.789-00",
       type: "network",
       left: null,
       right: null,

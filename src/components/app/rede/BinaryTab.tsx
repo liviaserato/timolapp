@@ -60,6 +60,7 @@ export function BinaryTab() {
   const searchRef = useRef<HTMLInputElement>(null);
 
   const currentRoot = findNodeById(mockBinaryTree, rootId) ?? mockBinaryTree;
+  const myDocument = mockBinaryTree.document;
 
   const leftMembers = useMemo(() => flattenSide(currentRoot.left), [currentRoot]);
   const rightMembers = useMemo(() => flattenSide(currentRoot.right), [currentRoot]);
@@ -172,76 +173,69 @@ export function BinaryTab() {
 
         {/* ═══ LEFT COLUMN: Tree ═══ */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-foreground">Rede Binária</h2>
-            {rootId !== mockBinaryTree.id && (
-              <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs shrink-0" onClick={resetToRoot}>
-                <RotateCcw className="h-3 w-3" /> Voltar ao início
-              </Button>
-            )}
-          </div>
-
           {/* Tree drawing */}
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="px-2 py-4">
+              <h2 className="text-base font-bold text-foreground text-center mb-1">Rede Binária</h2>
               {navHistory.length > 0 && (
-                <Button variant="ghost" size="sm" onClick={navigateBack} className="mb-2 gap-1 text-xs h-7 px-2">
-                  ← Voltar nível
-                </Button>
-              )}
-              <ScrollArea className="w-full">
-                <div className="flex flex-col items-center min-w-[360px] py-3">
-                  {/* Root */}
-                  <BinaryTreeNode node={currentRoot} onSelect={navigateTo} isRoot hasChildren={!!(currentRoot.left || currentRoot.right)} />
-
-                  {(currentRoot.left || currentRoot.right) && (
-                    <>
-                      <svg width="240" height="32" className="shrink-0">
-                        <line x1="120" y1="0" x2="60" y2="32" stroke="hsl(var(--border))" strokeWidth="1.5" />
-                        <line x1="120" y1="0" x2="180" y2="32" stroke="hsl(var(--border))" strokeWidth="1.5" />
-                      </svg>
-
-                      <div className="flex gap-8">
-                        <div className="flex flex-col items-center">
-                          <BinaryTreeNode node={currentRoot.left ?? null} side="left" onSelect={navigateTo} hasChildren={!!(currentRoot.left?.left || currentRoot.left?.right)} />
-                          {currentRoot.left && (currentRoot.left.left || currentRoot.left.right) && (
-                            <>
-                              <svg width="120" height="28" className="shrink-0">
-                                <line x1="60" y1="0" x2="30" y2="28" stroke="hsl(var(--border))" strokeWidth="1" />
-                                <line x1="60" y1="0" x2="90" y2="28" stroke="hsl(var(--border))" strokeWidth="1" />
-                              </svg>
-                              <div className="flex gap-3">
-                                <BinaryTreeNode node={currentRoot.left.left ?? null} side="left" onSelect={navigateTo} hasChildren={!!(currentRoot.left.left?.left || currentRoot.left.left?.right)} />
-                                <BinaryTreeNode node={currentRoot.left.right ?? null} side="right" onSelect={navigateTo} hasChildren={!!(currentRoot.left.right?.left || currentRoot.left.right?.right)} />
-                              </div>
-                            </>
-                          )}
-                        </div>
-
-                        <div className="flex flex-col items-center">
-                          <BinaryTreeNode node={currentRoot.right ?? null} side="right" onSelect={navigateTo} hasChildren={!!(currentRoot.right?.left || currentRoot.right?.right)} />
-                          {currentRoot.right && (currentRoot.right.left || currentRoot.right.right) && (
-                            <>
-                              <svg width="120" height="28" className="shrink-0">
-                                <line x1="60" y1="0" x2="30" y2="28" stroke="hsl(var(--border))" strokeWidth="1" />
-                                <line x1="60" y1="0" x2="90" y2="28" stroke="hsl(var(--border))" strokeWidth="1" />
-                              </svg>
-                              <div className="flex gap-3">
-                                <BinaryTreeNode node={currentRoot.right.left ?? null} side="left" onSelect={navigateTo} hasChildren={!!(currentRoot.right.left?.left || currentRoot.right.left?.right)} />
-                                <BinaryTreeNode node={currentRoot.right.right ?? null} side="right" onSelect={navigateTo} hasChildren={!!(currentRoot.right.right?.left || currentRoot.right.right?.right)} />
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </>
-                  )}
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Button variant="ghost" size="sm" onClick={navigateBack} className="gap-1 text-xs h-7 px-2">
+                    ← Voltar nível
+                  </Button>
+                  <Button variant="ghost" size="sm" className="gap-1 text-xs h-7 px-2" onClick={resetToRoot}>
+                    <RotateCcw className="h-3 w-3" /> Início
+                  </Button>
                 </div>
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
+              )}
+              <div className="flex flex-col items-center py-2">
+                {/* Root */}
+                <BinaryTreeNode node={currentRoot} onSelect={navigateTo} isRoot isMe={currentRoot.id === mockBinaryTree.id} isMineAlt={currentRoot.document === myDocument && currentRoot.id !== mockBinaryTree.id} hasChildren={!!(currentRoot.left || currentRoot.right)} />
+
+                {(currentRoot.left || currentRoot.right) && (
+                  <>
+                    <svg width="200" height="28" className="shrink-0">
+                      <line x1="100" y1="0" x2="50" y2="28" stroke="hsl(var(--border))" strokeWidth="1.5" />
+                      <line x1="100" y1="0" x2="150" y2="28" stroke="hsl(var(--border))" strokeWidth="1.5" />
+                    </svg>
+
+                    <div className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <BinaryTreeNode node={currentRoot.left ?? null} side="left" onSelect={navigateTo} isMineAlt={currentRoot.left?.document === myDocument} hasChildren={!!(currentRoot.left?.left || currentRoot.left?.right)} />
+                        {currentRoot.left && (currentRoot.left.left || currentRoot.left.right) && (
+                          <>
+                            <svg width="100" height="24" className="shrink-0">
+                              <line x1="50" y1="0" x2="24" y2="24" stroke="hsl(var(--border))" strokeWidth="1" />
+                              <line x1="50" y1="0" x2="76" y2="24" stroke="hsl(var(--border))" strokeWidth="1" />
+                            </svg>
+                            <div className="flex gap-2">
+                              <BinaryTreeNode node={currentRoot.left.left ?? null} side="left" onSelect={navigateTo} isMineAlt={currentRoot.left.left?.document === myDocument} hasChildren={!!(currentRoot.left.left?.left || currentRoot.left.left?.right)} />
+                              <BinaryTreeNode node={currentRoot.left.right ?? null} side="right" onSelect={navigateTo} isMineAlt={currentRoot.left.right?.document === myDocument} hasChildren={!!(currentRoot.left.right?.left || currentRoot.left.right?.right)} />
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col items-center">
+                        <BinaryTreeNode node={currentRoot.right ?? null} side="right" onSelect={navigateTo} isMineAlt={currentRoot.right?.document === myDocument} hasChildren={!!(currentRoot.right?.left || currentRoot.right?.right)} />
+                        {currentRoot.right && (currentRoot.right.left || currentRoot.right.right) && (
+                          <>
+                            <svg width="100" height="24" className="shrink-0">
+                              <line x1="50" y1="0" x2="24" y2="24" stroke="hsl(var(--border))" strokeWidth="1" />
+                              <line x1="50" y1="0" x2="76" y2="24" stroke="hsl(var(--border))" strokeWidth="1" />
+                            </svg>
+                            <div className="flex gap-2">
+                              <BinaryTreeNode node={currentRoot.right.left ?? null} side="left" onSelect={navigateTo} isMineAlt={currentRoot.right.left?.document === myDocument} hasChildren={!!(currentRoot.right.left?.left || currentRoot.right.left?.right)} />
+                              <BinaryTreeNode node={currentRoot.right.right ?? null} side="right" onSelect={navigateTo} isMineAlt={currentRoot.right.right?.document === myDocument} hasChildren={!!(currentRoot.right.right?.left || currentRoot.right.right?.right)} />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </CardContent>
           </Card>
-
         </div>
 
         {/* ═══ RIGHT COLUMN: Analytics ═══ */}
@@ -261,9 +255,9 @@ export function BinaryTab() {
           {/* Diagnostic */}
           <DiagnosticCard weakerSide={weakerSide} diff={diff} />
 
-          {/* Search + Sort */}
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
+          {/* Search + Sort — equal width */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
                 placeholder="Buscar por ID ou nome"
@@ -365,7 +359,7 @@ function SearchInput({ value, onChange, onKeyDown, inputRef }: { value: string; 
 function SortSelector({ value, onChange }: { value: SortMode; onChange: (v: SortMode) => void }) {
   return (
     <Select value={value} onValueChange={(v) => onChange(v as SortMode)}>
-      <SelectTrigger className="h-8 text-[11px] w-auto min-w-[140px] shrink-0">
+      <SelectTrigger className="h-8 text-[11px] w-full">
         <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
         <SelectValue />
       </SelectTrigger>
