@@ -15,6 +15,7 @@ import Dashboard from "./pages/app/Dashboard";
 import Cadastro from "./pages/app/Cadastro";
 import Financeiro from "./pages/app/Financeiro";
 import Suporte from "./pages/app/Suporte";
+import Treinamentos from "./pages/app/Treinamentos";
 import Pedidos from "./pages/app/Pedidos";
 import RealizarPedido from "./pages/app/RealizarPedido";
 import Checkout from "./pages/app/Checkout";
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="pedidos/realizar" element={<RealizarPedido />} />
               <Route path="pedidos/checkout" element={<Checkout />} />
               <Route path="pedidos/pagamento" element={<OrderPayment />} />
+              <Route path="treinamentos" element={<Treinamentos />} />
               <Route path="suporte" element={<Suporte />} />
               <Route path="configuracoes/emails" element={<EmailPreviews />} />
               <Route path=":section" element={<SectionPlaceholder />} />
