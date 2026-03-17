@@ -174,7 +174,7 @@ export function BinaryTab() {
         {/* ═══ LEFT COLUMN: Tree ═══ */}
         <div className="space-y-3">
           {/* Tree drawing */}
-          <Card className="min-h-[380px] flex flex-col">
+          <Card className="min-h-[400px] flex flex-col">
             <CardContent className="px-1 py-3 flex-1 flex flex-col">
               <h2 className="text-base font-bold text-foreground text-center mb-6">Rede Binária</h2>
               <div className="flex flex-col items-center py-2 flex-1">
@@ -249,9 +249,9 @@ export function BinaryTab() {
         {/* ═══ RIGHT COLUMN: Analytics ═══ */}
         <div className="space-y-3">
           {/* Current root info */}
-          <Card className="bg-primary/5 border-primary/20">
+          <Card>
             <CardContent className="p-4 text-center">
-              <h2 className="text-lg font-bold text-foreground">{currentRoot.name}</h2>
+              <h2 className="text-lg font-bold" style={{ color: "#003885" }}>{currentRoot.name}</h2>
               <p className="text-xs text-muted-foreground">ID {currentRoot.id}</p>
             </CardContent>
           </Card>
