@@ -181,7 +181,7 @@ export default function AssistirAoVivo() {
         </div>
 
         {isLive && (
-          <div className="flex-[3] min-w-[280px] flex flex-col" style={{ height: "calc(100vh - 130px)" }}>
+          <div className="flex-[3] min-w-[280px] flex flex-col" style={{ height: "calc(100vh - 110px)" }}>
             <div className="flex-1 rounded-lg border border-neutral-700/60 overflow-hidden bg-neutral-900">
               <iframe
                 src={chatUrl}
