@@ -7,11 +7,13 @@ export const qualificationLevelLimits: Record<string, number> = {
   lider: 5,
   rubi: 5,
   esmeralda: 6,
-  diamante: 10,
-  diamante_duplo: 10,
-  diamante_triplo: 10,
-  diamante_coroa: 10,
-  diamante_real: 10,
+  diamante: 7,
+  diamante_1: 8,
+  diamante_2: 9,
+  diamante_3: 10,
+  diamante_4: 10,
+  diamante_5: 10,
+  diamante_black: 10,
 };
 
 /* ── Unilevel tree structure (progressive load) ── */
