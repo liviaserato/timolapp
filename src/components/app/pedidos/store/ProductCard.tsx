@@ -105,9 +105,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
               )}
             </div>
             <h3 className="text-sm font-bold text-foreground leading-tight">{product.name}</h3>
-            {product.description && (
-              <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">{product.description}</p>
-            )}
+            <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2 min-h-[2lh]">
+              {product.description || "\u00A0"}
+            </p>
           </div>
 
           <div className="flex items-baseline gap-1.5">
