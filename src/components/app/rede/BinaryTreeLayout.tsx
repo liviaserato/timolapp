@@ -59,8 +59,12 @@ export function BinaryTreeLayout({ root, treeRoot, onSelect }: Props) {
   const rr = rc?.right ?? null;
 
   // Connector lines: [x1, y1, x2, y2]
-  // Start 6px below the node bottom (after the ▼ arrow)
+  // Start 16px below the node bottom (after the ▼ arrow)
   const EXIT_OFFSET = 16;
+  // When an empty node sits above children connectors, draw a vertical
+  // stub from below its "Esquerda"/"Direita" label to the connector origin.
+  const EMPTY_LABEL_BOTTOM = 52; // approx px from node top to bottom of label
+
   const connectors: [number, number, number, number][] = [
     // Root → children
     [ROOT_X, ROOT_Y + ROOT_H + EXIT_OFFSET, L_X, CHILD_Y],
@@ -72,6 +76,14 @@ export function BinaryTreeLayout({ root, treeRoot, onSelect }: Props) {
     [R_X, CHILD_Y + CHILD_H + EXIT_OFFSET, RL_X, GRAND_Y],
     [R_X, CHILD_Y + CHILD_H + EXIT_OFFSET, RR_X, GRAND_Y],
   ];
+
+  // Vertical stubs for empty parent nodes
+  if (!lc) {
+    connectors.push([L_X, CHILD_Y + EMPTY_LABEL_BOTTOM, L_X, CHILD_Y + CHILD_H + EXIT_OFFSET]);
+  }
+  if (!rc) {
+    connectors.push([R_X, CHILD_Y + EMPTY_LABEL_BOTTOM, R_X, CHILD_Y + CHILD_H + EXIT_OFFSET]);
+  }
 
   return (
     <div className="relative mx-auto" style={{ width: TREE_W, height: TREE_H }}>
