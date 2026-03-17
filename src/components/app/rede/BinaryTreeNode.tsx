@@ -14,11 +14,21 @@ interface Props {
   isMineAlt?: boolean;
 }
 
+/* Fixed heights so tree positions never shift:
+   - Root node:  h-[90px] (bigger circle + name + id + qual)
+   - Child node: h-[80px] (circle + name + id + qual + possible ▼)
+*/
+
 export function BinaryTreeNode({ node, side, onSelect, isRoot, hasChildren, isMe, isMineAlt }: Props) {
+  const fixedH = isRoot ? "h-[90px]" : "h-[80px]";
+
   if (!node) {
     return (
-      <div className="flex flex-col items-center">
-        <div className="flex items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/20 bg-muted/10 h-9 w-9 text-muted-foreground/30">
+      <div className={cn("flex flex-col items-center justify-start", fixedH)}>
+        <div className={cn(
+          "flex items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/20 bg-muted/10 text-muted-foreground/30",
+          isRoot ? "h-11 w-11" : "h-9 w-9"
+        )}>
           <UserPlus className="h-3.5 w-3.5" />
         </div>
         <span className="text-[10px] text-muted-foreground/40 mt-1">
@@ -33,7 +43,7 @@ export function BinaryTreeNode({ node, side, onSelect, isRoot, hasChildren, isMe
   const firstName = node.name.split(" ")[0];
 
   return (
-    <div className="flex flex-col items-center">
+    <div className={cn("flex flex-col items-center justify-start", fixedH)}>
       <button
         onClick={() => onSelect(node)}
         className="flex flex-col items-center gap-0.5 transition-all cursor-pointer group"
