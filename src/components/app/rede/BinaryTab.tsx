@@ -239,8 +239,8 @@ export function BinaryTab() {
             <SummaryCard side="right" volume={rightVolume} total={rightMembers.length} active={rightActive} inactive={rightMembers.length - rightActive} />
           </div>
 
-          {/* Search + Sort — equal width */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Search + Sort — stacked on mobile, side by side on sm+ */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
@@ -259,8 +259,8 @@ export function BinaryTab() {
             <SortSelector value={sortMode} onChange={setSortMode} />
           </div>
 
-          {/* Tables side by side */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Tables — stacked on mobile, side by side on sm+ */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <LegTable title="Perna Esquerda" members={filteredLeft} onNavigate={navigateToId} />
             <LegTable title="Perna Direita" members={filteredRight} onNavigate={navigateToId} />
           </div>
