@@ -23,6 +23,7 @@ import OrderPayment from "./pages/app/OrderPayment";
 import SectionPlaceholder from "./pages/app/SectionPlaceholder";
 import EmailPreviews from "./pages/app/EmailPreviews";
 import AssistirAoVivo from "./pages/app/AssistirAoVivo";
+import Rede from "./pages/app/Rede";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ const App = () => (
               <Route path="treinamentos" element={<Treinamentos />} />
               <Route path="treinamentos/ao-vivo/:eventId" element={<AssistirAoVivo />} />
               <Route path="suporte" element={<Suporte />} />
+              <Route path="rede" element={<Rede />} />
               <Route path="configuracoes/emails" element={<EmailPreviews />} />
               <Route path=":section" element={<SectionPlaceholder />} />
             </Route>
