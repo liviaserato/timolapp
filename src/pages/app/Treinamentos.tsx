@@ -144,7 +144,10 @@ export default function Treinamentos() {
     if (selectedDay === null) {
       const monday = getDateForDayIndex(0);
       const sunday = getDateForDayIndex(6);
-      return `${formatDateBR(monday)} – ${formatDateBR(sunday)}`;
+      const sameYear = monday.getFullYear() === sunday.getFullYear();
+      const mondayStr = monday.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", ...(sameYear ? {} : { year: "numeric" }) });
+      const sundayStr = formatDateBR(sunday);
+      return `${mondayStr} a ${sundayStr}`;
     }
     const date = getDateForDayIndex(selectedDay);
     return `${DAYS_FULL[selectedDay]}, ${formatDateBR(date)}`;
