@@ -174,20 +174,10 @@ export function BinaryTab() {
         {/* ═══ LEFT COLUMN: Tree ═══ */}
         <div className="space-y-3">
           {/* Tree drawing */}
-          <Card className="min-h-[340px]">
-            <CardContent className="px-1 py-3">
-              <h2 className="text-base font-bold text-foreground text-center mb-4">Rede Binária</h2>
-              {navHistory.length > 0 && (
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Button variant="ghost" size="sm" onClick={navigateBack} className="gap-1 text-xs h-7 px-2">
-                    ← Voltar nível
-                  </Button>
-                  <Button variant="ghost" size="sm" className="gap-1 text-xs h-7 px-2" onClick={resetToRoot}>
-                    <RotateCcw className="h-3 w-3" /> Início
-                  </Button>
-                </div>
-              )}
-              <div className="flex flex-col items-center py-2">
+          <Card className="min-h-[380px] flex flex-col">
+            <CardContent className="px-1 py-3 flex-1 flex flex-col">
+              <h2 className="text-base font-bold text-foreground text-center mb-6">Rede Binária</h2>
+              <div className="flex flex-col items-center py-2 flex-1">
                 {/* Root */}
                 <BinaryTreeNode node={currentRoot} onSelect={navigateTo} isRoot isMe={currentRoot.id === mockBinaryTree.id} isMineAlt={currentRoot.document === myDocument && currentRoot.id !== mockBinaryTree.id} hasChildren={!!(currentRoot.left || currentRoot.right)} />
 
@@ -234,8 +224,26 @@ export function BinaryTab() {
                   </>
                 )}
               </div>
+
+              {/* Navigation buttons at bottom */}
+              {navHistory.length > 0 && (
+                <>
+                  <div className="border-t border-border/40 mt-auto" />
+                  <div className="flex items-center justify-center gap-2 pt-2">
+                    <Button variant="ghost" size="sm" onClick={navigateBack} className="gap-1 text-xs h-7 px-2">
+                      ← Voltar nível
+                    </Button>
+                    <Button variant="ghost" size="sm" className="gap-1 text-xs h-7 px-2" onClick={resetToRoot}>
+                      <RotateCcw className="h-3 w-3" /> Início
+                    </Button>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
+
+          {/* Diagnostic - left column */}
+          <DiagnosticCard weakerSide={weakerSide} diff={diff} />
         </div>
 
         {/* ═══ RIGHT COLUMN: Analytics ═══ */}
