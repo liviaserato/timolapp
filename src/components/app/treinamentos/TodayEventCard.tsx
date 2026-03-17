@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Calendar, Clock, Play, Hourglass } from "lucide-react";
+import { Calendar, Clock, Play, Hourglass, Youtube } from "lucide-react";
 import type { WeekEvent } from "./types";
 import { typeConfig } from "./constants";
 import { getEventStatus, getDateForDayIndex } from "./helpers";
