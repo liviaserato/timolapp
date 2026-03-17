@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import {
   Users, UserCheck, Target, TrendingUp, Layers, Search, X, ArrowUpDown,
   PlayCircle, Lightbulb, List, GitBranch, RotateCcw, Calendar,
-  ChevronDown, ChevronRight,
+  ChevronDown, ChevronRight, ChevronLeft, Award,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -48,14 +48,10 @@ function sortMembers(members: FlatUnilevelMember[], mode: SortMode): FlatUnileve
 /* ── Filter mode ── */
 type FilterMode = "month" | "period";
 
-const monthOptions = [
-  { value: "2026-03", label: "Março 2026" },
-  { value: "2026-02", label: "Fevereiro 2026" },
-  { value: "2026-01", label: "Janeiro 2026" },
-  { value: "2025-12", label: "Dezembro 2025" },
-  { value: "2025-11", label: "Novembro 2025" },
-  { value: "2025-10", label: "Outubro 2025" },
-];
+/* ── Month helpers ── */
+function getMonthLabel(d: Date) {
+  return d.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }).replace(/^\w/, (c) => c.toUpperCase());
+}
 
 /* ── Main component ── */
 
@@ -70,7 +66,7 @@ export function UnilevelTab({ searchQuery }: Props) {
   const [searchId, setSearchId] = useState("");
   const [sortMode, setSortMode] = useState<SortMode | "">("");
   const [filterMode, setFilterMode] = useState<FilterMode>("month");
-  const [selectedMonth, setSelectedMonth] = useState("2026-03");
+  const [monthRef, setMonthRef] = useState(() => new Date(2026, 2, 1));
   const [periodStart, setPeriodStart] = useState("");
   const [periodEnd, setPeriodEnd] = useState("");
   const [viewMode, setViewMode] = useState<"tree" | "list">(isMobile ? "list" : "tree");
@@ -109,11 +105,31 @@ export function UnilevelTab({ searchQuery }: Props) {
   }, [filteredMembers]);
 
   // Summary stats
-  const totalMembers = allMembers.length;
-  const directMembers = allMembers.filter((m) => m.isDirect).length;
-  const activeMembers = allMembers.filter((m) => m.active).length;
+  const directList = allMembers.filter((m) => m.isDirect);
+  const directCount = directList.length;
+  const directActive = directList.filter((m) => m.active).length;
+  const directInactive = directCount - directActive;
+
+  const indirectList = allMembers.filter((m) => !m.isDirect);
+  const indirectCount = indirectList.length;
+  const indirectActive = indirectList.filter((m) => m.active).length;
+  const indirectInactive = indirectCount - indirectActive;
+
   const totalPoints = allMembers.reduce((sum, m) => sum + m.volume, 0);
-  const activeLevels = new Set(allMembers.map((m) => m.level)).size;
+
+  const today = new Date();
+  const isCurrentMonth = monthRef.getFullYear() === today.getFullYear() && monthRef.getMonth() === today.getMonth();
+
+  function prevMonth() {
+    setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
+  }
+  function nextMonth() {
+    if (!isCurrentMonth) {
+      setMonthRef((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+    }
+  }
+
+  const q = qualificationConfig[userQualification] ?? qualificationConfig.consultor;
 
   // ESC key resets
   useEffect(() => {
@@ -142,30 +158,70 @@ export function UnilevelTab({ searchQuery }: Props) {
     }
   }
 
-  const summaryItems = [
-    { label: "Total na Rede", value: totalMembers.toString(), icon: Users },
-    { label: "Diretos", value: directMembers.toString(), icon: UserCheck },
-    { label: "Pontos no Período", value: totalPoints.toLocaleString("pt-BR"), icon: Target },
-    { label: "Níveis Ativos", value: `${activeLevels} de ${maxLevel}`, icon: Layers },
-  ];
-
   return (
     <div className="space-y-4">
       {/* ═══ Summary cards ═══ */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {summaryItems.map((item) => (
-          <Card key={item.label}>
-            <CardContent className="p-3 flex items-center gap-3">
-              <div className="rounded-lg bg-primary/10 p-2 shrink-0">
-                <item.icon className="h-4 w-4 text-primary" />
+        {/* Diretos */}
+        <Card>
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
+              <UserCheck className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] text-muted-foreground truncate">Diretos</p>
+              <div className="flex items-baseline gap-1.5">
+                <p className="text-sm font-bold">{directCount}</p>
+                <span className="text-[10px] text-success">{directActive} ativos</span>
+                <span className="text-[10px] text-destructive">{directInactive} inat.</span>
               </div>
-              <div className="min-w-0">
-                <p className="text-[11px] text-muted-foreground truncate">{item.label}</p>
-                <p className="text-sm font-bold truncate">{item.value}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Pontos no período */}
+        <Card>
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
+              <Target className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] text-muted-foreground truncate">Pontos no Período</p>
+              <p className="text-sm font-bold truncate">{totalPoints.toLocaleString("pt-BR")}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Total indiretos */}
+        <Card>
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
+              <Users className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] text-muted-foreground truncate">Total Indiretos</p>
+              <div className="flex items-baseline gap-1.5">
+                <p className="text-sm font-bold">{indirectCount}</p>
+                <span className="text-[10px] text-success">{indirectActive} ativos</span>
+                <span className="text-[10px] text-destructive">{indirectInactive} inat.</span>
               </div>
-            </CardContent>
-          </Card>
-        ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Qualificação */}
+        <Card>
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
+              <Award className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] text-muted-foreground truncate">Qualificação</p>
+              <p className="text-sm font-bold truncate" style={{ color: q.color }}>{q.label}</p>
+              <p className="text-[10px] text-muted-foreground">{maxLevel}º nível</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* ═══ Filters ═══ */}
@@ -198,19 +254,17 @@ export function UnilevelTab({ searchQuery }: Props) {
           </div>
 
           {filterMode === "month" ? (
-            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-              <SelectTrigger className="h-8 text-xs w-[160px]">
-                <Calendar className="h-3 w-3 mr-1 text-muted-foreground" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {monthOptions.map((mo) => (
-                  <SelectItem key={mo.value} value={mo.value} className="text-xs">
-                    {mo.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-0 shrink-0 h-8">
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={prevMonth}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-xs font-medium w-[120px] text-center whitespace-nowrap">
+                {getMonthLabel(monthRef)}
+              </span>
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth} disabled={isCurrentMonth}>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           ) : (
             <div className="flex items-center gap-1.5">
               <Input
