@@ -45,6 +45,9 @@ function sortMembers(members: FlatUnilevelMember[], mode: SortMode): FlatUnileve
   }
 }
 
+/* ── Filter mode ── */
+type FilterMode = "month" | "period";
+
 /* ── Month helpers ── */
 function getMonthLabel(d: Date) {
   return d.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }).replace(/^\w/, (c) => c.toUpperCase());
