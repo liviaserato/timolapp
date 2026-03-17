@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Filter } from "lucide-react";
 import {
   Calendar,
   Youtube,
@@ -204,32 +206,27 @@ export default function Treinamentos() {
                 <p className="text-sm text-muted-foreground ml-6">{selectedDateLabel}</p>
               )}
             </div>
-            {/* Category filter */}
-            <div className="flex flex-wrap gap-1.5 ml-6 sm:ml-0">
-              <Button
-                size="sm"
-                variant={selectedType === "all" ? "default" : "outline"}
-                className="h-7 text-[11px] px-2.5 rounded-full"
-                onClick={() => setSelectedType("all")}
-              >
-                Todos
-              </Button>
-              {(Object.keys(typeConfig) as EventType[]).map((type) => {
-                const cfg = typeConfig[type];
-                return (
-                  <Button
-                    key={type}
-                    size="sm"
-                    variant={selectedType === type ? "default" : "outline"}
-                    className={`h-7 text-[11px] px-2.5 rounded-full gap-1 ${selectedType !== type ? cfg.badgeClass + " hover:opacity-80" : ""}`}
-                    onClick={() => setSelectedType(type)}
-                  >
-                    {cfg.icon}
-                    {cfg.label}
-                  </Button>
-                );
-              })}
-            </div>
+            {/* Category filter dropdown */}
+            <Select value={selectedType} onValueChange={(v) => setSelectedType(v as EventType | "all")}>
+              <SelectTrigger className="w-auto h-8 text-xs gap-1.5 px-3 shrink-0">
+                <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+                <SelectValue placeholder="Categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as categorias</SelectItem>
+                {(Object.keys(typeConfig) as EventType[]).map((type) => {
+                  const cfg = typeConfig[type];
+                  return (
+                    <SelectItem key={type} value={type}>
+                      <span className="flex items-center gap-1.5">
+                        {cfg.icon}
+                        {cfg.label}
+                      </span>
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
