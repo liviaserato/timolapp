@@ -50,6 +50,8 @@ const DAYS_FULL = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feir
 
 const weekEvents: WeekEvent[] = [
   { id: "1", dayIndex: 0, time: "08:50", endTime: "10:00", title: "Aulas de produtos e franquias", type: "produto", host: "Lucas Rocha" },
+  { id: "10", dayIndex: 0, time: "14:00", endTime: "15:00", title: "Live Especial – Novidades 2025", type: "especial", host: "Fernanda Lima", bannerUrl: bannerMock },
+  { id: "11", dayIndex: 0, time: "16:00", endTime: "17:00", title: "Negócio: Expansão Regional", type: "negocio", host: "Carlos Lima", bannerUrl: bannerMock2 },
   { id: "2", dayIndex: 0, time: "20:30", endTime: "21:30", title: "Treinamento: Primeiros Passos", type: "treinamento", host: "Maria Souza" },
   { id: "3", dayIndex: 1, time: "00:00", endTime: "23:59", title: "Aulas de produtos e franquias", type: "negocio", host: "Lucas Rocha", bannerUrl: bannerMock },
   { id: "4", dayIndex: 1, time: "20:30", endTime: "21:30", title: "Construindo uma Rede Forte", type: "especial", host: "Ana Costa", bannerUrl: bannerMock2 },
