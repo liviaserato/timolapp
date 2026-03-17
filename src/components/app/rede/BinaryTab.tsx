@@ -260,19 +260,30 @@ function SummaryCard({ side, volume, total, active, inactive }: { side: "left" |
 }
 
 function DiagnosticCard({ weakerSide, diff }: { weakerSide: string; diff: number }) {
+  const strongerSide = weakerSide === "esquerda" ? "direita" : "esquerda";
+  const isBalanced = diff === 0;
+
   return (
     <Card className="border-primary/20 bg-primary/[0.02]">
       <CardContent className="p-4">
         <div className="flex items-center gap-2 mb-1.5">
           <Lightbulb className="h-4 w-4 text-primary" />
-          <span className="text-xs font-semibold text-foreground">Diagnóstico</span>
+          <span className="text-xs font-semibold text-foreground">Perna Menor</span>
         </div>
-        <p className="text-sm leading-snug">
-          A perna <strong>{weakerSide}</strong> está com {diff.toLocaleString("pt-BR")} pts a menos.
-        </p>
-        <p className="text-[11px] text-muted-foreground mt-1">
-          Foque o desenvolvimento nesse lado para equilibrar o volume.
-        </p>
+        {isBalanced ? (
+          <p className="text-sm leading-snug text-muted-foreground">
+            No momento, as pernas estão equilibradas. As próximas movimentações definirão qual será a perna menor.
+          </p>
+        ) : (
+          <>
+            <p className="text-sm leading-snug">
+              A perna <strong>{weakerSide}</strong> está <strong>{diff.toLocaleString("pt-BR")} pontos</strong> abaixo da {strongerSide}.
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-1.5">
+              Os bônus são gerados a partir da pontuação da perna menor. Todo o volume da perna menor pode gerar bônus para você.
+            </p>
+          </>
+        )}
       </CardContent>
     </Card>
   );
