@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { BinaryTreeNode } from "./BinaryTreeNode";
 import { BinaryTreeLayout } from "./BinaryTreeLayout";
 import { mockBinaryTree, NetworkMember, qualificationConfig } from "./mock-data";
+import { QualificationLegend } from "./QualificationLegend";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
