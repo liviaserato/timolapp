@@ -316,13 +316,8 @@ export default function Treinamentos() {
 function TodayCarousel({ events, todayIndex }: { events: WeekEvent[]; todayIndex: number }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const showNav = events.length > 1;
-  const cardWidth = 200 + 16; // card width + gap
-
-  const scroll = useCallback((dir: "left" | "right") => {
-    if (!scrollRef.current) return;
-    scrollRef.current.scrollBy({ left: dir === "left" ? -cardWidth : cardWidth, behavior: "smooth" });
-  }, [cardWidth]);
+  const [overflows, setOverflows] = useState(false);
+  const cardWidth = 200 + 16;
 
   const scrollToIndex = useCallback((index: number) => {
     if (!scrollRef.current) return;
@@ -335,42 +330,35 @@ function TodayCarousel({ events, todayIndex }: { events: WeekEvent[]; todayIndex
     setActiveIndex(Math.min(idx, events.length - 1));
   }, [cardWidth, events.length]);
 
+  const checkOverflow = useCallback(() => {
+    if (!scrollRef.current) return;
+    setOverflows(scrollRef.current.scrollWidth > scrollRef.current.clientWidth + 4);
+  }, []);
+
+  const scrollRefCb = useCallback((node: HTMLDivElement | null) => {
+    (scrollRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+    if (!node) return;
+    setOverflows(node.scrollWidth > node.clientWidth + 4);
+    const ro = new ResizeObserver(() => checkOverflow());
+    ro.observe(node);
+  }, [checkOverflow]);
+
   return (
     <div className="space-y-3">
-      <div className="relative flex items-center gap-2">
-        {showNav && (
-          <button
-            onClick={() => scroll("left")}
-            className="shrink-0 h-8 w-8 rounded-full border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-        )}
-
-        <div
-          ref={scrollRef}
-          onScroll={handleScroll}
-          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
-          style={{ scrollSnapType: "x mandatory" }}
-        >
-          {events.map((ev) => (
-            <div key={ev.id} style={{ scrollSnapAlign: "start" }}>
-              <TodayEventCard event={ev} todayIndex={todayIndex} />
-            </div>
-          ))}
-        </div>
-
-        {showNav && (
-          <button
-            onClick={() => scroll("right")}
-            className="shrink-0 h-8 w-8 rounded-full border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        )}
+      <div
+        ref={scrollRefCb}
+        onScroll={handleScroll}
+        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
+        style={{ scrollSnapType: "x mandatory" }}
+      >
+        {events.map((ev) => (
+          <div key={ev.id} style={{ scrollSnapAlign: "start" }}>
+            <TodayEventCard event={ev} todayIndex={todayIndex} />
+          </div>
+        ))}
       </div>
 
-      {showNav && (
+      {overflows && events.length > 1 && (
         <div className="flex items-center justify-center gap-1.5">
           {events.map((_, i) => (
             <button
