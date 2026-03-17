@@ -68,6 +68,7 @@ export function ScheduleEventRow({ event, showDay = false, showDate = false, tod
 
 /** Mobile-friendly vertical card for schedule events */
 export function ScheduleEventCard({ event, todayIndex }: { event: WeekEvent; todayIndex: number }) {
+  const navigate = useNavigate();
   const cfg = typeConfig[event.type];
   const status = getEventStatus(event, todayIndex);
   const d = getDateForDayIndex(event.dayIndex);
