@@ -110,12 +110,31 @@ export function BinaryTab() {
   function resetToRoot() {
     setNavHistory([]);
     setRootId(mockBinaryTree.id);
+    setSearchId("");
+    setSortMode("");
   }
+
+  // ESC key resets to logged-in franchise
+  useEffect(() => {
+    function handleEsc(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        // Don't hijack if user is inside an input/select
+        const tag = (e.target as HTMLElement)?.tagName;
+        if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
+        e.preventDefault();
+        resetToRoot();
+      }
+    }
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
 
   function handleSearchKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Escape") {
       e.preventDefault();
-      e.currentTarget.select();
+      e.stopPropagation();
+      resetToRoot();
+      e.currentTarget.blur();
     }
   }
 
