@@ -388,7 +388,8 @@ function SortSelector({ value, onChange }: { value: SortMode | ""; onChange: (v:
       <SelectContent>
         <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
         <SelectItem value="status" className="text-xs">Ativos primeiro</SelectItem>
-        <SelectItem value="date" className="text-xs">Data de cadastro</SelectItem>
+        <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
+        <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
       </SelectContent>
     </Select>
   );
