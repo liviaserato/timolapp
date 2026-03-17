@@ -344,9 +344,10 @@ function TodayEventRow({ event, todayIndex }: { event: WeekEvent; todayIndex: nu
             Entrar na aula
           </Button>
         ) : status === "past" ? (
-          <Button size="sm" variant="outline" className="gap-1.5 text-xs">
-            <Play className="h-3.5 w-3.5" />
-            Assistir à gravação
+          <Button size="sm" variant="outline" className="gap-0.5 text-xs flex flex-col items-center leading-tight h-auto py-1.5 px-3">
+            <Play className="h-3.5 w-3.5 mb-0.5" />
+            <span>Assistir</span>
+            <span>gravação</span>
           </Button>
         ) : (
           <Badge variant="outline" className={`${cfg.badgeClass} text-[10px] gap-1`}>
