@@ -98,7 +98,7 @@ export function BinaryTreeLayout({ root, treeRoot, onSelect }: Props) {
             key={i}
             x1={x1} y1={y1} x2={x2} y2={y2}
             stroke="hsl(var(--border))"
-            strokeWidth={i < 2 ? 1.5 : 1}
+            strokeWidth={1.5}
           />
         ))}
       </svg>
