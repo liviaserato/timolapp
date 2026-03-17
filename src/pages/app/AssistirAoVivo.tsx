@@ -72,7 +72,7 @@ export default function AssistirAoVivo() {
   );
 
   return (
-    <div className="bg-[#0f1117] -m-6 p-4 md:p-6 min-h-[calc(100vh-64px)]" style={{ maxWidth: "none", width: "calc(100% + 48px)" }}>
+    <div className="bg-[#0f1117] -m-6 p-4 md:p-6 min-h-[calc(100vh-64px)]">
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
         <Button variant="ghost" size="icon" onClick={() => navigate("/app/treinamentos")} className="shrink-0 text-neutral-300 hover:bg-neutral-800 hover:text-neutral-100">
