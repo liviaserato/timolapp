@@ -143,7 +143,7 @@ export default function Treinamentos() {
                 <TabsTrigger
                   key={i}
                   value={String(i)}
-                  className={`text-xs px-1.5 flex-1 min-w-0 ${i === todayIndex ? "ring-0 shadow-[inset_0_-2px_0_0_hsl(var(--primary))]" : ""}`}
+                  className="text-xs px-1.5 flex-1 min-w-0"
                 >
                   {d}
                 </TabsTrigger>
