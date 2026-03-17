@@ -56,7 +56,7 @@ export function BinaryTab() {
   const [navHistory, setNavHistory] = useState<string[]>([]);
   const [bonusModalOpen, setBonusModalOpen] = useState(false);
   const [searchId, setSearchId] = useState("");
-  const [sortMode, setSortMode] = useState<SortMode>("default");
+  const [sortMode, setSortMode] = useState<SortMode | "">("");
   const searchRef = useRef<HTMLInputElement>(null);
 
   const currentRoot = findNodeById(mockBinaryTree, rootId) ?? mockBinaryTree;
@@ -71,7 +71,7 @@ export function BinaryTab() {
       const q = searchId.toLowerCase();
       result = result.filter(m => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q));
     }
-    return sortMembers(result, sortMode);
+    return sortMembers(result, sortMode || "default");
   };
 
   const filteredLeft = useMemo(() => filterMembers(leftMembers), [leftMembers, searchId, sortMode]);
@@ -174,20 +174,10 @@ export function BinaryTab() {
         {/* ═══ LEFT COLUMN: Tree ═══ */}
         <div className="space-y-3">
           {/* Tree drawing */}
-          <Card className="min-h-[340px]">
-            <CardContent className="px-1 py-3">
-              <h2 className="text-base font-bold text-foreground text-center mb-4">Rede Binária</h2>
-              {navHistory.length > 0 && (
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Button variant="ghost" size="sm" onClick={navigateBack} className="gap-1 text-xs h-7 px-2">
-                    ← Voltar nível
-                  </Button>
-                  <Button variant="ghost" size="sm" className="gap-1 text-xs h-7 px-2" onClick={resetToRoot}>
-                    <RotateCcw className="h-3 w-3" /> Início
-                  </Button>
-                </div>
-              )}
-              <div className="flex flex-col items-center py-2">
+          <Card className="min-h-[380px] flex flex-col">
+            <CardContent className="px-1 py-3 flex-1 flex flex-col">
+              <h2 className="text-base font-bold text-foreground text-center mb-6">Rede Binária</h2>
+              <div className="flex flex-col items-center py-2 flex-1">
                 {/* Root */}
                 <BinaryTreeNode node={currentRoot} onSelect={navigateTo} isRoot isMe={currentRoot.id === mockBinaryTree.id} isMineAlt={currentRoot.document === myDocument && currentRoot.id !== mockBinaryTree.id} hasChildren={!!(currentRoot.left || currentRoot.right)} />
 
@@ -234,26 +224,43 @@ export function BinaryTab() {
                   </>
                 )}
               </div>
+
+              {/* Navigation buttons at bottom */}
+              {navHistory.length > 0 && (
+                <>
+                  <div className="border-t border-border/40 mt-auto" />
+                  <div className="flex items-center justify-center gap-2 pt-2">
+                    <Button variant="ghost" size="sm" onClick={navigateBack} className="gap-1 text-xs h-7 px-2">
+                      ← Voltar nível
+                    </Button>
+                    <Button variant="ghost" size="sm" className="gap-1 text-xs h-7 px-2" onClick={resetToRoot}>
+                      <RotateCcw className="h-3 w-3" /> Início
+                    </Button>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
+
+          {/* Diagnostic - left column */}
+          <DiagnosticCard weakerSide={weakerSide} diff={diff} />
         </div>
 
         {/* ═══ RIGHT COLUMN: Analytics ═══ */}
         <div className="space-y-3">
           {/* Current root info */}
-          <div>
-            <h2 className="text-lg font-bold text-foreground">{currentRoot.name}</h2>
-            <p className="text-xs text-muted-foreground">ID {currentRoot.id}</p>
-          </div>
+          <Card className="bg-primary/5 border-primary/20">
+            <CardContent className="p-4 text-center">
+              <h2 className="text-lg font-bold text-foreground">{currentRoot.name}</h2>
+              <p className="text-xs text-muted-foreground">ID {currentRoot.id}</p>
+            </CardContent>
+          </Card>
 
           {/* Summary cards */}
           <div className="grid grid-cols-2 gap-3">
             <SummaryCard side="left" volume={leftVolume} total={leftMembers.length} active={leftActive} inactive={leftMembers.length - leftActive} />
             <SummaryCard side="right" volume={rightVolume} total={rightMembers.length} active={rightActive} inactive={rightMembers.length - rightActive} />
           </div>
-
-          {/* Diagnostic */}
-          <DiagnosticCard weakerSide={weakerSide} diff={diff} />
 
           {/* Search + Sort — equal width */}
           <div className="grid grid-cols-2 gap-3">
@@ -356,12 +363,12 @@ function SearchInput({ value, onChange, onKeyDown, inputRef }: { value: string; 
   );
 }
 
-function SortSelector({ value, onChange }: { value: SortMode; onChange: (v: SortMode) => void }) {
+function SortSelector({ value, onChange }: { value: SortMode | ""; onChange: (v: SortMode) => void }) {
   return (
-    <Select value={value} onValueChange={(v) => onChange(v as SortMode)}>
+    <Select value={value || undefined} onValueChange={(v) => onChange(v as SortMode)}>
       <SelectTrigger className="h-8 text-[11px] w-full">
         <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
-        <SelectValue />
+        <SelectValue placeholder="Classificar" />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>

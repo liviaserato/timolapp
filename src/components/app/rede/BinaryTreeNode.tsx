@@ -45,9 +45,9 @@ export function BinaryTreeNode({ node, side, onSelect, isRoot, hasChildren, isMe
           className={cn(
             "flex items-center justify-center rounded-full font-bold transition-shadow group-hover:shadow-md",
             isMe
-              ? "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background"
+              ? "bg-primary text-primary-foreground shadow-[inset_0_0_0_3px_hsl(var(--primary)/0.3)]"
               : isMineAlt
-                ? "bg-primary/20 text-primary ring-2 ring-primary/40 ring-offset-1 ring-offset-background"
+                ? "bg-primary/15 text-primary shadow-[inset_0_0_0_2px_hsl(var(--primary)/0.4)]"
                 : "bg-muted text-foreground",
             isRoot ? "h-11 w-11 text-sm" : "h-9 w-9 text-xs"
           )}
