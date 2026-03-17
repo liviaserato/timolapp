@@ -71,7 +71,7 @@ export function BinaryTab() {
       const q = searchId.toLowerCase();
       result = result.filter(m => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q));
     }
-    return sortMembers(result, sortMode);
+    return sortMembers(result, sortMode || "default");
   };
 
   const filteredLeft = useMemo(() => filterMembers(leftMembers), [leftMembers, searchId, sortMode]);
