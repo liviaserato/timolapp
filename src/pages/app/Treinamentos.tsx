@@ -36,6 +36,7 @@ interface WeekEvent {
   title: string;
   type: EventType;
   host?: string;
+  bannerUrl?: string;      // banner image URL (from DB)
 }
 
 const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
