@@ -280,7 +280,7 @@ function DiagnosticCard({ weakerSide, diff }: { weakerSide: string; diff: number
               A perna menor neste momento é a <strong>{weakerSide}</strong> com <strong>{diff.toLocaleString("pt-BR")} pontos</strong> a menos que a {strongerSide}.
             </p>
             <p className="text-[11px] text-muted-foreground mt-1.5">
-              Os bônus são gerados a partir da pontuação da perna menor.
+              Seus bônus binários são calculados com base na pontuação da perna menor.
             </p>
           </>
         )}
