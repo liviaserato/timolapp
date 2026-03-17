@@ -363,9 +363,10 @@ function TodayEventRow({ event, todayIndex }: { event: WeekEvent; todayIndex: nu
 /*  Schedule Event Row (weekly grid)                                   */
 /* ------------------------------------------------------------------ */
 
-function ScheduleEventRow({ event, showDay = false, todayIndex }: { event: WeekEvent; showDay?: boolean; todayIndex: number }) {
+function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex }: { event: WeekEvent; showDay?: boolean; showDate?: boolean; todayIndex: number }) {
   const cfg = typeConfig[event.type];
   const status = getEventStatus(event, todayIndex);
+  const dayDate = showDate ? getDateForDayIndex(event.dayIndex).getDate() : null;
 
   return (
     <div className={`flex items-center gap-3 rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] ${cfg.borderColor} p-3 hover:bg-muted/50 transition-colors`}>
@@ -375,6 +376,9 @@ function ScheduleEventRow({ event, showDay = false, todayIndex }: { event: WeekE
           <span className="text-[10px] font-semibold text-muted-foreground uppercase">
             {DAYS[event.dayIndex]}
           </span>
+        )}
+        {dayDate !== null && (
+          <span className="text-lg font-bold text-foreground leading-tight">{dayDate}</span>
         )}
         <span className="text-sm font-bold text-foreground flex items-center gap-1">
           <Clock className="h-3 w-3 text-muted-foreground" />
