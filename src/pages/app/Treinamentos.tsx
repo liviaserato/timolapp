@@ -46,7 +46,7 @@ const DAYS_FULL = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feir
 const weekEvents: WeekEvent[] = [
   { id: "1", dayIndex: 0, time: "08:50", endTime: "10:00", title: "Aulas de produtos e franquias", type: "produto", host: "Lucas Rocha" },
   { id: "2", dayIndex: 0, time: "20:30", endTime: "21:30", title: "Treinamento: Primeiros Passos", type: "treinamento", host: "Maria Souza" },
-  { id: "3", dayIndex: 1, time: "19:20", endTime: "20:20", title: "Aulas de produtos e franquias", type: "negocio", host: "Lucas Rocha", bannerUrl: bannerMock },
+  { id: "3", dayIndex: 1, time: "00:00", endTime: "23:59", title: "Aulas de produtos e franquias", type: "negocio", host: "Lucas Rocha", bannerUrl: bannerMock },
   { id: "4", dayIndex: 1, time: "20:30", endTime: "21:30", title: "Live Especial: Fechamento de Mês", type: "especial", host: "Ana Costa", bannerUrl: bannerMock },
   { id: "5", dayIndex: 2, time: "19:00", endTime: "20:00", title: "Treinamento: Técnicas de Venda", type: "treinamento", host: "Pedro Alves" },
   { id: "6", dayIndex: 3, time: "19:00", endTime: "20:00", title: "Live Produto – Linha Premium", type: "produto", host: "João Silva" },
