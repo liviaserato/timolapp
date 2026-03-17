@@ -340,37 +340,36 @@ function LegTable({ title, members, onNavigate }: { title: string; members: Netw
         {members.length === 0 ? (
           <p className="text-xs text-muted-foreground py-6 text-center">Nenhum membro encontrado</p>
         ) : (
-          <div className="max-h-[352px] overflow-y-auto">
-            <Table>
+          <div className="max-h-[352px] overflow-y-auto overflow-x-hidden">
+            <Table className="table-fixed w-full">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[24px] px-2"></TableHead>
-                  <TableHead className="text-[10px] px-2">ID</TableHead>
-                  <TableHead className="text-[10px] px-2">Nome</TableHead>
-                  <TableHead className="text-[10px] px-2 text-center w-[32px]">Qual.</TableHead>
-                  <TableHead className="text-[10px] px-2 text-right">Pontos</TableHead>
+                  <TableHead className="w-[24px] px-1"></TableHead>
+                  <TableHead className="text-[10px] px-1 w-[52px]">ID</TableHead>
+                  <TableHead className="text-[10px] px-1">Nome</TableHead>
+                  <TableHead className="text-[10px] px-1 text-center w-[28px]">Qual.</TableHead>
+                  <TableHead className="text-[10px] px-1 text-right w-[52px]">Pontos</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {members.map((m) => {
                   const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
                   const isDirect = m.type === "direct";
-                  const hasChildren = !!(m.left || m.right);
                   return (
                     <TableRow key={m.id} className="cursor-pointer hover:bg-accent/40" onClick={() => onNavigate(m.id)}>
-                      <TableCell className="px-2 py-1.5">
+                      <TableCell className="px-1 py-1.5">
                         <div className={cn("h-2 w-2 rounded-full mx-auto", m.active ? "bg-success" : "bg-destructive")} />
                       </TableCell>
-                      <TableCell className={cn("px-2 py-1.5 text-[11px] tabular-nums", isDirect ? "font-bold" : "font-normal")}>
+                      <TableCell className={cn("px-1 py-1.5 text-[11px] tabular-nums truncate", isDirect ? "font-bold" : "font-normal")}>
                         {m.id}
                       </TableCell>
-                      <TableCell className={cn("px-2 py-1.5 text-[11px] truncate max-w-[100px]", isDirect ? "font-bold" : "font-normal")}>
+                      <TableCell className={cn("px-1 py-1.5 text-[11px] truncate", isDirect ? "font-bold" : "font-normal")}>
                         {m.name}
                       </TableCell>
-                      <TableCell className="px-2 py-1.5 text-center">
+                      <TableCell className="px-1 py-1.5 text-center">
                         <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
                       </TableCell>
-                      <TableCell className="px-2 py-1.5 text-[11px] text-right tabular-nums font-medium">
+                      <TableCell className="px-1 py-1.5 text-[11px] text-right tabular-nums font-medium">
                         {m.volume.toLocaleString("pt-BR")}
                       </TableCell>
                     </TableRow>
