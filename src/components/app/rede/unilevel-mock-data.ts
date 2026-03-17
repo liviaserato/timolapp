@@ -109,16 +109,70 @@ export function flattenUnilevelTree(node: UnilevelNode, currentLevel: number = 0
   return result;
 }
 
-/* ── Level points table for bonus explainer ── */
-export const levelPointsTable = [
-  { level: 1, percentage: "20%", qualification: "Consultor" },
-  { level: 2, percentage: "10%", qualification: "Consultor" },
-  { level: 3, percentage: "5%", qualification: "Consultor" },
-  { level: 4, percentage: "5%", qualification: "Distribuidor" },
-  { level: 5, percentage: "5%", qualification: "Líder / Rubi" },
-  { level: 6, percentage: "5%", qualification: "Esmeralda" },
-  { level: 7, percentage: "3%", qualification: "Diamante" },
-  { level: 8, percentage: "3%", qualification: "Diamante" },
-  { level: 9, percentage: "2%", qualification: "Diamante" },
-  { level: 10, percentage: "2%", qualification: "Diamante" },
+/* ── Level points table per qualification ── */
+export interface LevelPercentageRow {
+  level: number;
+  consultor: string;
+  distribuidor: string;
+  lider: string;
+  rubi: string;
+  esmeralda: string;
+  diamante: string;
+}
+
+export const levelPointsTable: LevelPercentageRow[] = [
+  { level: 1,  consultor: "30%", distribuidor: "30%", lider: "30%", rubi: "30%", esmeralda: "30%", diamante: "30%" },
+  { level: 2,  consultor: "30%", distribuidor: "30%", lider: "30%", rubi: "30%", esmeralda: "30%", diamante: "30%" },
+  { level: 3,  consultor: "30%", distribuidor: "30%", lider: "30%", rubi: "30%", esmeralda: "30%", diamante: "30%" },
+  { level: 4,  consultor: "",    distribuidor: "30%", lider: "30%", rubi: "30%", esmeralda: "30%", diamante: "30%" },
+  { level: 5,  consultor: "",    distribuidor: "",    lider: "20%", rubi: "30%", esmeralda: "30%", diamante: "30%" },
+  { level: 6,  consultor: "",    distribuidor: "",    lider: "",    rubi: "",    esmeralda: "20%", diamante: "30%" },
+  { level: 7,  consultor: "",    distribuidor: "",    lider: "",    rubi: "",    esmeralda: "",    diamante: "20%" },
+  { level: 8,  consultor: "",    distribuidor: "",    lider: "",    rubi: "",    esmeralda: "",    diamante: "" },
+  { level: 9,  consultor: "",    distribuidor: "",    lider: "",    rubi: "",    esmeralda: "",    diamante: "" },
+  { level: 10, consultor: "",    distribuidor: "",    lider: "",    rubi: "",    esmeralda: "",    diamante: "" },
+];
+
+export const extraBonus: Record<string, string> = {
+  consultor: "-",
+  distribuidor: "-",
+  lider: "+ 25%",
+  rubi: "+ 50%",
+  esmeralda: "+ 100%",
+  diamante: "+ 100%",
+};
+
+/* ── Plano Diamante sub-levels ── */
+export interface DiamanteLevelRow {
+  level: number;
+  d1: string; // ★
+  d2: string; // ★★
+  d3: string; // ★★★
+  d4: string; // ★★★★
+  d5: string; // ★★★★★
+  black: string;
+}
+
+export const diamanteLevelTable: DiamanteLevelRow[] = [
+  { level: 1,  d1: "30%", d2: "30%", d3: "30%", d4: "30%", d5: "30%", black: "30%" },
+  { level: 2,  d1: "30%", d2: "30%", d3: "30%", d4: "30%", d5: "30%", black: "30%" },
+  { level: 3,  d1: "30%", d2: "30%", d3: "30%", d4: "30%", d5: "30%", black: "30%" },
+  { level: 4,  d1: "30%", d2: "30%", d3: "30%", d4: "30%", d5: "30%", black: "30%" },
+  { level: 5,  d1: "30%", d2: "30%", d3: "30%", d4: "30%", d5: "30%", black: "30%" },
+  { level: 6,  d1: "30%", d2: "30%", d3: "30%", d4: "30%", d5: "30%", black: "30%" },
+  { level: 7,  d1: "30%", d2: "30%", d3: "30%", d4: "30%", d5: "30%", black: "30%" },
+  { level: 8,  d1: "20%", d2: "20%", d3: "20%", d4: "30%", d5: "30%", black: "30%" },
+  { level: 9,  d1: "",    d2: "20%", d3: "20%", d4: "20%", d5: "30%", black: "30%" },
+  { level: 10, d1: "",    d2: "",    d3: "20%", d4: "20%", d5: "20%", black: "30%" },
+];
+
+export const diamanteExtraBonus = "+ 100%";
+
+export const diamanteLabels: { key: keyof DiamanteLevelRow; label: string }[] = [
+  { key: "d1", label: "★" },
+  { key: "d2", label: "★★" },
+  { key: "d3", label: "★★★" },
+  { key: "d4", label: "★★★★" },
+  { key: "d5", label: "★★★★★" },
+  { key: "black", label: "Black ◈" },
 ];
