@@ -1,18 +1,20 @@
 import { useState, useRef, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { WeekEvent } from "./types";
 import { TodayEventCard } from "./TodayEventCard";
 
 export function TodayCarousel({ events, todayIndex }: { events: WeekEvent[]; todayIndex: number }) {
+  const isMobile = useIsMobile();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [overflows, setOverflows] = useState(false);
 
   const getCardWidth = useCallback(() => {
-    if (!scrollRef.current) return 216;
+    if (!scrollRef.current) return 300;
     const firstChild = scrollRef.current.firstElementChild as HTMLElement | null;
-    if (!firstChild) return 216;
+    if (!firstChild) return 300;
     return firstChild.offsetWidth + 16;
   }, []);
 
@@ -45,48 +47,62 @@ export function TodayCarousel({ events, todayIndex }: { events: WeekEvent[]; tod
   const canPrev = activeIndex > 0;
   const canNext = activeIndex < events.length - 1;
 
-  return (
-    <div className="space-y-3">
-      {/* Prev / Next navigation - only when overflow */}
-      {overflows && events.length > 1 && (
-        <div className="flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground px-2"
-            disabled={!canPrev}
-            onClick={() => scrollToIndex(activeIndex - 1)}
-          >
-            <ChevronLeft className="h-3.5 w-3.5" />
-            Anterior
-          </Button>
-          <span className="text-[11px] text-muted-foreground">
-            {activeIndex + 1} / {events.length}
-          </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground px-2"
-            disabled={!canNext}
-            onClick={() => scrollToIndex(activeIndex + 1)}
-          >
-            Próximo
-            <ChevronRight className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-      )}
-
-      <div
-        ref={scrollRefCb}
-        onScroll={handleScroll}
-        className="grid grid-cols-1 sm:grid-cols-4 gap-4"
-      >
-        {events.map((ev) => (
-          <div key={ev.id}>
-            <TodayEventCard event={ev} todayIndex={todayIndex} />
+  // Mobile: horizontal scroll carousel
+  if (isMobile) {
+    return (
+      <div className="space-y-3">
+        {overflows && events.length > 1 && (
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground px-2"
+              disabled={!canPrev}
+              onClick={() => scrollToIndex(activeIndex - 1)}
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+              Anterior
+            </Button>
+            <span className="text-[11px] text-muted-foreground">
+              {activeIndex + 1} / {events.length}
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground px-2"
+              disabled={!canNext}
+              onClick={() => scrollToIndex(activeIndex + 1)}
+            >
+              Próximo
+              <ChevronRight className="h-3.5 w-3.5" />
+            </Button>
           </div>
-        ))}
+        )}
+
+        <div
+          ref={scrollRefCb}
+          onScroll={handleScroll}
+          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
+          style={{ scrollSnapType: "x mandatory", scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {events.map((ev) => (
+            <div key={ev.id} className="w-full shrink-0" style={{ scrollSnapAlign: "start" }}>
+              <TodayEventCard event={ev} todayIndex={todayIndex} />
+            </div>
+          ))}
+        </div>
       </div>
+    );
+  }
+
+  // Desktop: 4-column grid
+  return (
+    <div className="grid grid-cols-4 gap-4">
+      {events.map((ev) => (
+        <div key={ev.id}>
+          <TodayEventCard event={ev} todayIndex={todayIndex} />
+        </div>
+      ))}
     </div>
   );
 }
