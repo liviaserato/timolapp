@@ -315,44 +315,75 @@ export default function Treinamentos() {
 
 function TodayCarousel({ events, todayIndex }: { events: WeekEvent[]; todayIndex: number }) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const showChevrons = events.length > 1;
+  const [activeIndex, setActiveIndex] = useState(0);
+  const showNav = events.length > 1;
+  const cardWidth = 200 + 16; // card width + gap
 
   const scroll = useCallback((dir: "left" | "right") => {
     if (!scrollRef.current) return;
-    const cardWidth = 200 + 16;
     scrollRef.current.scrollBy({ left: dir === "left" ? -cardWidth : cardWidth, behavior: "smooth" });
-  }, []);
+  }, [cardWidth]);
+
+  const scrollToIndex = useCallback((index: number) => {
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollTo({ left: index * cardWidth, behavior: "smooth" });
+  }, [cardWidth]);
+
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return;
+    const idx = Math.round(scrollRef.current.scrollLeft / cardWidth);
+    setActiveIndex(Math.min(idx, events.length - 1));
+  }, [cardWidth, events.length]);
 
   return (
-    <div className="relative flex items-center gap-2">
-      {showChevrons && (
-        <button
-          onClick={() => scroll("left")}
-          className="shrink-0 h-8 w-8 rounded-full border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </button>
-      )}
+    <div className="space-y-3">
+      <div className="relative flex items-center gap-2">
+        {showNav && (
+          <button
+            onClick={() => scroll("left")}
+            className="shrink-0 h-8 w-8 rounded-full border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+        )}
 
-      <div
-        ref={scrollRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
-        style={{ scrollSnapType: "x mandatory" }}
-      >
-        {events.map((ev) => (
-          <div key={ev.id} style={{ scrollSnapAlign: "start" }}>
-            <TodayEventCard event={ev} todayIndex={todayIndex} />
-          </div>
-        ))}
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
+          style={{ scrollSnapType: "x mandatory" }}
+        >
+          {events.map((ev) => (
+            <div key={ev.id} style={{ scrollSnapAlign: "start" }}>
+              <TodayEventCard event={ev} todayIndex={todayIndex} />
+            </div>
+          ))}
+        </div>
+
+        {showNav && (
+          <button
+            onClick={() => scroll("right")}
+            className="shrink-0 h-8 w-8 rounded-full border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
-      {showChevrons && (
-        <button
-          onClick={() => scroll("right")}
-          className="shrink-0 h-8 w-8 rounded-full border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </button>
+      {showNav && (
+        <div className="flex items-center justify-center gap-1.5">
+          {events.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => scrollToIndex(i)}
+              className={`h-1 rounded-full transition-all duration-300 ${
+                i === activeIndex
+                  ? "w-6 bg-foreground"
+                  : "w-3 bg-muted-foreground/30 hover:bg-muted-foreground/50"
+              }`}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
