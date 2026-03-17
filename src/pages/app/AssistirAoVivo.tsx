@@ -166,7 +166,7 @@ export default function AssistirAoVivo() {
         </div>
       </div>
 
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-row gap-4 items-start">
         <div className="flex-[7] min-w-0 flex flex-col">
           <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
             <iframe
@@ -181,7 +181,7 @@ export default function AssistirAoVivo() {
         </div>
 
         {isLive && (
-          <div className="flex-[3] min-w-[280px] flex flex-col" style={{ height: "calc(100vh - 110px)" }}>
+          <div className="flex-[3] min-w-[280px] flex flex-col" style={{ height: "clamp(400px, 39.4vw, 700px)" }}>
             <div className="flex-1 rounded-lg border border-neutral-700/60 overflow-hidden bg-neutral-900">
               <iframe
                 src={chatUrl}
