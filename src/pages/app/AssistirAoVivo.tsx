@@ -93,31 +93,29 @@ export default function AssistirAoVivo() {
 
         {/* Chat panel — only for live events */}
         {isLive && (
-          <div className={isMobile ? "w-full" : "flex-[3] min-w-[280px]"}>
-            <div className="flex flex-col h-full">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                  <MessageSquare className="h-4 w-4 text-primary" />
-                  Chat ao vivo
-                </span>
-                <a
-                  href={`https://www.youtube.com/live_chat?v=${videoId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
-                >
-                  Abrir em nova aba
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              </div>
-              <div className="flex-1 rounded-lg border border-border overflow-hidden bg-card" style={{ minHeight: isMobile ? "400px" : "100%" }}>
-                <iframe
-                  src={chatUrl}
-                  title="YouTube Live Chat"
-                  className="w-full h-full"
-                  style={{ minHeight: isMobile ? "400px" : "500px" }}
-                />
-              </div>
+          <div className={isMobile ? "w-full" : "flex-[3] min-w-[280px] flex flex-col"}>
+            <div className="flex-1 rounded-lg border border-border overflow-hidden bg-card" style={{ minHeight: isMobile ? "400px" : "100%" }}>
+              <iframe
+                src={chatUrl}
+                title="YouTube Live Chat"
+                className="w-full h-full"
+                style={{ minHeight: isMobile ? "400px" : "500px" }}
+              />
+            </div>
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <MessageSquare className="h-3.5 w-3.5 text-primary" />
+                Chat ao vivo
+              </span>
+              <a
+                href={`https://www.youtube.com/live_chat?v=${videoId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+              >
+                Abrir em nova aba
+                <ExternalLink className="h-3 w-3" />
+              </a>
             </div>
           </div>
         )}
