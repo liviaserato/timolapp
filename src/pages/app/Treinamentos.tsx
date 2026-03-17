@@ -416,13 +416,13 @@ function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex
             Ao vivo
           </Badge>
         ) : status === "past" ? (
-          <button className="flex flex-col items-center gap-0.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1">
-            <Play className="h-4 w-4" />
+          <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 whitespace-nowrap">
+            <Play className="h-3.5 w-3.5 shrink-0" />
             <span>Gravação</span>
           </button>
         ) : (
-          <div className="flex flex-col items-center gap-0.5 text-xs text-muted-foreground px-3 py-1">
-            <Hourglass className="h-4 w-4" />
+          <div className="flex items-center gap-1 text-xs text-muted-foreground px-2 py-1 whitespace-nowrap">
+            <Hourglass className="h-3.5 w-3.5 shrink-0" />
             <span>Em breve</span>
           </div>
         )}
