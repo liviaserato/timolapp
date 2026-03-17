@@ -144,7 +144,7 @@ export default function AssistirAoVivo() {
     </div>
   ) : (
     /* ── Desktop ── */
-    <div className="bg-[#0f1117] p-6 min-h-full overflow-y-auto">
+    <div className="bg-[#0f1117] p-6">
       <div className="flex items-center gap-3 mb-4">
         <Button variant="ghost" size="icon" onClick={() => navigate("/app/treinamentos")} className="shrink-0 text-neutral-300 hover:bg-neutral-800 hover:text-neutral-100">
           <ArrowLeft className="h-5 w-5" />
@@ -168,7 +168,7 @@ export default function AssistirAoVivo() {
         </div>
       </div>
 
-      <div className="flex flex-row gap-4" style={{ minHeight: "calc(100vh - 220px)" }}>
+      <div className="flex flex-row gap-4">
         <div className="flex-[7] min-w-0 flex flex-col">
           <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
             <iframe
@@ -183,16 +183,15 @@ export default function AssistirAoVivo() {
         </div>
 
         {isLive && (
-          <div className="flex-[3] min-w-[280px] flex flex-col">
-            <div className="flex-1 rounded-lg border border-neutral-700/60 overflow-hidden bg-neutral-900" style={{ minHeight: "100%" }}>
+          <div className="flex-[3] min-w-[280px] flex flex-col" style={{ height: "calc(100vh - 130px)" }}>
+            <div className="flex-1 rounded-lg border border-neutral-700/60 overflow-hidden bg-neutral-900">
               <iframe
                 src={chatUrl}
                 title="YouTube Live Chat"
                 className="w-full h-full"
-                style={{ minHeight: "500px" }}
               />
             </div>
-            <div className="flex items-center justify-between mt-2">
+            <div className="flex items-center justify-between mt-2 shrink-0">
               <span className="text-xs text-neutral-500 flex items-center gap-1.5">
                 <MessageSquare className="h-3.5 w-3.5 text-primary" />
                 Chat ao vivo
