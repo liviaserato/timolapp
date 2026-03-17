@@ -53,11 +53,11 @@ const weekEvents: WeekEvent[] = [
   { id: "9", dayIndex: 5, time: "10:00", endTime: "11:00", title: "Treinamento: Liderança", type: "treinamento", host: "Maria Souza" },
 ];
 
-const typeConfig: Record<EventType, { label: string; borderColor: string; badgeClass: string; icon: React.ReactNode }> = {
-  produto:     { label: "Produto",     borderColor: "border-l-blue-600",    badgeClass: "bg-blue-500/15 text-blue-700 border-blue-200",       icon: <Presentation className="h-3.5 w-3.5" /> },
-  negocio:     { label: "Negócio",     borderColor: "border-l-emerald-600", badgeClass: "bg-emerald-500/15 text-emerald-700 border-emerald-200", icon: <Tv className="h-3.5 w-3.5" /> },
-  especial:    { label: "Especial",    borderColor: "border-l-amber-500",   badgeClass: "bg-amber-500/15 text-amber-700 border-amber-200",     icon: <Sparkles className="h-3.5 w-3.5" /> },
-  treinamento: { label: "Treinamento", borderColor: "border-l-purple-600",  badgeClass: "bg-purple-500/15 text-purple-700 border-purple-200",   icon: <GraduationCap className="h-3.5 w-3.5" /> },
+const typeConfig: Record<EventType, { label: string; borderColor: string; iconColor: string; icon: React.ReactNode }> = {
+  produto:     { label: "Produto",     borderColor: "border-l-[hsl(var(--app-sidebar))]",  iconColor: "text-[hsl(var(--app-sidebar))]",  icon: <Presentation className="h-3.5 w-3.5" /> },
+  negocio:     { label: "Negócio",     borderColor: "border-l-[hsl(var(--app-header))]",   iconColor: "text-[hsl(var(--app-header))]",   icon: <Tv className="h-3.5 w-3.5" /> },
+  especial:    { label: "Especial",    borderColor: "border-l-amber-300",                  iconColor: "text-amber-400",                  icon: <Sparkles className="h-3.5 w-3.5" /> },
+  treinamento: { label: "Treinamento", borderColor: "border-l-emerald-400",                iconColor: "text-emerald-500",                icon: <GraduationCap className="h-3.5 w-3.5" /> },
 };
 
 const quickLinks = [
@@ -223,7 +223,7 @@ export default function Treinamentos() {
                   return (
                     <SelectItem key={type} value={type}>
                       <span className="flex items-center gap-1.5">
-                        {cfg.icon}
+                        <span className={cfg.iconColor}>{cfg.icon}</span>
                         {cfg.label}
                       </span>
                     </SelectItem>
@@ -354,7 +354,7 @@ function TodayEventRow({ event, todayIndex }: { event: WeekEvent; todayIndex: nu
             <span>gravação</span>
           </Button>
         ) : (
-          <Badge variant="outline" className={`${cfg.badgeClass} text-[10px] gap-1`}>
+          <Badge variant="outline" className="text-[10px] gap-1 text-muted-foreground border-muted-foreground/30">
             {cfg.icon}
             {cfg.label}
           </Badge>
