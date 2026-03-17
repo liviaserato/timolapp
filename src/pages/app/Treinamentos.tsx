@@ -123,11 +123,17 @@ export default function Treinamentos() {
   const todayIndex = todayDow === 0 ? 6 : todayDow - 1;
 
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [selectedType, setSelectedType] = useState<EventType | "all">("all");
 
-  const filteredEvents =
-    selectedDay !== null
+  const filteredEvents = useMemo(() => {
+    let events = selectedDay !== null
       ? weekEvents.filter((e) => e.dayIndex === selectedDay)
       : weekEvents;
+    if (selectedType !== "all") {
+      events = events.filter((e) => e.type === selectedType);
+    }
+    return events;
+  }, [selectedDay, selectedType]);
 
   const todayEvents = weekEvents.filter((e) => e.dayIndex === todayIndex);
 
@@ -188,14 +194,42 @@ export default function Treinamentos() {
       {/* Weekly calendar */}
       <Card>
         <CardHeader className="pb-3">
-          <div className="flex flex-col gap-1">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-primary" />
-              Programação Semanal
-            </CardTitle>
-            {selectedDateLabel && (
-              <p className="text-sm text-muted-foreground ml-6">{selectedDateLabel}</p>
-            )}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+            <div className="flex flex-col gap-1">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-primary" />
+                Programação Semanal
+              </CardTitle>
+              {selectedDateLabel && (
+                <p className="text-sm text-muted-foreground ml-6">{selectedDateLabel}</p>
+              )}
+            </div>
+            {/* Category filter */}
+            <div className="flex flex-wrap gap-1.5 ml-6 sm:ml-0">
+              <Button
+                size="sm"
+                variant={selectedType === "all" ? "default" : "outline"}
+                className="h-7 text-[11px] px-2.5 rounded-full"
+                onClick={() => setSelectedType("all")}
+              >
+                Todos
+              </Button>
+              {(Object.keys(typeConfig) as EventType[]).map((type) => {
+                const cfg = typeConfig[type];
+                return (
+                  <Button
+                    key={type}
+                    size="sm"
+                    variant={selectedType === type ? "default" : "outline"}
+                    className={`h-7 text-[11px] px-2.5 rounded-full gap-1 ${selectedType !== type ? cfg.badgeClass + " hover:opacity-80" : ""}`}
+                    onClick={() => setSelectedType(type)}
+                  >
+                    {cfg.icon}
+                    {cfg.label}
+                  </Button>
+                );
+              })}
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -224,9 +258,41 @@ export default function Treinamentos() {
               <p className="text-sm text-muted-foreground text-center py-6">
                 Nenhum evento neste dia.
               </p>
+            ) : selectedDay === null ? (
+              /* Group by day with separator labels */
+              (() => {
+                const grouped = filteredEvents.reduce<Record<number, WeekEvent[]>>((acc, ev) => {
+                  (acc[ev.dayIndex] = acc[ev.dayIndex] || []).push(ev);
+                  return acc;
+                }, {});
+                return Object.entries(grouped)
+                  .sort(([a], [b]) => Number(a) - Number(b))
+                  .map(([dayIdx, events]) => {
+                    const idx = Number(dayIdx);
+                    const isToday = idx === todayIndex;
+                    return (
+                      <div key={dayIdx} className="flex gap-3">
+                        {/* Rotated day label */}
+                        <div className="flex flex-col items-center justify-center min-w-[36px] py-2">
+                          <span
+                            className={`text-[11px] font-bold uppercase tracking-wider whitespace-nowrap ${isToday ? "text-primary" : "text-muted-foreground/60"}`}
+                            style={{ writingMode: "vertical-rl", textOrientation: "mixed", transform: "rotate(180deg)" }}
+                          >
+                            {DAYS_FULL[idx]}
+                          </span>
+                        </div>
+                        <div className={`flex-1 space-y-2 border-l-2 pl-3 py-2 ${isToday ? "border-primary/40" : "border-border"}`}>
+                          {events.map((ev) => (
+                            <ScheduleEventRow key={ev.id} event={ev} showDay={false} todayIndex={todayIndex} />
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  });
+              })()
             ) : (
               filteredEvents.map((ev) => (
-                <ScheduleEventRow key={ev.id} event={ev} showDay={selectedDay === null} todayIndex={todayIndex} />
+                <ScheduleEventRow key={ev.id} event={ev} showDay={false} todayIndex={todayIndex} />
               ))
             )}
           </div>
