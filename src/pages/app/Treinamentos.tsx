@@ -280,7 +280,7 @@ export default function Treinamentos() {
                         </div>
                         <div className={`flex-1 space-y-2 border-l-2 pl-3 py-2 ${isToday ? "border-primary/40" : "border-border"}`}>
                           {events.map((ev) => (
-                            <ScheduleEventRow key={ev.id} event={ev} showDay={false} todayIndex={todayIndex} />
+                            <ScheduleEventRow key={ev.id} event={ev} showDay={false} showDate todayIndex={todayIndex} />
                           ))}
                         </div>
                       </div>
