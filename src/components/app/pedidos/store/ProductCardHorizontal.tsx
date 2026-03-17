@@ -108,9 +108,9 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
             )}
           </div>
           <h3 className="text-sm font-bold text-foreground leading-tight">{product.name}</h3>
-          {product.description && (
-            <p className="text-[11px] text-muted-foreground line-clamp-2">{product.description}</p>
-          )}
+          <p className="text-[11px] text-muted-foreground line-clamp-2 leading-normal" style={{ minHeight: "calc(2 * 1.5 * 11px)" }}>
+            {product.description || "\u00A0"}
+          </p>
           <div className="flex items-baseline gap-1.5">
             {product.oldPrice && (
               <span className="text-xs text-muted-foreground line-through">{formatCurrency(product.oldPrice)}</span>
