@@ -68,7 +68,14 @@ export function UnilevelTab({ searchQuery }: Props) {
   const [monthRef, setMonthRef] = useState(() => new Date(2026, 2, 1));
   const [periodStart, setPeriodStart] = useState("");
   const [periodEnd, setPeriodEnd] = useState("");
-  const [viewMode, setViewMode] = useState<"tree" | "list">(isMobile ? "list" : "tree");
+  const [viewMode, setViewMode] = useState<"tree" | "list">("list");
+
+  // Default to list on mobile, tree on desktop (only on mount)
+  useEffect(() => {
+    if (isMobile) setViewMode("list");
+    else setViewMode("tree");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Current user's qualification determines max visible level
   const userQualification = mockUnilevelTree.qualification;
