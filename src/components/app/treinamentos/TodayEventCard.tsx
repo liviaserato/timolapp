@@ -40,12 +40,12 @@ export function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayI
         <div className="p-2.5 space-y-1.5 flex-1 flex flex-col">
           <p className="text-xs font-semibold text-foreground leading-snug">{event.title}</p>
 
-          <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-            <span className="flex items-center gap-1">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-muted-foreground">
+            <span className="flex items-center gap-1 shrink-0">
               <Calendar className="h-3 w-3 shrink-0" />
               {dateStr}
             </span>
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1 shrink-0">
               <Clock className="h-3 w-3 shrink-0" />
               {event.time}
             </span>
