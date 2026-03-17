@@ -19,7 +19,6 @@ import { MemberDetailDialog } from "./MemberDetailDialog";
 import { UnilevelOrgChart } from "./UnilevelOrgChart";
 import {
   mockUnilevelTree, flattenUnilevelTree, qualificationLevelLimits,
-  levelPointsTable, extraBonus, diamanteLevelTable, diamanteLabels, diamanteExtraBonus,
   FlatUnilevelMember,
 } from "./unilevel-mock-data";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -162,19 +161,15 @@ export function UnilevelTab({ searchQuery }: Props) {
     <div className="space-y-4">
       {/* ═══ Summary cards ═══ */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {/* Diretos */}
+        {/* Qualificação */}
         <Card>
           <CardContent className="p-3 flex items-center gap-3">
             <div className="rounded-lg bg-primary/10 p-2 shrink-0">
-              <UserCheck className="h-4 w-4 text-primary" />
+              <Award className="h-4 w-4 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] text-muted-foreground truncate">Diretos</p>
-              <div className="flex items-baseline gap-1.5">
-                <p className="text-sm font-bold">{directCount}</p>
-                <span className="text-[10px] text-success">{directActive} ativos</span>
-                <span className="text-[10px] text-destructive">{directInactive} inat.</span>
-              </div>
+              <p className="text-sm font-bold truncate" style={{ color: q.color }}>{q.label}</p>
+              <p className="text-[10px] text-muted-foreground">{maxLevel}º nível</p>
             </div>
           </CardContent>
         </Card>
@@ -186,39 +181,40 @@ export function UnilevelTab({ searchQuery }: Props) {
               <Target className="h-4 w-4 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] text-muted-foreground truncate">Pontos no Período</p>
-              <p className="text-sm font-bold truncate">{totalPoints.toLocaleString("pt-BR")}</p>
+              <p className="text-sm font-bold truncate">{totalPoints.toLocaleString("pt-BR")} pontos</p>
+              <p className="text-[10px] text-muted-foreground">no período</p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Total indiretos */}
+        {/* Diretos */}
+        <Card>
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
+              <UserCheck className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold truncate">{directCount} diretos</p>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-[10px] text-success">{directActive} ativos</span>
+                <span className="text-[10px] text-destructive">{directInactive} inativos</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Indiretos */}
         <Card>
           <CardContent className="p-3 flex items-center gap-3">
             <div className="rounded-lg bg-primary/10 p-2 shrink-0">
               <Users className="h-4 w-4 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] text-muted-foreground truncate">Total Indiretos</p>
+              <p className="text-sm font-bold truncate">{indirectCount} indiretos</p>
               <div className="flex items-baseline gap-1.5">
-                <p className="text-sm font-bold">{indirectCount}</p>
                 <span className="text-[10px] text-success">{indirectActive} ativos</span>
-                <span className="text-[10px] text-destructive">{indirectInactive} inat.</span>
+                <span className="text-[10px] text-destructive">{indirectInactive} inativos</span>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Qualificação */}
-        <Card>
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-2 shrink-0">
-              <Award className="h-4 w-4 text-primary" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-[11px] text-muted-foreground truncate">Qualificação</p>
-              <p className="text-sm font-bold truncate" style={{ color: q.color }}>{q.label}</p>
-              <p className="text-[10px] text-muted-foreground">{maxLevel}º nível</p>
             </div>
           </CardContent>
         </Card>
@@ -385,8 +381,6 @@ export function UnilevelTab({ searchQuery }: Props) {
       {/* Qualification legend */}
       <QualificationLegend />
 
-      {/* ═══ Level info card ═══ */}
-      <LevelInfoCard userQualification={userQualification} maxLevel={maxLevel} />
 
       {/* ═══ Bonus section ═══ */}
       <BonusSection onOpen={() => setBonusModalOpen(true)} />
@@ -503,105 +497,6 @@ function LevelTable({
   );
 }
 
-function LevelInfoCard({ userQualification, maxLevel }: { userQualification: string; maxLevel: number }) {
-  const q = qualificationConfig[userQualification] ?? qualificationConfig.consultor;
-  const qualColumns = ["consultor", "distribuidor", "lider", "rubi", "esmeralda", "diamante"] as const;
-  const qualLabels: Record<string, string> = {
-    consultor: "Consultor", distribuidor: "Distribuidor", lider: "Líder",
-    rubi: "Rubi", esmeralda: "Esmeralda", diamante: "Diamante",
-  };
-
-  return (
-    <Card className="border-primary/20 bg-primary/[0.02]">
-      <CardContent className="p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Lightbulb className="h-4 w-4 text-primary" />
-          <span className="text-xs font-semibold text-foreground">Pontuação por Níveis</span>
-        </div>
-        <p className="text-sm leading-snug text-muted-foreground mb-3">
-          Sua qualificação atual é <strong className="text-foreground" style={{ color: q.color }}>{q.label}</strong>, permitindo visualizar e pontuar até o <strong className="text-foreground">nível {maxLevel}</strong>.
-          {" "}Conforme você avança de qualificação, mais níveis da rede ficam disponíveis.
-        </p>
-
-        {/* Main table */}
-        <div className="rounded-lg bg-muted/50 p-3 overflow-x-auto mb-3">
-          <Table className="w-full">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-[10px] px-2 py-1 h-6 font-bold">Nível</TableHead>
-                {qualColumns.map((col) => (
-                  <TableHead key={col} className="text-[10px] px-2 py-1 h-6 text-center font-bold">{qualLabels[col]}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {levelPointsTable.map((row) => (
-                <TableRow key={row.level}>
-                  <TableCell className="px-2 py-1 text-xs font-medium text-center">{row.level}º</TableCell>
-                  {qualColumns.map((col) => (
-                    <TableCell key={col} className={cn("px-2 py-1 text-xs text-center", row[col] ? "font-semibold" : "text-muted-foreground/30")}>
-                      {row[col] || ""}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-              {/* Extra row */}
-              <TableRow className="border-t-2 bg-primary/5">
-                <TableCell className="px-2 py-1.5 text-xs font-bold text-center">Extra</TableCell>
-                {qualColumns.map((col) => (
-                  <TableCell key={col} className={cn("px-2 py-1.5 text-xs text-center font-bold", extraBonus[col] !== "-" ? "text-primary" : "text-muted-foreground")}>
-                    {extraBonus[col]}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
-
-        {/* Plano Diamante */}
-        <div className="rounded-lg bg-foreground/[0.03] border border-foreground/10 p-3 overflow-x-auto">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm">◈</span>
-            <span className="text-xs font-bold text-foreground">Plano Diamante</span>
-            <span className="text-[10px] text-muted-foreground">Receba sempre o dobro dos seus ganhos</span>
-          </div>
-          <Table className="w-full">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-[10px] px-2 py-1 h-6 font-bold">Nível</TableHead>
-                {diamanteLabels.map((d) => (
-                  <TableHead key={d.key} className="text-[10px] px-2 py-1 h-6 text-center font-bold">{d.label}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {diamanteLevelTable.map((row) => (
-                <TableRow key={row.level}>
-                  <TableCell className="px-2 py-1 text-xs font-medium text-center">{row.level}º</TableCell>
-                  {diamanteLabels.map((d) => (
-                    <TableCell key={d.key} className={cn("px-2 py-1 text-xs text-center", row[d.key] ? "font-semibold" : "text-muted-foreground/30")}>
-                      {row[d.key] || ""}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-              {/* Extra row */}
-              <TableRow className="border-t-2 bg-primary/5">
-                <TableCell className="px-2 py-1.5 text-xs font-bold text-center">Extra</TableCell>
-                {diamanteLabels.map((d) => (
-                  <TableCell key={d.key} className="px-2 py-1.5 text-xs text-center font-bold text-primary">
-                    {diamanteExtraBonus}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 function BonusSection({ onOpen }: { onOpen: () => void }) {
   return (
     <Card className="border-dashed">
@@ -654,4 +549,3 @@ function BonusDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: 
     </Dialog>
   );
 }
-
