@@ -377,7 +377,7 @@ function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex
   })() : null;
 
   return (
-    <div className={`flex items-center gap-3 rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] ${cfg.borderColor} p-3 hover:bg-muted/50 transition-colors`}>
+    <div className={`flex items-center gap-2 rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] ${cfg.borderColor} px-2 py-3 hover:bg-muted/50 transition-colors`}>
       {/* Time */}
       <div className="flex flex-col items-center min-w-[72px] w-[72px]">
         {showDay && (
