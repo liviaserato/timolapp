@@ -272,9 +272,9 @@ export default function Treinamentos() {
                     const idx = Number(dayIdx);
                     const isToday = idx === todayIndex;
                     return (
-                      <div key={dayIdx} className="flex gap-3">
+                      <div key={dayIdx} className="flex gap-3 items-stretch">
                         {/* Rotated day label */}
-                        <div className="flex flex-col items-center justify-center min-w-[36px] py-2">
+                        <div className="flex items-center min-w-[36px]">
                           <span
                             className={`text-[11px] font-semibold tracking-widest whitespace-nowrap ${isToday ? "text-primary" : "text-muted-foreground/50"}`}
                             style={{ writingMode: "vertical-rl", textOrientation: "mixed", transform: "rotate(180deg)", fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", letterSpacing: "0.15em" }}
