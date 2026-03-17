@@ -70,7 +70,7 @@ export function ScheduleEventCard({ event, todayIndex }: { event: WeekEvent; tod
   const dateLabel = `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
 
   return (
-    <div className={`rounded-lg border border-border bg-card overflow-hidden border-l-[5px] ${cfg.borderColor} p-3 space-y-2 hover:bg-muted/50 transition-colors`}>
+    <div className={`rounded-r-lg rounded-l-[2px] border border-border bg-card overflow-hidden border-l-[5px] ${cfg.borderColor} p-3 space-y-2 hover:bg-muted/50 transition-colors`}>
       <p className="text-sm font-semibold text-foreground leading-snug">{event.title}</p>
       {event.host && (
         <p className="text-xs text-muted-foreground">com {event.host}</p>
