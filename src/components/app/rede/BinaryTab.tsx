@@ -244,7 +244,7 @@ export function BinaryTab() {
               {navHistory.length > 0 && (
                 <>
                   <div className="border-t border-border/40 mt-auto" />
-                  <div className="flex items-center justify-center gap-2 pt-2">
+                  <div className="flex items-center justify-center gap-2 pt-1 pb-0">
                     <Button variant="ghost" size="sm" onClick={navigateBack} className="gap-1 text-xs h-7 px-2">
                       ← Voltar nível
                     </Button>
