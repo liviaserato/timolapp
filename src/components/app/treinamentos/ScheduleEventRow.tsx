@@ -94,12 +94,14 @@ export function ScheduleEventCard({ event, todayIndex }: { event: WeekEvent; tod
           </span>
         </div>
         {status === "live" ? (
-          <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse">
-            <Radio className="h-3 w-3" />
-            Ao vivo
-          </Badge>
+          <button onClick={() => event.youtubeUrl && navigate(`/app/treinamentos/ao-vivo/${event.id}`)}>
+            <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse">
+              <Radio className="h-3 w-3" />
+              Ao vivo
+            </Badge>
+          </button>
         ) : status === "past" ? (
-          <button className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors">
+          <button onClick={() => event.youtubeUrl && navigate(`/app/treinamentos/ao-vivo/${event.id}`)} className={`flex items-center gap-1 text-[10px] text-muted-foreground ${event.youtubeUrl ? "hover:text-foreground" : ""} transition-colors`}>
             <Play className="h-3 w-3" />
             Gravação
           </button>
