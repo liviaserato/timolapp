@@ -26,15 +26,17 @@ function findNodeById(node: NetworkMember | null | undefined, id: string): Netwo
   return findNodeById(node.left, id) || findNodeById(node.right, id);
 }
 
-type SortMode = "default" | "points" | "date" | "status";
+type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status";
 
 function sortMembers(members: NetworkMember[], mode: SortMode): NetworkMember[] {
   const sorted = [...members];
   switch (mode) {
     case "points":
       return sorted.sort((a, b) => b.volume - a.volume);
-    case "date":
+    case "date_newest":
       return sorted.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
+    case "date_oldest":
+      return sorted.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
     case "status":
       return sorted.sort((a, b) => {
         if (a.active === b.active) return b.volume - a.volume;
@@ -386,7 +388,8 @@ function SortSelector({ value, onChange }: { value: SortMode | ""; onChange: (v:
       <SelectContent>
         <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
         <SelectItem value="status" className="text-xs">Ativos primeiro</SelectItem>
-        <SelectItem value="date" className="text-xs">Data de cadastro</SelectItem>
+        <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
+        <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
       </SelectContent>
     </Select>
   );
