@@ -10,7 +10,7 @@ export function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayI
   const cfg = typeConfig[event.type];
   const status = getEventStatus(event, todayIndex);
   const eventDate = getDateForDayIndex(event.dayIndex);
-  const dateStr = eventDate.toLocaleDateString("pt-BR", { day: "2-digit", month: "long" });
+  const dateStr = eventDate.toLocaleDateString("pt-BR", { day: "numeric", month: "long" });
   const [imageOpen, setImageOpen] = useState(false);
 
   return (
