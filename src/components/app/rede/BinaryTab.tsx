@@ -131,8 +131,8 @@ export function BinaryTab() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
-              <div className="rounded-lg bg-emerald-500/10 p-1.5">
-                <ArrowDownRight className="h-4 w-4 text-emerald-500" />
+              <div className="rounded-lg bg-success/10 p-1.5">
+                <ArrowDownRight className="h-4 w-4 text-success" />
               </div>
               <span className="text-xs font-medium text-muted-foreground">Perna Direita</span>
             </div>
