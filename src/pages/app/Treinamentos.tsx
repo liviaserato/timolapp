@@ -317,18 +317,25 @@ function TodayCarousel({ events, todayIndex }: { events: WeekEvent[]; todayIndex
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [overflows, setOverflows] = useState(false);
-  const cardWidth = 200 + 16;
+
+  const getCardWidth = useCallback(() => {
+    if (!scrollRef.current) return 200 + 16;
+    const firstChild = scrollRef.current.firstElementChild as HTMLElement | null;
+    if (!firstChild) return 200 + 16;
+    return firstChild.offsetWidth + 16; // card width + gap
+  }, []);
 
   const scrollToIndex = useCallback((index: number) => {
     if (!scrollRef.current) return;
-    scrollRef.current.scrollTo({ left: index * cardWidth, behavior: "smooth" });
-  }, [cardWidth]);
+    scrollRef.current.scrollTo({ left: index * getCardWidth(), behavior: "smooth" });
+  }, [getCardWidth]);
 
   const handleScroll = useCallback(() => {
     if (!scrollRef.current) return;
-    const idx = Math.round(scrollRef.current.scrollLeft / cardWidth);
+    const cw = getCardWidth();
+    const idx = Math.round(scrollRef.current.scrollLeft / cw);
     setActiveIndex(Math.min(idx, events.length - 1));
-  }, [cardWidth, events.length]);
+  }, [getCardWidth, events.length]);
 
   const checkOverflow = useCallback(() => {
     if (!scrollRef.current) return;
@@ -352,7 +359,7 @@ function TodayCarousel({ events, todayIndex }: { events: WeekEvent[]; todayIndex
         style={{ scrollSnapType: "x mandatory" }}
       >
         {events.map((ev) => (
-          <div key={ev.id} style={{ scrollSnapAlign: "start" }}>
+          <div key={ev.id} className="w-full sm:w-auto shrink-0" style={{ scrollSnapAlign: "start" }}>
             <TodayEventCard event={ev} todayIndex={todayIndex} />
           </div>
         ))}
@@ -390,7 +397,7 @@ function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayIndex: n
 
   return (
     <>
-      <div className="rounded-lg border border-border bg-card overflow-hidden shadow-sm flex flex-col w-[200px] min-w-[200px] max-w-[200px]">
+      <div className="rounded-lg border border-border bg-card overflow-hidden shadow-sm flex flex-col w-full sm:w-[200px] sm:min-w-[200px] sm:max-w-[200px]">
         {event.bannerUrl && (
           <div className="relative cursor-pointer" onClick={() => setImageOpen(true)}>
             <img src={event.bannerUrl} alt={event.title} className="w-full aspect-[4/5] object-cover" />
