@@ -8,9 +8,10 @@ import { IndicarFranquiaDialog } from "@/components/app/IndicarFranquiaDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { TodayCarousel } from "@/components/app/treinamentos/TodayCarousel";
-import { weekEvents } from "@/components/app/treinamentos/constants";
+import { weekEvents, DAYS_FULL } from "@/components/app/treinamentos/constants";
 import { getEventStatus } from "@/components/app/treinamentos/helpers";
-import { DAYS_FULL } from "@/components/app/treinamentos/constants";
+import { mockBonusSummary, mockBancoTimol, mockUserQualification, qualificationLabels } from "@/components/app/financeiro/mock-data";
+import { getCurrencyConfig, formatCurrency } from "@/components/app/financeiro/currency-helpers";
 import {
   Carousel,
   CarouselContent,
