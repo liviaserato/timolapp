@@ -220,6 +220,9 @@ export function BinaryTab() {
             <LegTable title="Perna Esquerda" members={filteredLeft} onNavigate={navigateToId} />
             <LegTable title="Perna Direita" members={filteredRight} onNavigate={navigateToId} />
           </div>
+
+          {/* Qualification legend below tables */}
+          <QualificationLegend />
         </div>
       </div>
 
