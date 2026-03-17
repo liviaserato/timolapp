@@ -13,6 +13,11 @@ export function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayI
   const eventDate = getDateForDayIndex(event.dayIndex);
   const dateStr = eventDate.toLocaleDateString("pt-BR", { day: "numeric", month: "long" });
   const [imageOpen, setImageOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleWatch = () => {
+    if (event.youtubeUrl) navigate(`/app/treinamentos/ao-vivo/${event.id}`);
+  };
 
   return (
     <>
