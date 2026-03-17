@@ -22,6 +22,7 @@ import Checkout from "./pages/app/Checkout";
 import OrderPayment from "./pages/app/OrderPayment";
 import SectionPlaceholder from "./pages/app/SectionPlaceholder";
 import EmailPreviews from "./pages/app/EmailPreviews";
+import AssistirAoVivo from "./pages/app/AssistirAoVivo";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
               <Route path="pedidos/checkout" element={<Checkout />} />
               <Route path="pedidos/pagamento" element={<OrderPayment />} />
               <Route path="treinamentos" element={<Treinamentos />} />
+              <Route path="treinamentos/ao-vivo/:eventId" element={<AssistirAoVivo />} />
               <Route path="suporte" element={<Suporte />} />
               <Route path="configuracoes/emails" element={<EmailPreviews />} />
               <Route path=":section" element={<SectionPlaceholder />} />

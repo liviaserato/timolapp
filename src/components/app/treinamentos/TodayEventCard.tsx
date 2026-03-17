@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Calendar, Clock, Play, Hourglass } from "lucide-react";
@@ -12,6 +13,11 @@ export function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayI
   const eventDate = getDateForDayIndex(event.dayIndex);
   const dateStr = eventDate.toLocaleDateString("pt-BR", { day: "numeric", month: "long" });
   const [imageOpen, setImageOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleWatch = () => {
+    if (event.youtubeUrl) navigate(`/app/treinamentos/ao-vivo/${event.id}`);
+  };
 
   return (
     <>
@@ -49,7 +55,7 @@ export function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayI
 
           <div className="pt-1">
             {status === "live" ? (
-              <Button size="sm" className="gap-1.5 text-[11px] w-full bg-red-600 hover:bg-red-700 h-7">
+              <Button size="sm" className="gap-1.5 text-[11px] w-full bg-red-600 hover:bg-red-700 h-7" onClick={handleWatch} disabled={!event.youtubeUrl}>
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
@@ -57,7 +63,7 @@ export function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayI
                 Assista ao vivo
               </Button>
             ) : status === "past" ? (
-              <Button size="sm" variant="outline" className="gap-1.5 text-[11px] w-full h-7">
+              <Button size="sm" variant="outline" className="gap-1.5 text-[11px] w-full h-7" onClick={handleWatch} disabled={!event.youtubeUrl}>
                 <Play className="h-3 w-3" />
                 Assistir gravação
               </Button>

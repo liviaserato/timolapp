@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Play, Radio, Hourglass, Calendar } from "lucide-react";
 import type { WeekEvent } from "./types";
@@ -5,6 +6,7 @@ import { typeConfig, DAYS } from "./constants";
 import { getEventStatus, getDateForDayIndex } from "./helpers";
 
 export function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex }: { event: WeekEvent; showDay?: boolean; showDate?: boolean; todayIndex: number }) {
+  const navigate = useNavigate();
   const cfg = typeConfig[event.type];
   const status = getEventStatus(event, todayIndex);
   const dayDateLabel = showDate ? (() => {
@@ -42,12 +44,14 @@ export function ScheduleEventRow({ event, showDay = false, showDate = false, tod
 
       <div className="shrink-0 hidden sm:flex min-w-[72px] w-[72px] justify-center">
         {status === "live" ? (
-          <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse">
-            <Radio className="h-3 w-3" />
-            Ao vivo
-          </Badge>
+          <button onClick={() => event.youtubeUrl && navigate(`/app/treinamentos/ao-vivo/${event.id}`)} className={event.youtubeUrl ? "cursor-pointer" : "cursor-default"}>
+            <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse">
+              <Radio className="h-3 w-3" />
+              Ao vivo
+            </Badge>
+          </button>
         ) : status === "past" ? (
-          <button className="flex flex-col items-center gap-0.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors px-1 py-1 whitespace-nowrap">
+          <button onClick={() => event.youtubeUrl && navigate(`/app/treinamentos/ao-vivo/${event.id}`)} className={`flex flex-col items-center gap-0.5 text-[10px] text-muted-foreground ${event.youtubeUrl ? "hover:text-foreground cursor-pointer" : "cursor-default"} transition-colors px-1 py-1 whitespace-nowrap`}>
             <Play className="h-3.5 w-3.5 shrink-0" />
             <span>Gravação</span>
           </button>
@@ -64,6 +68,7 @@ export function ScheduleEventRow({ event, showDay = false, showDate = false, tod
 
 /** Mobile-friendly vertical card for schedule events */
 export function ScheduleEventCard({ event, todayIndex }: { event: WeekEvent; todayIndex: number }) {
+  const navigate = useNavigate();
   const cfg = typeConfig[event.type];
   const status = getEventStatus(event, todayIndex);
   const d = getDateForDayIndex(event.dayIndex);
@@ -89,12 +94,14 @@ export function ScheduleEventCard({ event, todayIndex }: { event: WeekEvent; tod
           </span>
         </div>
         {status === "live" ? (
-          <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse">
-            <Radio className="h-3 w-3" />
-            Ao vivo
-          </Badge>
+          <button onClick={() => event.youtubeUrl && navigate(`/app/treinamentos/ao-vivo/${event.id}`)}>
+            <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse">
+              <Radio className="h-3 w-3" />
+              Ao vivo
+            </Badge>
+          </button>
         ) : status === "past" ? (
-          <button className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors">
+          <button onClick={() => event.youtubeUrl && navigate(`/app/treinamentos/ao-vivo/${event.id}`)} className={`flex items-center gap-1 text-[10px] text-muted-foreground ${event.youtubeUrl ? "hover:text-foreground" : ""} transition-colors`}>
             <Play className="h-3 w-3" />
             Gravação
           </button>
