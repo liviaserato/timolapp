@@ -108,7 +108,7 @@ export function ProductCardHorizontal({ product, onAddToCart }: ProductCardHoriz
             )}
           </div>
           <h3 className="text-sm font-bold text-foreground leading-tight">{product.name}</h3>
-          <p className="text-[11px] text-muted-foreground line-clamp-2 min-h-[2lh]">
+          <p className="text-[11px] text-muted-foreground line-clamp-2 leading-normal" style={{ minHeight: "calc(2 * 1.5 * 11px)" }}>
             {product.description || "\u00A0"}
           </p>
           <div className="flex items-baseline gap-1.5">
