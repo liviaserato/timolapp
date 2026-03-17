@@ -60,7 +60,7 @@ export function BinaryTreeLayout({ root, treeRoot, onSelect }: Props) {
 
   // Connector lines: [x1, y1, x2, y2]
   // Start 6px below the node bottom (after the ▼ arrow)
-  const EXIT_OFFSET = 12;
+  const EXIT_OFFSET = 16;
   const connectors: [number, number, number, number][] = [
     // Root → children
     [ROOT_X, ROOT_Y + ROOT_H + EXIT_OFFSET, L_X, CHILD_Y],
