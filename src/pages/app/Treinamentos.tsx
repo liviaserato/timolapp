@@ -241,7 +241,7 @@ function TodayEventRow({ event, todayIndex }: { event: WeekEvent; todayIndex: nu
   const status = getEventStatus(event, todayIndex);
 
   return (
-    <div className={`flex items-center gap-3 rounded-lg border border-l-4 ${cfg.borderColor} p-3 bg-background shadow-sm`}>
+    <div className={`flex items-center gap-3 rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] ${cfg.borderColor} p-3 shadow-sm`}>
       {/* Time */}
       <div className="flex flex-col items-center min-w-[48px]">
         <span className="text-sm font-bold text-foreground flex items-center gap-1">
@@ -301,7 +301,7 @@ function ScheduleEventRow({ event, showDay = false, todayIndex }: { event: WeekE
   const status = getEventStatus(event, todayIndex);
 
   return (
-    <div className={`flex items-center gap-3 rounded-lg border border-l-4 ${cfg.borderColor} p-3 hover:bg-muted/50 transition-colors`}>
+    <div className={`flex items-center gap-3 rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] ${cfg.borderColor} p-3 hover:bg-muted/50 transition-colors`}>
       {/* Time */}
       <div className="flex flex-col items-center min-w-[52px]">
         {showDay && (
