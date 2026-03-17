@@ -123,11 +123,17 @@ export default function Treinamentos() {
   const todayIndex = todayDow === 0 ? 6 : todayDow - 1;
 
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [selectedType, setSelectedType] = useState<EventType | "all">("all");
 
-  const filteredEvents =
-    selectedDay !== null
+  const filteredEvents = useMemo(() => {
+    let events = selectedDay !== null
       ? weekEvents.filter((e) => e.dayIndex === selectedDay)
       : weekEvents;
+    if (selectedType !== "all") {
+      events = events.filter((e) => e.type === selectedType);
+    }
+    return events;
+  }, [selectedDay, selectedType]);
 
   const todayEvents = weekEvents.filter((e) => e.dayIndex === todayIndex);
 
