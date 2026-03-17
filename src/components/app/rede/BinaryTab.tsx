@@ -174,55 +174,49 @@ export function BinaryTab() {
         {/* ═══ LEFT COLUMN: Tree ═══ */}
         <div className="space-y-3">
           {/* Tree drawing */}
-          <Card className="min-h-[420px] flex flex-col">
+           <Card className="min-h-[430px] flex flex-col">
             <CardContent className="px-1 py-3 flex-1 flex flex-col">
               <h2 className="text-base font-bold text-foreground text-center mb-6">Rede Binária</h2>
               <div className="flex flex-col items-center py-2 flex-1">
                 {/* Root */}
                 <BinaryTreeNode node={currentRoot} onSelect={navigateTo} isRoot isMe={currentRoot.id === mockBinaryTree.id} isMineAlt={currentRoot.document === myDocument && currentRoot.id !== mockBinaryTree.id} hasChildren={!!(currentRoot.left || currentRoot.right)} />
 
-                {(currentRoot.left || currentRoot.right) && (
-                  <>
-                    <svg width="200" height="28" className="shrink-0">
-                      <line x1="100" y1="0" x2="50" y2="28" stroke="hsl(var(--border))" strokeWidth="1.5" />
-                      <line x1="100" y1="0" x2="150" y2="28" stroke="hsl(var(--border))" strokeWidth="1.5" />
+                {/* Level 1 connectors — always rendered */}
+                <svg width="200" height="28" className="shrink-0">
+                  <line x1="100" y1="0" x2="50" y2="28" stroke="hsl(var(--border))" strokeWidth="1.5" />
+                  <line x1="100" y1="0" x2="150" y2="28" stroke="hsl(var(--border))" strokeWidth="1.5" />
+                </svg>
+
+                {/* Children — fixed-width columns so positions stay stable */}
+                <div className="flex">
+                  {/* Left child column */}
+                  <div className="flex flex-col items-center w-[120px]">
+                    <BinaryTreeNode node={currentRoot.left ?? null} side="left" onSelect={navigateTo} isMineAlt={currentRoot.left?.document === myDocument} hasChildren={!!(currentRoot.left?.left || currentRoot.left?.right)} />
+                    {/* Level 2 connectors — always rendered */}
+                    <svg width="100" height="24" className="shrink-0">
+                      <line x1="50" y1="0" x2="24" y2="24" stroke="hsl(var(--border))" strokeWidth="1" />
+                      <line x1="50" y1="0" x2="76" y2="24" stroke="hsl(var(--border))" strokeWidth="1" />
                     </svg>
-
-                    <div className="flex gap-4">
-                      <div className="flex flex-col items-center">
-                        <BinaryTreeNode node={currentRoot.left ?? null} side="left" onSelect={navigateTo} isMineAlt={currentRoot.left?.document === myDocument} hasChildren={!!(currentRoot.left?.left || currentRoot.left?.right)} />
-                        {currentRoot.left && (currentRoot.left.left || currentRoot.left.right) && (
-                          <>
-                            <svg width="100" height="24" className="shrink-0">
-                              <line x1="50" y1="0" x2="24" y2="24" stroke="hsl(var(--border))" strokeWidth="1" />
-                              <line x1="50" y1="0" x2="76" y2="24" stroke="hsl(var(--border))" strokeWidth="1" />
-                            </svg>
-                            <div className="flex gap-2">
-                              <BinaryTreeNode node={currentRoot.left.left ?? null} side="left" onSelect={navigateTo} isMineAlt={currentRoot.left.left?.document === myDocument} hasChildren={!!(currentRoot.left.left?.left || currentRoot.left.left?.right)} />
-                              <BinaryTreeNode node={currentRoot.left.right ?? null} side="right" onSelect={navigateTo} isMineAlt={currentRoot.left.right?.document === myDocument} hasChildren={!!(currentRoot.left.right?.left || currentRoot.left.right?.right)} />
-                            </div>
-                          </>
-                        )}
-                      </div>
-
-                      <div className="flex flex-col items-center">
-                        <BinaryTreeNode node={currentRoot.right ?? null} side="right" onSelect={navigateTo} isMineAlt={currentRoot.right?.document === myDocument} hasChildren={!!(currentRoot.right?.left || currentRoot.right?.right)} />
-                        {currentRoot.right && (currentRoot.right.left || currentRoot.right.right) && (
-                          <>
-                            <svg width="100" height="24" className="shrink-0">
-                              <line x1="50" y1="0" x2="24" y2="24" stroke="hsl(var(--border))" strokeWidth="1" />
-                              <line x1="50" y1="0" x2="76" y2="24" stroke="hsl(var(--border))" strokeWidth="1" />
-                            </svg>
-                            <div className="flex gap-2">
-                              <BinaryTreeNode node={currentRoot.right.left ?? null} side="left" onSelect={navigateTo} isMineAlt={currentRoot.right.left?.document === myDocument} hasChildren={!!(currentRoot.right.left?.left || currentRoot.right.left?.right)} />
-                              <BinaryTreeNode node={currentRoot.right.right ?? null} side="right" onSelect={navigateTo} isMineAlt={currentRoot.right.right?.document === myDocument} hasChildren={!!(currentRoot.right.right?.left || currentRoot.right.right?.right)} />
-                            </div>
-                          </>
-                        )}
-                      </div>
+                    <div className="flex gap-2">
+                      <BinaryTreeNode node={currentRoot.left?.left ?? null} side="left" onSelect={navigateTo} isMineAlt={currentRoot.left?.left?.document === myDocument} hasChildren={!!(currentRoot.left?.left?.left || currentRoot.left?.left?.right)} />
+                      <BinaryTreeNode node={currentRoot.left?.right ?? null} side="right" onSelect={navigateTo} isMineAlt={currentRoot.left?.right?.document === myDocument} hasChildren={!!(currentRoot.left?.right?.left || currentRoot.left?.right?.right)} />
                     </div>
-                  </>
-                )}
+                  </div>
+
+                  {/* Right child column */}
+                  <div className="flex flex-col items-center w-[120px]">
+                    <BinaryTreeNode node={currentRoot.right ?? null} side="right" onSelect={navigateTo} isMineAlt={currentRoot.right?.document === myDocument} hasChildren={!!(currentRoot.right?.left || currentRoot.right?.right)} />
+                    {/* Level 2 connectors — always rendered */}
+                    <svg width="100" height="24" className="shrink-0">
+                      <line x1="50" y1="0" x2="24" y2="24" stroke="hsl(var(--border))" strokeWidth="1" />
+                      <line x1="50" y1="0" x2="76" y2="24" stroke="hsl(var(--border))" strokeWidth="1" />
+                    </svg>
+                    <div className="flex gap-2">
+                      <BinaryTreeNode node={currentRoot.right?.left ?? null} side="left" onSelect={navigateTo} isMineAlt={currentRoot.right?.left?.document === myDocument} hasChildren={!!(currentRoot.right?.left?.left || currentRoot.right?.left?.right)} />
+                      <BinaryTreeNode node={currentRoot.right?.right ?? null} side="right" onSelect={navigateTo} isMineAlt={currentRoot.right?.right?.document === myDocument} hasChildren={!!(currentRoot.right?.right?.left || currentRoot.right?.right?.right)} />
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Navigation buttons at bottom */}
