@@ -59,16 +59,18 @@ export function BinaryTreeLayout({ root, treeRoot, onSelect }: Props) {
   const rr = rc?.right ?? null;
 
   // Connector lines: [x1, y1, x2, y2]
+  // Start 6px below the node bottom (after the ▼ arrow)
+  const EXIT_OFFSET = 6;
   const connectors: [number, number, number, number][] = [
     // Root → children
-    [ROOT_X, ROOT_Y + ROOT_H, L_X, CHILD_Y],
-    [ROOT_X, ROOT_Y + ROOT_H, R_X, CHILD_Y],
+    [ROOT_X, ROOT_Y + ROOT_H + EXIT_OFFSET, L_X, CHILD_Y],
+    [ROOT_X, ROOT_Y + ROOT_H + EXIT_OFFSET, R_X, CHILD_Y],
     // Left child → grandchildren
-    [L_X, CHILD_Y + CHILD_H, LL_X, GRAND_Y],
-    [L_X, CHILD_Y + CHILD_H, LR_X, GRAND_Y],
+    [L_X, CHILD_Y + CHILD_H + EXIT_OFFSET, LL_X, GRAND_Y],
+    [L_X, CHILD_Y + CHILD_H + EXIT_OFFSET, LR_X, GRAND_Y],
     // Right child → grandchildren
-    [R_X, CHILD_Y + CHILD_H, RL_X, GRAND_Y],
-    [R_X, CHILD_Y + CHILD_H, RR_X, GRAND_Y],
+    [R_X, CHILD_Y + CHILD_H + EXIT_OFFSET, RL_X, GRAND_Y],
+    [R_X, CHILD_Y + CHILD_H + EXIT_OFFSET, RR_X, GRAND_Y],
   ];
 
   return (
