@@ -25,10 +25,7 @@ const navItems = [
   { label: "Rede", path: "/app/rede", icon: iconRede },
   { label: "Clientes", path: "/app/clientes", icon: iconClientes },
   { label: "Treinamentos", path: "/app/treinamentos", icon: iconTreinamentos },
-  { label: "Produtos", path: "/app/produtos", icon: iconProdutos },
   { label: "Pedidos", path: "/app/pedidos", icon: iconPedidos },
-  { label: "Comercial", path: "/app/comercial", icon: iconComercial },
-  { label: "Relatórios", path: "/app/relatorios", icon: iconRelatorios },
   { label: "Suporte", path: "/app/suporte", icon: iconSuporte },
 ];
 
