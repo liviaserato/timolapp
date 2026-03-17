@@ -154,6 +154,8 @@ export default function Dashboard() {
           </div>
         </DashboardCard>
       </section>
+
+      <IndicarFranquiaDialog open={indicarOpen} onOpenChange={setIndicarOpen} />
     </div>
   );
 }
