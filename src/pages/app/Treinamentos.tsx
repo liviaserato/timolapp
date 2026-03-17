@@ -404,7 +404,7 @@ function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex
       {/* Divider */}
       <div className="w-px h-8 bg-border" />
 
-      {/* Action / Badge */}
+      {/* Status action */}
       <div className="shrink-0 hidden sm:flex">
         {status === "live" ? (
           <Badge className="bg-red-600 text-white border-0 text-[10px] gap-1 animate-pulse">
@@ -418,9 +418,9 @@ function ScheduleEventRow({ event, showDay = false, showDate = false, todayIndex
             <span>gravação</span>
           </Button>
         ) : (
-          <Badge variant="outline" className={`${cfg.badgeClass} text-[10px] gap-1`}>
-            {cfg.icon}
-            {cfg.label}
+          <Badge variant="outline" className="text-[10px] gap-1 text-muted-foreground border-muted-foreground/30">
+            <Hourglass className="h-3 w-3" />
+            Em breve
           </Badge>
         )}
       </div>
