@@ -8,17 +8,17 @@ export const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
 export const DAYS_FULL = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
 
 export const weekEvents: WeekEvent[] = [
-  { id: "1", dayIndex: 0, time: "08:50", endTime: "10:00", title: "Aulas de produtos e franquias", type: "produto", host: "Lucas Rocha" },
-  { id: "2", dayIndex: 0, time: "20:30", endTime: "21:30", title: "Treinamento: Primeiros Passos", type: "treinamento", host: "Maria Souza" },
-  { id: "10", dayIndex: 1, time: "14:00", endTime: "15:00", title: "Live Especial – Novidades 2025", type: "especial", host: "Fernanda Lima", bannerUrl: bannerMock },
-  { id: "11", dayIndex: 1, time: "16:00", endTime: "17:00", title: "Negócio: Expansão Regional", type: "negocio", host: "Carlos Lima", bannerUrl: bannerMock2 },
+  { id: "1", dayIndex: 0, time: "08:50", endTime: "10:00", title: "Aulas de produtos e franquias", type: "produto", host: "Lucas Rocha", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+  { id: "2", dayIndex: 0, time: "20:30", endTime: "21:30", title: "Treinamento: Primeiros Passos", type: "treinamento", host: "Maria Souza", youtubeUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw" },
+  { id: "10", dayIndex: 1, time: "14:00", endTime: "15:00", title: "Live Especial – Novidades 2025", type: "especial", host: "Fernanda Lima", bannerUrl: bannerMock, youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+  { id: "11", dayIndex: 1, time: "16:00", endTime: "17:00", title: "Negócio: Expansão Regional", type: "negocio", host: "Carlos Lima", bannerUrl: bannerMock2, youtubeUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw" },
   { id: "3", dayIndex: 1, time: "00:00", endTime: "23:59", title: "Aulas de produtos e franquias", type: "negocio", host: "Lucas Rocha", bannerUrl: bannerMock },
-  { id: "4", dayIndex: 1, time: "20:30", endTime: "21:30", title: "Construindo uma Rede Forte", type: "especial", host: "Ana Costa", bannerUrl: bannerMock2 },
-  { id: "5", dayIndex: 2, time: "19:00", endTime: "20:00", title: "Treinamento: Técnicas de Venda", type: "treinamento", host: "Pedro Alves" },
+  { id: "4", dayIndex: 1, time: "20:30", endTime: "21:30", title: "Construindo uma Rede Forte", type: "especial", host: "Ana Costa", bannerUrl: bannerMock2, youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+  { id: "5", dayIndex: 2, time: "19:00", endTime: "20:00", title: "Treinamento: Técnicas de Venda", type: "treinamento", host: "Pedro Alves", youtubeUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw" },
   { id: "6", dayIndex: 3, time: "19:00", endTime: "20:00", title: "Live Produto – Linha Premium", type: "produto", host: "João Silva" },
-  { id: "7", dayIndex: 3, time: "20:30", endTime: "21:30", title: "Live Negócio – Marketing Digital", type: "negocio", host: "Carlos Lima" },
+  { id: "7", dayIndex: 3, time: "20:30", endTime: "21:30", title: "Live Negócio – Marketing Digital", type: "negocio", host: "Carlos Lima", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
   { id: "8", dayIndex: 4, time: "19:00", endTime: "20:00", title: "Especial: Depoimentos de Sucesso", type: "especial", host: "Ana Costa" },
-  { id: "9", dayIndex: 5, time: "10:00", endTime: "11:00", title: "Treinamento: Liderança", type: "treinamento", host: "Maria Souza" },
+  { id: "9", dayIndex: 5, time: "10:00", endTime: "11:00", title: "Treinamento: Liderança", type: "treinamento", host: "Maria Souza", youtubeUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw" },
 ];
 
 export const typeConfig: Record<EventType, { label: string; borderColor: string; iconColor: string; badgeBg: string; badgeBorder: string; badgeText: string; icon: React.ReactNode }> = {

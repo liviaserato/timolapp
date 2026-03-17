@@ -9,6 +9,7 @@ export interface WeekEvent {
   type: EventType;
   host?: string;
   bannerUrl?: string;
+  youtubeUrl?: string;
 }
 
 export type EventStatus = "live" | "past" | "upcoming";
