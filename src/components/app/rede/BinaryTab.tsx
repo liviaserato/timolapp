@@ -93,7 +93,7 @@ export function BinaryTab() {
 
   function navigateToId(id: string) {
     const node = findNodeById(mockBinaryTree, id);
-    if (node && (node.left || node.right)) {
+    if (node) {
       setNavHistory(prev => [...prev, rootId]);
       setRootId(id);
     }
