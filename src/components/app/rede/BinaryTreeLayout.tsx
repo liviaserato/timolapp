@@ -58,19 +58,25 @@ export function BinaryTreeLayout({ root, treeRoot, onSelect }: Props) {
   const rl = rc?.left ?? null;
   const rr = rc?.right ?? null;
 
+  // Exit offset: 16px when parent is filled, 2px when empty
+  const FILLED_EXIT = 16;
+  const EMPTY_EXIT = 2;
+
+  const rootExit = ROOT_Y + ROOT_H + FILLED_EXIT; // root is always filled
+  const lcExit = CHILD_Y + CHILD_H + (lc ? FILLED_EXIT : EMPTY_EXIT);
+  const rcExit = CHILD_Y + CHILD_H + (rc ? FILLED_EXIT : EMPTY_EXIT);
+
   // Connector lines: [x1, y1, x2, y2]
-  // Start 6px below the node bottom (after the ▼ arrow)
-  const EXIT_OFFSET = 16;
   const connectors: [number, number, number, number][] = [
     // Root → children
-    [ROOT_X, ROOT_Y + ROOT_H + EXIT_OFFSET, L_X, CHILD_Y],
-    [ROOT_X, ROOT_Y + ROOT_H + EXIT_OFFSET, R_X, CHILD_Y],
+    [ROOT_X, rootExit, L_X, CHILD_Y],
+    [ROOT_X, rootExit, R_X, CHILD_Y],
     // Left child → grandchildren
-    [L_X, CHILD_Y + CHILD_H + EXIT_OFFSET, LL_X, GRAND_Y],
-    [L_X, CHILD_Y + CHILD_H + EXIT_OFFSET, LR_X, GRAND_Y],
+    [L_X, lcExit, LL_X, GRAND_Y],
+    [L_X, lcExit, LR_X, GRAND_Y],
     // Right child → grandchildren
-    [R_X, CHILD_Y + CHILD_H + EXIT_OFFSET, RL_X, GRAND_Y],
-    [R_X, CHILD_Y + CHILD_H + EXIT_OFFSET, RR_X, GRAND_Y],
+    [R_X, rcExit, RL_X, GRAND_Y],
+    [R_X, rcExit, RR_X, GRAND_Y],
   ];
 
   return (
