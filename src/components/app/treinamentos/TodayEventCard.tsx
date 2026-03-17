@@ -56,10 +56,7 @@ export function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayI
           <div className="pt-1">
             {status === "live" ? (
               <Button size="sm" className="gap-1.5 text-[11px] w-full bg-red-600 hover:bg-red-700 h-7" onClick={handleWatch} disabled={!event.youtubeUrl}>
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
-                </span>
+                <Youtube className="h-3.5 w-3.5" />
                 Assista ao vivo
               </Button>
             ) : status === "past" ? (
