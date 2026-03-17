@@ -55,19 +55,19 @@ export function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayI
 
           <div className="pt-1">
             {status === "live" ? (
-              <Button size="sm" className="gap-1.5 text-[11px] w-full bg-red-600 hover:bg-red-700 h-7" onClick={handleWatch} disabled={!event.youtubeUrl}>
-                <Youtube className="h-3.5 w-3.5" />
-                Assista ao vivo
+              <Button size="sm" className="gap-1.5 text-[11px] w-full bg-red-600 hover:bg-red-700 h-7 overflow-hidden" onClick={handleWatch} disabled={!event.youtubeUrl}>
+                <Youtube className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">Assista ao vivo</span>
               </Button>
             ) : status === "past" ? (
-              <Button size="sm" variant="outline" className="gap-1.5 text-[11px] w-full h-7" onClick={handleWatch} disabled={!event.youtubeUrl}>
-                <Play className="h-3 w-3" />
-                Assistir gravação
+              <Button size="sm" variant="outline" className="gap-1.5 text-[11px] w-full h-7 overflow-hidden" onClick={handleWatch} disabled={!event.youtubeUrl}>
+                <Play className="h-3 w-3 shrink-0" />
+                <span className="truncate">Assistir gravação</span>
               </Button>
             ) : (
-              <Button size="sm" variant="outline" className="gap-1.5 text-[11px] w-full h-7" disabled>
-                <Hourglass className="h-3 w-3" />
-                Em breve
+              <Button size="sm" variant="outline" className="gap-1.5 text-[11px] w-full h-7 overflow-hidden" disabled>
+                <Hourglass className="h-3 w-3 shrink-0" />
+                <span className="truncate">Em breve</span>
               </Button>
             )}
           </div>
