@@ -164,7 +164,7 @@ export default function Checkout() {
               <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
                 {isPickup ? (
                   <>
-                    <Store className="h-4 w-4" />
+                    <MapPinned className="h-4 w-4" />
                     Endereço de Retirada
                   </>
                 ) : (
