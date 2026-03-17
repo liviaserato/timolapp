@@ -386,7 +386,7 @@ function LegTable({ title, members, onNavigate }: { title: string; members: Netw
         {members.length === 0 ? (
           <p className="text-xs text-muted-foreground py-6 text-center">Nenhum membro encontrado</p>
         ) : (
-          <div className="max-h-[340px] overflow-y-auto">
+          <div className="max-h-[352px] overflow-y-auto">
             <Table>
               <TableHeader>
                 <TableRow>
