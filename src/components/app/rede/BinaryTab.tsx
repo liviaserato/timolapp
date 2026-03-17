@@ -366,20 +366,17 @@ function SearchInput({ value, onChange, onKeyDown, inputRef }: { value: string; 
 
 function SortSelector({ value, onChange }: { value: SortMode; onChange: (v: SortMode) => void }) {
   return (
-    <div className="flex items-center gap-2">
-      <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-      <Select value={value} onValueChange={(v) => onChange(v as SortMode)}>
-        <SelectTrigger className="h-7 text-[11px] w-auto min-w-[160px]">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="default" className="text-xs">Ativos primeiro + pontos</SelectItem>
-          <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
-          <SelectItem value="status" className="text-xs">Ativos primeiro</SelectItem>
-          <SelectItem value="date" className="text-xs">Data de cadastro</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
+    <Select value={value} onValueChange={(v) => onChange(v as SortMode)}>
+      <SelectTrigger className="h-8 text-[11px] w-auto min-w-[140px] shrink-0">
+        <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
+        <SelectItem value="status" className="text-xs">Ativos primeiro</SelectItem>
+        <SelectItem value="date" className="text-xs">Data de cadastro</SelectItem>
+      </SelectContent>
+    </Select>
   );
 }
 
