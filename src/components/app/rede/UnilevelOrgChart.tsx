@@ -353,7 +353,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
               <div className="absolute left-0 right-0 z-[2]" style={{ top: 0, height: ROW_H }}>
                 <div
                   className="transition-transform duration-300 ease-out"
-                  style={{ paddingTop: CARD_PAD_Y, transform: `translateX(${levelData[0].translateX}px)` }}
+                  style={{ paddingTop: CARD_PAD_Y, transform: `translateX(${levelData[0].translateX + dragOffset}px)` }}
                 >
                   <div className="flex" style={{ gap: CARD_GAP }}>
                     <NodeCard
