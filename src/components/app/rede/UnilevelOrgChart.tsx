@@ -10,7 +10,7 @@ const TOTAL_LEVELS = 10;
 const ROW_H = 120;
 const NODE_W = 90;
 const CARD_GAP = 8;
-const LEVEL_LABEL_W = 56;
+const LEVEL_LABEL_W = 64;
 
 /* Vertical geometry inside each row */
 const CARD_PAD_Y = 14;
@@ -342,7 +342,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
         {/* ── Level labels column ── */}
         <div className="shrink-0 px-0.5" style={{ width: LEVEL_LABEL_W }}>
           <div className="flex flex-col items-center justify-center text-[10px] text-muted-foreground" style={{ height: ROW_H }}>
-            <span className="font-semibold text-foreground text-[10px]">Você</span>
+            <span className="font-semibold text-foreground text-[11px]">Você</span>
           </div>
           {Array.from({ length: TOTAL_LEVELS }, (_, i) => {
             const lvl = i + 1;
@@ -353,23 +353,23 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
               <div
                 key={lvl}
                 className={cn(
-                  "flex flex-col items-center justify-center text-[10px]",
+                  "flex flex-col items-center justify-center",
                   isActive ? "text-muted-foreground" : "text-muted-foreground/30"
                 )}
                 style={{ height: ROW_H }}
               >
-                <span className={cn("font-semibold text-[9px] leading-tight", isActive ? "text-foreground" : "text-muted-foreground/40")}>
+                <span className={cn("font-semibold text-[11px] leading-tight", isActive ? "text-foreground" : "text-muted-foreground/40")}>
                   Nível {lvl}
                 </span>
-                {lvl === 1 && <span className="text-[8px] text-muted-foreground leading-none">DIRETOS</span>}
+                {lvl === 1 && <span className="text-[9px] text-muted-foreground leading-none">DIRETOS</span>}
                 {count > 0 && (
-                  <Badge variant="secondary" className={cn("text-[9px] px-1.5 py-0 h-4 mt-0.5", !isActive && "opacity-50")}>
+                  <Badge variant="secondary" className={cn("text-[10px] px-1.5 py-0 h-[18px] mt-0.5", !isActive && "opacity-50")}>
                     {!isActive && <Lock className="h-2.5 w-2.5 mr-0.5" />}
-                    {count}
+                    {count} {count === 1 ? "pessoa" : "pessoas"}
                   </Badge>
                 )}
                 {vol > 0 && (
-                  <span className={cn("text-[8px] leading-tight mt-0.5", !isActive ? "text-muted-foreground/30" : "text-muted-foreground")}>
+                  <span className={cn("text-[9px] leading-tight mt-0.5", !isActive ? "text-muted-foreground/30" : "text-muted-foreground")}>
                     {vol.toLocaleString("pt-BR")} pts
                   </span>
                 )}
