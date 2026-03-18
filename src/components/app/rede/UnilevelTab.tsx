@@ -394,6 +394,7 @@ export function UnilevelTab({ searchQuery }: Props) {
               <SelectContent>
                 <SelectItem value="default" className="text-xs">Ativos primeiro</SelectItem>
                 <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
+                <SelectItem value="qualification" className="text-xs">Maior qualificação</SelectItem>
                 <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
                 <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
               </SelectContent>
@@ -491,6 +492,11 @@ export function UnilevelTab({ searchQuery }: Props) {
               maxLevel={maxLevel}
               searchQuery={searchId || searchQuery}
               sortMode={sortMode || "default"}
+              filterEndDate={
+                filterMode === "month"
+                  ? new Date(monthRef.getFullYear(), monthRef.getMonth() + 1, 0).toISOString()
+                  : periodEnd || undefined
+              }
             />
           </CardContent>
         </Card>

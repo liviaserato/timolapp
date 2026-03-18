@@ -162,9 +162,11 @@ interface Props {
   maxLevel: number;
   searchQuery?: string;
   sortMode?: string;
+  /** End date of the selected filter period (ISO string). Nodes with joinDate after this are "not yet existing" */
+  filterEndDate?: string;
 }
 
-export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "default" }: Props) {
+export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "default", filterEndDate }: Props) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set([root.id]));
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
@@ -477,6 +479,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                           {info.nodes.map(node => {
                             const hasChildren = !!(node.children?.length);
                             const canExpand = hasChildren && lvl < TOTAL_LEVELS;
+                            const notYetExisting = filterEndDate && new Date(node.joinDate) > new Date(filterEndDate);
                             return !isActive ? (
                               <LockedNodeCard
                                 key={node.id}
@@ -484,6 +487,11 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                                 hasChildren={canExpand}
                                 isExpanded={expandedIds.has(node.id)}
                                 onToggle={() => toggleExpand(node.id)}
+                              />
+                            ) : notYetExisting ? (
+                              <NotYetCard
+                                key={node.id}
+                                node={node}
                               />
                             ) : (
                               <NodeCard
@@ -632,6 +640,24 @@ function LockedNodeCard({ node, hasChildren = false, isExpanded = false, onToggl
           {isExpanded ? <Minus className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
         </button>
       )}
+    </div>
+  );
+}
+
+/* ── NotYetCard — node didn't exist in the selected period ── */
+
+function NotYetCard({ node }: { node: UnilevelNode }) {
+  const firstName = node.name.split(" ")[0];
+
+  return (
+    <div className="flex flex-col items-center shrink-0" style={{ width: NODE_W }}>
+      <div className="w-full rounded-lg border border-border/40 bg-muted/30 p-1.5 opacity-50 select-none relative">
+        <p className="text-[11px] font-bold text-center leading-tight text-muted-foreground/60">{node.id}</p>
+        <p className="text-[10px] text-muted-foreground/40 text-center leading-tight truncate mt-0.5">{firstName}</p>
+        <p className="text-[8px] text-muted-foreground/50 text-center leading-tight mt-1 px-0.5">
+          Não cadastrado neste período
+        </p>
+      </div>
     </div>
   );
 }
