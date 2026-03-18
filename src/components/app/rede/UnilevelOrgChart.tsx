@@ -131,41 +131,37 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
-  /* ── Drag-to-pan state ── */
-  const [dragOffset, setDragOffset] = useState(0);
-  const dragState = useRef<{ active: boolean; startX: number; startOffset: number; moved: boolean }>({
-    active: false, startX: 0, startOffset: 0, moved: false,
+  /* ── Per-level drag offsets ── */
+  const [levelDragOffsets, setLevelDragOffsets] = useState<Record<number, number>>({});
+  const dragState = useRef<{ active: boolean; level: number; startX: number; startOffset: number; moved: boolean }>({
+    active: false, level: -1, startX: 0, startOffset: 0, moved: false,
   });
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    // Only primary button (mouse) or touch
+  const handleLevelPointerDown = useCallback((e: React.PointerEvent, level: number) => {
     if (e.button !== 0) return;
-    dragState.current = { active: true, startX: e.clientX, startOffset: dragOffset, moved: false };
+    const currentOffset = levelDragOffsets[level] || 0;
+    dragState.current = { active: true, level, startX: e.clientX, startOffset: currentOffset, moved: false };
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    (e.currentTarget as HTMLElement).style.cursor = "grabbing";
-  }, [dragOffset]);
+  }, [levelDragOffsets]);
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+  const handleLevelPointerMove = useCallback((e: React.PointerEvent) => {
     if (!dragState.current.active) return;
     const dx = e.clientX - dragState.current.startX;
     if (Math.abs(dx) > 3) dragState.current.moved = true;
-    setDragOffset(dragState.current.startOffset + dx);
+    setLevelDragOffsets(prev => ({ ...prev, [dragState.current.level]: dragState.current.startOffset + dx }));
   }, []);
 
-  const handlePointerUp = useCallback((e: React.PointerEvent) => {
-    if (!dragState.current.active) return;
+  const handleLevelPointerUp = useCallback(() => {
     dragState.current.active = false;
-    (e.currentTarget as HTMLElement).style.cursor = "grab";
   }, []);
 
-  // Reset drag offset when expanding/collapsing
-  useEffect(() => { setDragOffset(0); }, [expandedIds]);
+  // Reset per-level drag offsets when expanding/collapsing
+  useEffect(() => { setLevelDragOffsets({}); }, [expandedIds]);
 
   const levelCounts = useMemo(() => countByLevel(root), [root]);
 
   const toggleExpand = useCallback((id: string) => {
     if (id === root.id) return;
-    // Ignore if user was dragging
     if (dragState.current.moved) return;
     const siblingIds = findSiblingIds(root, id);
     setExpandedIds(prev => {
@@ -234,7 +230,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     return data;
   }, [root, expandedIds, containerWidth, sortMode]);
 
-  /* ── Compute SVG connectors (includes dragOffset) ── */
+  /* ── Compute SVG connectors with per-level drag offsets ── */
   const connectors = useMemo(() => {
     if (levelData.length === 0) return [];
     const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
@@ -252,7 +248,10 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
         if (pIdx < 0) continue;
       }
 
-      const parentCX = parentInfo.translateX + dragOffset + pIdx * (NODE_W + CARD_GAP) + NODE_W / 2;
+      const parentDrag = levelDragOffsets[lvl - 1] || 0;
+      const childDrag = levelDragOffsets[lvl] || 0;
+
+      const parentCX = parentInfo.translateX + parentDrag + pIdx * (NODE_W + CARD_GAP) + NODE_W / 2;
       const parentRowY = (lvl - 1) * ROW_H;
       const parentExitY = parentRowY + CARD_PAD_Y + CARD_BODY_H + (lvl === 1 ? 0 : EXPAND_BTN_H);
       const childRowY = lvl * ROW_H;
@@ -262,26 +261,26 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
       lines.push({ x1: parentCX, y1: parentExitY, x2: parentCX, y2: midY });
 
       if (childInfo.nodes.length === 1) {
-        const childCX = childInfo.translateX + dragOffset + NODE_W / 2;
+        const childCX = childInfo.translateX + childDrag + NODE_W / 2;
         if (Math.abs(parentCX - childCX) > 1) {
           lines.push({ x1: parentCX, y1: midY, x2: childCX, y2: midY });
         }
         lines.push({ x1: childCX, y1: midY, x2: childCX, y2: childEntryY });
       } else {
-        const firstCX = childInfo.translateX + dragOffset + NODE_W / 2;
-        const lastCX = childInfo.translateX + dragOffset + (childInfo.nodes.length - 1) * (NODE_W + CARD_GAP) + NODE_W / 2;
+        const firstCX = childInfo.translateX + childDrag + NODE_W / 2;
+        const lastCX = childInfo.translateX + childDrag + (childInfo.nodes.length - 1) * (NODE_W + CARD_GAP) + NODE_W / 2;
         const hLeft = Math.min(firstCX, parentCX);
         const hRight = Math.max(lastCX, parentCX);
         lines.push({ x1: hLeft, y1: midY, x2: hRight, y2: midY });
 
         for (let i = 0; i < childInfo.nodes.length; i++) {
-          const cx = childInfo.translateX + dragOffset + i * (NODE_W + CARD_GAP) + NODE_W / 2;
+          const cx = childInfo.translateX + childDrag + i * (NODE_W + CARD_GAP) + NODE_W / 2;
           lines.push({ x1: cx, y1: midY, x2: cx, y2: childEntryY });
         }
       }
     }
     return lines;
-  }, [levelData, expandedIds, dragOffset]);
+  }, [levelData, expandedIds, levelDragOffsets]);
 
   const totalH = (TOTAL_LEVELS + 1) * ROW_H;
 
@@ -324,12 +323,8 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
         {/* ── Tree content area ── */}
         <div
           ref={containerRef}
-          className="flex-1 overflow-hidden relative select-none"
-          style={{ height: totalH, cursor: "grab", touchAction: "pan-y" }}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
+          className="flex-1 overflow-hidden relative"
+          style={{ height: totalH }}
         >
           {containerWidth > 0 && levelData.length > 0 && (
             <>
@@ -349,11 +344,11 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                 ))}
               </svg>
 
-              {/* Root row (level 0) */}
+              {/* Root row (level 0) — always centered, not draggable */}
               <div className="absolute left-0 right-0 z-[2]" style={{ top: 0, height: ROW_H }}>
                 <div
                   className="transition-transform duration-300 ease-out"
-                  style={{ paddingTop: CARD_PAD_Y, transform: `translateX(${levelData[0].translateX + dragOffset}px)` }}
+                  style={{ paddingTop: CARD_PAD_Y, transform: `translateX(${levelData[0].translateX}px)` }}
                 >
                   <div className="flex" style={{ gap: CARD_GAP }}>
                     <NodeCard
@@ -369,24 +364,29 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                 </div>
               </div>
 
-              {/* Level rows 1–10 */}
+              {/* Level rows 1–10 — each independently draggable */}
               {Array.from({ length: TOTAL_LEVELS }, (_, i) => {
                 const lvl = i + 1;
                 const isActive = lvl <= maxLevel;
                 const info = levelData[lvl];
                 const hasNodes = info.nodes.length > 0;
                 const hasAnyData = (levelCounts.get(lvl) || 0) > 0;
+                const effectiveTx = info.translateX + (levelDragOffsets[lvl] || 0);
 
                 return (
                   <div
                     key={lvl}
-                    className="absolute left-0 right-0 border-t border-border/30 z-[2]"
-                    style={{ top: lvl * ROW_H, height: ROW_H }}
+                    className="absolute left-0 right-0 border-t border-border/30 z-[2] select-none"
+                    style={{ top: lvl * ROW_H, height: ROW_H, cursor: hasNodes ? "grab" : undefined, touchAction: hasNodes ? "pan-y" : undefined }}
+                    onPointerDown={hasNodes ? (e) => handleLevelPointerDown(e, lvl) : undefined}
+                    onPointerMove={hasNodes ? handleLevelPointerMove : undefined}
+                    onPointerUp={hasNodes ? handleLevelPointerUp : undefined}
+                    onPointerCancel={hasNodes ? handleLevelPointerUp : undefined}
                   >
                     {hasNodes ? (
                       <div
                         className="transition-transform duration-300 ease-out"
-                        style={{ paddingTop: CARD_PAD_Y, transform: `translateX(${info.translateX + dragOffset}px)` }}
+                        style={{ paddingTop: CARD_PAD_Y, transform: `translateX(${effectiveTx}px)` }}
                       >
                         <div className="flex" style={{ gap: CARD_GAP }}>
                           {info.nodes.map(node => {
