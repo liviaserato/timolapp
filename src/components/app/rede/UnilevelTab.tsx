@@ -587,12 +587,14 @@ export function UnilevelTab({ searchQuery }: Props) {
                       {m.name}
                     </TableCell>
                     {!isMobile && (
-                      <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground truncate" title={lineLabel}>
-                        {lineLabel}
-                      </TableCell>
-                      <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground">
-                        {m.level ?? 1}
-                      </TableCell>
+                      <>
+                        <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground truncate" title={lineLabel}>
+                          {lineLabel}
+                        </TableCell>
+                        <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground">
+                          {m.level ?? 1}
+                        </TableCell>
+                      </>
                     )}
                     <TableCell className="px-1 py-1.5 text-center">
                       <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
