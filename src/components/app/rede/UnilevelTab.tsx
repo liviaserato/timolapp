@@ -617,8 +617,7 @@ function LevelTable({
                   return (
                     <TableRow
                       key={m.id}
-                      className="cursor-pointer hover:bg-accent/40"
-                      onClick={() => onSelect(m)}
+                      className="hover:bg-accent/40"
                     >
                       <TableCell className="px-1 py-1.5">
                         <div className={cn("h-2 w-2 rounded-full mx-auto", m.active ? "bg-success" : "bg-destructive")} />
