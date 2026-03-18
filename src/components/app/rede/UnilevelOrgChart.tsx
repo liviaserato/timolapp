@@ -195,16 +195,14 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                 {lvl === 1 && (
                   <span className="text-[8px] text-muted-foreground leading-none">DIRETOS</span>
                 )}
+                {count > 0 && (
                 <span className="text-[9px]">
-                  {count > 0 ? (
                     <Badge variant="secondary" className={cn("text-[9px] px-1.5 py-0 h-4 mt-0.5", !isActive && "opacity-50")}>
                       {!isActive && <Lock className="h-2.5 w-2.5 mr-0.5" />}
                       {count}
                     </Badge>
-                  ) : (
-                    <span className="text-muted-foreground/30">—</span>
-                  )}
                 </span>
+                )}
               </div>
             );
           })}
