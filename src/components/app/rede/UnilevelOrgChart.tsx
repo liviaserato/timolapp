@@ -36,6 +36,18 @@ function sortNodes(nodes: UnilevelNode[], mode: SortMode): UnilevelNode[] {
 
 /* ── Helpers ── */
 
+function findSiblingIds(root: UnilevelNode, targetId: string, currentLevel: number = 0): string[] | null {
+  if (!root.children) return null;
+  for (const child of root.children) {
+    if (child.id === targetId) {
+      return root.children.map(c => c.id);
+    }
+    const found = findSiblingIds(child, targetId, currentLevel + 1);
+    if (found) return found;
+  }
+  return null;
+}
+
 function findPathToId(node: UnilevelNode, targetId: string): string[] | null {
   if (node.id.toLowerCase() === targetId.toLowerCase()) return [node.id];
   if (!node.children) return null;
