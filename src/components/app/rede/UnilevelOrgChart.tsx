@@ -208,6 +208,13 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     }
   }, []);
 
+  const handleLevelPointerLeave = useCallback(() => {
+    if (dragState.current.active) {
+      dragState.current.active = false;
+      dragState.current.moved = false;
+    }
+  }, []);
+
   // Reset per-level drag offsets when expanding/collapsing
   useEffect(() => { setLevelDragOffsets({}); }, [expandedIds]);
 
