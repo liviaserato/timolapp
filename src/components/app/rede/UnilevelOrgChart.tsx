@@ -284,7 +284,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
 
 function LevelRow({
   root, targetLevel, currentLevel, expandedIds, onToggle,
-  highlightedId, highlightRef, maxLevel, sortMode,
+  highlightedId, highlightRef, maxLevel, sortMode, isLocked = false,
 }: {
   root: UnilevelNode;
   targetLevel: number;
@@ -297,7 +297,6 @@ function LevelRow({
   sortMode: SortMode;
   isLocked?: boolean;
 }) {
-  const isLocked = arguments[0].isLocked ?? false;
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
