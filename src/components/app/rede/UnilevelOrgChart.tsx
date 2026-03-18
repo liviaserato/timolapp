@@ -283,7 +283,9 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     data.push({ nodes: [root], anchorIdx: 0, translateX: cx - NODE_W / 2 });
 
     for (let lvl = 1; lvl <= TOTAL_LEVELS; lvl++) {
-      const nodes = sortNodes(collectNodesAtLevel(root, 0, lvl, expandedIds), sortMode as SortMode);
+      const rawNodes = collectNodesAtLevel(root, 0, lvl, expandedIds);
+      // Sort only applies to level 1 (diretos)
+      const nodes = lvl === 1 ? sortNodes(rawNodes, sortMode as SortMode) : rawNodes;
       const anchorIdx = nodes.findIndex(n => expandedIds.has(n.id));
       let tx: number;
       if (nodes.length === 0) {
