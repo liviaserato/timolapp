@@ -8,8 +8,8 @@ import { Badge } from "@/components/ui/badge";
 /* ── Constants ── */
 const TOTAL_LEVELS = 10;
 const ROW_HEIGHT = 120;
-const NODE_W = 110;
-const LEVEL_LABEL_W = 70;
+const NODE_W = 90;
+const LEVEL_LABEL_W = 52;
 const SCROLL_AMOUNT = 300;
 
 /* ── Sort modes (must match UnilevelTab) ── */
@@ -158,7 +158,7 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery, 
         <div className="shrink-0" style={{ width: LEVEL_LABEL_W }}>
           {/* Root row label */}
           <div className="flex flex-col items-center justify-center text-[10px] text-muted-foreground" style={{ height: ROW_HEIGHT }}>
-            <span className="font-semibold text-foreground text-[11px]">Raiz</span>
+            <span className="font-semibold text-foreground text-[10px]">Você</span>
           </div>
           {/* Levels 1-10 */}
           {Array.from({ length: TOTAL_LEVELS }, (_, i) => {
@@ -174,9 +174,12 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery, 
                 )}
                 style={{ height: ROW_HEIGHT }}
               >
-                <span className={cn("font-semibold", isActive ? "text-foreground" : "text-muted-foreground/40")}>
-                  Nível {lvl}
+                <span className={cn("font-semibold text-[10px]", isActive ? "text-foreground" : "text-muted-foreground/40")}>
+                  N{lvl}
                 </span>
+                {lvl === 1 && (
+                  <span className="text-[8px] text-muted-foreground leading-none">DIRETOS</span>
+                )}
                 <span className="text-[9px]">
                   {count > 0 ? (
                     <Badge variant="secondary" className="text-[9px] px-1.5 py-0 h-4 mt-0.5">
@@ -393,7 +396,7 @@ function NodeCard({
           "text-[11px] font-bold text-center leading-tight",
           isRoot ? "text-primary" : "text-foreground"
         )}>
-          {isRoot ? `ID ${node.id} (Eu)` : `ID ${node.id}`}
+          {node.id}
         </p>
 
         {/* Name */}
