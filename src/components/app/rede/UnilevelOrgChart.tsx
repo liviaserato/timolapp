@@ -174,8 +174,8 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery, 
                 )}
                 style={{ height: ROW_HEIGHT }}
               >
-                <span className={cn("font-semibold text-[10px]", isActive ? "text-foreground" : "text-muted-foreground/40")}>
-                  N{lvl}
+                <span className={cn("font-semibold text-[9px] leading-tight", isActive ? "text-foreground" : "text-muted-foreground/40")}>
+                  Nível {lvl}
                 </span>
                 {lvl === 1 && (
                   <span className="text-[8px] text-muted-foreground leading-none">DIRETOS</span>
