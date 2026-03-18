@@ -262,17 +262,15 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
 /* ── LevelRow with horizontal chevron scroll ── */
 
 function LevelRow({
-  root, targetLevel, currentLevel, expandedIds, onToggle, onSelect,
-  highlightedId, selectedId, highlightRef, maxLevel, sortMode,
+  root, targetLevel, currentLevel, expandedIds, onToggle,
+  highlightedId, highlightRef, maxLevel, sortMode,
 }: {
   root: UnilevelNode;
   targetLevel: number;
   currentLevel: number;
   expandedIds: Set<string>;
   onToggle: (id: string) => void;
-  onSelect: (n: UnilevelNode) => void;
   highlightedId: string | null;
-  selectedId: string | null;
   highlightRef: React.RefObject<HTMLDivElement>;
   maxLevel: number;
   sortMode: SortMode;
