@@ -360,8 +360,15 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
       <div className="flex">
         {/* ── Level labels column ── */}
         <div className="shrink-0 px-0.5" style={{ width: LEVEL_LABEL_W }}>
-          <div className="flex flex-col items-center justify-center text-[10px] text-muted-foreground" style={{ height: ROW_H }}>
-            <span className="font-semibold text-foreground text-[11px]">Você</span>
+          <div className="flex flex-col items-center text-[10px] text-muted-foreground" style={{ height: ROW_H, paddingTop: CARD_PAD_Y, justifyContent: "flex-start" }}>
+            <div style={{ height: CARD_BODY_H }} className="flex flex-col items-center justify-center">
+              <span className="font-semibold text-foreground text-[11px]">Você</span>
+              {root.volume > 0 && (
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-[18px] mt-0.5">
+                  {root.volume.toLocaleString("pt-BR")} pts
+                </Badge>
+              )}
+            </div>
           </div>
           {Array.from({ length: TOTAL_LEVELS }, (_, i) => {
             const lvl = i + 1;
