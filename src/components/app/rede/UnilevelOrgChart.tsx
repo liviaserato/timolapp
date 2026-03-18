@@ -155,7 +155,7 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery, 
     <div className="w-full">
       <div className="flex">
         {/* Level labels column */}
-        <div className="shrink-0" style={{ width: LEVEL_LABEL_W }}>
+        <div className="shrink-0 px-0.5" style={{ width: LEVEL_LABEL_W }}>
           {/* Root row label */}
           <div className="flex flex-col items-center justify-center text-[10px] text-muted-foreground" style={{ height: ROW_HEIGHT }}>
             <span className="font-semibold text-foreground text-[10px]">Você</span>
