@@ -128,7 +128,16 @@ interface LevelInfo {
   translateX: number;
 }
 
-/** Collect all descendant IDs from a node */
+function findNodeById(node: UnilevelNode, id: string): UnilevelNode | null {
+  if (node.id === id) return node;
+  if (!node.children) return null;
+  for (const child of node.children) {
+    const found = findNodeById(child, id);
+    if (found) return found;
+  }
+  return null;
+}
+
 function collectDescendantIds(node: UnilevelNode): string[] {
   const ids: string[] = [];
   if (node.children) {
