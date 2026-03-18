@@ -282,6 +282,58 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     return data;
   }, [root, expandedIds, containerWidth, sortMode]);
 
+  /* ── Compute SVG connectors with per-level drag offsets ── */
+  const connectors = useMemo(() => {
+    if (levelData.length === 0) return [];
+    const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
+
+    for (let lvl = 1; lvl <= TOTAL_LEVELS; lvl++) {
+      const childInfo = levelData[lvl];
+      if (!childInfo || childInfo.nodes.length === 0) continue;
+
+      const parentInfo = levelData[lvl - 1];
+      let pIdx: number;
+      if (lvl === 1) {
+        pIdx = 0;
+      } else {
+        pIdx = parentInfo.nodes.findIndex(n => expandedIds.has(n.id) && n.children?.length);
+        if (pIdx < 0) continue;
+      }
+
+      const parentDrag = levelDragOffsets[lvl - 1] || 0;
+      const childDrag = levelDragOffsets[lvl] || 0;
+
+      const parentCX = parentInfo.translateX + parentDrag + pIdx * (NODE_W + CARD_GAP) + NODE_W / 2;
+      const parentRowY = (lvl - 1) * ROW_H;
+      const parentExitY = parentRowY + CARD_PAD_Y + CARD_BODY_H + (lvl === 1 ? 0 : EXPAND_BTN_H);
+      const childRowY = lvl * ROW_H;
+      const childEntryY = childRowY + CARD_PAD_Y;
+      const midY = (parentExitY + childEntryY) / 2;
+
+      lines.push({ x1: parentCX, y1: parentExitY, x2: parentCX, y2: midY });
+
+      if (childInfo.nodes.length === 1) {
+        const childCX = childInfo.translateX + childDrag + NODE_W / 2;
+        if (Math.abs(parentCX - childCX) > 1) {
+          lines.push({ x1: parentCX, y1: midY, x2: childCX, y2: midY });
+        }
+        lines.push({ x1: childCX, y1: midY, x2: childCX, y2: childEntryY });
+      } else {
+        const firstCX = childInfo.translateX + childDrag + NODE_W / 2;
+        const lastCX = childInfo.translateX + childDrag + (childInfo.nodes.length - 1) * (NODE_W + CARD_GAP) + NODE_W / 2;
+        const hLeft = Math.min(firstCX, parentCX);
+        const hRight = Math.max(lastCX, parentCX);
+        lines.push({ x1: hLeft, y1: midY, x2: hRight, y2: midY });
+
+        for (let i = 0; i < childInfo.nodes.length; i++) {
+          const cx = childInfo.translateX + childDrag + i * (NODE_W + CARD_GAP) + NODE_W / 2;
+          lines.push({ x1: cx, y1: midY, x2: cx, y2: childEntryY });
+        }
+      }
+    }
+    return lines;
+  }, [levelData, expandedIds, levelDragOffsets]);
+
   const totalH = (TOTAL_LEVELS + 1) * ROW_H;
 
   return (
