@@ -30,7 +30,6 @@ const navItems = [
 ];
 
 const bottomItems = [
-  { label: "Atualização Cadastral", path: "/app/atualizacao-cadastral", icon: null, lucideIcon: ClipboardEdit },
   { label: "Configurações", path: "/app/configuracoes", icon: iconConfiguracoes },
 ];
 
