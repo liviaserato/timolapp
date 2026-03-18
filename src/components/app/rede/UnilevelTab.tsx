@@ -19,12 +19,13 @@ import { MemberDetailDialog } from "./MemberDetailDialog";
 import { UnilevelOrgChart } from "./UnilevelOrgChart";
 import {
   mockUnilevelTree, flattenUnilevelTree, qualificationLevelLimits,
-  FlatUnilevelMember,
+  FlatUnilevelMember, UnilevelNode,
 } from "./unilevel-mock-data";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 /* ── Sort ── */
 type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status" | "qualification";
+type ListMode = "by_level" | "by_direct";
 
 const qualificationRank: Record<string, number> = {
   consultor: 0, distribuidor: 1, lider: 2, rubi: 3, esmeralda: 4, diamante: 5,
@@ -109,8 +110,78 @@ export function UnilevelTab({ searchQuery }: Props) {
     return sortMembers(result, (sortMode || "default") as SortMode);
   }, [allMembers, searchId, searchQuery, sortMode]);
 
+  // List mode: by_level or by_direct
+  const [listMode, setListMode] = useState<ListMode>("by_level");
+
   // Selected level for list view
   const [selectedLevel, setSelectedLevel] = useState(1);
+
+  // Selected direct member for "by_direct" mode
+  const [selectedDirectId, setSelectedDirectId] = useState<string>("");
+
+  // Direct members list for the dropdown
+  const directMembers = useMemo(() => {
+    return allMembers.filter((m) => m.isDirect);
+  }, [allMembers]);
+
+  // Set default selected direct when switching to by_direct mode
+  useEffect(() => {
+    if (listMode === "by_direct" && !selectedDirectId && directMembers.length > 0) {
+      setSelectedDirectId(directMembers[0].id);
+    }
+  }, [listMode, selectedDirectId, directMembers]);
+
+  // Flatten the subtree of a specific direct member
+  const directSubtreeMembers = useMemo(() => {
+    if (listMode !== "by_direct" || !selectedDirectId) return [];
+    // Find the direct node in the tree
+    const directNode = mockUnilevelTree.children?.find((c) => c.id === selectedDirectId);
+    if (!directNode) return [];
+    // Include the direct member itself as level 1, then flatten children
+    const result: FlatUnilevelMember[] = [{
+      ...directNode,
+      level: 1,
+      isDirect: true,
+    } as FlatUnilevelMember];
+    // Flatten descendants starting from level 2
+    function flattenNode(node: UnilevelNode, lvl: number) {
+      if (!node.children) return;
+      for (const child of node.children) {
+        if (lvl + 1 > maxLevel) continue;
+        result.push({
+          ...child,
+          level: lvl + 1,
+          isDirect: false,
+        } as FlatUnilevelMember);
+        flattenNode(child, lvl + 1);
+      }
+    }
+    flattenNode(directNode, 1);
+    // Apply search filter
+    const q = (searchId || searchQuery || "").toLowerCase().trim();
+    let filtered = result;
+    if (q) {
+      filtered = result.filter(
+        (m) => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q)
+      );
+    }
+    return sortMembers(filtered, (sortMode || "default") as SortMode);
+  }, [listMode, selectedDirectId, maxLevel, searchId, searchQuery, sortMode]);
+
+  // Group by level for "by_direct" mode
+  const directSubtreeByLevel = useMemo(() => {
+    const grouped: Record<number, FlatUnilevelMember[]> = {};
+    for (const m of directSubtreeMembers) {
+      const lvl = m.level ?? 1;
+      if (!grouped[lvl]) grouped[lvl] = [];
+      grouped[lvl].push(m);
+    }
+    return grouped;
+  }, [directSubtreeMembers]);
+
+  const directSubtreeLevels = useMemo(() => {
+    return Object.keys(directSubtreeByLevel).map(Number).sort((a, b) => a - b);
+  }, [directSubtreeByLevel]);
 
   // Members for the selected level
   const selectedLevelMembers = useMemo(() => {
@@ -519,105 +590,235 @@ export function UnilevelTab({ searchQuery }: Props) {
       {/* ═══ Level Table (list view only) ═══ */}
       {viewMode === "list" && (
       <Card>
-        {/* Header with level dropdown */}
+        {/* Header with mode toggle + selectors */}
         <div className="flex items-center justify-between p-3 bg-primary text-primary-foreground rounded-t-lg">
           <div className="flex items-center gap-2">
-            <Select value={String(selectedLevel)} onValueChange={(v) => setSelectedLevel(Number(v))}>
-              <SelectTrigger className="h-8 w-[110px] text-sm font-semibold bg-white/20 border-0 text-primary-foreground">
-                <SelectValue placeholder="Nível" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableLevels.map((lvl) => {
-                  const locked = lvl > maxLevel;
-                  return (
-                    <SelectItem
-                      key={lvl}
-                      value={String(lvl)}
-                      className={cn("text-sm font-semibold", locked && "text-muted-foreground")}
-                      disabled={locked}
-                    >
+            {/* Mode toggle: Por Nível / Por Direto */}
+            <div className="flex rounded-md overflow-hidden h-8">
+              <button
+                onClick={() => setListMode("by_level")}
+                className={cn(
+                  "px-2.5 text-[11px] font-medium transition-colors whitespace-nowrap",
+                  listMode === "by_level"
+                    ? "bg-white/30 text-primary-foreground"
+                    : "bg-white/10 text-primary-foreground/60 hover:bg-white/15"
+                )}
+              >
+                Por Nível
+              </button>
+              <button
+                onClick={() => setListMode("by_direct")}
+                className={cn(
+                  "px-2.5 text-[11px] font-medium transition-colors whitespace-nowrap",
+                  listMode === "by_direct"
+                    ? "bg-white/30 text-primary-foreground"
+                    : "bg-white/10 text-primary-foreground/60 hover:bg-white/15"
+                )}
+              >
+                Por Direto
+              </button>
+            </div>
+
+            {/* Contextual selector */}
+            {listMode === "by_level" ? (
+              <Select value={String(selectedLevel)} onValueChange={(v) => setSelectedLevel(Number(v))}>
+                <SelectTrigger className="h-8 w-[110px] text-sm font-semibold bg-white/20 border-0 text-primary-foreground">
+                  <SelectValue placeholder="Nível" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableLevels.map((lvl) => {
+                    const locked = lvl > maxLevel;
+                    return (
+                      <SelectItem
+                        key={lvl}
+                        value={String(lvl)}
+                        className={cn("text-sm font-semibold", locked && "text-muted-foreground")}
+                        disabled={locked}
+                      >
+                        <span className="flex items-center gap-1.5">
+                          Nível {lvl}
+                          {locked && <Lock className="h-3 w-3" />}
+                        </span>
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Select value={selectedDirectId} onValueChange={(v) => setSelectedDirectId(v)}>
+                <SelectTrigger className="h-8 w-[160px] text-sm font-semibold bg-white/20 border-0 text-primary-foreground">
+                  <SelectValue placeholder="Selecionar direto" />
+                </SelectTrigger>
+                <SelectContent>
+                  {directMembers.map((dm) => (
+                    <SelectItem key={dm.id} value={dm.id} className="text-xs">
                       <span className="flex items-center gap-1.5">
-                        Nível {lvl}
-                        {locked && <Lock className="h-3 w-3" />}
+                        <span className={cn("h-1.5 w-1.5 rounded-full inline-block", dm.active ? "bg-success" : "bg-destructive")} />
+                        {dm.name}
                       </span>
                     </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
+
+          {/* Stats */}
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
-              {selectedLevelMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
-            </Badge>
-            <span className="text-xs text-primary-foreground/80 font-medium">
-              {selectedLevelMembers.length} {selectedLevelMembers.length === 1 ? "pessoa" : "pessoas"}
-            </span>
+            {listMode === "by_level" ? (
+              <>
+                <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
+                  {selectedLevelMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
+                </Badge>
+                <span className="text-xs text-primary-foreground/80 font-medium">
+                  {selectedLevelMembers.length} {selectedLevelMembers.length === 1 ? "pessoa" : "pessoas"}
+                </span>
+              </>
+            ) : (
+              <>
+                <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
+                  {directSubtreeMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
+                </Badge>
+                <span className="text-xs text-primary-foreground/80 font-medium">
+                  {directSubtreeMembers.length} {directSubtreeMembers.length === 1 ? "pessoa" : "pessoas"}
+                </span>
+              </>
+            )}
           </div>
         </div>
 
         <CardContent className="px-0 pb-2">
-          {selectedLevelMembers.length === 0 ? (
-            <p className="p-6 text-center text-sm text-muted-foreground">Nenhum membro encontrado neste nível.</p>
-          ) : (
-          <div className="max-h-[400px] overflow-y-auto overflow-x-hidden">
-          <Table className="table-fixed w-full">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[24px] px-2.5" />
-                <TableHead className="text-[10px] px-2.5 w-[80px] text-center">ID</TableHead>
-                <TableHead className="text-[10px] px-2.5 text-center w-[28px]">Qual.</TableHead>
-                <TableHead className="text-[10px] px-2.5 w-auto">Nome</TableHead>
-                <TableHead className="text-[10px] px-2.5 w-[52px] text-right">Pontos</TableHead>
-                {!isMobile && (
-                  <>
-                    <TableHead className="text-[10px] px-2.5 w-[100px]">Origem</TableHead>
-                    <TableHead className="text-[10px] px-2.5 w-[52px] text-center">Nível</TableHead>
-                  </>
-                )}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {selectedLevelMembers.map((m, idx) => {
-                const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
-                const lineLabel = selectedLevel === 1
-                  ? "Diretos"
-                  : m.directAncestorName
-                    ? `↳ ${m.directAncestorName}`
-                    : "—";
-                return (
-                  <TableRow key={m.id} className="hover:bg-accent/40">
-                    <TableCell className="px-2.5 py-1.5">
-                      <div className={cn("h-2 w-2 rounded-full mx-auto", m.active ? "bg-success" : "bg-destructive")} />
-                    </TableCell>
-                    <TableCell className={cn("px-2.5 py-1.5 text-[11px] tabular-nums truncate text-center", m.isDirect && "font-bold")}>
-                      {m.id}
-                    </TableCell>
-                    <TableCell className="px-2.5 py-1.5 text-center">
-                      <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
-                    </TableCell>
-                    <TableCell className={cn("px-2.5 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
-                      {m.name}
-                    </TableCell>
-                    <TableCell className="px-2.5 py-1.5 text-[11px] tabular-nums font-medium text-right">
-                      {m.volume.toLocaleString("pt-BR")}
-                    </TableCell>
+          {/* ── By Level mode ── */}
+          {listMode === "by_level" && (
+            <>
+              {selectedLevelMembers.length === 0 ? (
+                <p className="p-6 text-center text-sm text-muted-foreground">Nenhum membro encontrado neste nível.</p>
+              ) : (
+              <div className="max-h-[400px] overflow-y-auto overflow-x-hidden">
+              <Table className="table-fixed w-full">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[24px] px-2.5" />
+                    <TableHead className="text-[10px] px-2.5 w-[80px] text-center">ID</TableHead>
+                    <TableHead className="text-[10px] px-2.5 text-center w-[28px]">Qual.</TableHead>
+                    <TableHead className="text-[10px] px-2.5 w-auto">Nome</TableHead>
+                    <TableHead className="text-[10px] px-2.5 w-[52px] text-right">Pontos</TableHead>
                     {!isMobile && (
                       <>
-                        <TableCell className="px-2.5 py-1.5 text-[10px] text-muted-foreground truncate" title={lineLabel}>
-                          {lineLabel}
-                        </TableCell>
-                        <TableCell className="px-2.5 py-1.5 text-[10px] text-muted-foreground text-center">
-                          {m.level ?? 1}
-                        </TableCell>
+                        <TableHead className="text-[10px] px-2.5 w-[100px]">Origem</TableHead>
+                        <TableHead className="text-[10px] px-2.5 w-[52px] text-center">Nível</TableHead>
                       </>
                     )}
                   </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {selectedLevelMembers.map((m) => {
+                    const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
+                    const lineLabel = selectedLevel === 1
+                      ? "Diretos"
+                      : m.directAncestorName
+                        ? `↳ ${m.directAncestorName}`
+                        : "—";
+                    return (
+                      <TableRow key={m.id} className="hover:bg-accent/40">
+                        <TableCell className="px-2.5 py-1.5">
+                          <div className={cn("h-2 w-2 rounded-full mx-auto", m.active ? "bg-success" : "bg-destructive")} />
+                        </TableCell>
+                        <TableCell className={cn("px-2.5 py-1.5 text-[11px] tabular-nums truncate text-center", m.isDirect && "font-bold")}>
+                          {m.id}
+                        </TableCell>
+                        <TableCell className="px-2.5 py-1.5 text-center">
+                          <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
+                        </TableCell>
+                        <TableCell className={cn("px-2.5 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
+                          {m.name}
+                        </TableCell>
+                        <TableCell className="px-2.5 py-1.5 text-[11px] tabular-nums font-medium text-right">
+                          {m.volume.toLocaleString("pt-BR")}
+                        </TableCell>
+                        {!isMobile && (
+                          <>
+                            <TableCell className="px-2.5 py-1.5 text-[10px] text-muted-foreground truncate" title={lineLabel}>
+                              {lineLabel}
+                            </TableCell>
+                            <TableCell className="px-2.5 py-1.5 text-[10px] text-muted-foreground text-center">
+                              {m.level ?? 1}
+                            </TableCell>
+                          </>
+                        )}
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+              </div>
+              )}
+            </>
+          )}
+
+          {/* ── By Direct mode ── */}
+          {listMode === "by_direct" && (
+            <>
+              {directSubtreeMembers.length === 0 ? (
+                <p className="p-6 text-center text-sm text-muted-foreground">Nenhum membro encontrado para este direto.</p>
+              ) : (
+              <div className="max-h-[400px] overflow-y-auto overflow-x-hidden">
+                {directSubtreeLevels.map((lvl) => {
+                  const members = directSubtreeByLevel[lvl] || [];
+                  const levelPoints = members.reduce((s, m) => s + m.volume, 0);
+                  const indent = (lvl - 1) * 16; // 16px indent per level
+                  return (
+                    <div key={lvl}>
+                      {/* Level header */}
+                      <div
+                        className="flex items-center justify-between px-3 py-1.5 bg-muted/60 border-b"
+                        style={{ paddingLeft: 12 + indent }}
+                      >
+                        <span className="text-[11px] font-semibold text-foreground">
+                          Nível {lvl}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-semibold">
+                            {levelPoints.toLocaleString("pt-BR")} pts
+                          </Badge>
+                          <span className="text-[10px] text-muted-foreground">
+                            {members.length} {members.length === 1 ? "pessoa" : "pessoas"}
+                          </span>
+                        </div>
+                      </div>
+                      {/* Members in this level */}
+                      <Table className="table-fixed w-full">
+                        <TableBody>
+                          {members.map((m) => {
+                            const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
+                            return (
+                              <TableRow key={m.id} className="hover:bg-accent/40">
+                                <TableCell className="py-1.5 w-[24px]" style={{ paddingLeft: 10 + indent }}>
+                                  <div className={cn("h-2 w-2 rounded-full mx-auto", m.active ? "bg-success" : "bg-destructive")} />
+                                </TableCell>
+                                <TableCell className="px-2.5 py-1.5 text-[11px] tabular-nums text-center w-[80px]">
+                                  {m.id}
+                                </TableCell>
+                                <TableCell className="px-2.5 py-1.5 text-center w-[28px]">
+                                  <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
+                                </TableCell>
+                                <TableCell className="px-2.5 py-1.5 text-[11px] truncate w-auto">
+                                  {m.name}
+                                </TableCell>
+                                <TableCell className="px-2.5 py-1.5 text-[11px] tabular-nums font-medium text-right w-[52px]">
+                                  {m.volume.toLocaleString("pt-BR")}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  );
+                })}
+              </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
