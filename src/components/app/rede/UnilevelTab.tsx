@@ -605,6 +605,25 @@ export function UnilevelTab({ searchQuery }: Props) {
       </Card>
       )}
 
+      {/* Qualification legend (list view only) */}
+      {viewMode === "list" && <QualificationLegend />}
+
+      {/* ═══ Bonus section ═══ */}
+      <BonusSection onOpen={() => setBonusModalOpen(true)} />
+      <BonusDialog open={bonusModalOpen} onOpenChange={setBonusModalOpen} />
+
+      {/* Member detail */}
+      <MemberDetailDialog
+        member={selectedMember}
+        open={!!selectedMember}
+        onOpenChange={(o) => !o && setSelectedMember(null)}
+      />
+    </div>
+  );
+}
+
+/* ── Sub-components ── */
+
 function BonusSection({ onOpen }: { onOpen: () => void }) {
   return (
     <Card className="border-dashed">
