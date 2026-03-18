@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight, Users, Plus, Minus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users, Plus, Minus, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { qualificationConfig } from "./mock-data";
 import { UnilevelNode } from "./unilevel-mock-data";
