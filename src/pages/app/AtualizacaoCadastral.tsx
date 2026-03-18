@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import ContractScreen from "@/components/screens/ContractScreen";
 import { useNavigate } from "react-router-dom";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
