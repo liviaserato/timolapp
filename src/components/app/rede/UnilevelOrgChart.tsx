@@ -518,9 +518,11 @@ function NodeCard({
           isRoot
             ? "bg-primary text-primary-foreground border-none"
             : [
-                "border bg-card",
-                hasChildren && "cursor-pointer hover:shadow-md",
-                isExpanded && hasChildren && "border-primary ring-2 ring-primary/30",
+                "border bg-card cursor-pointer hover:shadow-md",
+                isExpanded && "border-primary ring-2 ring-primary/30",
+                isHighlighted && !isExpanded && "border-primary/60 bg-primary/5",
+                !isExpanded && !isHighlighted && "border-border",
+              ],
                 isHighlighted && !isExpanded && "border-primary/60 bg-primary/5",
                 !isExpanded && !isHighlighted && "border-border",
               ],
