@@ -26,6 +26,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 /* ── Sort ── */
 type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status" | "qualification";
 
+const qualificationRank: Record<string, number> = {
+  consultor: 0, distribuidor: 1, lider: 2, rubi: 3, esmeralda: 4, diamante: 5,
+};
+
 function sortMembers(members: FlatUnilevelMember[], mode: SortMode): FlatUnilevelMember[] {
   const sorted = [...members];
   switch (mode) {
@@ -35,11 +39,17 @@ function sortMembers(members: FlatUnilevelMember[], mode: SortMode): FlatUnileve
       return sorted.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
     case "date_oldest":
       return sorted.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
+    case "qualification":
+      return sorted.sort((a, b) => (qualificationRank[b.qualification] ?? 0) - (qualificationRank[a.qualification] ?? 0));
     case "status":
     default:
       return sorted.sort((a, b) => {
-        if (a.active === b.active) return b.volume - a.volume;
-        return a.active ? -1 : 1;
+        // Active first
+        if (a.active !== b.active) return a.active ? -1 : 1;
+        // Then highest points
+        if (b.volume !== a.volume) return b.volume - a.volume;
+        // Then highest qualification
+        return (qualificationRank[b.qualification] ?? 0) - (qualificationRank[a.qualification] ?? 0);
       });
   }
 }
