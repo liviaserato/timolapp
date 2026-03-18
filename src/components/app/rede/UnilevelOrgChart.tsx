@@ -379,6 +379,16 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
 
   const totalH = (maxVisibleLevel + 1) * ROW_H;
 
+  // Auto-scroll to show the bottom of the tree when new levels appear
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const prevMaxVisible = useRef(maxVisibleLevel);
+  useEffect(() => {
+    if (maxVisibleLevel > prevMaxVisible.current) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+    prevMaxVisible.current = maxVisibleLevel;
+  }, [maxVisibleLevel]);
+
   return (
     <div className="w-full">
       <div className="flex">
@@ -537,6 +547,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
           )}
         </div>
       </div>
+      <div ref={bottomRef} />
     </div>
   );
 }
