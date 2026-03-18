@@ -24,7 +24,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 
 /* ── Sort ── */
-type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status";
+type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status" | "qualification";
 
 function sortMembers(members: FlatUnilevelMember[], mode: SortMode): FlatUnilevelMember[] {
   const sorted = [...members];
@@ -320,6 +320,7 @@ export function UnilevelTab({ searchQuery }: Props) {
               <SelectContent>
                 <SelectItem value="default" className="text-xs">Ativos primeiro</SelectItem>
                 <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
+                <SelectItem value="qualification" className="text-xs">Maior qualificação</SelectItem>
                 <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
                 <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
               </SelectContent>

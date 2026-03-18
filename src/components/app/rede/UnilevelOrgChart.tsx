@@ -22,7 +22,13 @@ const CONN_COLOR = "hsl(var(--border))";
 const CONN_W = 1.5;
 
 /* ── Sort ── */
-type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status";
+type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status" | "qualification";
+
+const QUALIFICATION_ORDER: Record<string, number> = {
+  consultor: 0, distribuidor: 1, lider: 2, rubi: 3, esmeralda: 4,
+  diamante: 5, diamante_1: 6, diamante_2: 7, diamante_3: 8,
+  diamante_4: 9, diamante_5: 10, diamante_black: 11,
+};
 
 function sortNodes(nodes: UnilevelNode[], mode: SortMode): UnilevelNode[] {
   const sorted = [...nodes];
@@ -33,6 +39,8 @@ function sortNodes(nodes: UnilevelNode[], mode: SortMode): UnilevelNode[] {
       return sorted.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
     case "date_oldest":
       return sorted.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
+    case "qualification":
+      return sorted.sort((a, b) => (QUALIFICATION_ORDER[b.qualification] ?? 0) - (QUALIFICATION_ORDER[a.qualification] ?? 0));
     case "status":
     case "default":
     default:
@@ -199,6 +207,15 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
   const levelCounts = useMemo(() => countByLevel(root), [root]);
   const levelVolumes = useMemo(() => volumeByLevel(root), [root]);
 
+  // Collapse all levels when sortMode changes (keep only root expanded = show level 1)
+  const prevSortRef = useRef(sortMode);
+  useEffect(() => {
+    if (prevSortRef.current !== sortMode) {
+      prevSortRef.current = sortMode;
+      setExpandedIds(new Set([root.id]));
+    }
+  }, [sortMode, root.id]);
+
   const toggleExpand = useCallback((id: string) => {
     if (id === root.id) return;
     if (dragState.current.moved) return;
@@ -266,7 +283,9 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     data.push({ nodes: [root], anchorIdx: 0, translateX: cx - NODE_W / 2 });
 
     for (let lvl = 1; lvl <= TOTAL_LEVELS; lvl++) {
-      const nodes = sortNodes(collectNodesAtLevel(root, 0, lvl, expandedIds), sortMode as SortMode);
+      const rawNodes = collectNodesAtLevel(root, 0, lvl, expandedIds);
+      // Sort only applies to level 1 (diretos)
+      const nodes = lvl === 1 ? sortNodes(rawNodes, sortMode as SortMode) : rawNodes;
       const anchorIdx = nodes.findIndex(n => expandedIds.has(n.id));
       let tx: number;
       if (nodes.length === 0) {
@@ -341,8 +360,15 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
       <div className="flex">
         {/* ── Level labels column ── */}
         <div className="shrink-0 px-0.5" style={{ width: LEVEL_LABEL_W }}>
-          <div className="flex flex-col items-center justify-center text-[10px] text-muted-foreground" style={{ height: ROW_H }}>
-            <span className="font-semibold text-foreground text-[11px]">Você</span>
+          <div className="flex flex-col items-center text-[10px] text-muted-foreground" style={{ height: ROW_H, paddingTop: CARD_PAD_Y, justifyContent: "flex-start" }}>
+            <div style={{ height: CARD_BODY_H }} className="flex flex-col items-center justify-center">
+              <span className="font-semibold text-foreground text-[11px]">Você</span>
+              {root.volume > 0 && (
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-[18px] mt-0.5">
+                  {root.volume.toLocaleString("pt-BR")} pts
+                </Badge>
+              )}
+            </div>
           </div>
           {Array.from({ length: TOTAL_LEVELS }, (_, i) => {
             const lvl = i + 1;
@@ -353,26 +379,28 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
               <div
                 key={lvl}
                 className={cn(
-                  "flex flex-col items-center justify-center",
+                  "flex flex-col items-center",
                   isActive ? "text-muted-foreground" : "text-muted-foreground/30"
                 )}
-                style={{ height: ROW_H }}
+                style={{ height: ROW_H, paddingTop: CARD_PAD_Y, justifyContent: "flex-start" }}
               >
-                <span className={cn("font-semibold text-[11px] leading-tight", isActive ? "text-foreground" : "text-muted-foreground/40")}>
-                  Nível {lvl}
-                </span>
-                {lvl === 1 && <span className="text-[9px] text-muted-foreground leading-none">DIRETOS</span>}
-                {vol > 0 && (
-                  <Badge variant="secondary" className={cn("text-[10px] px-1.5 py-0 h-[18px] mt-0.5", !isActive && "opacity-50")}>
-                    {!isActive && <Lock className="h-2.5 w-2.5 mr-0.5" />}
-                    {vol.toLocaleString("pt-BR")} pts
-                  </Badge>
-                )}
-                {count > 0 && (
-                  <span className={cn("text-[9px] leading-tight mt-0.5", !isActive ? "text-muted-foreground/30" : "text-muted-foreground")}>
-                    {count} {count === 1 ? "pessoa" : "pessoas"}
+                <div style={{ height: CARD_BODY_H }} className="flex flex-col items-center justify-center">
+                  <span className={cn("font-semibold text-[11px] leading-tight", isActive ? "text-foreground" : "text-muted-foreground/40")}>
+                    Nível {lvl}
                   </span>
-                )}
+                  {lvl === 1 && <span className="text-[9px] text-muted-foreground leading-none">DIRETOS</span>}
+                  {vol > 0 && (
+                    <Badge variant="secondary" className={cn("text-[10px] px-1.5 py-0 h-[18px] mt-0.5", !isActive && "opacity-50")}>
+                      {!isActive && <Lock className="h-2.5 w-2.5 mr-0.5" />}
+                      {vol.toLocaleString("pt-BR")} pts
+                    </Badge>
+                  )}
+                  {count > 0 && (
+                    <span className={cn("text-[9px] leading-tight mt-0.5", !isActive ? "text-muted-foreground/30" : "text-muted-foreground")}>
+                      {count} {count === 1 ? "pessoa" : "pessoas"}
+                    </span>
+                  )}
+                </div>
               </div>
             );
           })}
