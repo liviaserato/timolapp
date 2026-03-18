@@ -183,7 +183,7 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery, 
                 <span className="text-[9px]">
                   {count > 0 ? (
                     <Badge variant="secondary" className="text-[9px] px-1.5 py-0 h-4 mt-0.5">
-                      {count} {count === 1 ? "pessoa" : "pessoas"}
+                      {count}
                     </Badge>
                   ) : (
                     <span className="text-muted-foreground/30">—</span>
