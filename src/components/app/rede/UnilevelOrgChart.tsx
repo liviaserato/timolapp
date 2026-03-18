@@ -22,7 +22,13 @@ const CONN_COLOR = "hsl(var(--border))";
 const CONN_W = 1.5;
 
 /* ── Sort ── */
-type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status";
+type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status" | "qualification";
+
+const QUALIFICATION_ORDER: Record<string, number> = {
+  consultor: 0, distribuidor: 1, lider: 2, rubi: 3, esmeralda: 4,
+  diamante: 5, diamante_1: 6, diamante_2: 7, diamante_3: 8,
+  diamante_4: 9, diamante_5: 10, diamante_black: 11,
+};
 
 function sortNodes(nodes: UnilevelNode[], mode: SortMode): UnilevelNode[] {
   const sorted = [...nodes];
@@ -33,6 +39,8 @@ function sortNodes(nodes: UnilevelNode[], mode: SortMode): UnilevelNode[] {
       return sorted.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
     case "date_oldest":
       return sorted.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
+    case "qualification":
+      return sorted.sort((a, b) => (QUALIFICATION_ORDER[b.qualification] ?? 0) - (QUALIFICATION_ORDER[a.qualification] ?? 0));
     case "status":
     case "default":
     default:
