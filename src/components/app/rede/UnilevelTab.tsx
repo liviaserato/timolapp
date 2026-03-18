@@ -571,12 +571,17 @@ function LevelTable({
             <ChevronDown className="h-4 w-4 text-muted-foreground" />
           )}
           <span className="text-sm font-semibold">Nível {level}</span>
-          <Badge variant="secondary" className="text-[10px]">{members.length}</Badge>
           {level === 1 && (
-            <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 border-primary/30 text-primary">
-              Diretos
-            </Badge>
+            <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
+              — Diretos
+            </span>
           )}
+          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-[18px]">
+            {totalVolume.toLocaleString("pt-BR")} pts
+          </Badge>
+          <span className="text-[10px] text-muted-foreground">
+            {members.length} {members.length === 1 ? "pessoa" : "pessoas"}
+          </span>
         </div>
       </button>
       {!collapsed && (
