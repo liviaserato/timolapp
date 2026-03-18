@@ -383,8 +383,8 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
   const bottomRef = useRef<HTMLDivElement>(null);
   const prevMaxVisible = useRef(maxVisibleLevel);
   useEffect(() => {
-    if (maxVisibleLevel > prevMaxVisible.current) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    if (maxVisibleLevel !== prevMaxVisible.current) {
+      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 50);
     }
     prevMaxVisible.current = maxVisibleLevel;
   }, [maxVisibleLevel]);
