@@ -518,8 +518,8 @@ export function UnilevelTab({ searchQuery }: Props) {
       </div>
       )}
 
-      {/* Qualification legend */}
-      <QualificationLegend />
+      {/* Qualification legend (list view only) */}
+      {viewMode === "list" && <QualificationLegend />}
 
 
       {/* ═══ Bonus section ═══ */}
