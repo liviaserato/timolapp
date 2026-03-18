@@ -109,15 +109,19 @@ export function UnilevelTab({ searchQuery }: Props) {
     return sortMembers(result, (sortMode || "default") as SortMode);
   }, [allMembers, searchId, searchQuery, sortMode]);
 
-  // Group by level
-  const levelGroups = useMemo(() => {
-    const map = new Map<number, FlatUnilevelMember[]>();
-    filteredMembers.forEach((m) => {
-      const lvl = m.level ?? 1;
-      if (!map.has(lvl)) map.set(lvl, []);
-      map.get(lvl)!.push(m);
-    });
-    return Array.from(map.entries()).sort(([a], [b]) => a - b);
+  // Selected level for list view
+  const [selectedLevel, setSelectedLevel] = useState(1);
+
+  // Members for the selected level
+  const selectedLevelMembers = useMemo(() => {
+    return filteredMembers.filter((m) => (m.level ?? 1) === selectedLevel);
+  }, [filteredMembers, selectedLevel]);
+
+  // Available levels
+  const availableLevels = useMemo(() => {
+    const levels = new Set<number>();
+    filteredMembers.forEach((m) => levels.add(m.level ?? 1));
+    return Array.from(levels).sort((a, b) => a - b);
   }, [filteredMembers]);
 
   // Summary stats
@@ -514,30 +518,95 @@ export function UnilevelTab({ searchQuery }: Props) {
 
       {/* ═══ Level Table (list view only) ═══ */}
       {viewMode === "list" && (
-      <div className="space-y-3">
-        {levelGroups.length === 0 && (
-          <Card>
-            <CardContent className="p-6 text-center text-sm text-muted-foreground">
-              Nenhum membro encontrado.
-            </CardContent>
-          </Card>
-        )}
+      <Card>
+        {/* Header with level dropdown */}
+        <div className="flex items-center justify-between p-3 bg-primary text-primary-foreground rounded-t-lg">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold">Nível</span>
+            <Select value={String(selectedLevel)} onValueChange={(v) => setSelectedLevel(Number(v))}>
+              <SelectTrigger className="h-7 w-[80px] text-xs bg-white/20 border-0 text-primary-foreground">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: maxLevel }, (_, i) => i + 1).map((lvl) => (
+                  <SelectItem key={lvl} value={String(lvl)} className="text-xs">
+                    {lvl === 1 ? "1 — Diretos" : String(lvl)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-[18px] bg-white/20 text-primary-foreground border-0">
+              {selectedLevelMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
+            </Badge>
+            <span className="text-[10px] text-primary-foreground/70">
+              {selectedLevelMembers.length} {selectedLevelMembers.length === 1 ? "pessoa" : "pessoas"}
+            </span>
+          </div>
+        </div>
 
-        {levelGroups.map(([lvl, members]) => (
-          <LevelTable
-            key={lvl}
-            level={lvl}
-            members={members}
-            onSelect={setSelectedMember}
-            isMobile={isMobile}
-          />
-        ))}
-      </div>
+        <CardContent className="px-0 pb-2">
+          {selectedLevelMembers.length === 0 ? (
+            <p className="p-6 text-center text-sm text-muted-foreground">Nenhum membro encontrado neste nível.</p>
+          ) : (
+          <div className="max-h-[400px] overflow-y-auto overflow-x-hidden">
+          <Table className="table-fixed w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[24px] px-1" />
+                <TableHead className="text-[10px] px-1 w-[52px]">ID</TableHead>
+                <TableHead className="text-[10px] px-1">Nome</TableHead>
+                {!isMobile && (
+                  <TableHead className="text-[10px] px-1 w-[100px]">Linha</TableHead>
+                )}
+                <TableHead className="text-[10px] px-1 text-center w-[28px]">Qual.</TableHead>
+                <TableHead className="text-[10px] px-1 text-right w-[52px]">Pontos</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {selectedLevelMembers.map((m, idx) => {
+                const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
+                const lineLabel = selectedLevel === 1
+                  ? `Linha ${idx + 1}`
+                  : m.directAncestorName
+                    ? `↳ ${m.directAncestorName}`
+                    : "—";
+                return (
+                  <TableRow key={m.id} className="hover:bg-accent/40">
+                    <TableCell className="px-1 py-1.5">
+                      <div className={cn("h-2 w-2 rounded-full mx-auto", m.active ? "bg-success" : "bg-destructive")} />
+                    </TableCell>
+                    <TableCell className={cn("px-1 py-1.5 text-[11px] tabular-nums truncate", m.isDirect && "font-bold")}>
+                      {m.id}
+                    </TableCell>
+                    <TableCell className={cn("px-1 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
+                      {m.name}
+                    </TableCell>
+                    {!isMobile && (
+                      <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground truncate" title={lineLabel}>
+                        {lineLabel}
+                      </TableCell>
+                    )}
+                    <TableCell className="px-1 py-1.5 text-center">
+                      <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
+                    </TableCell>
+                    <TableCell className="px-1 py-1.5 text-[11px] text-right tabular-nums font-medium">
+                      {m.volume.toLocaleString("pt-BR")}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+          </div>
+          )}
+        </CardContent>
+      </Card>
       )}
 
       {/* Qualification legend (list view only) */}
       {viewMode === "list" && <QualificationLegend />}
-
 
       {/* ═══ Bonus section ═══ */}
       <BonusSection onOpen={() => setBonusModalOpen(true)} />
@@ -554,102 +623,6 @@ export function UnilevelTab({ searchQuery }: Props) {
 }
 
 /* ── Sub-components ── */
-
-function LevelTable({
-  level,
-  members,
-  onSelect,
-  isMobile,
-}: {
-  level: number;
-  members: FlatUnilevelMember[];
-  onSelect: (m: NetworkMember) => void;
-  isMobile: boolean;
-}) {
-  const [collapsed, setCollapsed] = useState(level > 2);
-  const totalVolume = members.reduce((sum, m) => sum + m.volume, 0);
-
-  return (
-    <Card>
-      <button
-        onClick={() => setCollapsed((p) => !p)}
-        className="w-full flex items-center justify-between p-3 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-t-lg"
-      >
-        <div className="flex items-center gap-2">
-          {collapsed ? (
-            <ChevronRight className="h-4 w-4 text-primary-foreground/70" />
-          ) : (
-            <ChevronDown className="h-4 w-4 text-primary-foreground/70" />
-          )}
-          <span className="text-sm font-semibold">Nível {level}</span>
-          {level === 1 && (
-            <span className="text-[11px] font-semibold text-primary-foreground/70 uppercase tracking-wide">
-              — Diretos
-            </span>
-          )}
-          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-[18px] bg-white/20 text-primary-foreground border-0">
-            {totalVolume.toLocaleString("pt-BR")} pts
-          </Badge>
-          <span className="text-[10px] text-primary-foreground/70">
-            {members.length} {members.length === 1 ? "pessoa" : "pessoas"}
-          </span>
-        </div>
-      </button>
-      {!collapsed && (
-        <CardContent className="px-0 pb-2">
-          <div className="max-h-[352px] overflow-y-auto overflow-x-hidden">
-          <Table className="table-fixed w-full">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[24px] px-1" />
-                  <TableHead className="text-[10px] px-1 w-[52px]">ID</TableHead>
-                  <TableHead className="text-[10px] px-1">Nome</TableHead>
-                  {!isMobile && (
-                    <TableHead className="text-[10px] px-1 w-[64px]">Linha</TableHead>
-                  )}
-                  <TableHead className="text-[10px] px-1 text-center w-[28px]">Qual.</TableHead>
-                  <TableHead className="text-[10px] px-1 text-right w-[52px]">Pontos</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {members.map((m, idx) => {
-                  const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
-                  return (
-                    <TableRow
-                      key={m.id}
-                      className="hover:bg-accent/40"
-                    >
-                      <TableCell className="px-1 py-1.5">
-                        <div className={cn("h-2 w-2 rounded-full mx-auto", m.active ? "bg-success" : "bg-destructive")} />
-                      </TableCell>
-                      <TableCell className={cn("px-1 py-1.5 text-[11px] tabular-nums truncate", m.isDirect && "font-bold")}>
-                        {m.id}
-                      </TableCell>
-                      <TableCell className={cn("px-1 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
-                        {m.name}
-                      </TableCell>
-                      {!isMobile && (
-                        <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground">
-                          Linha {idx + 1}
-                        </TableCell>
-                      )}
-                      <TableCell className="px-1 py-1.5 text-center">
-                        <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
-                      </TableCell>
-                      <TableCell className="px-1 py-1.5 text-[11px] text-right tabular-nums font-medium">
-                        {m.volume.toLocaleString("pt-BR")}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      )}
-    </Card>
-  );
-}
 
 function BonusSection({ onOpen }: { onOpen: () => void }) {
   return (

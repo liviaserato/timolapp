@@ -179,21 +179,32 @@ export const mockUnilevelTree: UnilevelNode = {
 /* ── Flatten tree into a flat list with level info ── */
 export interface FlatUnilevelMember extends NetworkMember {
   isDirect: boolean;
+  /** For levels 2+, the name of the level-1 ancestor (direct) this person descends from */
+  directAncestorName?: string;
+  directAncestorId?: string;
 }
 
-export function flattenUnilevelTree(node: UnilevelNode, currentLevel: number = 0, maxLevel: number = 10): FlatUnilevelMember[] {
+export function flattenUnilevelTree(
+  node: UnilevelNode,
+  currentLevel: number = 0,
+  maxLevel: number = 10,
+  directAncestor?: { id: string; name: string },
+): FlatUnilevelMember[] {
   const result: FlatUnilevelMember[] = [];
   if (!node.children) return result;
 
   for (const child of node.children) {
     const lvl = currentLevel + 1;
     if (lvl > maxLevel) continue;
+    const ancestor = lvl === 1 ? { id: child.id, name: child.name } : directAncestor;
     result.push({
       ...child,
       level: lvl,
       isDirect: lvl === 1,
+      directAncestorName: lvl >= 2 ? ancestor?.name : undefined,
+      directAncestorId: lvl >= 2 ? ancestor?.id : undefined,
     } as FlatUnilevelMember);
-    result.push(...flattenUnilevelTree(child, lvl, maxLevel));
+    result.push(...flattenUnilevelTree(child, lvl, maxLevel, ancestor));
   }
 
   return result;
