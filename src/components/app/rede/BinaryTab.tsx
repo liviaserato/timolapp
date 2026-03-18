@@ -28,7 +28,11 @@ function findNodeById(node: NetworkMember | null | undefined, id: string): Netwo
   return findNodeById(node.left, id) || findNodeById(node.right, id);
 }
 
-type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status";
+type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status" | "qualification";
+
+const qualificationRank: Record<string, number> = {
+  consultor: 0, distribuidor: 1, lider: 2, rubi: 3, esmeralda: 4, diamante: 5,
+};
 
 function sortMembers(members: NetworkMember[], mode: SortMode): NetworkMember[] {
   const sorted = [...members];
