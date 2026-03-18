@@ -131,10 +131,42 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
+  /* ── Drag-to-pan state ── */
+  const [dragOffset, setDragOffset] = useState(0);
+  const dragState = useRef<{ active: boolean; startX: number; startOffset: number; moved: boolean }>({
+    active: false, startX: 0, startOffset: 0, moved: false,
+  });
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    // Only primary button (mouse) or touch
+    if (e.button !== 0) return;
+    dragState.current = { active: true, startX: e.clientX, startOffset: dragOffset, moved: false };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    (e.currentTarget as HTMLElement).style.cursor = "grabbing";
+  }, [dragOffset]);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!dragState.current.active) return;
+    const dx = e.clientX - dragState.current.startX;
+    if (Math.abs(dx) > 3) dragState.current.moved = true;
+    setDragOffset(dragState.current.startOffset + dx);
+  }, []);
+
+  const handlePointerUp = useCallback((e: React.PointerEvent) => {
+    if (!dragState.current.active) return;
+    dragState.current.active = false;
+    (e.currentTarget as HTMLElement).style.cursor = "grab";
+  }, []);
+
+  // Reset drag offset when expanding/collapsing
+  useEffect(() => { setDragOffset(0); }, [expandedIds]);
+
   const levelCounts = useMemo(() => countByLevel(root), [root]);
 
   const toggleExpand = useCallback((id: string) => {
     if (id === root.id) return;
+    // Ignore if user was dragging
+    if (dragState.current.moved) return;
     const siblingIds = findSiblingIds(root, id);
     setExpandedIds(prev => {
       const next = new Set(prev);
