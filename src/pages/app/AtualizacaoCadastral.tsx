@@ -667,6 +667,13 @@ export default function AtualizacaoCadastral() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* ── Contract Modal ── */}
+      <Dialog open={contractOpen} onOpenChange={setContractOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0">
+          <ContractScreen mode="modal" onClose={() => setContractOpen(false)} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
