@@ -530,7 +530,7 @@ export function UnilevelTab({ searchQuery }: Props) {
               <SelectContent>
                 {Array.from({ length: maxLevel }, (_, i) => i + 1).map((lvl) => (
                   <SelectItem key={lvl} value={String(lvl)} className="text-xs">
-                    {lvl === 1 ? "1 — Diretos" : String(lvl)}
+                    {String(lvl)}
                   </SelectItem>
                 ))}
               </SelectContent>
