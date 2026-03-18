@@ -106,22 +106,6 @@ function collectNodesAtLevel(
   return result;
 }
 
-/** Collect ALL nodes at a given level, ignoring expansion state (for locked levels) */
-function collectAllNodesAtLevel(
-  node: UnilevelNode,
-  currentLevel: number,
-  targetLevel: number,
-): UnilevelNode[] {
-  if (currentLevel + 1 === targetLevel) {
-    return node.children ?? [];
-  }
-  if (!node.children) return [];
-  const result: UnilevelNode[] = [];
-  for (const child of node.children) {
-    result.push(...collectAllNodesAtLevel(child, currentLevel + 1, targetLevel));
-  }
-  return result;
-}
 
 /* ── Props ── */
 interface Props {
