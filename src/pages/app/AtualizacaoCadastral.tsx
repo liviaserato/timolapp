@@ -146,7 +146,7 @@ export default function AtualizacaoCadastral() {
   const [loadingCep, setLoadingCep] = useState(false);
 
   // Financial
-  const [financialType, setFinancialType] = useState(mockApiData.financial.type);
+  const [financialType, setFinancialType] = useState<string>(mockApiData.financial.type);
   const [pixKey, setPixKey] = useState(mockApiData.financial.pixKey);
   const [bank, setBank] = useState(mockApiData.financial.bank);
   const [agency, setAgency] = useState(mockApiData.financial.agency);
