@@ -620,29 +620,30 @@ export function UnilevelTab({ searchQuery }: Props) {
               </button>
             </div>
 
-            {/* Stats */}
-            <div className="flex items-center gap-2">
-              {listMode === "by_level" ? (
-                <>
-                  <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
-                    {selectedLevelMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
-                  </Badge>
-                  <span className="text-xs text-primary-foreground/80 font-medium">
-                    {selectedLevelMembers.length} {selectedLevelMembers.length === 1 ? "pessoa" : "pessoas"}
-                  </span>
-                </>
-              ) : (
-                <>
-                    <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
-                      {directSubtreeMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
-                    </Badge>
-                    <span className="text-xs text-primary-foreground/80 font-medium">
-                      {directSubtreeMembers.length} {directSubtreeMembers.length === 1 ? "pessoa" : "pessoas"}
-                    </span>
-                  </>
-                )}
-              </div>
-            </div>
+          </div>
+
+          {/* Row 1b: Stats (left-aligned) */}
+          <div className="flex items-center gap-2">
+            {listMode === "by_level" ? (
+              <>
+                <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
+                  {selectedLevelMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
+                </Badge>
+                <span className="text-xs text-primary-foreground/80 font-medium">
+                  {selectedLevelMembers.length} {selectedLevelMembers.length === 1 ? "pessoa" : "pessoas"}
+                </span>
+              </>
+            ) : (
+              <>
+                <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
+                  {directSubtreeMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
+                </Badge>
+                <span className="text-xs text-primary-foreground/80 font-medium">
+                  {directSubtreeMembers.length} {directSubtreeMembers.length === 1 ? "pessoa" : "pessoas"}
+                </span>
+              </>
+            )}
+          </div>
 
           {/* Row 2: Contextual selector */}
           {listMode === "by_level" ? (
@@ -703,13 +704,10 @@ export function UnilevelTab({ searchQuery }: Props) {
                     <TableHead className="text-[10px] px-2.5 w-[80px] text-center">ID</TableHead>
                     <TableHead className="text-[10px] px-2.5 text-center w-[28px]">Qual.</TableHead>
                     <TableHead className="text-[10px] px-2.5 w-auto">Nome</TableHead>
-                    <TableHead className="text-[10px] px-2.5 w-[52px] text-right">Pontos</TableHead>
                     {!isMobile && (
-                      <>
-                        <TableHead className="text-[10px] px-2.5 w-[100px]">Origem</TableHead>
-                        <TableHead className="text-[10px] px-2.5 w-[52px] text-center">Nível</TableHead>
-                      </>
+                      <TableHead className="text-[10px] px-2.5 w-[100px]">Origem</TableHead>
                     )}
+                    <TableHead className="text-[10px] px-2.5 w-[52px] text-right">Pontos</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -734,19 +732,14 @@ export function UnilevelTab({ searchQuery }: Props) {
                         <TableCell className={cn("px-2.5 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
                           {m.name}
                         </TableCell>
+                        {!isMobile && (
+                          <TableCell className="px-2.5 py-1.5 text-[10px] text-muted-foreground truncate" title={lineLabel}>
+                            {lineLabel}
+                          </TableCell>
+                        )}
                         <TableCell className="px-2.5 py-1.5 text-[11px] tabular-nums font-medium text-right">
                           {m.volume.toLocaleString("pt-BR")}
                         </TableCell>
-                        {!isMobile && (
-                          <>
-                            <TableCell className="px-2.5 py-1.5 text-[10px] text-muted-foreground truncate" title={lineLabel}>
-                              {lineLabel}
-                            </TableCell>
-                            <TableCell className="px-2.5 py-1.5 text-[10px] text-muted-foreground text-center">
-                              {m.level ?? 1}
-                            </TableCell>
-                          </>
-                        )}
                       </TableRow>
                     );
                   })}
@@ -771,20 +764,16 @@ export function UnilevelTab({ searchQuery }: Props) {
                   return (
                     <div key={lvl}>
                       {/* Level header */}
-                      <div
-                        className="flex items-center justify-between px-3 py-1.5 bg-muted/60 border-b"
-                      >
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/60 border-b">
                         <span className="text-[11px] font-semibold text-foreground">
                           Nível {lvl}
                         </span>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-semibold">
-                            {levelPoints.toLocaleString("pt-BR")} pts
-                          </Badge>
-                          <span className="text-[10px] text-muted-foreground">
-                            {members.length} {members.length === 1 ? "pessoa" : "pessoas"}
-                          </span>
-                        </div>
+                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-semibold">
+                          {levelPoints.toLocaleString("pt-BR")} pts
+                        </Badge>
+                        <span className="text-[10px] text-muted-foreground">
+                          {members.length} {members.length === 1 ? "pessoa" : "pessoas"}
+                        </span>
                       </div>
                       {/* Members in this level */}
                       <Table className="table-fixed w-full">
