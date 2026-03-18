@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import { LogOut, ClipboardEdit } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebarState } from "@/pages/AppLayout";
 import { logout } from "@/lib/api";
@@ -30,7 +30,6 @@ const navItems = [
 ];
 
 const bottomItems = [
-  { label: "Atualização Cadastral", path: "/app/atualizacao-cadastral", icon: null, lucideIcon: ClipboardEdit },
   { label: "Configurações", path: "/app/configuracoes", icon: iconConfiguracoes },
 ];
 
@@ -51,7 +50,7 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
   const navItemClass =
     "flex h-11 items-center gap-3 px-4 text-[15px] font-medium leading-none text-primary-foreground/90 transition-colors hover:bg-[hsl(var(--app-sidebar-hover))] whitespace-nowrap overflow-hidden border-l-[3px] border-transparent";
 
-  const renderLink = (item: { label: string; path: string; icon: string | null; lucideIcon?: React.ComponentType<{ className?: string }> }) => (
+  const renderLink = (item: { label: string; path: string; icon: string }) => (
     <Link
       key={item.path}
       to={item.path}
@@ -63,11 +62,7 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
       )}
     >
       <span className="flex h-5 w-5 shrink-0 items-center justify-center">
-        {item.icon ? (
-          <img src={item.icon} alt="" className="h-5 w-5 object-contain" />
-        ) : item.lucideIcon ? (
-          <item.lucideIcon className="h-5 w-5" />
-        ) : null}
+        <img src={item.icon} alt="" className="h-5 w-5 object-contain" />
       </span>
       {!collapsed && <span>{item.label}</span>}
     </Link>
@@ -81,6 +76,23 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
 
       {/* Bottom section */}
       <div className="mt-auto">
+        {/* Atualização Cadastral button */}
+        <div className="mx-3 mb-2">
+          <Link
+            to="/app/atualizacao-cadastral"
+            onClick={onNavigate}
+            title={collapsed ? "Atualização Cadastral" : undefined}
+            className={cn(
+              "flex items-center justify-center gap-2 rounded-md px-3 py-2 text-xs font-semibold transition-colors",
+              "bg-primary-foreground/15 text-primary-foreground hover:bg-primary-foreground/25",
+              isActive("/app/atualizacao-cadastral") && "bg-primary-foreground/25"
+            )}
+          >
+            {!collapsed && <span>Atualização Cadastral</span>}
+            {collapsed && <span className="text-[10px]">Atual.</span>}
+          </Link>
+        </div>
+
         {/* Separator */}
         <div className="mx-3 border-t border-primary-foreground/20" />
 
