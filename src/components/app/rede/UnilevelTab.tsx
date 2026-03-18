@@ -701,7 +701,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                   <TableRow>
                     <TableHead className="w-[24px] px-2.5" />
                     <TableHead className="text-[10px] px-2.5 w-[80px] text-center">ID</TableHead>
-                    <TableHead className="text-[10px] px-2.5 w-fit whitespace-nowrap">Qual.</TableHead>
+                    <TableHead className="text-[10px] px-2.5 text-center w-[28px]">Qual.</TableHead>
                     <TableHead className="text-[10px] px-2.5 w-auto">Nome</TableHead>
                     <TableHead className="text-[10px] px-2.5 w-[52px] text-right">Pontos</TableHead>
                     {!isMobile && (
@@ -728,10 +728,8 @@ export function UnilevelTab({ searchQuery }: Props) {
                         <TableCell className={cn("px-2.5 py-1.5 text-[11px] tabular-nums truncate text-center", m.isDirect && "font-bold")}>
                           {m.id}
                         </TableCell>
-                        <TableCell className="px-2.5 py-1.5 whitespace-nowrap">
-                          <span style={{ color: q.color }} className="text-xs" title={q.label}>
-                            {q.icon}{!isMobile && <span className="ml-1 text-[10px]">{q.label}</span>}
-                          </span>
+                        <TableCell className="px-2.5 py-1.5 text-center">
+                          <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
                         </TableCell>
                         <TableCell className={cn("px-2.5 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
                           {m.name}
@@ -801,10 +799,8 @@ export function UnilevelTab({ searchQuery }: Props) {
                                 <TableCell className="px-2.5 py-1.5 text-[11px] tabular-nums text-center w-[80px]">
                                   {m.id}
                                 </TableCell>
-                                <TableCell className="px-2.5 py-1.5 whitespace-nowrap w-fit">
-                                  <span style={{ color: q.color }} className="text-xs" title={q.label}>
-                                    {q.icon}{!isMobile && <span className="ml-1 text-[10px]">{q.label}</span>}
-                                  </span>
+                                <TableCell className="px-2.5 py-1.5 text-center w-[28px]">
+                                  <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
                                 </TableCell>
                                 <TableCell className="px-2.5 py-1.5 text-[11px] truncate w-auto">
                                   {m.name}
