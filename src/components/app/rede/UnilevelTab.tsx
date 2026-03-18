@@ -558,8 +558,10 @@ export function UnilevelTab({ searchQuery }: Props) {
                 <TableHead className="text-[10px] px-1 w-[52px]">ID</TableHead>
                 <TableHead className="text-[10px] px-1">Nome</TableHead>
                 {!isMobile && (
-                  <TableHead className="text-[10px] px-1 w-[100px]">Origem</TableHead>
-                  <TableHead className="text-[10px] px-1 w-[52px]">Nível</TableHead>
+                  <>
+                    <TableHead className="text-[10px] px-1 w-[100px]">Origem</TableHead>
+                    <TableHead className="text-[10px] px-1 w-[52px]">Nível</TableHead>
+                  </>
                 )}
                 <TableHead className="text-[10px] px-1 text-center w-[28px]">Qual.</TableHead>
                 <TableHead className="text-[10px] px-1 text-right w-[52px]">Pontos</TableHead>
