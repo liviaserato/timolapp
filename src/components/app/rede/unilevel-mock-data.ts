@@ -23,7 +23,7 @@ export interface UnilevelNode extends NetworkMember {
   isDirect?: boolean;
 }
 
-// Build a deeper mock tree for orgchart — 15 directs for testing
+// Build a deeper mock tree for orgchart — first child at each level has a descendant down to level 10
 export const mockUnilevelTree: UnilevelNode = {
   id: "100231",
   name: "Lívia Serato",
@@ -42,11 +42,37 @@ export const mockUnilevelTree: UnilevelNode = {
         {
           id: "300142", name: "Ana Paula Silva", qualification: "consultor", active: true, volume: 620, joinDate: "2025-06-01", city: "Ribeirão Preto, SP", isDirect: false,
           children: [
-            { id: "400111", name: "Juliana Ramos", qualification: "consultor", active: true, volume: 310, joinDate: "2025-09-01", city: "Belo Horizonte, MG", isDirect: false, children: [
-              { id: "500010", name: "Rafael Cunha", qualification: "consultor", active: true, volume: 180, joinDate: "2025-12-10", isDirect: false, children: [
-                { id: "600010", name: "Débora Leal", qualification: "consultor", active: true, volume: 95, joinDate: "2026-02-01", isDirect: false, children: [] },
-              ] },
-            ] },
+            {
+              id: "400111", name: "Juliana Ramos", qualification: "consultor", active: true, volume: 310, joinDate: "2025-09-01", city: "Belo Horizonte, MG", isDirect: false,
+              children: [
+                {
+                  id: "500010", name: "Rafael Cunha", qualification: "consultor", active: true, volume: 180, joinDate: "2025-12-10", isDirect: false,
+                  children: [
+                    {
+                      id: "600010", name: "Débora Leal", qualification: "consultor", active: true, volume: 95, joinDate: "2026-02-01", isDirect: false,
+                      children: [
+                        {
+                          id: "700010", name: "Thiago Rocha", qualification: "consultor", active: true, volume: 72, joinDate: "2026-02-15", isDirect: false,
+                          children: [
+                            {
+                              id: "800010", name: "Larissa Mendes", qualification: "consultor", active: true, volume: 55, joinDate: "2026-03-01", isDirect: false,
+                              children: [
+                                {
+                                  id: "900010", name: "André Borges", qualification: "consultor", active: true, volume: 40, joinDate: "2026-03-05", isDirect: false,
+                                  children: [
+                                    { id: "100010", name: "Priscila Farias", qualification: "consultor", active: true, volume: 25, joinDate: "2026-03-10", isDirect: false, children: [] },
+                                  ],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
             { id: "400112", name: "Marcos Lima", qualification: "consultor", active: true, volume: 210, joinDate: "2025-12-01", isDirect: false, children: [] },
           ],
         },
@@ -83,7 +109,6 @@ export const mockUnilevelTree: UnilevelNode = {
       id: "200999", name: "Diego Martins", qualification: "consultor", active: false, volume: 90, joinDate: "2025-12-10", city: "Manaus, AM", isDirect: true,
       children: [],
     },
-    // Additional directs for testing (15 total)
     {
       id: "201001", name: "Rafael Souza", qualification: "distribuidor", active: true, volume: 980, joinDate: "2025-04-01", city: "Recife, PE", isDirect: true,
       children: [
