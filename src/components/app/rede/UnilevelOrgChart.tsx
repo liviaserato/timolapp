@@ -208,6 +208,13 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     }
   }, []);
 
+  const handleLevelPointerLeave = useCallback(() => {
+    if (dragState.current.active) {
+      dragState.current.active = false;
+      dragState.current.moved = false;
+    }
+  }, []);
+
   // Reset per-level drag offsets when expanding/collapsing
   useEffect(() => { setLevelDragOffsets({}); }, [expandedIds]);
 
@@ -360,7 +367,17 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     return lines;
   }, [levelData, expandedIds, levelDragOffsets]);
 
-  const totalH = (TOTAL_LEVELS + 1) * ROW_H;
+  // Compute the highest visible level: level 1 always visible, higher levels only if they have nodes
+  const maxVisibleLevel = useMemo(() => {
+    if (levelData.length === 0) return 1;
+    let max = 1;
+    for (let lvl = 2; lvl <= TOTAL_LEVELS; lvl++) {
+      if (levelData[lvl] && levelData[lvl].nodes.length > 0) max = lvl;
+    }
+    return max;
+  }, [levelData]);
+
+  const totalH = (maxVisibleLevel + 1) * ROW_H;
 
   return (
     <div className="w-full">
@@ -377,7 +394,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
               )}
             </div>
           </div>
-          {Array.from({ length: TOTAL_LEVELS }, (_, i) => {
+          {Array.from({ length: maxVisibleLevel }, (_, i) => {
             const lvl = i + 1;
             const count = levelCounts.get(lvl) || 0;
             const vol = levelVolumes.get(lvl) || 0;
@@ -395,7 +412,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                   <span className={cn("font-semibold text-[11px] leading-tight", isActive ? "text-foreground" : "text-muted-foreground/40")}>
                     Nível {lvl}
                   </span>
-                  {lvl === 1 && <span className="text-[9px] text-muted-foreground leading-none mt-1 mb-1">DIRETOS</span>}
+                  {lvl === 1 && <span className="text-[10px] font-medium text-muted-foreground leading-none mt-1 mb-1">DIRETOS</span>}
                   {vol > 0 && (
                     <Badge variant="secondary" className={cn("text-[10px] px-1.5 py-0 h-[18px] mt-0.5", !isActive && "opacity-50")}>
                       {!isActive && <Lock className="h-2.5 w-2.5 mr-0.5" />}
@@ -457,12 +474,11 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
               </div>
 
               {/* Level rows 1–10 — each independently draggable */}
-              {Array.from({ length: TOTAL_LEVELS }, (_, i) => {
+              {Array.from({ length: maxVisibleLevel }, (_, i) => {
                 const lvl = i + 1;
                 const isActive = lvl <= maxLevel;
                 const info = levelData[lvl];
                 const hasNodes = info.nodes.length > 0;
-                const hasAnyData = (levelCounts.get(lvl) || 0) > 0;
                 const effectiveTx = info.translateX + (levelDragOffsets[lvl] || 0);
 
                 return (
@@ -474,6 +490,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                     onPointerMove={hasNodes ? handleLevelPointerMove : undefined}
                     onPointerUp={hasNodes ? handleLevelPointerUp : undefined}
                     onPointerCancel={hasNodes ? handleLevelPointerUp : undefined}
+                    onPointerLeave={hasNodes ? handleLevelPointerLeave : undefined}
                   >
                     {hasNodes ? (
                       <div
@@ -511,13 +528,6 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                             );
                           })}
                         </div>
-                      </div>
-                    ) : !isActive && !hasAnyData ? (
-                      <div className="flex items-center justify-center text-[10px] text-muted-foreground/30 h-full">
-                        <span className="flex items-center gap-1">
-                          <Users className="h-3 w-3" />
-                          Qualifique-se para desbloquear
-                        </span>
                       </div>
                     ) : null}
                   </div>
