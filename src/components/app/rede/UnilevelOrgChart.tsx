@@ -32,23 +32,28 @@ const QUALIFICATION_ORDER: Record<string, number> = {
 
 function sortNodes(nodes: UnilevelNode[], mode: SortMode): UnilevelNode[] {
   const sorted = [...nodes];
-  switch (mode) {
-    case "points":
-      return sorted.sort((a, b) => b.volume - a.volume);
-    case "date_newest":
-      return sorted.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
-    case "date_oldest":
-      return sorted.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
-    case "qualification":
-      return sorted.sort((a, b) => (QUALIFICATION_ORDER[b.qualification] ?? 0) - (QUALIFICATION_ORDER[a.qualification] ?? 0));
-    case "status":
-    case "default":
-    default:
-      return sorted.sort((a, b) => {
-        if (a.active === b.active) return b.volume - a.volume;
-        return a.active ? -1 : 1;
-      });
-  }
+  // Always push inactive to the end, then apply the chosen sort within each group
+  const activeNodes = sorted.filter(n => n.active);
+  const inactiveNodes = sorted.filter(n => !n.active);
+
+  const applySortWithin = (arr: UnilevelNode[]) => {
+    switch (mode) {
+      case "points":
+        return arr.sort((a, b) => b.volume - a.volume);
+      case "date_newest":
+        return arr.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
+      case "date_oldest":
+        return arr.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
+      case "qualification":
+        return arr.sort((a, b) => (QUALIFICATION_ORDER[b.qualification] ?? 0) - (QUALIFICATION_ORDER[a.qualification] ?? 0));
+      case "status":
+      case "default":
+      default:
+        return arr.sort((a, b) => b.volume - a.volume);
+    }
+  };
+
+  return [...applySortWithin(activeNodes), ...applySortWithin(inactiveNodes)];
 }
 
 /* ── Tree helpers ── */
