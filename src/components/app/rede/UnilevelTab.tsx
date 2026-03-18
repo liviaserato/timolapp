@@ -24,7 +24,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 
 /* ── Sort ── */
-type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status";
+type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status" | "qualification";
 
 function sortMembers(members: FlatUnilevelMember[], mode: SortMode): FlatUnilevelMember[] {
   const sorted = [...members];
