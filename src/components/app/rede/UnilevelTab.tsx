@@ -770,7 +770,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                         <span className="text-[11px] font-semibold text-foreground">
                           Nível {lvl}
                         </span>
-                        <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 ml-auto order-first">
                           <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-semibold">
                             {levelPoints.toLocaleString("pt-BR")} pts
                           </Badge>
