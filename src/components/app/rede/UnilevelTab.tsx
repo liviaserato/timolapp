@@ -557,14 +557,14 @@ export function UnilevelTab({ searchQuery }: Props) {
                 <TableHead className="w-[24px] px-1" />
                 <TableHead className="text-[10px] px-1 w-[52px]">ID</TableHead>
                 <TableHead className="text-[10px] px-1">Nome</TableHead>
+                <TableHead className="text-[10px] px-1 text-center w-[28px]">Qual.</TableHead>
+                <TableHead className="text-[10px] px-1 w-[52px]">Pontos</TableHead>
                 {!isMobile && (
                   <>
                     <TableHead className="text-[10px] px-1 w-[100px]">Origem</TableHead>
                     <TableHead className="text-[10px] px-1 w-[52px] text-center">Nível</TableHead>
                   </>
                 )}
-                <TableHead className="text-[10px] px-1 text-center w-[28px]">Qual.</TableHead>
-                <TableHead className="text-[10px] px-1 text-right w-[52px]">Pontos</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -586,6 +586,12 @@ export function UnilevelTab({ searchQuery }: Props) {
                     <TableCell className={cn("px-1 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
                       {m.name}
                     </TableCell>
+                    <TableCell className="px-1 py-1.5 text-center">
+                      <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
+                    </TableCell>
+                    <TableCell className="px-1 py-1.5 text-[11px] tabular-nums font-medium">
+                      {m.volume.toLocaleString("pt-BR")}
+                    </TableCell>
                     {!isMobile && (
                       <>
                         <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground truncate" title={lineLabel}>
@@ -596,12 +602,6 @@ export function UnilevelTab({ searchQuery }: Props) {
                         </TableCell>
                       </>
                     )}
-                    <TableCell className="px-1 py-1.5 text-center">
-                      <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
-                    </TableCell>
-                    <TableCell className="px-1 py-1.5 text-[11px] text-right tabular-nums font-medium">
-                      {m.volume.toLocaleString("pt-BR")}
-                    </TableCell>
                   </TableRow>
                 );
               })}
