@@ -106,22 +106,6 @@ function collectNodesAtLevel(
   return result;
 }
 
-/** Collect ALL nodes at a given level, ignoring expansion state (for locked levels) */
-function collectAllNodesAtLevel(
-  node: UnilevelNode,
-  currentLevel: number,
-  targetLevel: number,
-): UnilevelNode[] {
-  if (currentLevel + 1 === targetLevel) {
-    return node.children ?? [];
-  }
-  if (!node.children) return [];
-  const result: UnilevelNode[] = [];
-  for (const child of node.children) {
-    result.push(...collectAllNodesAtLevel(child, currentLevel + 1, targetLevel));
-  }
-  return result;
-}
 
 /* ── Props ── */
 interface Props {
@@ -249,7 +233,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
               const hasNodes = (levelCounts.get(lvl) || 0) > 0;
               return (
                 <div key={lvl} className="border-t border-border/30" style={{ minHeight: ROW_HEIGHT }}>
-                  {isActive ? (
+                  {(isActive || hasNodes) ? (
                     <LevelRow
                       root={root}
                       targetLevel={lvl}
@@ -260,13 +244,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                       highlightRef={highlightRef}
                       maxLevel={maxLevel}
                       sortMode={sortMode as SortMode}
-                    />
-                  ) : hasNodes ? (
-                    <LockedLevelRow
-                      root={root}
-                      targetLevel={lvl}
-                      currentLevel={0}
-                      sortMode={sortMode as SortMode}
+                      isLocked={!isActive}
                     />
                   ) : (
                     <div className="flex items-center justify-center text-[10px] text-muted-foreground/30" style={{ height: ROW_HEIGHT }}>
@@ -290,7 +268,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
 
 function LevelRow({
   root, targetLevel, currentLevel, expandedIds, onToggle,
-  highlightedId, highlightRef, maxLevel, sortMode,
+  highlightedId, highlightRef, maxLevel, sortMode, isLocked = false,
 }: {
   root: UnilevelNode;
   targetLevel: number;
@@ -301,6 +279,7 @@ function LevelRow({
   highlightRef: React.RefObject<HTMLDivElement>;
   maxLevel: number;
   sortMode: SortMode;
+  isLocked?: boolean;
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -361,8 +340,16 @@ function LevelRow({
         <div className="flex items-start gap-1 py-2 px-4 w-max">
           {nodes.map((node) => {
             const hasChildren = !!(node.children && node.children.length > 0);
-            const canExpand = hasChildren && targetLevel < maxLevel;
-            return (
+            const canExpand = hasChildren && targetLevel < TOTAL_LEVELS;
+            return isLocked ? (
+              <LockedNodeCard
+                key={node.id}
+                node={node}
+                hasChildren={canExpand}
+                isExpanded={expandedIds.has(node.id)}
+                onToggle={() => onToggle(node.id)}
+              />
+            ) : (
               <NodeCard
                 key={node.id}
                 node={node}
@@ -475,98 +462,30 @@ function NodeCard({
   );
 }
 
-/* ── LockedLevelRow — shows nodes dimmed with lock overlay ── */
 
-function LockedLevelRow({
-  root, targetLevel, currentLevel, sortMode,
-}: {
-  root: UnilevelNode;
-  targetLevel: number;
-  currentLevel: number;
-  sortMode: SortMode;
-}) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-
-  const nodes = useMemo(() => {
-    const collected = collectAllNodesAtLevel(root, currentLevel, targetLevel);
-    return sortNodes(collected, sortMode);
-  }, [root, currentLevel, targetLevel, sortMode]);
-
-  const checkScroll = useCallback(() => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 2);
-    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2);
-  }, []);
-
-  useEffect(() => {
-    checkScroll();
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    el.addEventListener("scroll", checkScroll, { passive: true });
-    const ro = new ResizeObserver(checkScroll);
-    ro.observe(el);
-    return () => { el.removeEventListener("scroll", checkScroll); ro.disconnect(); };
-  }, [checkScroll, nodes]);
-
-  const scrollBy = (dir: number) => {
-    scrollContainerRef.current?.scrollBy({ left: dir * SCROLL_AMOUNT, behavior: "smooth" });
-  };
-
-  if (nodes.length === 0) {
-    return (
-      <div className="flex items-center justify-center text-[10px] text-muted-foreground/30" style={{ height: ROW_HEIGHT }}>
-        —
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative flex items-center" style={{ minHeight: ROW_HEIGHT }}>
-      {canScrollLeft && (
-        <button
-          onClick={() => scrollBy(-1)}
-          className="absolute left-0 z-10 h-8 w-8 flex items-center justify-center rounded-full bg-background border border-border shadow-sm hover:bg-accent transition-colors"
-        >
-          <ChevronLeft className="h-4 w-4 text-foreground" />
-        </button>
-      )}
-
-      <div
-        ref={scrollContainerRef}
-        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide mx-1"
-        style={{ scrollbarWidth: "none" }}
-      >
-        <div className="flex items-start gap-1 py-2 px-4 w-max">
-          {nodes.map((node) => (
-            <LockedNodeCard key={node.id} node={node} />
-          ))}
-        </div>
-      </div>
-
-      {canScrollRight && (
-        <button
-          onClick={() => scrollBy(1)}
-          className="absolute right-0 z-10 h-8 w-8 flex items-center justify-center rounded-full bg-background border border-border shadow-sm hover:bg-accent transition-colors"
-        >
-          <ChevronRight className="h-4 w-4 text-foreground" />
-        </button>
-      )}
-    </div>
-  );
-}
 
 /* ── LockedNodeCard — dimmed card with lock icon ── */
 
-function LockedNodeCard({ node }: { node: UnilevelNode }) {
+function LockedNodeCard({ node, hasChildren = false, isExpanded = false, onToggle }: {
+  node: UnilevelNode;
+  hasChildren?: boolean;
+  isExpanded?: boolean;
+  onToggle?: () => void;
+}) {
   const q = qualificationConfig[node.qualification] ?? qualificationConfig.consultor;
   const firstName = node.name.split(" ")[0];
+  const directCount = countDirectChildren(node);
 
   return (
-    <div className="flex flex-col items-center relative" style={{ width: NODE_W }}>
-      <div className="w-full rounded-lg border border-border/40 bg-muted/30 p-1.5 opacity-50 select-none">
+    <div className="flex flex-col items-center" style={{ width: NODE_W }}>
+      <div
+        onClick={hasChildren ? onToggle : undefined}
+        className={cn(
+          "w-full rounded-lg border border-border/40 bg-muted/30 p-1.5 opacity-50 select-none relative",
+          hasChildren && "cursor-pointer hover:opacity-70",
+          isExpanded && hasChildren && "ring-2 ring-muted-foreground/20"
+        )}
+      >
         <p className="text-[11px] font-bold text-center leading-tight text-muted-foreground/60">
           {node.id}
         </p>
@@ -576,13 +495,31 @@ function LockedNodeCard({ node }: { node: UnilevelNode }) {
         <p className="text-[9px] text-muted-foreground/40 text-center leading-none mt-0.5">
           {q.label}
         </p>
-      </div>
-      {/* Lock overlay */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="rounded-full bg-background/80 border border-border p-1">
-          <Lock className="h-3 w-3 text-muted-foreground/60" />
+        <p className="text-[9px] text-muted-foreground/40 text-center mt-0.5">
+          {directCount} {directCount === 1 ? "direto" : "diretos"}
+        </p>
+        {/* Lock overlay */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="rounded-full bg-background/80 border border-border p-1">
+            <Lock className="h-3 w-3 text-muted-foreground/60" />
+          </div>
         </div>
       </div>
+      {/* Expand/collapse button */}
+      {hasChildren && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggle?.(); }}
+          className={cn(
+            "mt-1 flex items-center justify-center rounded border transition-colors",
+            "h-5 w-5 opacity-50",
+            isExpanded
+              ? "bg-muted-foreground/30 text-background border-muted-foreground/30"
+              : "bg-background text-muted-foreground/40 border-border/40 hover:opacity-70"
+          )}
+        >
+          {isExpanded ? <Minus className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+        </button>
+      )}
     </div>
   );
 }

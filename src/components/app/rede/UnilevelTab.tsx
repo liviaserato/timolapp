@@ -334,7 +334,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                     ? "bg-primary text-primary-foreground"
                     : "bg-background text-muted-foreground hover:bg-accent"
                 )}
-                title="Organograma"
+                title="Árvore"
               >
                 <GitBranch className="h-3.5 w-3.5" />
               </button>
@@ -407,7 +407,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                     ? "bg-primary text-primary-foreground"
                     : "bg-background text-muted-foreground hover:bg-accent"
                 )}
-                title="Organograma"
+                title="Árvore"
               >
                 <GitBranch className="h-3.5 w-3.5" />
               </button>
@@ -495,7 +495,8 @@ export function UnilevelTab({ searchQuery }: Props) {
         </Card>
       ) : null}
 
-      {/* ═══ Level Table ═══ */}
+      {/* ═══ Level Table (list view only) ═══ */}
+      {viewMode === "list" && (
       <div className="space-y-3">
         {levelGroups.length === 0 && (
           <Card>
@@ -515,6 +516,7 @@ export function UnilevelTab({ searchQuery }: Props) {
           />
         ))}
       </div>
+      )}
 
       {/* Qualification legend */}
       <QualificationLegend />
