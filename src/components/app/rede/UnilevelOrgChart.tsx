@@ -377,7 +377,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     return max;
   }, [levelData]);
 
-  const totalH = (maxVisibleLevel + 1) * ROW_H + EXPAND_BTN_H;
+  const totalH = (maxVisibleLevel + 1) * ROW_H + 12;
 
   // Auto-scroll to show the bottom of the tree when new levels appear
   const bottomRef = useRef<HTMLDivElement>(null);
