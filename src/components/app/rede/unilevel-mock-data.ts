@@ -23,7 +23,7 @@ export interface UnilevelNode extends NetworkMember {
   isDirect?: boolean;
 }
 
-// Build a deeper mock tree for orgchart
+// Build a deeper mock tree for orgchart — 15 directs for testing
 export const mockUnilevelTree: UnilevelNode = {
   id: "100231",
   name: "Lívia Serato",
@@ -81,6 +81,71 @@ export const mockUnilevelTree: UnilevelNode = {
     },
     {
       id: "200999", name: "Diego Martins", qualification: "consultor", active: false, volume: 90, joinDate: "2025-12-10", city: "Manaus, AM", isDirect: true,
+      children: [],
+    },
+    // Additional directs for testing (15 total)
+    {
+      id: "201001", name: "Rafael Souza", qualification: "distribuidor", active: true, volume: 980, joinDate: "2025-04-01", city: "Recife, PE", isDirect: true,
+      children: [
+        { id: "301201", name: "Tiago Braga", qualification: "consultor", active: true, volume: 220, joinDate: "2025-08-15", isDirect: false, children: [] },
+      ],
+    },
+    {
+      id: "201002", name: "Fernanda Lima", qualification: "lider", active: true, volume: 1800, joinDate: "2025-03-15", city: "Fortaleza, CE", isDirect: true,
+      children: [
+        { id: "301202", name: "Beatriz Rocha", qualification: "consultor", active: true, volume: 340, joinDate: "2025-09-10", isDirect: false, children: [] },
+        { id: "301203", name: "Hugo Pereira", qualification: "distribuidor", active: true, volume: 710, joinDate: "2025-07-22", isDirect: false, children: [] },
+      ],
+    },
+    {
+      id: "201003", name: "Bruno Almeida", qualification: "consultor", active: true, volume: 310, joinDate: "2025-05-20", city: "Goiânia, GO", isDirect: true,
+      children: [],
+    },
+    {
+      id: "201004", name: "Isabela Costa", qualification: "rubi", active: true, volume: 2400, joinDate: "2025-02-10", city: "Curitiba, PR", isDirect: true,
+      children: [
+        { id: "301204", name: "Vinícius Gomes", qualification: "consultor", active: true, volume: 190, joinDate: "2025-10-01", isDirect: false, children: [] },
+      ],
+    },
+    {
+      id: "201005", name: "Lucas Ribeiro", qualification: "consultor", active: true, volume: 420, joinDate: "2025-06-05", city: "Belém, PA", isDirect: true,
+      children: [],
+    },
+    {
+      id: "201006", name: "Amanda Ferreira", qualification: "distribuidor", active: true, volume: 870, joinDate: "2025-04-18", city: "Salvador, BA", isDirect: true,
+      children: [
+        { id: "301205", name: "Otávio Dias", qualification: "consultor", active: false, volume: 60, joinDate: "2025-11-20", isDirect: false, children: [] },
+      ],
+    },
+    {
+      id: "201007", name: "Gustavo Neves", qualification: "consultor", active: false, volume: 150, joinDate: "2025-08-01", city: "Vitória, ES", isDirect: true,
+      children: [],
+    },
+    {
+      id: "201008", name: "Juliana Martins", qualification: "lider", active: true, volume: 1650, joinDate: "2025-03-22", city: "Porto Alegre, RS", isDirect: true,
+      children: [
+        { id: "301206", name: "Renato Farias", qualification: "distribuidor", active: true, volume: 540, joinDate: "2025-06-30", isDirect: false, children: [] },
+        { id: "301207", name: "Camila Duarte", qualification: "consultor", active: true, volume: 280, joinDate: "2025-08-14", isDirect: false, children: [] },
+      ],
+    },
+    {
+      id: "201009", name: "Thiago Santos", qualification: "distribuidor", active: true, volume: 760, joinDate: "2025-05-10", city: "Natal, RN", isDirect: true,
+      children: [],
+    },
+    {
+      id: "201010", name: "Patricia Moura", qualification: "consultor", active: true, volume: 290, joinDate: "2025-07-15", city: "Aracaju, SE", isDirect: true,
+      children: [],
+    },
+    {
+      id: "201011", name: "Ricardo Campos", qualification: "esmeralda", active: true, volume: 2800, joinDate: "2025-01-28", city: "Florianópolis, SC", isDirect: true,
+      children: [
+        { id: "301208", name: "Larissa Melo", qualification: "distribuidor", active: true, volume: 650, joinDate: "2025-05-25", isDirect: false, children: [
+          { id: "401301", name: "Daniel Azevedo", qualification: "consultor", active: true, volume: 180, joinDate: "2025-09-15", isDirect: false, children: [] },
+        ] },
+      ],
+    },
+    {
+      id: "201012", name: "Vanessa Prado", qualification: "consultor", active: true, volume: 380, joinDate: "2025-09-01", city: "São Luís, MA", isDirect: true,
       children: [],
     },
   ],
@@ -145,11 +210,11 @@ export const extraBonus: Record<string, string> = {
 /* ── Plano Diamante sub-levels ── */
 export interface DiamanteLevelRow {
   level: number;
-  d1: string; // ★
-  d2: string; // ★★
-  d3: string; // ★★★
-  d4: string; // ★★★★
-  d5: string; // ★★★★★
+  d1: string;
+  d2: string;
+  d3: string;
+  d4: string;
+  d5: string;
   black: string;
 }
 

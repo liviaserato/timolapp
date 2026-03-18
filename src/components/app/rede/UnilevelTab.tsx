@@ -490,6 +490,7 @@ export function UnilevelTab({ searchQuery }: Props) {
               maxLevel={maxLevel}
               onSelectMember={setSelectedMember}
               searchQuery={searchId || searchQuery}
+              sortMode={sortMode || "default"}
             />
           </CardContent>
         </Card>
