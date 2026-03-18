@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import {
   Users, UserCheck, Target, TrendingUp, Layers, Search, X, ArrowUpDown,
   PlayCircle, Lightbulb, List, GitBranch, RotateCcw, Calendar,
-  ChevronDown, ChevronRight, ChevronLeft, Award,
+  ChevronDown, ChevronRight, ChevronLeft, Award, Lock,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -528,11 +528,24 @@ export function UnilevelTab({ searchQuery }: Props) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {Array.from({ length: maxLevel }, (_, i) => i + 1).map((lvl) => (
-                  <SelectItem key={lvl} value={String(lvl)} className="text-xs">
-                    {String(lvl)}
-                  </SelectItem>
-                ))}
+                {Array.from({ length: 10 }, (_, i) => i + 1).map((lvl) => {
+                  const locked = lvl > maxLevel;
+                  const hasMembers = availableLevels.includes(lvl);
+                  return (
+                    <SelectItem
+                      key={lvl}
+                      value={String(lvl)}
+                      className={cn("text-xs", locked && "text-muted-foreground")}
+                      disabled={locked}
+                    >
+                      <span className="flex items-center gap-1.5">
+                        {String(lvl)}
+                        {locked && <Lock className="h-3 w-3" />}
+                        {!locked && !hasMembers && <span className="text-muted-foreground">—</span>}
+                      </span>
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
