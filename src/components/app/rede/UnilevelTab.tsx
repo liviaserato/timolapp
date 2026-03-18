@@ -19,7 +19,7 @@ import { MemberDetailDialog } from "./MemberDetailDialog";
 import { UnilevelOrgChart } from "./UnilevelOrgChart";
 import {
   mockUnilevelTree, flattenUnilevelTree, qualificationLevelLimits,
-  FlatUnilevelMember,
+  FlatUnilevelMember, UnilevelNode,
 } from "./unilevel-mock-data";
 import { useIsMobile } from "@/hooks/use-mobile";
 
