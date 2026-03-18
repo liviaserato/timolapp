@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Users, Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { qualificationConfig, NetworkMember } from "./mock-data";
+import { qualificationConfig } from "./mock-data";
 import { UnilevelNode } from "./unilevel-mock-data";
 import { Badge } from "@/components/ui/badge";
 
@@ -35,6 +35,18 @@ function sortNodes(nodes: UnilevelNode[], mode: SortMode): UnilevelNode[] {
 }
 
 /* ── Helpers ── */
+
+function findSiblingIds(root: UnilevelNode, targetId: string, currentLevel: number = 0): string[] | null {
+  if (!root.children) return null;
+  for (const child of root.children) {
+    if (child.id === targetId) {
+      return root.children.map(c => c.id);
+    }
+    const found = findSiblingIds(child, targetId, currentLevel + 1);
+    if (found) return found;
+  }
+  return null;
+}
 
 function findPathToId(node: UnilevelNode, targetId: string): string[] | null {
   if (node.id.toLowerCase() === targetId.toLowerCase()) return [node.id];
@@ -98,32 +110,33 @@ function collectNodesAtLevel(
 interface Props {
   root: UnilevelNode;
   maxLevel: number;
-  onSelectMember: (member: NetworkMember) => void;
   searchQuery?: string;
   sortMode?: string;
 }
 
-export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery, sortMode = "default" }: Props) {
+export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "default" }: Props) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set([root.id]));
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
 
   const levelCounts = useMemo(() => countByLevel(root), [root]);
 
   const toggleExpand = useCallback((id: string) => {
+    const siblingIds = findSiblingIds(root, id);
     setExpandedIds(prev => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        // Close siblings first
+        if (siblingIds) {
+          siblingIds.forEach(sid => next.delete(sid));
+        }
+        next.add(id);
+      }
       return next;
     });
-  }, []);
-
-  const handleSelectNode = useCallback((node: UnilevelNode) => {
-    setSelectedId(prev => prev === node.id ? null : node.id);
-    onSelectMember(node);
-  }, [onSelectMember]);
+  }, [root]);
 
   // Auto-expand path when searchQuery changes
   useEffect(() => {
@@ -204,10 +217,8 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery, 
                 isRoot
                 isExpanded={expandedIds.has(root.id)}
                 onToggle={() => toggleExpand(root.id)}
-                onSelect={() => handleSelectNode(root)}
                 hasChildren={!!(root.children && root.children.length > 0)}
                 isHighlighted={highlightedId === root.id}
-                isSelected={selectedId === root.id}
                 highlightRef={highlightedId === root.id ? highlightRef : undefined}
               />
             </div>
@@ -225,9 +236,7 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery, 
                       currentLevel={0}
                       expandedIds={expandedIds}
                       onToggle={toggleExpand}
-                      onSelect={handleSelectNode}
                       highlightedId={highlightedId}
-                      selectedId={selectedId}
                       highlightRef={highlightRef}
                       maxLevel={maxLevel}
                       sortMode={sortMode as SortMode}
@@ -253,17 +262,15 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery, 
 /* ── LevelRow with horizontal chevron scroll ── */
 
 function LevelRow({
-  root, targetLevel, currentLevel, expandedIds, onToggle, onSelect,
-  highlightedId, selectedId, highlightRef, maxLevel, sortMode,
+  root, targetLevel, currentLevel, expandedIds, onToggle,
+  highlightedId, highlightRef, maxLevel, sortMode,
 }: {
   root: UnilevelNode;
   targetLevel: number;
   currentLevel: number;
   expandedIds: Set<string>;
   onToggle: (id: string) => void;
-  onSelect: (n: UnilevelNode) => void;
   highlightedId: string | null;
-  selectedId: string | null;
   highlightRef: React.RefObject<HTMLDivElement>;
   maxLevel: number;
   sortMode: SortMode;
@@ -334,10 +341,8 @@ function LevelRow({
                 node={node}
                 isExpanded={expandedIds.has(node.id)}
                 onToggle={() => onToggle(node.id)}
-                onSelect={() => onSelect(node)}
                 hasChildren={canExpand}
                 isHighlighted={highlightedId === node.id}
-                isSelected={selectedId === node.id}
                 highlightRef={highlightedId === node.id ? highlightRef : undefined}
               />
             );
@@ -361,17 +366,15 @@ function LevelRow({
 /* ── NodeCard ── */
 
 function NodeCard({
-  node, isRoot, isExpanded, onToggle, onSelect, hasChildren,
-  isHighlighted, isSelected, highlightRef,
+  node, isRoot, isExpanded, onToggle, hasChildren,
+  isHighlighted, highlightRef,
 }: {
   node: UnilevelNode;
   isRoot?: boolean;
   isExpanded: boolean;
   onToggle: () => void;
-  onSelect: () => void;
   hasChildren: boolean;
   isHighlighted: boolean;
-  isSelected: boolean;
   highlightRef?: React.RefObject<HTMLDivElement>;
 }) {
   const q = qualificationConfig[node.qualification] ?? qualificationConfig.consultor;
@@ -383,12 +386,13 @@ function NodeCard({
       {/* Card */}
       <div
         ref={highlightRef as any}
-        onClick={onSelect}
+        onClick={hasChildren ? onToggle : undefined}
         className={cn(
-          "w-full rounded-lg border bg-card p-1.5 cursor-pointer transition-all hover:shadow-md",
-          isSelected && "border-primary ring-2 ring-primary/30",
-          isHighlighted && !isSelected && "border-primary/60 bg-primary/5",
-          !isSelected && !isHighlighted && "border-border",
+          "w-full rounded-lg border bg-card p-1.5 transition-all",
+          hasChildren && "cursor-pointer hover:shadow-md",
+          isExpanded && hasChildren && "border-primary ring-2 ring-primary/30",
+          isHighlighted && !isExpanded && "border-primary/60 bg-primary/5",
+          !isExpanded && !isHighlighted && "border-border",
         )}
       >
         {/* ID — highlighted */}

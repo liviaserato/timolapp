@@ -488,7 +488,6 @@ export function UnilevelTab({ searchQuery }: Props) {
             <UnilevelOrgChart
               root={mockUnilevelTree}
               maxLevel={maxLevel}
-              onSelectMember={setSelectedMember}
               searchQuery={searchId || searchQuery}
               sortMode={sortMode || "default"}
             />
