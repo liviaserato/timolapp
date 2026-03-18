@@ -643,3 +643,21 @@ function LockedNodeCard({ node, hasChildren = false, isExpanded = false, onToggl
     </div>
   );
 }
+
+/* ── NotYetCard — node didn't exist in the selected period ── */
+
+function NotYetCard({ node }: { node: UnilevelNode }) {
+  const firstName = node.name.split(" ")[0];
+
+  return (
+    <div className="flex flex-col items-center shrink-0" style={{ width: NODE_W }}>
+      <div className="w-full rounded-lg border border-border/40 bg-muted/30 p-1.5 opacity-50 select-none relative">
+        <p className="text-[11px] font-bold text-center leading-tight text-muted-foreground/60">{node.id}</p>
+        <p className="text-[10px] text-muted-foreground/40 text-center leading-tight truncate mt-0.5">{firstName}</p>
+        <p className="text-[8px] text-muted-foreground/50 text-center leading-tight mt-1 px-0.5">
+          Não cadastrado neste período
+        </p>
+      </div>
+    </div>
+  );
+}

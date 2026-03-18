@@ -491,6 +491,11 @@ export function UnilevelTab({ searchQuery }: Props) {
               maxLevel={maxLevel}
               searchQuery={searchId || searchQuery}
               sortMode={sortMode || "default"}
+              filterEndDate={
+                filterMode === "month"
+                  ? new Date(monthRef.getFullYear(), monthRef.getMonth(), 1).toISOString()
+                  : periodEnd || undefined
+              }
             />
           </CardContent>
         </Card>
