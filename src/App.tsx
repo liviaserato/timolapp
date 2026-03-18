@@ -24,6 +24,7 @@ import SectionPlaceholder from "./pages/app/SectionPlaceholder";
 import EmailPreviews from "./pages/app/EmailPreviews";
 import AssistirAoVivo from "./pages/app/AssistirAoVivo";
 import Rede from "./pages/app/Rede";
+import AtualizacaoCadastral from "./pages/app/AtualizacaoCadastral";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -55,6 +56,7 @@ const App = () => (
               <Route path="suporte" element={<Suporte />} />
               <Route path="rede" element={<Rede />} />
               <Route path="configuracoes/emails" element={<EmailPreviews />} />
+              <Route path="atualizacao-cadastral" element={<AtualizacaoCadastral />} />
               <Route path=":section" element={<SectionPlaceholder />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
