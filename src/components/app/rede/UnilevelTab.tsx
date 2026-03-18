@@ -641,7 +641,50 @@ export function UnilevelTab({ searchQuery }: Props) {
                 </span>
               </>
             )}
-          </div>
+           </div>
+
+          {/* Row 2: Contextual selector */}
+          {listMode === "by_level" ? (
+            <Select value={String(selectedLevel)} onValueChange={(v) => setSelectedLevel(Number(v))}>
+              <SelectTrigger className="h-8 w-full text-sm font-semibold bg-white/20 border-0 text-primary-foreground">
+                <SelectValue placeholder="Nível" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableLevels.map((lvl) => {
+                  const locked = lvl > maxLevel;
+                  return (
+                    <SelectItem
+                      key={lvl}
+                      value={String(lvl)}
+                      className={cn("text-sm font-semibold", locked && "text-muted-foreground")}
+                      disabled={locked}
+                    >
+                      <span className="flex items-center gap-1.5">
+                        Nível {lvl}
+                        {locked && <Lock className="h-3 w-3" />}
+                      </span>
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          ) : (
+            <Select value={selectedDirectId} onValueChange={(v) => setSelectedDirectId(v)}>
+              <SelectTrigger className="h-8 w-full text-sm font-semibold bg-white/20 border-0 text-primary-foreground">
+                <SelectValue placeholder="Selecionar direto" />
+              </SelectTrigger>
+              <SelectContent>
+                {directMembers.map((dm) => (
+                  <SelectItem key={dm.id} value={dm.id} className="text-xs">
+                    <span className="flex items-center gap-1.5">
+                      <span className={cn("h-1.5 w-1.5 rounded-full inline-block", dm.active ? "bg-success" : "bg-destructive")} />
+                      {dm.name}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         <CardContent className="px-0 pb-2">
