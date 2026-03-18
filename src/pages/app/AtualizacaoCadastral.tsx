@@ -156,6 +156,7 @@ export default function AtualizacaoCadastral() {
 
   // Contract
   const [contractAccepted, setContractAccepted] = useState(false);
+  const [contractOpen, setContractOpen] = useState(false);
 
   // Divergence
   const [divergenceOpen, setDivergenceOpen] = useState(false);
