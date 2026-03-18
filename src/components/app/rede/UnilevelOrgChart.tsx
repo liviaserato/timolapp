@@ -14,7 +14,7 @@ const LEVEL_LABEL_W = 80;
 
 /* Vertical geometry inside each row */
 const CARD_PAD_Y = 14;
-const CARD_BODY_H = 68;
+const CARD_BODY_H = 80;
 const EXPAND_BTN_H = 24;
 
 /* Connector styling — same as binary tree */
