@@ -396,7 +396,7 @@ function NodeCard({
           "text-[11px] font-bold text-center leading-tight",
           isRoot ? "text-primary" : "text-foreground"
         )}>
-          {isRoot ? `ID ${node.id} (Eu)` : `ID ${node.id}`}
+          {node.id}
         </p>
 
         {/* Name */}
