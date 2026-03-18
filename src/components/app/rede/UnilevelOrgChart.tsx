@@ -10,16 +10,11 @@ const TOTAL_LEVELS = 10;
 const ROW_H = 120;
 const NODE_W = 90;
 const CARD_GAP = 8;
-const LEVEL_LABEL_W = 46;
+const LEVEL_LABEL_W = 56;
 
 /* Vertical geometry inside each row */
 const CARD_PAD_Y = 14;
 const CARD_BODY_H = 68;
-const EXPAND_BTN_H = 24; // mt-1 (4) + h-5 (20)
-
-/* Connector styling — same as binary tree */
-const CONN_COLOR = "hsl(var(--border))";
-const CONN_W = 1.5;
 
 /* ── Sort ── */
 type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status";
@@ -87,6 +82,18 @@ function countByLevel(node: UnilevelNode, currentLevel: number = 0): Map<number,
   return map;
 }
 
+function volumeByLevel(node: UnilevelNode, currentLevel: number = 0): Map<number, number> {
+  const map = new Map<number, number>();
+  if (!node.children) return map;
+  for (const child of node.children) {
+    const lvl = currentLevel + 1;
+    map.set(lvl, (map.get(lvl) || 0) + child.volume);
+    const childMap = volumeByLevel(child, lvl);
+    childMap.forEach((vol, l) => map.set(l, (map.get(l) || 0) + vol));
+  }
+  return map;
+}
+
 function countDirectChildren(node: UnilevelNode): number {
   return node.children?.length ?? 0;
 }
@@ -141,24 +148,31 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     if (e.button !== 0) return;
     const currentOffset = levelDragOffsets[level] || 0;
     dragState.current = { active: true, level, startX: e.clientX, startOffset: currentOffset, moved: false };
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   }, [levelDragOffsets]);
 
   const handleLevelPointerMove = useCallback((e: React.PointerEvent) => {
     if (!dragState.current.active) return;
     const dx = e.clientX - dragState.current.startX;
     if (Math.abs(dx) > 3) dragState.current.moved = true;
-    setLevelDragOffsets(prev => ({ ...prev, [dragState.current.level]: dragState.current.startOffset + dx }));
+    if (dragState.current.moved) {
+      setLevelDragOffsets(prev => ({ ...prev, [dragState.current.level]: dragState.current.startOffset + dx }));
+    }
   }, []);
 
   const handleLevelPointerUp = useCallback(() => {
+    const wasDrag = dragState.current.moved;
     dragState.current.active = false;
+    // Reset moved flag after a microtask so toggleExpand can check it
+    if (wasDrag) {
+      setTimeout(() => { dragState.current.moved = false; }, 0);
+    }
   }, []);
 
   // Reset per-level drag offsets when expanding/collapsing
   useEffect(() => { setLevelDragOffsets({}); }, [expandedIds]);
 
   const levelCounts = useMemo(() => countByLevel(root), [root]);
+  const levelVolumes = useMemo(() => volumeByLevel(root), [root]);
 
   const toggleExpand = useCallback((id: string) => {
     if (id === root.id) return;
@@ -230,58 +244,6 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     return data;
   }, [root, expandedIds, containerWidth, sortMode]);
 
-  /* ── Compute SVG connectors with per-level drag offsets ── */
-  const connectors = useMemo(() => {
-    if (levelData.length === 0) return [];
-    const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
-
-    for (let lvl = 1; lvl <= TOTAL_LEVELS; lvl++) {
-      const childInfo = levelData[lvl];
-      if (!childInfo || childInfo.nodes.length === 0) continue;
-
-      const parentInfo = levelData[lvl - 1];
-      let pIdx: number;
-      if (lvl === 1) {
-        pIdx = 0;
-      } else {
-        pIdx = parentInfo.nodes.findIndex(n => expandedIds.has(n.id));
-        if (pIdx < 0) continue;
-      }
-
-      const parentDrag = levelDragOffsets[lvl - 1] || 0;
-      const childDrag = levelDragOffsets[lvl] || 0;
-
-      const parentCX = parentInfo.translateX + parentDrag + pIdx * (NODE_W + CARD_GAP) + NODE_W / 2;
-      const parentRowY = (lvl - 1) * ROW_H;
-      const parentExitY = parentRowY + CARD_PAD_Y + CARD_BODY_H + (lvl === 1 ? 0 : EXPAND_BTN_H);
-      const childRowY = lvl * ROW_H;
-      const childEntryY = childRowY + CARD_PAD_Y;
-      const midY = (parentExitY + childEntryY) / 2;
-
-      lines.push({ x1: parentCX, y1: parentExitY, x2: parentCX, y2: midY });
-
-      if (childInfo.nodes.length === 1) {
-        const childCX = childInfo.translateX + childDrag + NODE_W / 2;
-        if (Math.abs(parentCX - childCX) > 1) {
-          lines.push({ x1: parentCX, y1: midY, x2: childCX, y2: midY });
-        }
-        lines.push({ x1: childCX, y1: midY, x2: childCX, y2: childEntryY });
-      } else {
-        const firstCX = childInfo.translateX + childDrag + NODE_W / 2;
-        const lastCX = childInfo.translateX + childDrag + (childInfo.nodes.length - 1) * (NODE_W + CARD_GAP) + NODE_W / 2;
-        const hLeft = Math.min(firstCX, parentCX);
-        const hRight = Math.max(lastCX, parentCX);
-        lines.push({ x1: hLeft, y1: midY, x2: hRight, y2: midY });
-
-        for (let i = 0; i < childInfo.nodes.length; i++) {
-          const cx = childInfo.translateX + childDrag + i * (NODE_W + CARD_GAP) + NODE_W / 2;
-          lines.push({ x1: cx, y1: midY, x2: cx, y2: childEntryY });
-        }
-      }
-    }
-    return lines;
-  }, [levelData, expandedIds, levelDragOffsets]);
-
   const totalH = (TOTAL_LEVELS + 1) * ROW_H;
 
   return (
@@ -295,6 +257,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
           {Array.from({ length: TOTAL_LEVELS }, (_, i) => {
             const lvl = i + 1;
             const count = levelCounts.get(lvl) || 0;
+            const vol = levelVolumes.get(lvl) || 0;
             const isActive = lvl <= maxLevel;
             return (
               <div
@@ -315,6 +278,11 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                     {count}
                   </Badge>
                 )}
+                {vol > 0 && (
+                  <span className={cn("text-[8px] leading-tight mt-0.5", !isActive ? "text-muted-foreground/30" : "text-muted-foreground")}>
+                    {vol.toLocaleString("pt-BR")} pts
+                  </span>
+                )}
               </div>
             );
           })}
@@ -328,21 +296,6 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
         >
           {containerWidth > 0 && levelData.length > 0 && (
             <>
-              {/* SVG connector overlay */}
-              <svg
-                className="absolute inset-0 pointer-events-none z-[1]"
-                width={containerWidth}
-                height={totalH}
-              >
-                {connectors.map((c, i) => (
-                  <line
-                    key={i}
-                    x1={c.x1} y1={c.y1} x2={c.x2} y2={c.y2}
-                    stroke={CONN_COLOR}
-                    strokeWidth={CONN_W}
-                  />
-                ))}
-              </svg>
 
               {/* Root row (level 0) — always centered, not draggable */}
               <div className="absolute left-0 right-0 z-[2]" style={{ top: 0, height: ROW_H }}>
