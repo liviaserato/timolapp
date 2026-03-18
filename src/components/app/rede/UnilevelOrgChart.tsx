@@ -512,7 +512,7 @@ function NodeCard({
     <div className="flex flex-col items-center shrink-0" style={{ width: NODE_W }}>
       <div
         ref={highlightRef as any}
-        onClick={!isRoot && hasChildren ? onToggle : undefined}
+        onClick={!isRoot ? onToggle : undefined}
         className={cn(
           "w-full rounded-lg p-1.5 transition-all",
           isRoot
