@@ -701,7 +701,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                   <TableRow>
                     <TableHead className="w-[24px] px-2.5" />
                     <TableHead className="text-[10px] px-2.5 w-[80px] text-center">ID</TableHead>
-                    <TableHead className="text-[10px] px-2.5 text-center w-[28px]">Qual.</TableHead>
+                    <TableHead className={cn("text-[10px] px-2.5 text-center", isMobile ? "w-[28px]" : "w-[100px]")}>Qual.</TableHead>
                     <TableHead className="text-[10px] px-2.5 w-auto">Nome</TableHead>
                     <TableHead className="text-[10px] px-2.5 w-[52px] text-right">Pontos</TableHead>
                     {!isMobile && (
@@ -801,7 +801,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                                 <TableCell className="px-2.5 py-1.5 text-[11px] tabular-nums text-center w-[80px]">
                                   {m.id}
                                 </TableCell>
-                                <TableCell className="px-2.5 py-1.5 text-center">
+                                <TableCell className={cn("px-2.5 py-1.5 text-center", isMobile ? "w-[28px]" : "w-[100px]")}>
                                   <span style={{ color: q.color }} className="text-xs" title={q.label}>
                                     {q.icon}{!isMobile && <span className="ml-1 text-[10px]">{q.label}</span>}
                                   </span>
