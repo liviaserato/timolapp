@@ -407,7 +407,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                     ? "bg-primary text-primary-foreground"
                     : "bg-background text-muted-foreground hover:bg-accent"
                 )}
-                title="Organograma"
+                title="Árvore"
               >
                 <GitBranch className="h-3.5 w-3.5" />
               </button>
