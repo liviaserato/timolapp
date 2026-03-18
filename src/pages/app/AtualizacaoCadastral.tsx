@@ -338,12 +338,18 @@ export default function AtualizacaoCadastral() {
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label>Documento (CPF)</Label>
+              <Label>{mockApiData.documentCountryCode === "BR" ? "Documento (CPF)" : "Documento"}</Label>
               <Input value={mockApiData.document} readOnly disabled className="bg-muted/50 cursor-not-allowed" />
               <p className="text-[11px] text-muted-foreground">
                 O documento não pode ser alterado por aqui. Caso haja divergência, utilize o botão abaixo.
               </p>
             </div>
+            {mockApiData.documentCountryCode !== "BR" && (
+              <div className="space-y-1.5">
+                <Label>País emissor do documento</Label>
+                <Input value={mockApiData.documentCountryCode} readOnly disabled className="bg-muted/50 cursor-not-allowed" />
+              </div>
+            )}
           </div>
         </DashboardCard>
 
