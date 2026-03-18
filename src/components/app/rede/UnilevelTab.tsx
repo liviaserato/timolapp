@@ -732,19 +732,14 @@ export function UnilevelTab({ searchQuery }: Props) {
                         <TableCell className={cn("px-2.5 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
                           {m.name}
                         </TableCell>
+                        {!isMobile && (
+                          <TableCell className="px-2.5 py-1.5 text-[10px] text-muted-foreground truncate" title={lineLabel}>
+                            {lineLabel}
+                          </TableCell>
+                        )}
                         <TableCell className="px-2.5 py-1.5 text-[11px] tabular-nums font-medium text-right">
                           {m.volume.toLocaleString("pt-BR")}
                         </TableCell>
-                        {!isMobile && (
-                          <>
-                            <TableCell className="px-2.5 py-1.5 text-[10px] text-muted-foreground truncate" title={lineLabel}>
-                              {lineLabel}
-                            </TableCell>
-                            <TableCell className="px-2.5 py-1.5 text-[10px] text-muted-foreground text-center">
-                              {m.level ?? 1}
-                            </TableCell>
-                          </>
-                        )}
                       </TableRow>
                     );
                   })}
