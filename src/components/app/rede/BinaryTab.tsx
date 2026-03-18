@@ -333,6 +333,7 @@ function SortSelector({ value, onChange }: { value: SortMode | ""; onChange: (v:
         <SelectItem value="status" className="text-xs">Ativos primeiro</SelectItem>
         <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
         <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
+        <SelectItem value="qualification" className="text-xs">Maior qualificação</SelectItem>
       </SelectContent>
     </Select>
   );
