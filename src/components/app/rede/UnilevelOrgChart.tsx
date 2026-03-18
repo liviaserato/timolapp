@@ -623,10 +623,13 @@ function LockedNodeCard({ node, hasChildren = false, isExpanded = false, onToggl
           isExpanded && hasChildren && "ring-2 ring-muted-foreground/20"
         )}
       >
-        <p className="text-[11px] font-bold text-center leading-tight text-muted-foreground/60">{node.id}</p>
-        <p className="text-[10px] text-muted-foreground/40 text-center leading-tight truncate mt-0.5">{firstName}</p>
-        <p className="text-[9px] text-muted-foreground/40 text-center leading-none mt-0.5">{q.label}</p>
-        <p className="text-[9px] text-muted-foreground/40 text-center mt-0.5">
+        <p className="text-[12px] font-bold text-center leading-tight text-muted-foreground/60">{node.id}</p>
+        <p className="text-[11px] text-muted-foreground/40 text-center leading-tight truncate mt-0.5">{firstName}</p>
+        <p className="text-[10px] text-muted-foreground/40 text-center leading-none mt-0.5">{q.label}</p>
+        <p className="text-[10px] text-muted-foreground/40 text-center mt-0.5">
+          {node.volume.toLocaleString("pt-BR")} pts
+        </p>
+        <p className="text-[10px] text-muted-foreground/40 text-center mt-0.5">
           {directCount} {directCount === 1 ? "direto" : "diretos"}
         </p>
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
