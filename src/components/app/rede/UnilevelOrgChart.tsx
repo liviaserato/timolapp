@@ -563,13 +563,26 @@ function LockedLevelRow({
 
 /* ── LockedNodeCard — dimmed card with lock icon ── */
 
-function LockedNodeCard({ node }: { node: UnilevelNode }) {
+function LockedNodeCard({ node, hasChildren = false, isExpanded = false, onToggle }: {
+  node: UnilevelNode;
+  hasChildren?: boolean;
+  isExpanded?: boolean;
+  onToggle?: () => void;
+}) {
   const q = qualificationConfig[node.qualification] ?? qualificationConfig.consultor;
   const firstName = node.name.split(" ")[0];
+  const directCount = countDirectChildren(node);
 
   return (
-    <div className="flex flex-col items-center relative" style={{ width: NODE_W }}>
-      <div className="w-full rounded-lg border border-border/40 bg-muted/30 p-1.5 opacity-50 select-none">
+    <div className="flex flex-col items-center" style={{ width: NODE_W }}>
+      <div
+        onClick={hasChildren ? onToggle : undefined}
+        className={cn(
+          "w-full rounded-lg border border-border/40 bg-muted/30 p-1.5 opacity-50 select-none relative",
+          hasChildren && "cursor-pointer hover:opacity-70",
+          isExpanded && hasChildren && "ring-2 ring-muted-foreground/20"
+        )}
+      >
         <p className="text-[11px] font-bold text-center leading-tight text-muted-foreground/60">
           {node.id}
         </p>
@@ -579,13 +592,31 @@ function LockedNodeCard({ node }: { node: UnilevelNode }) {
         <p className="text-[9px] text-muted-foreground/40 text-center leading-none mt-0.5">
           {q.label}
         </p>
-      </div>
-      {/* Lock overlay */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="rounded-full bg-background/80 border border-border p-1">
-          <Lock className="h-3 w-3 text-muted-foreground/60" />
+        <p className="text-[9px] text-muted-foreground/40 text-center mt-0.5">
+          {directCount} {directCount === 1 ? "direto" : "diretos"}
+        </p>
+        {/* Lock overlay */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="rounded-full bg-background/80 border border-border p-1">
+            <Lock className="h-3 w-3 text-muted-foreground/60" />
+          </div>
         </div>
       </div>
+      {/* Expand/collapse button */}
+      {hasChildren && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggle?.(); }}
+          className={cn(
+            "mt-1 flex items-center justify-center rounded border transition-colors",
+            "h-5 w-5 opacity-50",
+            isExpanded
+              ? "bg-muted-foreground/30 text-background border-muted-foreground/30"
+              : "bg-background text-muted-foreground/40 border-border/40 hover:opacity-70"
+          )}
+        >
+          {isExpanded ? <Minus className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+        </button>
+      )}
     </div>
   );
 }
