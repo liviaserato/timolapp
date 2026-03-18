@@ -197,9 +197,22 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     setExpandedIds(prev => {
       const next = new Set(prev);
       if (next.has(id)) {
+        // Collapsing: remove this node and all its descendants
         next.delete(id);
+        const path = findPathToId(root, id);
+        if (path) {
+          const node = findNodeById(root, id);
+          if (node) collectDescendantIds(node).forEach(did => next.delete(did));
+        }
       } else {
-        if (siblingIds) siblingIds.forEach(sid => next.delete(sid));
+        // Expanding: close siblings (and their descendants) then add this
+        if (siblingIds) {
+          siblingIds.forEach(sid => {
+            next.delete(sid);
+            const sNode = findNodeById(root, sid);
+            if (sNode) collectDescendantIds(sNode).forEach(did => next.delete(did));
+          });
+        }
         next.add(id);
       }
       return next;
