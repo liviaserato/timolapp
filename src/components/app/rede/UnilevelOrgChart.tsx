@@ -412,41 +412,46 @@ function NodeCard({
       {/* Card */}
       <div
         ref={highlightRef as any}
-        onClick={hasChildren ? onToggle : undefined}
+        onClick={!isRoot && hasChildren ? onToggle : undefined}
         className={cn(
-          "w-full rounded-lg border bg-card p-1.5 transition-all",
-          hasChildren && "cursor-pointer hover:shadow-md",
-          isExpanded && hasChildren && "border-primary ring-2 ring-primary/30",
-          isHighlighted && !isExpanded && "border-primary/60 bg-primary/5",
-          !isExpanded && !isHighlighted && "border-border",
+          "w-full rounded-lg p-1.5 transition-all",
+          isRoot
+            ? "bg-primary text-primary-foreground border-none"
+            : [
+                "border bg-card",
+                hasChildren && "cursor-pointer hover:shadow-md",
+                isExpanded && hasChildren && "border-primary ring-2 ring-primary/30",
+                isHighlighted && !isExpanded && "border-primary/60 bg-primary/5",
+                !isExpanded && !isHighlighted && "border-border",
+              ],
         )}
       >
-        {/* ID — highlighted */}
+        {/* ID */}
         <p className={cn(
           "text-[11px] font-bold text-center leading-tight",
-          isRoot ? "text-primary" : "text-foreground"
+          isRoot ? "text-primary-foreground" : "text-foreground"
         )}>
           {node.id}
         </p>
 
         {/* Name */}
-        <p className="text-[10px] text-muted-foreground text-center leading-tight truncate mt-0.5">
+        <p className={cn("text-[10px] text-center leading-tight truncate mt-0.5", isRoot ? "text-primary-foreground/80" : "text-muted-foreground")}>
           {firstName}
         </p>
 
         {/* Qualification */}
-        <p className="text-[9px] text-muted-foreground text-center leading-none mt-0.5">
+        <p className={cn("text-[9px] text-center leading-none mt-0.5", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
           {q.label}
         </p>
 
         {/* Direct count */}
-        <p className="text-[9px] text-muted-foreground text-center mt-0.5">
+        <p className={cn("text-[9px] text-center mt-0.5", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
           {directCount} {directCount === 1 ? "direto" : "diretos"}
         </p>
       </div>
 
-      {/* Expand/collapse square button */}
-      {hasChildren && (
+      {/* Expand/collapse square button — not for root */}
+      {!isRoot && hasChildren && (
         <button
           onClick={(e) => { e.stopPropagation(); onToggle(); }}
           className={cn(
