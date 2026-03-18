@@ -566,16 +566,19 @@ function NodeCard({
               ],
         )}
       >
-        <p className={cn("text-[11px] font-bold text-center leading-tight", isRoot ? "text-primary-foreground" : "text-foreground")}>
+        <p className={cn("text-[12px] font-bold text-center leading-tight", isRoot ? "text-primary-foreground" : "text-foreground")}>
           {node.id}
         </p>
-        <p className={cn("text-[10px] text-center leading-tight truncate mt-0.5", isRoot ? "text-primary-foreground/80" : "text-muted-foreground")}>
+        <p className={cn("text-[11px] text-center leading-tight truncate mt-0.5", isRoot ? "text-primary-foreground/80" : "text-muted-foreground")}>
           {firstName}
         </p>
-        <p className={cn("text-[9px] text-center leading-none mt-0.5", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
+        <p className={cn("text-[10px] text-center leading-none mt-0.5", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
           {q.label}
         </p>
-        <p className={cn("text-[9px] text-center mt-0.5", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
+        <p className={cn("text-[10px] text-center mt-0.5 font-medium", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
+          {node.volume.toLocaleString("pt-BR")} pts
+        </p>
+        <p className={cn("text-[10px] text-center mt-0.5", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
           {directCount} {directCount === 1 ? "direto" : "diretos"}
         </p>
       </div>
