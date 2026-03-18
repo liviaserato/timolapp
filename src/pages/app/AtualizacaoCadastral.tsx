@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { ContractScreen } from "@/components/screens/ContractScreen";
 import { useNavigate } from "react-router-dom";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
@@ -155,6 +156,7 @@ export default function AtualizacaoCadastral() {
 
   // Contract
   const [contractAccepted, setContractAccepted] = useState(false);
+  const [contractOpen, setContractOpen] = useState(false);
 
   // Divergence
   const [divergenceOpen, setDivergenceOpen] = useState(false);
@@ -337,12 +339,18 @@ export default function AtualizacaoCadastral() {
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label>Documento (CPF)</Label>
+              <Label>{mockApiData.documentCountryCode === "BR" ? "Documento (CPF)" : "Documento"}</Label>
               <Input value={mockApiData.document} readOnly disabled className="bg-muted/50 cursor-not-allowed" />
               <p className="text-[11px] text-muted-foreground">
                 O documento não pode ser alterado por aqui. Caso haja divergência, utilize o botão abaixo.
               </p>
             </div>
+            {mockApiData.documentCountryCode !== "BR" && (
+              <div className="space-y-1.5">
+                <Label>País emissor do documento</Label>
+                <Input value={mockApiData.documentCountryCode} readOnly disabled className="bg-muted/50 cursor-not-allowed" />
+              </div>
+            )}
           </div>
         </DashboardCard>
 
@@ -567,7 +575,7 @@ export default function AtualizacaoCadastral() {
                 <button
                   type="button"
                   className="text-primary underline underline-offset-2 hover:text-primary/80"
-                  onClick={() => window.open("/cadastro?contract=1", "_blank")}
+                  onClick={() => setContractOpen(true)}
                 >
                   Contrato de Franquia TIMOL
                 </button>{" "}
@@ -657,6 +665,13 @@ export default function AtualizacaoCadastral() {
               </DialogFooter>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Contract Modal ── */}
+      <Dialog open={contractOpen} onOpenChange={setContractOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0">
+          <ContractScreen mode="modal" onClose={() => setContractOpen(false)} />
         </DialogContent>
       </Dialog>
     </div>
