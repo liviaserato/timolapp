@@ -367,7 +367,17 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     return lines;
   }, [levelData, expandedIds, levelDragOffsets]);
 
-  const totalH = (TOTAL_LEVELS + 1) * ROW_H;
+  // Compute the highest visible level: level 1 always visible, higher levels only if they have nodes
+  const maxVisibleLevel = useMemo(() => {
+    if (levelData.length === 0) return 1;
+    let max = 1;
+    for (let lvl = 2; lvl <= TOTAL_LEVELS; lvl++) {
+      if (levelData[lvl] && levelData[lvl].nodes.length > 0) max = lvl;
+    }
+    return max;
+  }, [levelData]);
+
+  const totalH = (maxVisibleLevel + 1) * ROW_H;
 
   return (
     <div className="w-full">
