@@ -575,9 +575,14 @@ function NodeCard({
         <p className={cn("text-[10px] text-center leading-none mt-0.5", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
           {q.label}
         </p>
-        <p className={cn("text-[10px] text-center mt-0.5 font-medium", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
-          {node.volume.toLocaleString("pt-BR")} pts
-        </p>
+        <div className="flex justify-center mt-0.5">
+          <span className={cn(
+            "text-[10px] font-medium px-1.5 py-0 rounded-sm leading-[18px]",
+            isRoot ? "bg-primary-foreground/20 text-primary-foreground" : "bg-secondary text-secondary-foreground"
+          )}>
+            {node.volume.toLocaleString("pt-BR")} pts
+          </span>
+        </div>
         <p className={cn("text-[10px] text-center mt-0.5", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
           {directCount} {directCount === 1 ? "direto" : "diretos"}
         </p>
