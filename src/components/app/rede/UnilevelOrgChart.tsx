@@ -575,9 +575,14 @@ function NodeCard({
         <p className={cn("text-[10px] text-center leading-none mt-0.5", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
           {q.label}
         </p>
-        <p className={cn("text-[10px] text-center mt-0.5 font-medium", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
-          {node.volume.toLocaleString("pt-BR")} pts
-        </p>
+        <div className="flex justify-center mt-0.5">
+          <span className={cn(
+            "text-[10px] font-medium px-1.5 py-0 rounded-sm leading-[18px]",
+            isRoot ? "bg-primary-foreground/20 text-primary-foreground" : "bg-secondary text-secondary-foreground"
+          )}>
+            {node.volume.toLocaleString("pt-BR")} pts
+          </span>
+        </div>
         <p className={cn("text-[10px] text-center mt-0.5", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
           {directCount} {directCount === 1 ? "direto" : "diretos"}
         </p>
@@ -626,9 +631,11 @@ function LockedNodeCard({ node, hasChildren = false, isExpanded = false, onToggl
         <p className="text-[12px] font-bold text-center leading-tight text-muted-foreground/60">{node.id}</p>
         <p className="text-[11px] text-muted-foreground/40 text-center leading-tight truncate mt-0.5">{firstName}</p>
         <p className="text-[10px] text-muted-foreground/40 text-center leading-none mt-0.5">{q.label}</p>
-        <p className="text-[10px] text-muted-foreground/40 text-center mt-0.5">
-          {node.volume.toLocaleString("pt-BR")} pts
-        </p>
+        <div className="flex justify-center mt-0.5">
+          <span className="text-[10px] font-medium px-1.5 py-0 rounded-sm leading-[18px] bg-secondary/50 text-muted-foreground/50">
+            {node.volume.toLocaleString("pt-BR")} pts
+          </span>
+        </div>
         <p className="text-[10px] text-muted-foreground/40 text-center mt-0.5">
           {directCount} {directCount === 1 ? "direto" : "diretos"}
         </p>
