@@ -701,7 +701,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                   <TableRow>
                     <TableHead className="w-[24px] px-2.5" />
                     <TableHead className="text-[10px] px-2.5 w-[80px] text-center">ID</TableHead>
-                    <TableHead className="text-[10px] px-2.5 text-center w-[28px]">Qual.</TableHead>
+                    <TableHead className={cn("text-[10px] px-2.5 text-center", isMobile ? "w-[28px]" : "w-[100px]")}>Qual.</TableHead>
                     <TableHead className="text-[10px] px-2.5 w-auto">Nome</TableHead>
                     <TableHead className="text-[10px] px-2.5 w-[52px] text-right">Pontos</TableHead>
                     {!isMobile && (
