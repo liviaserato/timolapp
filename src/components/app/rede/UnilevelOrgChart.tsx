@@ -295,7 +295,9 @@ function LevelRow({
   highlightRef: React.RefObject<HTMLDivElement>;
   maxLevel: number;
   sortMode: SortMode;
+  isLocked?: boolean;
 }) {
+  const isLocked = arguments[0].isLocked ?? false;
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
