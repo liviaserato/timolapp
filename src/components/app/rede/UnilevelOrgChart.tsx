@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { ChevronDown, ChevronRight, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users, Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { qualificationConfig, NetworkMember } from "./mock-data";
 import { UnilevelNode } from "./unilevel-mock-data";
@@ -7,16 +7,35 @@ import { Badge } from "@/components/ui/badge";
 
 /* ── Constants ── */
 const TOTAL_LEVELS = 10;
-const NODE_H = 88;        // height of each node box
-const ROW_GAP = 24;        // vertical gap between rows
-const ROW_HEIGHT = NODE_H + ROW_GAP;
-const NODE_W = 110;        // width of each node column
-const LEVEL_LABEL_W = 80;  // width of the left level labels column
-const CONNECTOR_COLOR = "hsl(var(--border))";
+const ROW_HEIGHT = 120;
+const NODE_W = 140;
+const LEVEL_LABEL_W = 80;
+const SCROLL_AMOUNT = 300;
+
+/* ── Sort modes (must match UnilevelTab) ── */
+type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status";
+
+function sortNodes(nodes: UnilevelNode[], mode: SortMode): UnilevelNode[] {
+  const sorted = [...nodes];
+  switch (mode) {
+    case "points":
+      return sorted.sort((a, b) => b.volume - a.volume);
+    case "date_newest":
+      return sorted.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
+    case "date_oldest":
+      return sorted.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
+    case "status":
+    case "default":
+    default:
+      return sorted.sort((a, b) => {
+        if (a.active === b.active) return b.volume - a.volume;
+        return a.active ? -1 : 1;
+      });
+  }
+}
 
 /* ── Helpers ── */
 
-/** Find the path of IDs from root to a target ID */
 function findPathToId(node: UnilevelNode, targetId: string): string[] | null {
   if (node.id.toLowerCase() === targetId.toLowerCase()) return [node.id];
   if (!node.children) return null;
@@ -27,7 +46,6 @@ function findPathToId(node: UnilevelNode, targetId: string): string[] | null {
   return null;
 }
 
-/** Find path by name match */
 function findPathByName(node: UnilevelNode, query: string): string[] | null {
   if (node.name.toLowerCase().includes(query)) return [node.id];
   if (!node.children) return null;
@@ -38,7 +56,6 @@ function findPathByName(node: UnilevelNode, query: string): string[] | null {
   return null;
 }
 
-/** Count members at each level */
 function countByLevel(node: UnilevelNode, currentLevel: number = 0): Map<number, number> {
   const map = new Map<number, number>();
   if (!node.children) return map;
@@ -53,19 +70,43 @@ function countByLevel(node: UnilevelNode, currentLevel: number = 0): Map<number,
   return map;
 }
 
+function countDirectChildren(node: UnilevelNode): number {
+  return node.children?.length ?? 0;
+}
+
+function collectNodesAtLevel(
+  node: UnilevelNode,
+  currentLevel: number,
+  targetLevel: number,
+  expandedIds: Set<string>
+): UnilevelNode[] {
+  if (currentLevel + 1 === targetLevel) {
+    if (expandedIds.has(node.id) && node.children) {
+      return node.children;
+    }
+    return [];
+  }
+  if (!expandedIds.has(node.id) || !node.children) return [];
+  const result: UnilevelNode[] = [];
+  for (const child of node.children) {
+    result.push(...collectNodesAtLevel(child, currentLevel + 1, targetLevel, expandedIds));
+  }
+  return result;
+}
+
 /* ── Props ── */
 interface Props {
   root: UnilevelNode;
   maxLevel: number;
   onSelectMember: (member: NetworkMember) => void;
   searchQuery?: string;
+  sortMode?: string;
 }
 
-export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery }: Props) {
-  // Track which nodes are expanded by ID
+export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery, sortMode = "default" }: Props) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set([root.id]));
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
 
   const levelCounts = useMemo(() => countByLevel(root), [root]);
@@ -73,14 +114,16 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery }
   const toggleExpand = useCallback((id: string) => {
     setExpandedIds(prev => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }, []);
+
+  const handleSelectNode = useCallback((node: UnilevelNode) => {
+    setSelectedId(prev => prev === node.id ? null : node.id);
+    onSelectMember(node);
+  }, [onSelectMember]);
 
   // Auto-expand path when searchQuery changes
   useEffect(() => {
@@ -89,21 +132,15 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery }
       setHighlightedId(null);
       return;
     }
-
-    // Try by ID first, then by name
     let path = findPathToId(root, q);
     if (!path) path = findPathByName(root, q);
-
     if (path && path.length > 1) {
       setExpandedIds(prev => {
         const next = new Set(prev);
-        // Expand all nodes along the path (except the last which is the target)
         path!.forEach(id => next.add(id));
         return next;
       });
       setHighlightedId(path[path.length - 1]);
-
-      // Scroll to the highlighted node after render
       setTimeout(() => {
         highlightRef.current?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
       }, 100);
@@ -120,10 +157,7 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery }
         {/* Level labels column */}
         <div className="shrink-0" style={{ width: LEVEL_LABEL_W }}>
           {/* Root row label */}
-          <div
-            className="flex flex-col items-center justify-center text-[10px] text-muted-foreground"
-            style={{ height: ROW_HEIGHT }}
-          >
+          <div className="flex flex-col items-center justify-center text-[10px] text-muted-foreground" style={{ height: ROW_HEIGHT }}>
             <span className="font-semibold text-foreground text-[11px]">Raiz</span>
           </div>
           {/* Levels 1-10 */}
@@ -157,19 +191,20 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery }
           })}
         </div>
 
-        {/* Tree content - scrollable */}
-        <div ref={scrollRef} className="flex-1 overflow-x-auto overflow-y-hidden">
+        {/* Tree content */}
+        <div className="flex-1 overflow-hidden">
           <div className="min-w-[300px] relative">
             {/* Root row */}
             <div className="flex justify-center" style={{ height: ROW_HEIGHT }}>
-              <TreeNode
+              <NodeCard
                 node={root}
                 isRoot
                 isExpanded={expandedIds.has(root.id)}
                 onToggle={() => toggleExpand(root.id)}
-                onSelect={onSelectMember}
+                onSelect={() => handleSelectNode(root)}
                 hasChildren={!!(root.children && root.children.length > 0)}
                 isHighlighted={highlightedId === root.id}
+                isSelected={selectedId === root.id}
                 highlightRef={highlightedId === root.id ? highlightRef : undefined}
               />
             </div>
@@ -179,11 +214,7 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery }
               const lvl = i + 1;
               const isActive = lvl <= maxLevel;
               return (
-                <div
-                  key={lvl}
-                  className="border-t border-border/30"
-                  style={{ minHeight: ROW_HEIGHT }}
-                >
+                <div key={lvl} className="border-t border-border/30" style={{ minHeight: ROW_HEIGHT }}>
                   {isActive ? (
                     <LevelRow
                       root={root}
@@ -191,10 +222,12 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery }
                       currentLevel={0}
                       expandedIds={expandedIds}
                       onToggle={toggleExpand}
-                      onSelect={onSelectMember}
+                      onSelect={handleSelectNode}
                       highlightedId={highlightedId}
+                      selectedId={selectedId}
                       highlightRef={highlightRef}
                       maxLevel={maxLevel}
+                      sortMode={sortMode as SortMode}
                     />
                   ) : (
                     <div className="flex items-center justify-center text-[10px] text-muted-foreground/30" style={{ height: ROW_HEIGHT }}>
@@ -214,32 +247,53 @@ export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery }
   );
 }
 
-/* ── LevelRow: collects visible nodes at a given level ── */
+/* ── LevelRow with horizontal chevron scroll ── */
 
 function LevelRow({
-  root,
-  targetLevel,
-  currentLevel,
-  expandedIds,
-  onToggle,
-  onSelect,
-  highlightedId,
-  highlightRef,
-  maxLevel,
+  root, targetLevel, currentLevel, expandedIds, onToggle, onSelect,
+  highlightedId, selectedId, highlightRef, maxLevel, sortMode,
 }: {
   root: UnilevelNode;
   targetLevel: number;
   currentLevel: number;
   expandedIds: Set<string>;
   onToggle: (id: string) => void;
-  onSelect: (m: NetworkMember) => void;
+  onSelect: (n: UnilevelNode) => void;
   highlightedId: string | null;
+  selectedId: string | null;
   highlightRef: React.RefObject<HTMLDivElement>;
   maxLevel: number;
+  sortMode: SortMode;
 }) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
   const nodes = useMemo(() => {
-    return collectNodesAtLevel(root, currentLevel, targetLevel, expandedIds);
-  }, [root, currentLevel, targetLevel, expandedIds]);
+    const collected = collectNodesAtLevel(root, currentLevel, targetLevel, expandedIds);
+    return sortNodes(collected, sortMode);
+  }, [root, currentLevel, targetLevel, expandedIds, sortMode]);
+
+  const checkScroll = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 2);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2);
+  }, []);
+
+  useEffect(() => {
+    checkScroll();
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", checkScroll, { passive: true });
+    const ro = new ResizeObserver(checkScroll);
+    ro.observe(el);
+    return () => { el.removeEventListener("scroll", checkScroll); ro.disconnect(); };
+  }, [checkScroll, nodes]);
+
+  const scrollBy = (dir: number) => {
+    scrollContainerRef.current?.scrollBy({ left: dir * SCROLL_AMOUNT, behavior: "smooth" });
+  };
 
   if (nodes.length === 0) {
     return (
@@ -250,147 +304,146 @@ function LevelRow({
   }
 
   return (
-    <div className="flex flex-wrap items-start justify-center gap-1 py-2" style={{ minHeight: ROW_HEIGHT }}>
-      {nodes.map((node) => {
-        const hasChildren = !!(node.children && node.children.length > 0);
-        const canExpand = hasChildren && targetLevel < maxLevel;
-        return (
-          <TreeNode
-            key={node.id}
-            node={node}
-            isExpanded={expandedIds.has(node.id)}
-            onToggle={() => onToggle(node.id)}
-            onSelect={onSelect}
-            hasChildren={canExpand}
-            isHighlighted={highlightedId === node.id}
-            highlightRef={highlightedId === node.id ? highlightRef : undefined}
-            isDirect={targetLevel === 1}
-          />
-        );
-      })}
+    <div className="relative flex items-center" style={{ minHeight: ROW_HEIGHT }}>
+      {/* Left chevron */}
+      {canScrollLeft && (
+        <button
+          onClick={() => scrollBy(-1)}
+          className="absolute left-0 z-10 h-8 w-8 flex items-center justify-center rounded-full bg-background border border-border shadow-sm hover:bg-accent transition-colors"
+        >
+          <ChevronLeft className="h-4 w-4 text-foreground" />
+        </button>
+      )}
+
+      {/* Scrollable container — no wrapping */}
+      <div
+        ref={scrollContainerRef}
+        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide mx-1"
+        style={{ scrollbarWidth: "none" }}
+      >
+        <div className="flex items-start gap-2 py-2 px-6 w-max">
+          {nodes.map((node) => {
+            const hasChildren = !!(node.children && node.children.length > 0);
+            const canExpand = hasChildren && targetLevel < maxLevel;
+            return (
+              <NodeCard
+                key={node.id}
+                node={node}
+                isExpanded={expandedIds.has(node.id)}
+                onToggle={() => onToggle(node.id)}
+                onSelect={() => onSelect(node)}
+                hasChildren={canExpand}
+                isHighlighted={highlightedId === node.id}
+                isSelected={selectedId === node.id}
+                highlightRef={highlightedId === node.id ? highlightRef : undefined}
+              />
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Right chevron */}
+      {canScrollRight && (
+        <button
+          onClick={() => scrollBy(1)}
+          className="absolute right-0 z-10 h-8 w-8 flex items-center justify-center rounded-full bg-background border border-border shadow-sm hover:bg-accent transition-colors"
+        >
+          <ChevronRight className="h-4 w-4 text-foreground" />
+        </button>
+      )}
     </div>
   );
 }
 
-/** Collect nodes that should be visible at a given target level, respecting expand state */
-function collectNodesAtLevel(
-  node: UnilevelNode,
-  currentLevel: number,
-  targetLevel: number,
-  expandedIds: Set<string>
-): UnilevelNode[] {
-  if (currentLevel + 1 === targetLevel) {
-    // This node's children are at the target level
-    if (expandedIds.has(node.id) && node.children) {
-      return node.children;
-    }
-    return [];
-  }
+/* ── NodeCard ── */
 
-  // Go deeper only through expanded nodes
-  if (!expandedIds.has(node.id) || !node.children) return [];
-
-  const result: UnilevelNode[] = [];
-  for (const child of node.children) {
-    result.push(...collectNodesAtLevel(child, currentLevel + 1, targetLevel, expandedIds));
-  }
-  return result;
-}
-
-/* ── TreeNode: circle avatar + info ── */
-
-function TreeNode({
-  node,
-  isRoot,
-  isExpanded,
-  onToggle,
-  onSelect,
-  hasChildren,
-  isHighlighted,
-  highlightRef,
-  isDirect,
+function NodeCard({
+  node, isRoot, isExpanded, onToggle, onSelect, hasChildren,
+  isHighlighted, isSelected, highlightRef,
 }: {
   node: UnilevelNode;
   isRoot?: boolean;
   isExpanded: boolean;
   onToggle: () => void;
-  onSelect: (m: NetworkMember) => void;
+  onSelect: () => void;
   hasChildren: boolean;
   isHighlighted: boolean;
+  isSelected: boolean;
   highlightRef?: React.RefObject<HTMLDivElement>;
-  isDirect?: boolean;
 }) {
   const q = qualificationConfig[node.qualification] ?? qualificationConfig.consultor;
   const initial = node.name.charAt(0).toUpperCase();
   const firstName = node.name.split(" ")[0];
+  const directCount = countDirectChildren(node);
 
   return (
-    <div
-      ref={highlightRef as any}
-      className={cn(
-        "flex flex-col items-center px-1 py-1 rounded-lg transition-all",
-        isHighlighted && "bg-primary/10 ring-2 ring-primary/40",
-      )}
-      style={{ width: NODE_W }}
-    >
-      {/* Circle avatar */}
-      <button
-        onClick={() => onSelect(node)}
-        className="flex flex-col items-center gap-0.5 transition-all cursor-pointer group"
+    <div className="flex flex-col items-center" style={{ width: NODE_W }}>
+      {/* Card */}
+      <div
+        ref={highlightRef as any}
+        onClick={onSelect}
+        className={cn(
+          "w-full rounded-lg border bg-card p-2 cursor-pointer transition-all hover:shadow-md",
+          isSelected && "border-primary ring-2 ring-primary/30",
+          isHighlighted && !isSelected && "border-primary/60 bg-primary/5",
+          !isSelected && !isHighlighted && "border-border",
+        )}
       >
-        <div
-          className={cn(
-            "flex items-center justify-center rounded-full font-bold transition-shadow group-hover:shadow-md",
-            isRoot
-              ? "h-11 w-11 text-sm bg-primary text-primary-foreground"
-              : isDirect
-                ? "h-9 w-9 text-xs bg-primary/15 text-primary"
+        {/* Circle initial */}
+        <div className="flex justify-center mb-1.5">
+          <div
+            className={cn(
+              "flex items-center justify-center rounded-full font-bold",
+              isRoot
+                ? "h-10 w-10 text-sm bg-primary text-primary-foreground"
                 : "h-9 w-9 text-xs bg-muted text-foreground"
-          )}
-        >
-          {initial}
+            )}
+          >
+            {initial}
+          </div>
         </div>
 
         {/* Name */}
-        <span className="text-[11px] font-semibold text-foreground mt-0.5 max-w-[100px] truncate leading-tight">
+        <p className="text-[11px] font-semibold text-foreground text-center leading-tight truncate">
           {firstName}{isRoot ? " (Eu)" : ""}
-        </span>
+        </p>
 
         {/* ID */}
-        <span className="text-[10px] text-muted-foreground leading-none">
+        <p className="text-[10px] text-muted-foreground text-center leading-none mt-0.5">
           ID {node.id}
-        </span>
+        </p>
 
         {/* Qualification */}
-        <span className="text-[10px] text-muted-foreground leading-none">
+        <p className="text-[10px] text-muted-foreground text-center leading-none mt-0.5">
           {q.label}
-        </span>
-      </button>
+        </p>
 
-      {/* Expand/collapse button */}
+        {/* Direct count */}
+        <p className="text-[9px] text-muted-foreground text-center mt-1">
+          {directCount} {directCount === 1 ? "direto" : "diretos"}
+        </p>
+      </div>
+
+      {/* Expand/collapse square button */}
       {hasChildren && (
         <button
           onClick={(e) => { e.stopPropagation(); onToggle(); }}
           className={cn(
-            "mt-0.5 flex items-center justify-center rounded-full transition-colors",
-            "h-5 w-5 hover:bg-accent",
-            isExpanded ? "text-primary" : "text-muted-foreground"
+            "mt-1 flex items-center justify-center rounded border transition-colors",
+            "h-5 w-5",
+            isExpanded
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-background text-muted-foreground border-border hover:border-primary hover:text-primary"
           )}
           title={isExpanded ? "Recolher" : "Expandir rede"}
         >
           {isExpanded ? (
-            <ChevronDown className="h-3.5 w-3.5" />
+            <Minus className="h-3 w-3" />
           ) : (
-            <ChevronRight className="h-3.5 w-3.5" />
+            <Plus className="h-3 w-3" />
           )}
         </button>
       )}
-
-      {/* Active indicator */}
-      <div className={cn(
-        "h-1.5 w-1.5 rounded-full mt-0.5",
-        node.active ? "bg-success" : "bg-destructive"
-      )} />
     </div>
   );
 }
