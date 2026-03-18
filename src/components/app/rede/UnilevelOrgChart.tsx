@@ -257,6 +257,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
           {Array.from({ length: TOTAL_LEVELS }, (_, i) => {
             const lvl = i + 1;
             const count = levelCounts.get(lvl) || 0;
+            const vol = levelVolumes.get(lvl) || 0;
             const isActive = lvl <= maxLevel;
             return (
               <div
@@ -276,6 +277,11 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                     {!isActive && <Lock className="h-2.5 w-2.5 mr-0.5" />}
                     {count}
                   </Badge>
+                )}
+                {vol > 0 && (
+                  <span className={cn("text-[8px] leading-tight mt-0.5", !isActive ? "text-muted-foreground/30" : "text-muted-foreground")}>
+                    {vol.toLocaleString("pt-BR")} pts
+                  </span>
                 )}
               </div>
             );
