@@ -529,13 +529,6 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                           })}
                         </div>
                       </div>
-                    ) : !isActive && !hasAnyData ? (
-                      <div className="flex items-center justify-center text-[10px] text-muted-foreground/30 h-full">
-                        <span className="flex items-center gap-1">
-                          <Users className="h-3 w-3" />
-                          Qualifique-se para desbloquear
-                        </span>
-                      </div>
                     ) : null}
                   </div>
                 );
