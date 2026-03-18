@@ -95,14 +95,43 @@ export function TodayCarousel({ events, todayIndex }: { events: WeekEvent[]; tod
     );
   }
 
-  // Desktop: 4-column grid
+  // Desktop: single-row carousel with arrows
   return (
-    <div className="grid grid-cols-4 gap-4">
-      {events.map((ev) => (
-        <div key={ev.id}>
-          <TodayEventCard event={ev} todayIndex={todayIndex} />
-        </div>
-      ))}
+    <div className="relative">
+      <div
+        ref={scrollRefCb}
+        onScroll={handleScroll}
+        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
+        style={{ scrollSnapType: "x mandatory", scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {events.map((ev) => (
+          <div key={ev.id} className="w-[calc(25%-12px)] shrink-0" style={{ scrollSnapAlign: "start" }}>
+            <TodayEventCard event={ev} todayIndex={todayIndex} />
+          </div>
+        ))}
+      </div>
+      {overflows && events.length > 1 && (
+        <>
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute -left-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full border-border bg-background shadow-md z-10 disabled:opacity-0"
+            disabled={!canPrev}
+            onClick={() => scrollToIndex(activeIndex - 1)}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute -right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full border-border bg-background shadow-md z-10 disabled:opacity-0"
+            disabled={!canNext}
+            onClick={() => scrollToIndex(activeIndex + 1)}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </>
+      )}
     </div>
   );
 }
