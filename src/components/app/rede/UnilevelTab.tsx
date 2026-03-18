@@ -530,7 +530,7 @@ export function UnilevelTab({ searchQuery }: Props) {
               <SelectContent>
                 {Array.from({ length: maxLevel }, (_, i) => i + 1).map((lvl) => (
                   <SelectItem key={lvl} value={String(lvl)} className="text-xs">
-                    {lvl === 1 ? "1 — Diretos" : String(lvl)}
+                    {String(lvl)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -556,8 +556,8 @@ export function UnilevelTab({ searchQuery }: Props) {
               <TableRow>
                 <TableHead className="w-[24px] px-1" />
                 <TableHead className="text-[10px] px-1 w-[52px]">ID</TableHead>
-                <TableHead className="text-[10px] px-1">Nome</TableHead>
                 <TableHead className="text-[10px] px-1 text-center w-[28px]">Qual.</TableHead>
+                <TableHead className="text-[10px] px-1 w-auto">Nome</TableHead>
                 <TableHead className="text-[10px] px-1 w-[52px]">Pontos</TableHead>
                 {!isMobile && (
                   <>
@@ -571,7 +571,7 @@ export function UnilevelTab({ searchQuery }: Props) {
               {selectedLevelMembers.map((m, idx) => {
                 const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
                 const lineLabel = selectedLevel === 1
-                  ? `Linha ${idx + 1}`
+                  ? "Diretos"
                   : m.directAncestorName
                     ? `↳ ${m.directAncestorName}`
                     : "—";
@@ -583,11 +583,11 @@ export function UnilevelTab({ searchQuery }: Props) {
                     <TableCell className={cn("px-1 py-1.5 text-[11px] tabular-nums truncate", m.isDirect && "font-bold")}>
                       {m.id}
                     </TableCell>
-                    <TableCell className={cn("px-1 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
-                      {m.name}
-                    </TableCell>
                     <TableCell className="px-1 py-1.5 text-center">
                       <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
+                    </TableCell>
+                    <TableCell className={cn("px-1 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
+                      {m.name}
                     </TableCell>
                     <TableCell className="px-1 py-1.5 text-[11px] tabular-nums font-medium">
                       {m.volume.toLocaleString("pt-BR")}
