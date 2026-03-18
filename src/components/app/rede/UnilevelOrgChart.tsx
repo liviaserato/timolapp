@@ -166,7 +166,7 @@ interface Props {
   filterEndDate?: string;
 }
 
-export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "default" }: Props) {
+export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "default", filterEndDate }: Props) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set([root.id]));
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
