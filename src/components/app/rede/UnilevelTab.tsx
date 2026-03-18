@@ -557,6 +557,7 @@ function LevelTable({
   isMobile: boolean;
 }) {
   const [collapsed, setCollapsed] = useState(level > 2);
+  const totalVolume = members.reduce((sum, m) => sum + m.volume, 0);
 
   return (
     <Card>
