@@ -353,7 +353,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
               <div
                 key={lvl}
                 className={cn(
-                  "flex flex-col items-center justify-center text-[10px] border-t border-border/30",
+                  "flex flex-col items-center justify-center text-[10px]",
                   isActive ? "text-muted-foreground" : "text-muted-foreground/30"
                 )}
                 style={{ height: ROW_H }}
