@@ -7,8 +7,8 @@ import { Badge } from "@/components/ui/badge";
 
 /* ── Constants ── */
 const TOTAL_LEVELS = 10;
-const ROW_H = 120;
-const NODE_W = 90;
+const ROW_H = 130;
+const NODE_W = 94;
 const CARD_GAP = 8;
 const LEVEL_LABEL_W = 80;
 
