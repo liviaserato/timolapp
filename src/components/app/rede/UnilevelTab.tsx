@@ -493,7 +493,7 @@ export function UnilevelTab({ searchQuery }: Props) {
               sortMode={sortMode || "default"}
               filterEndDate={
                 filterMode === "month"
-                  ? new Date(monthRef.getFullYear(), monthRef.getMonth(), 1).toISOString()
+                  ? new Date(monthRef.getFullYear(), monthRef.getMonth() + 1, 0).toISOString()
                   : periodEnd || undefined
               }
             />
