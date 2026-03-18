@@ -523,9 +523,6 @@ function NodeCard({
                 isHighlighted && !isExpanded && "border-primary/60 bg-primary/5",
                 !isExpanded && !isHighlighted && "border-border",
               ],
-                isHighlighted && !isExpanded && "border-primary/60 bg-primary/5",
-                !isExpanded && !isHighlighted && "border-border",
-              ],
         )}
       >
         <p className={cn("text-[11px] font-bold text-center leading-tight", isRoot ? "text-primary-foreground" : "text-foreground")}>
