@@ -633,15 +633,16 @@ export function UnilevelTab({ searchQuery }: Props) {
                 </>
               ) : (
                 <>
-                  <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
-                    {directSubtreeMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
-                </Badge>
-                <span className="text-xs text-primary-foreground/80 font-medium">
-                  {directSubtreeMembers.length} {directSubtreeMembers.length === 1 ? "pessoa" : "pessoas"}
-                </span>
-              </>
-            )}
-           </div>
+                    <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
+                      {directSubtreeMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
+                    </Badge>
+                    <span className="text-xs text-primary-foreground/80 font-medium">
+                      {directSubtreeMembers.length} {directSubtreeMembers.length === 1 ? "pessoa" : "pessoas"}
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
 
           {/* Row 2: Contextual selector */}
           {listMode === "by_level" ? (
