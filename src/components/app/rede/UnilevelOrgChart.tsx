@@ -479,6 +479,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                           {info.nodes.map(node => {
                             const hasChildren = !!(node.children?.length);
                             const canExpand = hasChildren && lvl < TOTAL_LEVELS;
+                            const notYetExisting = filterEndDate && new Date(node.joinDate) > new Date(filterEndDate);
                             return !isActive ? (
                               <LockedNodeCard
                                 key={node.id}
@@ -486,6 +487,11 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                                 hasChildren={canExpand}
                                 isExpanded={expandedIds.has(node.id)}
                                 onToggle={() => toggleExpand(node.id)}
+                              />
+                            ) : notYetExisting ? (
+                              <NotYetCard
+                                key={node.id}
+                                node={node}
                               />
                             ) : (
                               <NodeCard
