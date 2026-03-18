@@ -355,8 +355,16 @@ function LevelRow({
         <div className="flex items-start gap-1 py-2 px-4 w-max">
           {nodes.map((node) => {
             const hasChildren = !!(node.children && node.children.length > 0);
-            const canExpand = hasChildren && targetLevel < maxLevel;
-            return (
+            const canExpand = hasChildren && targetLevel < TOTAL_LEVELS;
+            return isLocked ? (
+              <LockedNodeCard
+                key={node.id}
+                node={node}
+                hasChildren={canExpand}
+                isExpanded={expandedIds.has(node.id)}
+                onToggle={() => onToggle(node.id)}
+              />
+            ) : (
               <NodeCard
                 key={node.id}
                 node={node}
