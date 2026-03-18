@@ -591,8 +591,9 @@ export function UnilevelTab({ searchQuery }: Props) {
       {viewMode === "list" && (
       <Card>
         {/* Header with mode toggle + selectors */}
-        <div className="flex items-center justify-between p-3 bg-primary text-primary-foreground rounded-t-lg">
-          <div className="flex items-center gap-2">
+        <div className="p-3 bg-primary text-primary-foreground rounded-t-lg space-y-2">
+          {/* Row 1: Mode toggle + Stats */}
+          <div className="flex items-center justify-between">
             {/* Mode toggle: Por Nível / Por Direto */}
             <div className="flex rounded-md overflow-hidden h-8">
               <button
@@ -619,65 +620,21 @@ export function UnilevelTab({ searchQuery }: Props) {
               </button>
             </div>
 
-            {/* Contextual selector */}
-            {listMode === "by_level" ? (
-              <Select value={String(selectedLevel)} onValueChange={(v) => setSelectedLevel(Number(v))}>
-                <SelectTrigger className="h-8 w-[110px] text-sm font-semibold bg-white/20 border-0 text-primary-foreground">
-                  <SelectValue placeholder="Nível" />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableLevels.map((lvl) => {
-                    const locked = lvl > maxLevel;
-                    return (
-                      <SelectItem
-                        key={lvl}
-                        value={String(lvl)}
-                        className={cn("text-sm font-semibold", locked && "text-muted-foreground")}
-                        disabled={locked}
-                      >
-                        <span className="flex items-center gap-1.5">
-                          Nível {lvl}
-                          {locked && <Lock className="h-3 w-3" />}
-                        </span>
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            ) : (
-              <Select value={selectedDirectId} onValueChange={(v) => setSelectedDirectId(v)}>
-                <SelectTrigger className="h-8 w-[160px] text-sm font-semibold bg-white/20 border-0 text-primary-foreground">
-                  <SelectValue placeholder="Selecionar direto" />
-                </SelectTrigger>
-                <SelectContent>
-                  {directMembers.map((dm) => (
-                    <SelectItem key={dm.id} value={dm.id} className="text-xs">
-                      <span className="flex items-center gap-1.5">
-                        <span className={cn("h-1.5 w-1.5 rounded-full inline-block", dm.active ? "bg-success" : "bg-destructive")} />
-                        {dm.name}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          </div>
-
-          {/* Stats */}
-          <div className="flex items-center gap-2">
-            {listMode === "by_level" ? (
-              <>
-                <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
-                  {selectedLevelMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
-                </Badge>
-                <span className="text-xs text-primary-foreground/80 font-medium">
-                  {selectedLevelMembers.length} {selectedLevelMembers.length === 1 ? "pessoa" : "pessoas"}
-                </span>
-              </>
-            ) : (
-              <>
-                <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
-                  {directSubtreeMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
+            {/* Stats */}
+            <div className="flex items-center gap-2">
+              {listMode === "by_level" ? (
+                <>
+                  <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
+                    {selectedLevelMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
+                  </Badge>
+                  <span className="text-xs text-primary-foreground/80 font-medium">
+                    {selectedLevelMembers.length} {selectedLevelMembers.length === 1 ? "pessoa" : "pessoas"}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
+                    {directSubtreeMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
                 </Badge>
                 <span className="text-xs text-primary-foreground/80 font-medium">
                   {directSubtreeMembers.length} {directSubtreeMembers.length === 1 ? "pessoa" : "pessoas"}
