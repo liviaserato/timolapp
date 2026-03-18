@@ -624,19 +624,19 @@ export function UnilevelTab({ searchQuery }: Props) {
             <div className="flex items-center gap-2">
               {listMode === "by_level" ? (
                 <>
-                  <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
+                  <Badge variant="secondary" className="text-sm px-2 py-0.5 h-6 bg-white/20 text-primary-foreground border-0 font-semibold">
                     {selectedLevelMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
                   </Badge>
-                  <span className="text-xs text-primary-foreground/80 font-medium">
+                  <span className="text-sm text-primary-foreground/80 font-medium">
                     {selectedLevelMembers.length} {selectedLevelMembers.length === 1 ? "pessoa" : "pessoas"}
                   </span>
                 </>
               ) : (
                 <>
-                  <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
+                  <Badge variant="secondary" className="text-sm px-2 py-0.5 h-6 bg-white/20 text-primary-foreground border-0 font-semibold">
                     {directSubtreeMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
                   </Badge>
-                  <span className="text-xs text-primary-foreground/80 font-medium">
+                  <span className="text-sm text-primary-foreground/80 font-medium">
                     {directSubtreeMembers.length} {directSubtreeMembers.length === 1 ? "pessoa" : "pessoas"}
                   </span>
                 </>
