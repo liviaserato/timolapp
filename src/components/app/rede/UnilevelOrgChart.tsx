@@ -10,7 +10,7 @@ const TOTAL_LEVELS = 10;
 const ROW_H = 120;
 const NODE_W = 90;
 const CARD_GAP = 8;
-const LEVEL_LABEL_W = 56;
+const LEVEL_LABEL_W = 64;
 
 /* Vertical geometry inside each row */
 const CARD_PAD_Y = 14;
