@@ -114,27 +114,29 @@ interface Props {
   sortMode?: string;
 }
 
-export function UnilevelOrgChart({ root, maxLevel, onSelectMember, searchQuery, sortMode = "default" }: Props) {
+export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "default" }: Props) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set([root.id]));
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
 
   const levelCounts = useMemo(() => countByLevel(root), [root]);
 
   const toggleExpand = useCallback((id: string) => {
+    const siblingIds = findSiblingIds(root, id);
     setExpandedIds(prev => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        // Close siblings first
+        if (siblingIds) {
+          siblingIds.forEach(sid => next.delete(sid));
+        }
+        next.add(id);
+      }
       return next;
     });
-  }, []);
-
-  const handleSelectNode = useCallback((node: UnilevelNode) => {
-    setSelectedId(prev => prev === node.id ? null : node.id);
-    onSelectMember(node);
-  }, [onSelectMember]);
+  }, [root]);
 
   // Auto-expand path when searchQuery changes
   useEffect(() => {
