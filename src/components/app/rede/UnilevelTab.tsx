@@ -26,6 +26,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 /* ── Sort ── */
 type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status" | "qualification";
 
+const qualificationRank: Record<string, number> = {
+  consultor: 0, distribuidor: 1, lider: 2, rubi: 3, esmeralda: 4, diamante: 5,
+};
+
 function sortMembers(members: FlatUnilevelMember[], mode: SortMode): FlatUnilevelMember[] {
   const sorted = [...members];
   switch (mode) {
@@ -35,11 +39,17 @@ function sortMembers(members: FlatUnilevelMember[], mode: SortMode): FlatUnileve
       return sorted.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
     case "date_oldest":
       return sorted.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
+    case "qualification":
+      return sorted.sort((a, b) => (qualificationRank[b.qualification] ?? 0) - (qualificationRank[a.qualification] ?? 0));
     case "status":
     default:
       return sorted.sort((a, b) => {
-        if (a.active === b.active) return b.volume - a.volume;
-        return a.active ? -1 : 1;
+        // Active first
+        if (a.active !== b.active) return a.active ? -1 : 1;
+        // Then highest points
+        if (b.volume !== a.volume) return b.volume - a.volume;
+        // Then highest qualification
+        return (qualificationRank[b.qualification] ?? 0) - (qualificationRank[a.qualification] ?? 0);
       });
   }
 }
@@ -588,24 +598,21 @@ function LevelTable({
       {!collapsed && (
         <CardContent className="px-0 pb-2">
           <div className="max-h-[352px] overflow-y-auto overflow-x-hidden">
-            <Table className="table-fixed w-full">
+          <Table className="table-fixed w-full">
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[24px] px-1" />
                   <TableHead className="text-[10px] px-1 w-[52px]">ID</TableHead>
                   <TableHead className="text-[10px] px-1">Nome</TableHead>
                   {!isMobile && (
-                    <TableHead className="text-[10px] px-1 w-[60px]">Tipo</TableHead>
+                    <TableHead className="text-[10px] px-1 w-[64px]">Linha</TableHead>
                   )}
                   <TableHead className="text-[10px] px-1 text-center w-[28px]">Qual.</TableHead>
                   <TableHead className="text-[10px] px-1 text-right w-[52px]">Pontos</TableHead>
-                  {!isMobile && (
-                    <TableHead className="text-[10px] px-1 text-right w-[76px]">Cadastro</TableHead>
-                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {members.map((m) => {
+                {members.map((m, idx) => {
                   const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
                   return (
                     <TableRow
@@ -624,7 +631,7 @@ function LevelTable({
                       </TableCell>
                       {!isMobile && (
                         <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground">
-                          {m.isDirect ? "Direto" : "Rede"}
+                          Linha {idx + 1}
                         </TableCell>
                       )}
                       <TableCell className="px-1 py-1.5 text-center">
@@ -633,11 +640,6 @@ function LevelTable({
                       <TableCell className="px-1 py-1.5 text-[11px] text-right tabular-nums font-medium">
                         {m.volume.toLocaleString("pt-BR")}
                       </TableCell>
-                      {!isMobile && (
-                        <TableCell className="px-1 py-1.5 text-[10px] text-right text-muted-foreground tabular-nums">
-                          {new Date(m.joinDate).toLocaleDateString("pt-BR")}
-                        </TableCell>
-                      )}
                     </TableRow>
                   );
                 })}
