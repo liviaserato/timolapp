@@ -568,7 +568,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                 <TableHead className="text-[10px] px-1 w-[52px]">ID</TableHead>
                 <TableHead className="text-[10px] px-1 text-center w-[28px]">Qual.</TableHead>
                 <TableHead className="text-[10px] px-1 w-auto">Nome</TableHead>
-                <TableHead className="text-[10px] px-1 w-[52px]">Pontos</TableHead>
+                <TableHead className="text-[10px] px-1 w-[52px] text-right">Pontos</TableHead>
                 {!isMobile && (
                   <>
                     <TableHead className="text-[10px] px-1 w-[100px]">Origem</TableHead>
@@ -599,7 +599,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                     <TableCell className={cn("px-1 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
                       {m.name}
                     </TableCell>
-                    <TableCell className="px-1 py-1.5 text-[11px] tabular-nums font-medium">
+                    <TableCell className="px-1 py-1.5 text-[11px] tabular-nums font-medium text-right">
                       {m.volume.toLocaleString("pt-BR")}
                     </TableCell>
                     {!isMobile && (
