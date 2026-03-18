@@ -217,10 +217,8 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                 isRoot
                 isExpanded={expandedIds.has(root.id)}
                 onToggle={() => toggleExpand(root.id)}
-                onSelect={() => handleSelectNode(root)}
                 hasChildren={!!(root.children && root.children.length > 0)}
                 isHighlighted={highlightedId === root.id}
-                isSelected={selectedId === root.id}
                 highlightRef={highlightedId === root.id ? highlightRef : undefined}
               />
             </div>
