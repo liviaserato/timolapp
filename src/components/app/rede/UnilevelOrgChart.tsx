@@ -341,10 +341,8 @@ function LevelRow({
                 node={node}
                 isExpanded={expandedIds.has(node.id)}
                 onToggle={() => onToggle(node.id)}
-                onSelect={() => onSelect(node)}
                 hasChildren={canExpand}
                 isHighlighted={highlightedId === node.id}
-                isSelected={selectedId === node.id}
                 highlightRef={highlightedId === node.id ? highlightRef : undefined}
               />
             );
