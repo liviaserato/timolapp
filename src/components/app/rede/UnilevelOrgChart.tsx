@@ -337,7 +337,15 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
         </div>
 
         {/* ── Tree content area ── */}
-        <div ref={containerRef} className="flex-1 overflow-hidden relative" style={{ height: totalH }}>
+        <div
+          ref={containerRef}
+          className="flex-1 overflow-hidden relative select-none"
+          style={{ height: totalH, cursor: "grab", touchAction: "pan-y" }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+        >
           {containerWidth > 0 && levelData.length > 0 && (
             <>
               {/* SVG connector overlay */}
