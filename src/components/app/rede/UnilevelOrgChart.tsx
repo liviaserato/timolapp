@@ -172,6 +172,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
   useEffect(() => { setLevelDragOffsets({}); }, [expandedIds]);
 
   const levelCounts = useMemo(() => countByLevel(root), [root]);
+  const levelVolumes = useMemo(() => volumeByLevel(root), [root]);
 
   const toggleExpand = useCallback((id: string) => {
     if (id === root.id) return;
