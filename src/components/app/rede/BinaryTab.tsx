@@ -48,6 +48,13 @@ function sortMembers(members: NetworkMember[], mode: SortMode): NetworkMember[] 
         if (a.active === b.active) return b.volume - a.volume;
         return a.active ? -1 : 1;
       });
+    case "qualification":
+      return sorted.sort((a, b) => {
+        const rA = qualificationRank[a.qualification] ?? 0;
+        const rB = qualificationRank[b.qualification] ?? 0;
+        if (rB !== rA) return rB - rA;
+        return b.volume - a.volume;
+      });
     default:
       return sorted.sort((a, b) => {
         if (a.active === b.active) return b.volume - a.volume;
