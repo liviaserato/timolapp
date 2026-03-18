@@ -162,6 +162,8 @@ interface Props {
   maxLevel: number;
   searchQuery?: string;
   sortMode?: string;
+  /** End date of the selected filter period (ISO string). Nodes with joinDate after this are "not yet existing" */
+  filterEndDate?: string;
 }
 
 export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "default" }: Props) {
