@@ -109,15 +109,19 @@ export function UnilevelTab({ searchQuery }: Props) {
     return sortMembers(result, (sortMode || "default") as SortMode);
   }, [allMembers, searchId, searchQuery, sortMode]);
 
-  // Group by level
-  const levelGroups = useMemo(() => {
-    const map = new Map<number, FlatUnilevelMember[]>();
-    filteredMembers.forEach((m) => {
-      const lvl = m.level ?? 1;
-      if (!map.has(lvl)) map.set(lvl, []);
-      map.get(lvl)!.push(m);
-    });
-    return Array.from(map.entries()).sort(([a], [b]) => a - b);
+  // Selected level for list view
+  const [selectedLevel, setSelectedLevel] = useState(1);
+
+  // Members for the selected level
+  const selectedLevelMembers = useMemo(() => {
+    return filteredMembers.filter((m) => (m.level ?? 1) === selectedLevel);
+  }, [filteredMembers, selectedLevel]);
+
+  // Available levels
+  const availableLevels = useMemo(() => {
+    const levels = new Set<number>();
+    filteredMembers.forEach((m) => levels.add(m.level ?? 1));
+    return Array.from(levels).sort((a, b) => a - b);
   }, [filteredMembers]);
 
   // Summary stats
