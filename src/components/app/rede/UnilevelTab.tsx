@@ -764,20 +764,16 @@ export function UnilevelTab({ searchQuery }: Props) {
                   return (
                     <div key={lvl}>
                       {/* Level header */}
-                      <div
-                        className="flex items-center justify-between px-3 py-1.5 bg-muted/60 border-b"
-                      >
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/60 border-b">
                         <span className="text-[11px] font-semibold text-foreground">
                           Nível {lvl}
                         </span>
-                      <div className="flex items-center gap-2 ml-auto order-first">
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-semibold">
-                            {levelPoints.toLocaleString("pt-BR")} pts
-                          </Badge>
-                          <span className="text-[10px] text-muted-foreground">
-                            {members.length} {members.length === 1 ? "pessoa" : "pessoas"}
-                          </span>
-                        </div>
+                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-semibold">
+                          {levelPoints.toLocaleString("pt-BR")} pts
+                        </Badge>
+                        <span className="text-[10px] text-muted-foreground">
+                          {members.length} {members.length === 1 ? "pessoa" : "pessoas"}
+                        </span>
                       </div>
                       {/* Members in this level */}
                       <Table className="table-fixed w-full">
