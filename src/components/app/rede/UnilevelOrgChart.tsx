@@ -124,8 +124,19 @@ function collectNodesAtLevel(
 /* ── Level info for rendering ── */
 interface LevelInfo {
   nodes: UnilevelNode[];
-  anchorIdx: number; // index of expanded node (centering anchor), or -1
+  anchorIdx: number; // index of selected/expanded node (centering anchor), or -1
   translateX: number;
+}
+
+/** Collect all descendant IDs from a node */
+function collectDescendantIds(node: UnilevelNode): string[] {
+  const ids: string[] = [];
+  if (node.children) {
+    for (const child of node.children) {
+      ids.push(child.id, ...collectDescendantIds(child));
+    }
+  }
+  return ids;
 }
 
 /* ── Props ── */
