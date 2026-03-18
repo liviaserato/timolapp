@@ -10,7 +10,7 @@ const TOTAL_LEVELS = 10;
 const ROW_H = 120;
 const NODE_W = 90;
 const CARD_GAP = 8;
-const LEVEL_LABEL_W = 64;
+const LEVEL_LABEL_W = 80;
 
 /* Vertical geometry inside each row */
 const CARD_PAD_Y = 14;
@@ -362,15 +362,15 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                   Nível {lvl}
                 </span>
                 {lvl === 1 && <span className="text-[9px] text-muted-foreground leading-none">DIRETOS</span>}
-                {count > 0 && (
+                {vol > 0 && (
                   <Badge variant="secondary" className={cn("text-[10px] px-1.5 py-0 h-[18px] mt-0.5", !isActive && "opacity-50")}>
                     {!isActive && <Lock className="h-2.5 w-2.5 mr-0.5" />}
-                    {count} {count === 1 ? "pessoa" : "pessoas"}
+                    {vol.toLocaleString("pt-BR")} pts
                   </Badge>
                 )}
-                {vol > 0 && (
+                {count > 0 && (
                   <span className={cn("text-[9px] leading-tight mt-0.5", !isActive ? "text-muted-foreground/30" : "text-muted-foreground")}>
-                    {vol.toLocaleString("pt-BR")} pts
+                    {count} {count === 1 ? "pessoa" : "pessoas"}
                   </span>
                 )}
               </div>
