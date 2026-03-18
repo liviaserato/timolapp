@@ -591,7 +591,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                         <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground truncate" title={lineLabel}>
                           {lineLabel}
                         </TableCell>
-                        <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground">
+                        <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground text-center">
                           {m.level ?? 1}
                         </TableCell>
                       </>
