@@ -227,6 +227,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
             {Array.from({ length: TOTAL_LEVELS }, (_, i) => {
               const lvl = i + 1;
               const isActive = lvl <= maxLevel;
+              const hasNodes = (levelCounts.get(lvl) || 0) > 0;
               return (
                 <div key={lvl} className="border-t border-border/30" style={{ minHeight: ROW_HEIGHT }}>
                   {isActive ? (
@@ -239,6 +240,13 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                       highlightedId={highlightedId}
                       highlightRef={highlightRef}
                       maxLevel={maxLevel}
+                      sortMode={sortMode as SortMode}
+                    />
+                  ) : hasNodes ? (
+                    <LockedLevelRow
+                      root={root}
+                      targetLevel={lvl}
+                      currentLevel={0}
                       sortMode={sortMode as SortMode}
                     />
                   ) : (
