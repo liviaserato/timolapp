@@ -484,7 +484,7 @@ export function UnilevelTab({ searchQuery }: Props) {
       {viewMode === "tree" ? (
         <Card>
           <CardContent className="p-3 sm:p-4">
-            <h2 className="text-base font-bold text-foreground text-center mb-4">Rede Unilevel</h2>
+            <h2 className="text-base font-bold text-foreground text-center mb-4" style={{ paddingLeft: 46 }}>Rede Unilevel</h2>
             <UnilevelOrgChart
               root={mockUnilevelTree}
               maxLevel={maxLevel}
