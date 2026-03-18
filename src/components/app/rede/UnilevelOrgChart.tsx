@@ -15,6 +15,11 @@ const LEVEL_LABEL_W = 56;
 /* Vertical geometry inside each row */
 const CARD_PAD_Y = 14;
 const CARD_BODY_H = 68;
+const EXPAND_BTN_H = 24;
+
+/* Connector styling — same as binary tree */
+const CONN_COLOR = "hsl(var(--border))";
+const CONN_W = 1.5;
 
 /* ── Sort ── */
 type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status";
