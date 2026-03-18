@@ -663,9 +663,9 @@ function NotYetCard({ node }: { node: UnilevelNode }) {
   return (
     <div className="flex flex-col items-center shrink-0" style={{ width: NODE_W }}>
       <div className="w-full rounded-lg border border-border/40 bg-muted/30 p-1.5 opacity-50 select-none relative">
-        <p className="text-[11px] font-bold text-center leading-tight text-muted-foreground/60">{node.id}</p>
-        <p className="text-[10px] text-muted-foreground/40 text-center leading-tight truncate mt-0.5">{firstName}</p>
-        <p className="text-[8px] text-muted-foreground/50 text-center leading-tight mt-1 px-0.5">
+        <p className="text-[12px] font-bold text-center leading-tight text-muted-foreground/60">{node.id}</p>
+        <p className="text-[11px] text-muted-foreground/40 text-center leading-tight truncate mt-0.5">{firstName}</p>
+        <p className="text-[9px] text-muted-foreground/50 text-center leading-tight mt-1 px-0.5">
           Não cadastrado neste período
         </p>
       </div>
