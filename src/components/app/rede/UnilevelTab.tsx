@@ -573,24 +573,24 @@ function LevelTable({
     <Card>
       <button
         onClick={() => setCollapsed((p) => !p)}
-        className="w-full flex items-center justify-between p-3 hover:bg-accent/50 transition-colors rounded-t-lg"
+        className="w-full flex items-center justify-between p-3 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-t-lg"
       >
         <div className="flex items-center gap-2">
           {collapsed ? (
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            <ChevronRight className="h-4 w-4 text-primary-foreground/70" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+            <ChevronDown className="h-4 w-4 text-primary-foreground/70" />
           )}
           <span className="text-sm font-semibold">Nível {level}</span>
           {level === 1 && (
-            <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
+            <span className="text-[11px] font-semibold text-primary-foreground/70 uppercase tracking-wide">
               — Diretos
             </span>
           )}
-          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-[18px]">
+          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-[18px] bg-white/20 text-primary-foreground border-0">
             {totalVolume.toLocaleString("pt-BR")} pts
           </Badge>
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-[10px] text-primary-foreground/70">
             {members.length} {members.length === 1 ? "pessoa" : "pessoas"}
           </span>
         </div>
