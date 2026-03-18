@@ -394,7 +394,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
               )}
             </div>
           </div>
-          {Array.from({ length: TOTAL_LEVELS }, (_, i) => {
+          {Array.from({ length: maxVisibleLevel }, (_, i) => {
             const lvl = i + 1;
             const count = levelCounts.get(lvl) || 0;
             const vol = levelVolumes.get(lvl) || 0;
