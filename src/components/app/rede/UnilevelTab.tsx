@@ -571,7 +571,7 @@ export function UnilevelTab({ searchQuery }: Props) {
               {selectedLevelMembers.map((m, idx) => {
                 const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
                 const lineLabel = selectedLevel === 1
-                  ? `Linha ${idx + 1}`
+                  ? "Diretos"
                   : m.directAncestorName
                     ? `↳ ${m.directAncestorName}`
                     : "—";
