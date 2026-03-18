@@ -7,14 +7,14 @@ import { Badge } from "@/components/ui/badge";
 
 /* ── Constants ── */
 const TOTAL_LEVELS = 10;
-const ROW_H = 120;
-const NODE_W = 90;
+const ROW_H = 130;
+const NODE_W = 94;
 const CARD_GAP = 8;
 const LEVEL_LABEL_W = 80;
 
 /* Vertical geometry inside each row */
 const CARD_PAD_Y = 14;
-const CARD_BODY_H = 68;
+const CARD_BODY_H = 80;
 const EXPAND_BTN_H = 24;
 
 /* Connector styling — same as binary tree */
@@ -32,23 +32,28 @@ const QUALIFICATION_ORDER: Record<string, number> = {
 
 function sortNodes(nodes: UnilevelNode[], mode: SortMode): UnilevelNode[] {
   const sorted = [...nodes];
-  switch (mode) {
-    case "points":
-      return sorted.sort((a, b) => b.volume - a.volume);
-    case "date_newest":
-      return sorted.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
-    case "date_oldest":
-      return sorted.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
-    case "qualification":
-      return sorted.sort((a, b) => (QUALIFICATION_ORDER[b.qualification] ?? 0) - (QUALIFICATION_ORDER[a.qualification] ?? 0));
-    case "status":
-    case "default":
-    default:
-      return sorted.sort((a, b) => {
-        if (a.active === b.active) return b.volume - a.volume;
-        return a.active ? -1 : 1;
-      });
-  }
+  // Always push inactive to the end, then apply the chosen sort within each group
+  const activeNodes = sorted.filter(n => n.active);
+  const inactiveNodes = sorted.filter(n => !n.active);
+
+  const applySortWithin = (arr: UnilevelNode[]) => {
+    switch (mode) {
+      case "points":
+        return arr.sort((a, b) => b.volume - a.volume);
+      case "date_newest":
+        return arr.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
+      case "date_oldest":
+        return arr.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
+      case "qualification":
+        return arr.sort((a, b) => (QUALIFICATION_ORDER[b.qualification] ?? 0) - (QUALIFICATION_ORDER[a.qualification] ?? 0));
+      case "status":
+      case "default":
+      default:
+        return arr.sort((a, b) => b.volume - a.volume);
+    }
+  };
+
+  return [...applySortWithin(activeNodes), ...applySortWithin(inactiveNodes)];
 }
 
 /* ── Tree helpers ── */
@@ -561,16 +566,19 @@ function NodeCard({
               ],
         )}
       >
-        <p className={cn("text-[11px] font-bold text-center leading-tight", isRoot ? "text-primary-foreground" : "text-foreground")}>
+        <p className={cn("text-[12px] font-bold text-center leading-tight", isRoot ? "text-primary-foreground" : "text-foreground")}>
           {node.id}
         </p>
-        <p className={cn("text-[10px] text-center leading-tight truncate mt-0.5", isRoot ? "text-primary-foreground/80" : "text-muted-foreground")}>
+        <p className={cn("text-[11px] text-center leading-tight truncate mt-0.5", isRoot ? "text-primary-foreground/80" : "text-muted-foreground")}>
           {firstName}
         </p>
-        <p className={cn("text-[9px] text-center leading-none mt-0.5", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
+        <p className={cn("text-[10px] text-center leading-none mt-0.5", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
           {q.label}
         </p>
-        <p className={cn("text-[9px] text-center mt-0.5", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
+        <p className={cn("text-[10px] text-center mt-0.5 font-medium", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
+          {node.volume.toLocaleString("pt-BR")} pts
+        </p>
+        <p className={cn("text-[10px] text-center mt-0.5", isRoot ? "text-primary-foreground/70" : "text-muted-foreground")}>
           {directCount} {directCount === 1 ? "direto" : "diretos"}
         </p>
       </div>
@@ -615,10 +623,13 @@ function LockedNodeCard({ node, hasChildren = false, isExpanded = false, onToggl
           isExpanded && hasChildren && "ring-2 ring-muted-foreground/20"
         )}
       >
-        <p className="text-[11px] font-bold text-center leading-tight text-muted-foreground/60">{node.id}</p>
-        <p className="text-[10px] text-muted-foreground/40 text-center leading-tight truncate mt-0.5">{firstName}</p>
-        <p className="text-[9px] text-muted-foreground/40 text-center leading-none mt-0.5">{q.label}</p>
-        <p className="text-[9px] text-muted-foreground/40 text-center mt-0.5">
+        <p className="text-[12px] font-bold text-center leading-tight text-muted-foreground/60">{node.id}</p>
+        <p className="text-[11px] text-muted-foreground/40 text-center leading-tight truncate mt-0.5">{firstName}</p>
+        <p className="text-[10px] text-muted-foreground/40 text-center leading-none mt-0.5">{q.label}</p>
+        <p className="text-[10px] text-muted-foreground/40 text-center mt-0.5">
+          {node.volume.toLocaleString("pt-BR")} pts
+        </p>
+        <p className="text-[10px] text-muted-foreground/40 text-center mt-0.5">
           {directCount} {directCount === 1 ? "direto" : "diretos"}
         </p>
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -652,9 +663,9 @@ function NotYetCard({ node }: { node: UnilevelNode }) {
   return (
     <div className="flex flex-col items-center shrink-0" style={{ width: NODE_W }}>
       <div className="w-full rounded-lg border border-border/40 bg-muted/30 p-1.5 opacity-50 select-none relative">
-        <p className="text-[11px] font-bold text-center leading-tight text-muted-foreground/60">{node.id}</p>
-        <p className="text-[10px] text-muted-foreground/40 text-center leading-tight truncate mt-0.5">{firstName}</p>
-        <p className="text-[8px] text-muted-foreground/50 text-center leading-tight mt-1 px-0.5">
+        <p className="text-[12px] font-bold text-center leading-tight text-muted-foreground/60">{node.id}</p>
+        <p className="text-[11px] text-muted-foreground/40 text-center leading-tight truncate mt-0.5">{firstName}</p>
+        <p className="text-[9px] text-muted-foreground/50 text-center leading-tight mt-1 px-0.5">
           Não cadastrado neste período
         </p>
       </div>
