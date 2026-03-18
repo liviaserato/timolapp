@@ -366,17 +366,15 @@ function LevelRow({
 /* ── NodeCard ── */
 
 function NodeCard({
-  node, isRoot, isExpanded, onToggle, onSelect, hasChildren,
-  isHighlighted, isSelected, highlightRef,
+  node, isRoot, isExpanded, onToggle, hasChildren,
+  isHighlighted, highlightRef,
 }: {
   node: UnilevelNode;
   isRoot?: boolean;
   isExpanded: boolean;
   onToggle: () => void;
-  onSelect: () => void;
   hasChildren: boolean;
   isHighlighted: boolean;
-  isSelected: boolean;
   highlightRef?: React.RefObject<HTMLDivElement>;
 }) {
   const q = qualificationConfig[node.qualification] ?? qualificationConfig.consultor;
@@ -388,12 +386,13 @@ function NodeCard({
       {/* Card */}
       <div
         ref={highlightRef as any}
-        onClick={onSelect}
+        onClick={hasChildren ? onToggle : undefined}
         className={cn(
-          "w-full rounded-lg border bg-card p-1.5 cursor-pointer transition-all hover:shadow-md",
-          isSelected && "border-primary ring-2 ring-primary/30",
-          isHighlighted && !isSelected && "border-primary/60 bg-primary/5",
-          !isSelected && !isHighlighted && "border-border",
+          "w-full rounded-lg border bg-card p-1.5 transition-all",
+          hasChildren && "cursor-pointer hover:shadow-md",
+          isExpanded && hasChildren && "border-primary ring-2 ring-primary/30",
+          isHighlighted && !isExpanded && "border-primary/60 bg-primary/5",
+          !isExpanded && !isHighlighted && "border-border",
         )}
       >
         {/* ID — highlighted */}
