@@ -110,7 +110,6 @@ function collectNodesAtLevel(
 interface Props {
   root: UnilevelNode;
   maxLevel: number;
-  onSelectMember: (member: NetworkMember) => void;
   searchQuery?: string;
   sortMode?: string;
 }
