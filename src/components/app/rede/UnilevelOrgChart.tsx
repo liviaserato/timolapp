@@ -321,7 +321,7 @@ function LevelRow({
         className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide mx-1"
         style={{ scrollbarWidth: "none" }}
       >
-        <div className="flex items-start gap-2 py-2 px-6 w-max">
+        <div className="flex items-start gap-1 py-2 px-4 w-max">
           {nodes.map((node) => {
             const hasChildren = !!(node.children && node.children.length > 0);
             const canExpand = hasChildren && targetLevel < maxLevel;
