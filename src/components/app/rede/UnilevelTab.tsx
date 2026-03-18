@@ -599,7 +599,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                     <TableCell className={cn("px-1 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
                       {m.name}
                     </TableCell>
-                    <TableCell className="px-1 py-1.5 text-[11px] tabular-nums font-medium">
+                    <TableCell className="px-1 py-1.5 text-[11px] tabular-nums font-medium text-right">
                       {m.volume.toLocaleString("pt-BR")}
                     </TableCell>
                     {!isMobile && (
