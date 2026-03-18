@@ -82,6 +82,18 @@ function countByLevel(node: UnilevelNode, currentLevel: number = 0): Map<number,
   return map;
 }
 
+function volumeByLevel(node: UnilevelNode, currentLevel: number = 0): Map<number, number> {
+  const map = new Map<number, number>();
+  if (!node.children) return map;
+  for (const child of node.children) {
+    const lvl = currentLevel + 1;
+    map.set(lvl, (map.get(lvl) || 0) + child.volume);
+    const childMap = volumeByLevel(child, lvl);
+    childMap.forEach((vol, l) => map.set(l, (map.get(l) || 0) + vol));
+  }
+  return map;
+}
+
 function countDirectChildren(node: UnilevelNode): number {
   return node.children?.length ?? 0;
 }
