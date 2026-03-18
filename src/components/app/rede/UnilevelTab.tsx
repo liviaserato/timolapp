@@ -68,7 +68,14 @@ export function UnilevelTab({ searchQuery }: Props) {
   const [monthRef, setMonthRef] = useState(() => new Date(2026, 2, 1));
   const [periodStart, setPeriodStart] = useState("");
   const [periodEnd, setPeriodEnd] = useState("");
-  const [viewMode, setViewMode] = useState<"tree" | "list">(isMobile ? "list" : "tree");
+  const [viewMode, setViewMode] = useState<"tree" | "list">("list");
+
+  // Default to list on mobile, tree on desktop (only on mount)
+  useEffect(() => {
+    if (isMobile) setViewMode("list");
+    else setViewMode("tree");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Current user's qualification determines max visible level
   const userQualification = mockUnilevelTree.qualification;
@@ -223,9 +230,135 @@ export function UnilevelTab({ searchQuery }: Props) {
       </div>
 
       {/* ═══ Filters ═══ */}
-      <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] gap-3 items-end">
-        {/* Period filter */}
-        <div className="flex items-center gap-2">
+      {/* Desktop: all in one row, wrapping search+sort+toggle to second row when tight */}
+      <div className="hidden md:block">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Period mode + date control */}
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="flex rounded-md border border-input overflow-hidden h-8">
+              <button
+                onClick={() => setFilterMode("month")}
+                className={cn(
+                  "px-3 text-xs transition-colors",
+                  filterMode === "month"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-background text-muted-foreground hover:bg-accent"
+                )}
+              >
+                Mês
+              </button>
+              <button
+                onClick={() => setFilterMode("period")}
+                className={cn(
+                  "px-3 text-xs transition-colors",
+                  filterMode === "period"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-background text-muted-foreground hover:bg-accent"
+                )}
+              >
+                Período
+              </button>
+            </div>
+
+            {filterMode === "month" ? (
+              <div className="flex items-center gap-0 shrink-0 h-8">
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={prevMonth}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-xs font-medium w-[120px] text-center whitespace-nowrap">
+                  {getMonthLabel(monthRef)}
+                </span>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth} disabled={isCurrentMonth}>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5">
+                <Input
+                  type="date"
+                  className="h-8 text-xs w-[130px]"
+                  value={periodStart}
+                  max={new Date().toISOString().split("T")[0]}
+                  onChange={(e) => setPeriodStart(e.target.value)}
+                />
+                <span className="text-xs text-muted-foreground">a</span>
+                <Input
+                  type="date"
+                  className="h-8 text-xs w-[130px]"
+                  value={periodEnd}
+                  max={new Date().toISOString().split("T")[0]}
+                  onChange={(e) => setPeriodEnd(e.target.value)}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Search */}
+          <div className="relative flex-1 min-w-[180px]">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por ID ou nome"
+              className="h-8 pl-8 pr-8 text-xs"
+              value={searchId}
+              onChange={(e) => setSearchId(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+            />
+            {searchId && (
+              <button type="button" onClick={() => setSearchId("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Sort + View toggle */}
+          <div className="flex items-center gap-2 shrink-0">
+            <Select value={sortMode || undefined} onValueChange={(v) => setSortMode(v as SortMode)}>
+              <SelectTrigger className="h-8 text-[11px] w-[140px]">
+                <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
+                <SelectValue placeholder="Classificar" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default" className="text-xs">Ativos primeiro</SelectItem>
+                <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
+                <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
+                <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <div className="flex rounded-md border border-input overflow-hidden h-8">
+              <button
+                onClick={() => setViewMode("tree")}
+                className={cn(
+                  "px-2 transition-colors",
+                  viewMode === "tree"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-background text-muted-foreground hover:bg-accent"
+                )}
+                title="Organograma"
+              >
+                <GitBranch className="h-3.5 w-3.5" />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={cn(
+                  "px-2 transition-colors",
+                  viewMode === "list"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-background text-muted-foreground hover:bg-accent"
+                )}
+                title="Lista"
+              >
+                <List className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile layout */}
+      <div className="md:hidden space-y-2">
+        {/* Row 1: Mês|Período toggle + Sort + View toggle */}
+        <div className="flex items-center justify-between gap-2">
           <div className="flex rounded-md border border-input overflow-hidden h-8">
             <button
               onClick={() => setFilterMode("month")}
@@ -251,8 +384,53 @@ export function UnilevelTab({ searchQuery }: Props) {
             </button>
           </div>
 
+          <div className="flex items-center gap-2">
+            <Select value={sortMode || undefined} onValueChange={(v) => setSortMode(v as SortMode)}>
+              <SelectTrigger className="h-8 text-[11px] w-[130px]">
+                <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
+                <SelectValue placeholder="Classificar" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default" className="text-xs">Ativos primeiro</SelectItem>
+                <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
+                <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
+                <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <div className="flex rounded-md border border-input overflow-hidden h-8">
+              <button
+                onClick={() => setViewMode("tree")}
+                className={cn(
+                  "px-2 transition-colors",
+                  viewMode === "tree"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-background text-muted-foreground hover:bg-accent"
+                )}
+                title="Organograma"
+              >
+                <GitBranch className="h-3.5 w-3.5" />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={cn(
+                  "px-2 transition-colors",
+                  viewMode === "list"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-background text-muted-foreground hover:bg-accent"
+                )}
+                title="Lista"
+              >
+                <List className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Row 2: Date control */}
+        <div>
           {filterMode === "month" ? (
-            <div className="flex items-center gap-0 shrink-0 h-8">
+            <div className="flex items-center justify-center gap-0 h-8">
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={prevMonth}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -267,7 +445,7 @@ export function UnilevelTab({ searchQuery }: Props) {
             <div className="flex items-center gap-1.5">
               <Input
                 type="date"
-                className="h-8 text-xs w-[130px]"
+                className="h-8 text-xs flex-1"
                 value={periodStart}
                 max={new Date().toISOString().split("T")[0]}
                 onChange={(e) => setPeriodStart(e.target.value)}
@@ -275,7 +453,7 @@ export function UnilevelTab({ searchQuery }: Props) {
               <span className="text-xs text-muted-foreground">a</span>
               <Input
                 type="date"
-                className="h-8 text-xs w-[130px]"
+                className="h-8 text-xs flex-1"
                 value={periodEnd}
                 max={new Date().toISOString().split("T")[0]}
                 onChange={(e) => setPeriodEnd(e.target.value)}
@@ -284,7 +462,7 @@ export function UnilevelTab({ searchQuery }: Props) {
           )}
         </div>
 
-        {/* Search */}
+        {/* Row 3: Search */}
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
@@ -299,49 +477,6 @@ export function UnilevelTab({ searchQuery }: Props) {
               <X className="h-3.5 w-3.5" />
             </button>
           )}
-        </div>
-
-        {/* Sort + View toggle */}
-        <div className="flex items-center gap-2">
-          <Select value={sortMode || undefined} onValueChange={(v) => setSortMode(v as SortMode)}>
-            <SelectTrigger className="h-8 text-[11px] w-[140px]">
-              <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
-              <SelectValue placeholder="Classificar" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="default" className="text-xs">Ativos primeiro</SelectItem>
-              <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
-              <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
-              <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <div className="flex rounded-md border border-input overflow-hidden h-8">
-            <button
-              onClick={() => setViewMode("tree")}
-              className={cn(
-                "px-2 transition-colors",
-                viewMode === "tree"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-background text-muted-foreground hover:bg-accent"
-              )}
-              title="Organograma"
-            >
-              <GitBranch className="h-3.5 w-3.5" />
-            </button>
-            <button
-              onClick={() => setViewMode("list")}
-              className={cn(
-                "px-2 transition-colors",
-                viewMode === "list"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-background text-muted-foreground hover:bg-accent"
-              )}
-              title="Lista"
-            >
-              <List className="h-3.5 w-3.5" />
-            </button>
-          </div>
         </div>
       </div>
 
