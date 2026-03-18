@@ -522,26 +522,23 @@ export function UnilevelTab({ searchQuery }: Props) {
         {/* Header with level dropdown */}
         <div className="flex items-center justify-between p-3 bg-primary text-primary-foreground rounded-t-lg">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold">Nível</span>
             <Select value={String(selectedLevel)} onValueChange={(v) => setSelectedLevel(Number(v))}>
-              <SelectTrigger className="h-7 w-[80px] text-xs bg-white/20 border-0 text-primary-foreground">
-                <SelectValue />
+              <SelectTrigger className="h-8 w-[110px] text-sm font-semibold bg-white/20 border-0 text-primary-foreground">
+                <SelectValue placeholder="Nível" />
               </SelectTrigger>
               <SelectContent>
-                {Array.from({ length: 10 }, (_, i) => i + 1).map((lvl) => {
+                {availableLevels.map((lvl) => {
                   const locked = lvl > maxLevel;
-                  const hasMembers = availableLevels.includes(lvl);
                   return (
                     <SelectItem
                       key={lvl}
                       value={String(lvl)}
-                      className={cn("text-xs", locked && "text-muted-foreground")}
+                      className={cn("text-sm font-semibold", locked && "text-muted-foreground")}
                       disabled={locked}
                     >
                       <span className="flex items-center gap-1.5">
-                        {String(lvl)}
+                        Nível {lvl}
                         {locked && <Lock className="h-3 w-3" />}
-                        {!locked && !hasMembers && <span className="text-muted-foreground">—</span>}
                       </span>
                     </SelectItem>
                   );
@@ -550,10 +547,10 @@ export function UnilevelTab({ searchQuery }: Props) {
             </Select>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-[18px] bg-white/20 text-primary-foreground border-0">
+            <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 bg-white/20 text-primary-foreground border-0 font-semibold">
               {selectedLevelMembers.reduce((s, m) => s + m.volume, 0).toLocaleString("pt-BR")} pts
             </Badge>
-            <span className="text-[10px] text-primary-foreground/70">
+            <span className="text-xs text-primary-foreground/80 font-medium">
               {selectedLevelMembers.length} {selectedLevelMembers.length === 1 ? "pessoa" : "pessoas"}
             </span>
           </div>
