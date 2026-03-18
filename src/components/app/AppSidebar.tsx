@@ -50,7 +50,7 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
   const navItemClass =
     "flex h-11 items-center gap-3 px-4 text-[15px] font-medium leading-none text-primary-foreground/90 transition-colors hover:bg-[hsl(var(--app-sidebar-hover))] whitespace-nowrap overflow-hidden border-l-[3px] border-transparent";
 
-  const renderLink = (item: { label: string; path: string; icon: string | null; lucideIcon?: React.ComponentType<{ className?: string }> }) => (
+  const renderLink = (item: { label: string; path: string; icon: string }) => (
     <Link
       key={item.path}
       to={item.path}
@@ -62,11 +62,7 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
       )}
     >
       <span className="flex h-5 w-5 shrink-0 items-center justify-center">
-        {item.icon ? (
-          <img src={item.icon} alt="" className="h-5 w-5 object-contain" />
-        ) : item.lucideIcon ? (
-          <item.lucideIcon className="h-5 w-5" />
-        ) : null}
+        <img src={item.icon} alt="" className="h-5 w-5 object-contain" />
       </span>
       {!collapsed && <span>{item.label}</span>}
     </Link>
