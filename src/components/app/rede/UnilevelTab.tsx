@@ -25,6 +25,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 /* ── Sort ── */
 type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status" | "qualification";
+type ListMode = "by_level" | "by_direct";
 
 const qualificationRank: Record<string, number> = {
   consultor: 0, distribuidor: 1, lider: 2, rubi: 3, esmeralda: 4, diamante: 5,
