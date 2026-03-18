@@ -291,7 +291,7 @@ export default function AtualizacaoCadastral() {
   const errorClass = (field: string) => fieldErrors[field] ? "border-destructive" : "";
 
   return (
-    <div>
+    <div className="max-w-2xl mx-auto">
       <header className="mb-4">
         <h1 className="text-2xl font-bold text-primary">Atualização Cadastral</h1>
         <p className="text-sm text-muted-foreground mt-1">
