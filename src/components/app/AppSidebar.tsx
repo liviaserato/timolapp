@@ -76,6 +76,23 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
 
       {/* Bottom section */}
       <div className="mt-auto">
+        {/* Atualização Cadastral button */}
+        <div className="mx-3 mb-2">
+          <Link
+            to="/app/atualizacao-cadastral"
+            onClick={onNavigate}
+            title={collapsed ? "Atualização Cadastral" : undefined}
+            className={cn(
+              "flex items-center justify-center gap-2 rounded-md px-3 py-2 text-xs font-semibold transition-colors",
+              "bg-primary-foreground/15 text-primary-foreground hover:bg-primary-foreground/25",
+              isActive("/app/atualizacao-cadastral") && "bg-primary-foreground/25"
+            )}
+          >
+            {!collapsed && <span>Atualização Cadastral</span>}
+            {collapsed && <span className="text-[10px]">Atual.</span>}
+          </Link>
+        </div>
+
         {/* Separator */}
         <div className="mx-3 border-t border-primary-foreground/20" />
 
