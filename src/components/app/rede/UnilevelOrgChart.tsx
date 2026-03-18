@@ -386,7 +386,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                     {hasNodes ? (
                       <div
                         className="transition-transform duration-300 ease-out"
-                        style={{ paddingTop: CARD_PAD_Y, transform: `translateX(${info.translateX}px)` }}
+                        style={{ paddingTop: CARD_PAD_Y, transform: `translateX(${info.translateX + dragOffset}px)` }}
                       >
                         <div className="flex" style={{ gap: CARD_GAP }}>
                           {info.nodes.map(node => {
