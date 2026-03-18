@@ -788,7 +788,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                                 <TableCell className="px-2.5 py-1.5 text-[11px] tabular-nums text-center w-[80px]">
                                   {m.id}
                                 </TableCell>
-                                <TableCell className="px-2.5 py-1.5 text-center w-[28px]">
+                                <TableCell className="px-1 py-1.5 text-center w-[40px]">
                                   <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
                                 </TableCell>
                                 <TableCell className="px-2.5 py-1.5 text-[11px] truncate w-auto">
