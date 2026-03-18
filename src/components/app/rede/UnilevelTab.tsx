@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import {
   Users, UserCheck, Target, TrendingUp, Layers, Search, X, ArrowUpDown,
   PlayCircle, Lightbulb, List, GitBranch, RotateCcw, Calendar,
-  ChevronDown, ChevronRight, ChevronLeft, Award,
+  ChevronDown, ChevronRight, ChevronLeft, Award, Lock,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
