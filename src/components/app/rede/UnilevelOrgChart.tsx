@@ -474,12 +474,11 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
               </div>
 
               {/* Level rows 1–10 — each independently draggable */}
-              {Array.from({ length: TOTAL_LEVELS }, (_, i) => {
+              {Array.from({ length: maxVisibleLevel }, (_, i) => {
                 const lvl = i + 1;
                 const isActive = lvl <= maxLevel;
                 const info = levelData[lvl];
                 const hasNodes = info.nodes.length > 0;
-                const hasAnyData = (levelCounts.get(lvl) || 0) > 0;
                 const effectiveTx = info.translateX + (levelDragOffsets[lvl] || 0);
 
                 return (
@@ -491,6 +490,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                     onPointerMove={hasNodes ? handleLevelPointerMove : undefined}
                     onPointerUp={hasNodes ? handleLevelPointerUp : undefined}
                     onPointerCancel={hasNodes ? handleLevelPointerUp : undefined}
+                    onPointerLeave={hasNodes ? handleLevelPointerLeave : undefined}
                   >
                     {hasNodes ? (
                       <div
