@@ -207,6 +207,15 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
   const levelCounts = useMemo(() => countByLevel(root), [root]);
   const levelVolumes = useMemo(() => volumeByLevel(root), [root]);
 
+  // Collapse all levels when sortMode changes (keep only root expanded = show level 1)
+  const prevSortRef = useRef(sortMode);
+  useEffect(() => {
+    if (prevSortRef.current !== sortMode) {
+      prevSortRef.current = sortMode;
+      setExpandedIds(new Set([root.id]));
+    }
+  }, [sortMode, root.id]);
+
   const toggleExpand = useCallback((id: string) => {
     if (id === root.id) return;
     if (dragState.current.moved) return;
