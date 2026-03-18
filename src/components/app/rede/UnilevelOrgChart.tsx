@@ -212,7 +212,8 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                 )}
                 <span className="text-[9px]">
                   {count > 0 ? (
-                    <Badge variant="secondary" className="text-[9px] px-1.5 py-0 h-4 mt-0.5">
+                    <Badge variant="secondary" className={cn("text-[9px] px-1.5 py-0 h-4 mt-0.5", !isActive && "opacity-50")}>
+                      {!isActive && <Lock className="h-2.5 w-2.5 mr-0.5" />}
                       {count}
                     </Badge>
                   ) : (
