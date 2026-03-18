@@ -767,7 +767,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                 {directSubtreeLevels.map((lvl) => {
                   const members = directSubtreeByLevel[lvl] || [];
                   const levelPoints = members.reduce((s, m) => s + m.volume, 0);
-                  const indent = (lvl - 1) * 16; // 16px indent per level
+                  
                   return (
                     <div key={lvl}>
                       {/* Level header */}
