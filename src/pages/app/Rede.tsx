@@ -14,9 +14,9 @@ export default function Rede() {
       </div>
 
       <Tabs defaultValue="binario" className="w-full">
-        <TabsList className="w-full sm:w-auto">
-          <TabsTrigger value="binario" className="flex-1 sm:flex-none">Binário</TabsTrigger>
-          <TabsTrigger value="unilevel" className="flex-1 sm:flex-none">Unilevel</TabsTrigger>
+        <TabsList className="w-full grid grid-cols-2">
+          <TabsTrigger value="binario">Binário</TabsTrigger>
+          <TabsTrigger value="unilevel">Unilevel</TabsTrigger>
         </TabsList>
 
         <TabsContent value="binario">
