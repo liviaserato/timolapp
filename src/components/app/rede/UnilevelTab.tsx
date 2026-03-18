@@ -110,8 +110,78 @@ export function UnilevelTab({ searchQuery }: Props) {
     return sortMembers(result, (sortMode || "default") as SortMode);
   }, [allMembers, searchId, searchQuery, sortMode]);
 
+  // List mode: by_level or by_direct
+  const [listMode, setListMode] = useState<ListMode>("by_level");
+
   // Selected level for list view
   const [selectedLevel, setSelectedLevel] = useState(1);
+
+  // Selected direct member for "by_direct" mode
+  const [selectedDirectId, setSelectedDirectId] = useState<string>("");
+
+  // Direct members list for the dropdown
+  const directMembers = useMemo(() => {
+    return allMembers.filter((m) => m.isDirect);
+  }, [allMembers]);
+
+  // Set default selected direct when switching to by_direct mode
+  useEffect(() => {
+    if (listMode === "by_direct" && !selectedDirectId && directMembers.length > 0) {
+      setSelectedDirectId(directMembers[0].id);
+    }
+  }, [listMode, selectedDirectId, directMembers]);
+
+  // Flatten the subtree of a specific direct member
+  const directSubtreeMembers = useMemo(() => {
+    if (listMode !== "by_direct" || !selectedDirectId) return [];
+    // Find the direct node in the tree
+    const directNode = mockUnilevelTree.children?.find((c) => c.id === selectedDirectId);
+    if (!directNode) return [];
+    // Include the direct member itself as level 1, then flatten children
+    const result: FlatUnilevelMember[] = [{
+      ...directNode,
+      level: 1,
+      isDirect: true,
+    } as FlatUnilevelMember];
+    // Flatten descendants starting from level 2
+    function flattenNode(node: UnilevelNode, lvl: number) {
+      if (!node.children) return;
+      for (const child of node.children) {
+        if (lvl + 1 > maxLevel) continue;
+        result.push({
+          ...child,
+          level: lvl + 1,
+          isDirect: false,
+        } as FlatUnilevelMember);
+        flattenNode(child, lvl + 1);
+      }
+    }
+    flattenNode(directNode, 1);
+    // Apply search filter
+    const q = (searchId || searchQuery || "").toLowerCase().trim();
+    let filtered = result;
+    if (q) {
+      filtered = result.filter(
+        (m) => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q)
+      );
+    }
+    return sortMembers(filtered, (sortMode || "default") as SortMode);
+  }, [listMode, selectedDirectId, maxLevel, searchId, searchQuery, sortMode]);
+
+  // Group by level for "by_direct" mode
+  const directSubtreeByLevel = useMemo(() => {
+    const grouped: Record<number, FlatUnilevelMember[]> = {};
+    for (const m of directSubtreeMembers) {
+      const lvl = m.level ?? 1;
+      if (!grouped[lvl]) grouped[lvl] = [];
+      grouped[lvl].push(m);
+    }
+    return grouped;
+  }, [directSubtreeMembers]);
+
+  const directSubtreeLevels = useMemo(() => {
+    return Object.keys(directSubtreeByLevel).map(Number).sort((a, b) => a - b);
+  }, [directSubtreeByLevel]);
 
   // Members for the selected level
   const selectedLevelMembers = useMemo(() => {
