@@ -495,7 +495,8 @@ export function UnilevelTab({ searchQuery }: Props) {
         </Card>
       ) : null}
 
-      {/* ═══ Level Table ═══ */}
+      {/* ═══ Level Table (list view only) ═══ */}
+      {viewMode === "list" && (
       <div className="space-y-3">
         {levelGroups.length === 0 && (
           <Card>
@@ -515,6 +516,7 @@ export function UnilevelTab({ searchQuery }: Props) {
           />
         ))}
       </div>
+      )}
 
       {/* Qualification legend */}
       <QualificationLegend />
