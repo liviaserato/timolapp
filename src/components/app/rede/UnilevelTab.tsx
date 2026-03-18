@@ -573,7 +573,7 @@ function LevelTable({
     <Card>
       <button
         onClick={() => setCollapsed((p) => !p)}
-        className="w-full flex items-center justify-between p-3 hover:bg-accent/50 transition-colors rounded-t-lg"
+        className="w-full flex items-center justify-between p-3 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-t-lg"
       >
         <div className="flex items-center gap-2">
           {collapsed ? (
