@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 const TOTAL_LEVELS = 10;
 const ROW_HEIGHT = 120;
 const NODE_W = 90;
-const LEVEL_LABEL_W = 52;
+const LEVEL_LABEL_W = 46;
 const SCROLL_AMOUNT = 300;
 
 /* ── Sort modes (must match UnilevelTab) ── */
