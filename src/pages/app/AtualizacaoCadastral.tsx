@@ -622,8 +622,8 @@ export default function AtualizacaoCadastral() {
         <DialogContent className="max-w-md">
           {divergenceSent ? (
             <div className="flex flex-col items-center py-6 gap-4">
-              <div className="h-14 w-14 rounded-full bg-green-100 flex items-center justify-center">
-                <CheckCircle2 className="h-7 w-7 text-green-600" />
+              <div className="h-14 w-14 rounded-full bg-success/10 flex items-center justify-center">
+                <CheckCircle2 className="h-7 w-7 text-success" />
               </div>
               <div className="text-center space-y-1">
                 <h3 className="text-lg font-semibold text-foreground">Divergência registrada</h3>
