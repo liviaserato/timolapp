@@ -574,7 +574,7 @@ export default function AtualizacaoCadastral() {
                 <button
                   type="button"
                   className="text-primary underline underline-offset-2 hover:text-primary/80"
-                  onClick={() => window.open("/cadastro?contract=1", "_blank")}
+                  onClick={() => setContractOpen(true)}
                 >
                   Contrato de Franquia TIMOL
                 </button>{" "}
