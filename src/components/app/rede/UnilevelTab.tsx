@@ -728,13 +728,13 @@ export function UnilevelTab({ searchQuery }: Props) {
                         <TableCell className={cn("px-2.5 py-1.5 text-[11px] tabular-nums truncate text-center", m.isDirect && "font-bold")}>
                           {m.id}
                         </TableCell>
-                        <TableCell className={cn("px-2.5 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
-                          {m.name}
-                        </TableCell>
                         <TableCell className="px-2.5 py-1.5 whitespace-nowrap">
                           <span style={{ color: q.color }} className="text-xs" title={q.label}>
                             {q.icon}{!isMobile && <span className="ml-1 text-[10px]">{q.label}</span>}
                           </span>
+                        </TableCell>
+                        <TableCell className={cn("px-2.5 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
+                          {m.name}
                         </TableCell>
                         <TableCell className="px-2.5 py-1.5 text-[11px] tabular-nums font-medium text-right">
                           {m.volume.toLocaleString("pt-BR")}
