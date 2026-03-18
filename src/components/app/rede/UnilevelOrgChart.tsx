@@ -547,6 +547,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
           )}
         </div>
       </div>
+      <div ref={bottomRef} />
     </div>
   );
 }
