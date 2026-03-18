@@ -234,7 +234,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     return data;
   }, [root, expandedIds, containerWidth, sortMode]);
 
-  /* ── Compute SVG connectors ── */
+  /* ── Compute SVG connectors (includes dragOffset) ── */
   const connectors = useMemo(() => {
     if (levelData.length === 0) return [];
     const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
@@ -244,59 +244,44 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
       if (!childInfo || childInfo.nodes.length === 0) continue;
 
       const parentInfo = levelData[lvl - 1];
-      // Find expanded parent index in the parent level
       let pIdx: number;
       if (lvl === 1) {
-        pIdx = 0; // root
+        pIdx = 0;
       } else {
         pIdx = parentInfo.nodes.findIndex(n => expandedIds.has(n.id));
         if (pIdx < 0) continue;
       }
 
-      // Parent center X
-      const parentCX = parentInfo.translateX + pIdx * (NODE_W + CARD_GAP) + NODE_W / 2;
-
-      // Parent exit Y (below card body + expand button; root has no button)
+      const parentCX = parentInfo.translateX + dragOffset + pIdx * (NODE_W + CARD_GAP) + NODE_W / 2;
       const parentRowY = (lvl - 1) * ROW_H;
       const parentExitY = parentRowY + CARD_PAD_Y + CARD_BODY_H + (lvl === 1 ? 0 : EXPAND_BTN_H);
-
-      // Child entry Y (top of card)
       const childRowY = lvl * ROW_H;
       const childEntryY = childRowY + CARD_PAD_Y;
-
-      // Midpoint for horizontal connector
       const midY = (parentExitY + childEntryY) / 2;
 
-      // Parent vertical down to midY
       lines.push({ x1: parentCX, y1: parentExitY, x2: parentCX, y2: midY });
 
       if (childInfo.nodes.length === 1) {
-        // Single child → continuous vertical (no horizontal bar)
-        const childCX = childInfo.translateX + NODE_W / 2;
-        // If parent and child aren't aligned, add horizontal segment
+        const childCX = childInfo.translateX + dragOffset + NODE_W / 2;
         if (Math.abs(parentCX - childCX) > 1) {
           lines.push({ x1: parentCX, y1: midY, x2: childCX, y2: midY });
         }
         lines.push({ x1: childCX, y1: midY, x2: childCX, y2: childEntryY });
       } else {
-        // Multiple children → horizontal bar + vertical stubs
-        const firstCX = childInfo.translateX + NODE_W / 2;
-        const lastCX = childInfo.translateX + (childInfo.nodes.length - 1) * (NODE_W + CARD_GAP) + NODE_W / 2;
-
-        // Extend horizontal bar to include parent connection point if needed
+        const firstCX = childInfo.translateX + dragOffset + NODE_W / 2;
+        const lastCX = childInfo.translateX + dragOffset + (childInfo.nodes.length - 1) * (NODE_W + CARD_GAP) + NODE_W / 2;
         const hLeft = Math.min(firstCX, parentCX);
         const hRight = Math.max(lastCX, parentCX);
         lines.push({ x1: hLeft, y1: midY, x2: hRight, y2: midY });
 
-        // Vertical stub from each child up to horizontal bar
         for (let i = 0; i < childInfo.nodes.length; i++) {
-          const cx = childInfo.translateX + i * (NODE_W + CARD_GAP) + NODE_W / 2;
+          const cx = childInfo.translateX + dragOffset + i * (NODE_W + CARD_GAP) + NODE_W / 2;
           lines.push({ x1: cx, y1: midY, x2: cx, y2: childEntryY });
         }
       }
     }
     return lines;
-  }, [levelData, expandedIds]);
+  }, [levelData, expandedIds, dragOffset]);
 
   const totalH = (TOTAL_LEVELS + 1) * ROW_H;
 
