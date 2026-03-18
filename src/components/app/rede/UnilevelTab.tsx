@@ -773,7 +773,6 @@ export function UnilevelTab({ searchQuery }: Props) {
                       {/* Level header */}
                       <div
                         className="flex items-center justify-between px-3 py-1.5 bg-muted/60 border-b"
-                        style={{ paddingLeft: 12 + indent }}
                       >
                         <span className="text-[11px] font-semibold text-foreground">
                           Nível {lvl}
