@@ -560,7 +560,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                 {!isMobile && (
                   <>
                     <TableHead className="text-[10px] px-1 w-[100px]">Origem</TableHead>
-                    <TableHead className="text-[10px] px-1 w-[52px]">Nível</TableHead>
+                    <TableHead className="text-[10px] px-1 w-[52px] text-center">Nível</TableHead>
                   </>
                 )}
                 <TableHead className="text-[10px] px-1 text-center w-[28px]">Qual.</TableHead>
@@ -591,7 +591,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                         <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground truncate" title={lineLabel}>
                           {lineLabel}
                         </TableCell>
-                        <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground">
+                        <TableCell className="px-1 py-1.5 text-[10px] text-muted-foreground text-center">
                           {m.level ?? 1}
                         </TableCell>
                       </>
