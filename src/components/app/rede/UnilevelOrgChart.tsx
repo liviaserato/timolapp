@@ -8,8 +8,8 @@ import { Badge } from "@/components/ui/badge";
 /* ── Constants ── */
 const TOTAL_LEVELS = 10;
 const ROW_HEIGHT = 120;
-const NODE_W = 140;
-const LEVEL_LABEL_W = 80;
+const NODE_W = 110;
+const LEVEL_LABEL_W = 70;
 const SCROLL_AMOUNT = 300;
 
 /* ── Sort modes (must match UnilevelTab) ── */
@@ -321,7 +321,7 @@ function LevelRow({
         className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide mx-1"
         style={{ scrollbarWidth: "none" }}
       >
-        <div className="flex items-start gap-2 py-2 px-6 w-max">
+        <div className="flex items-start gap-1 py-2 px-4 w-max">
           {nodes.map((node) => {
             const hasChildren = !!(node.children && node.children.length > 0);
             const canExpand = hasChildren && targetLevel < maxLevel;
@@ -372,7 +372,6 @@ function NodeCard({
   highlightRef?: React.RefObject<HTMLDivElement>;
 }) {
   const q = qualificationConfig[node.qualification] ?? qualificationConfig.consultor;
-  const initial = node.name.charAt(0).toUpperCase();
   const firstName = node.name.split(" ")[0];
   const directCount = countDirectChildren(node);
 
@@ -383,43 +382,32 @@ function NodeCard({
         ref={highlightRef as any}
         onClick={onSelect}
         className={cn(
-          "w-full rounded-lg border bg-card p-2 cursor-pointer transition-all hover:shadow-md",
+          "w-full rounded-lg border bg-card p-1.5 cursor-pointer transition-all hover:shadow-md",
           isSelected && "border-primary ring-2 ring-primary/30",
           isHighlighted && !isSelected && "border-primary/60 bg-primary/5",
           !isSelected && !isHighlighted && "border-border",
         )}
       >
-        {/* Circle initial */}
-        <div className="flex justify-center mb-1.5">
-          <div
-            className={cn(
-              "flex items-center justify-center rounded-full font-bold",
-              isRoot
-                ? "h-10 w-10 text-sm bg-primary text-primary-foreground"
-                : "h-9 w-9 text-xs bg-muted text-foreground"
-            )}
-          >
-            {initial}
-          </div>
-        </div>
-
-        {/* Name */}
-        <p className="text-[11px] font-semibold text-foreground text-center leading-tight truncate">
-          {firstName}{isRoot ? " (Eu)" : ""}
+        {/* ID — highlighted */}
+        <p className={cn(
+          "text-[11px] font-bold text-center leading-tight",
+          isRoot ? "text-primary" : "text-foreground"
+        )}>
+          {isRoot ? `ID ${node.id} (Eu)` : `ID ${node.id}`}
         </p>
 
-        {/* ID */}
-        <p className="text-[10px] text-muted-foreground text-center leading-none mt-0.5">
-          ID {node.id}
+        {/* Name */}
+        <p className="text-[10px] text-muted-foreground text-center leading-tight truncate mt-0.5">
+          {firstName}
         </p>
 
         {/* Qualification */}
-        <p className="text-[10px] text-muted-foreground text-center leading-none mt-0.5">
+        <p className="text-[9px] text-muted-foreground text-center leading-none mt-0.5">
           {q.label}
         </p>
 
         {/* Direct count */}
-        <p className="text-[9px] text-muted-foreground text-center mt-1">
+        <p className="text-[9px] text-muted-foreground text-center mt-0.5">
           {directCount} {directCount === 1 ? "direto" : "diretos"}
         </p>
       </div>
