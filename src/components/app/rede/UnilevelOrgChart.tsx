@@ -148,18 +148,24 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     if (e.button !== 0) return;
     const currentOffset = levelDragOffsets[level] || 0;
     dragState.current = { active: true, level, startX: e.clientX, startOffset: currentOffset, moved: false };
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   }, [levelDragOffsets]);
 
   const handleLevelPointerMove = useCallback((e: React.PointerEvent) => {
     if (!dragState.current.active) return;
     const dx = e.clientX - dragState.current.startX;
     if (Math.abs(dx) > 3) dragState.current.moved = true;
-    setLevelDragOffsets(prev => ({ ...prev, [dragState.current.level]: dragState.current.startOffset + dx }));
+    if (dragState.current.moved) {
+      setLevelDragOffsets(prev => ({ ...prev, [dragState.current.level]: dragState.current.startOffset + dx }));
+    }
   }, []);
 
   const handleLevelPointerUp = useCallback(() => {
+    const wasDrag = dragState.current.moved;
     dragState.current.active = false;
+    // Reset moved flag after a microtask so toggleExpand can check it
+    if (wasDrag) {
+      setTimeout(() => { dragState.current.moved = false; }, 0);
+    }
   }, []);
 
   // Reset per-level drag offsets when expanding/collapsing
