@@ -386,7 +386,21 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
         >
           {containerWidth > 0 && levelData.length > 0 && (
             <>
-
+              {/* SVG connector overlay */}
+              <svg
+                className="absolute inset-0 pointer-events-none z-[1]"
+                width={containerWidth}
+                height={totalH}
+              >
+                {connectors.map((c, i) => (
+                  <line
+                    key={i}
+                    x1={c.x1} y1={c.y1} x2={c.x2} y2={c.y2}
+                    stroke={CONN_COLOR}
+                    strokeWidth={CONN_W}
+                  />
+                ))}
+              </svg>
               {/* Root row (level 0) — always centered, not draggable */}
               <div className="absolute left-0 right-0 z-[2]" style={{ top: 0, height: ROW_H }}>
                 <div
