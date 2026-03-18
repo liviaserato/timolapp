@@ -767,13 +767,12 @@ export function UnilevelTab({ searchQuery }: Props) {
                 {directSubtreeLevels.map((lvl) => {
                   const members = directSubtreeByLevel[lvl] || [];
                   const levelPoints = members.reduce((s, m) => s + m.volume, 0);
-                  const indent = (lvl - 1) * 16; // 16px indent per level
+                  
                   return (
                     <div key={lvl}>
                       {/* Level header */}
                       <div
                         className="flex items-center justify-between px-3 py-1.5 bg-muted/60 border-b"
-                        style={{ paddingLeft: 12 + indent }}
                       >
                         <span className="text-[11px] font-semibold text-foreground">
                           Nível {lvl}
@@ -794,7 +793,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                             const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
                             return (
                               <TableRow key={m.id} className="hover:bg-accent/40">
-                                <TableCell className="py-1.5 w-[24px]" style={{ paddingLeft: 10 + indent }}>
+                                <TableCell className="px-2.5 py-1.5 w-[24px]">
                                   <div className={cn("h-2 w-2 rounded-full mx-auto", m.active ? "bg-success" : "bg-destructive")} />
                                 </TableCell>
                                 <TableCell className="px-2.5 py-1.5 text-[11px] tabular-nums text-center w-[80px]">
