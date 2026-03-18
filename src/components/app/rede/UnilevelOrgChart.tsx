@@ -15,6 +15,11 @@ const LEVEL_LABEL_W = 56;
 /* Vertical geometry inside each row */
 const CARD_PAD_Y = 14;
 const CARD_BODY_H = 68;
+const EXPAND_BTN_H = 24;
+
+/* Connector styling — same as binary tree */
+const CONN_COLOR = "hsl(var(--border))";
+const CONN_W = 1.5;
 
 /* ── Sort ── */
 type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status";
@@ -119,8 +124,28 @@ function collectNodesAtLevel(
 /* ── Level info for rendering ── */
 interface LevelInfo {
   nodes: UnilevelNode[];
-  anchorIdx: number; // index of expanded node (centering anchor), or -1
+  anchorIdx: number; // index of selected/expanded node (centering anchor), or -1
   translateX: number;
+}
+
+function findNodeById(node: UnilevelNode, id: string): UnilevelNode | null {
+  if (node.id === id) return node;
+  if (!node.children) return null;
+  for (const child of node.children) {
+    const found = findNodeById(child, id);
+    if (found) return found;
+  }
+  return null;
+}
+
+function collectDescendantIds(node: UnilevelNode): string[] {
+  const ids: string[] = [];
+  if (node.children) {
+    for (const child of node.children) {
+      ids.push(child.id, ...collectDescendantIds(child));
+    }
+  }
+  return ids;
 }
 
 /* ── Props ── */
@@ -181,9 +206,22 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     setExpandedIds(prev => {
       const next = new Set(prev);
       if (next.has(id)) {
+        // Collapsing: remove this node and all its descendants
         next.delete(id);
+        const path = findPathToId(root, id);
+        if (path) {
+          const node = findNodeById(root, id);
+          if (node) collectDescendantIds(node).forEach(did => next.delete(did));
+        }
       } else {
-        if (siblingIds) siblingIds.forEach(sid => next.delete(sid));
+        // Expanding: close siblings (and their descendants) then add this
+        if (siblingIds) {
+          siblingIds.forEach(sid => {
+            next.delete(sid);
+            const sNode = findNodeById(root, sid);
+            if (sNode) collectDescendantIds(sNode).forEach(did => next.delete(did));
+          });
+        }
         next.add(id);
       }
       return next;
@@ -244,6 +282,58 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
     return data;
   }, [root, expandedIds, containerWidth, sortMode]);
 
+  /* ── Compute SVG connectors with per-level drag offsets ── */
+  const connectors = useMemo(() => {
+    if (levelData.length === 0) return [];
+    const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
+
+    for (let lvl = 1; lvl <= TOTAL_LEVELS; lvl++) {
+      const childInfo = levelData[lvl];
+      if (!childInfo || childInfo.nodes.length === 0) continue;
+
+      const parentInfo = levelData[lvl - 1];
+      let pIdx: number;
+      if (lvl === 1) {
+        pIdx = 0;
+      } else {
+        pIdx = parentInfo.nodes.findIndex(n => expandedIds.has(n.id) && n.children?.length);
+        if (pIdx < 0) continue;
+      }
+
+      const parentDrag = levelDragOffsets[lvl - 1] || 0;
+      const childDrag = levelDragOffsets[lvl] || 0;
+
+      const parentCX = parentInfo.translateX + parentDrag + pIdx * (NODE_W + CARD_GAP) + NODE_W / 2;
+      const parentRowY = (lvl - 1) * ROW_H;
+      const parentExitY = parentRowY + CARD_PAD_Y + CARD_BODY_H + (lvl === 1 ? 0 : EXPAND_BTN_H);
+      const childRowY = lvl * ROW_H;
+      const childEntryY = childRowY + CARD_PAD_Y;
+      const midY = (parentExitY + childEntryY) / 2;
+
+      lines.push({ x1: parentCX, y1: parentExitY, x2: parentCX, y2: midY });
+
+      if (childInfo.nodes.length === 1) {
+        const childCX = childInfo.translateX + childDrag + NODE_W / 2;
+        if (Math.abs(parentCX - childCX) > 1) {
+          lines.push({ x1: parentCX, y1: midY, x2: childCX, y2: midY });
+        }
+        lines.push({ x1: childCX, y1: midY, x2: childCX, y2: childEntryY });
+      } else {
+        const firstCX = childInfo.translateX + childDrag + NODE_W / 2;
+        const lastCX = childInfo.translateX + childDrag + (childInfo.nodes.length - 1) * (NODE_W + CARD_GAP) + NODE_W / 2;
+        const hLeft = Math.min(firstCX, parentCX);
+        const hRight = Math.max(lastCX, parentCX);
+        lines.push({ x1: hLeft, y1: midY, x2: hRight, y2: midY });
+
+        for (let i = 0; i < childInfo.nodes.length; i++) {
+          const cx = childInfo.translateX + childDrag + i * (NODE_W + CARD_GAP) + NODE_W / 2;
+          lines.push({ x1: cx, y1: midY, x2: cx, y2: childEntryY });
+        }
+      }
+    }
+    return lines;
+  }, [levelData, expandedIds, levelDragOffsets]);
+
   const totalH = (TOTAL_LEVELS + 1) * ROW_H;
 
   return (
@@ -263,7 +353,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
               <div
                 key={lvl}
                 className={cn(
-                  "flex flex-col items-center justify-center text-[10px] border-t border-border/30",
+                  "flex flex-col items-center justify-center text-[10px]",
                   isActive ? "text-muted-foreground" : "text-muted-foreground/30"
                 )}
                 style={{ height: ROW_H }}
@@ -296,7 +386,21 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
         >
           {containerWidth > 0 && levelData.length > 0 && (
             <>
-
+              {/* SVG connector overlay */}
+              <svg
+                className="absolute inset-0 pointer-events-none z-[1]"
+                width={containerWidth}
+                height={totalH}
+              >
+                {connectors.map((c, i) => (
+                  <line
+                    key={i}
+                    x1={c.x1} y1={c.y1} x2={c.x2} y2={c.y2}
+                    stroke={CONN_COLOR}
+                    strokeWidth={CONN_W}
+                  />
+                ))}
+              </svg>
               {/* Root row (level 0) — always centered, not draggable */}
               <div className="absolute left-0 right-0 z-[2]" style={{ top: 0, height: ROW_H }}>
                 <div
@@ -329,7 +433,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                 return (
                   <div
                     key={lvl}
-                    className="absolute left-0 right-0 border-t border-border/30 z-[2] select-none"
+                    className="absolute left-0 right-0 z-[2] select-none"
                     style={{ top: lvl * ROW_H, height: ROW_H, cursor: hasNodes ? "grab" : undefined, touchAction: hasNodes ? "pan-y" : undefined }}
                     onPointerDown={hasNodes ? (e) => handleLevelPointerDown(e, lvl) : undefined}
                     onPointerMove={hasNodes ? handleLevelPointerMove : undefined}
@@ -408,15 +512,14 @@ function NodeCard({
     <div className="flex flex-col items-center shrink-0" style={{ width: NODE_W }}>
       <div
         ref={highlightRef as any}
-        onClick={!isRoot && hasChildren ? onToggle : undefined}
+        onClick={!isRoot ? onToggle : undefined}
         className={cn(
           "w-full rounded-lg p-1.5 transition-all",
           isRoot
             ? "bg-primary text-primary-foreground border-none"
             : [
-                "border bg-card",
-                hasChildren && "cursor-pointer hover:shadow-md",
-                isExpanded && hasChildren && "border-primary ring-2 ring-primary/30",
+                "border bg-card cursor-pointer hover:shadow-md",
+                isExpanded && "border-primary ring-2 ring-primary/30",
                 isHighlighted && !isExpanded && "border-primary/60 bg-primary/5",
                 !isExpanded && !isHighlighted && "border-border",
               ],
