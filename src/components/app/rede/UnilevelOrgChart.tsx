@@ -139,6 +139,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
   const levelCounts = useMemo(() => countByLevel(root), [root]);
 
   const toggleExpand = useCallback((id: string) => {
+    if (id === root.id) return; // Root is always expanded
     const siblingIds = findSiblingIds(root, id);
     setExpandedIds(prev => {
       const next = new Set(prev);
