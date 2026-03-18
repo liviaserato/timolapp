@@ -433,7 +433,7 @@ export function UnilevelOrgChart({ root, maxLevel, searchQuery, sortMode = "defa
                 return (
                   <div
                     key={lvl}
-                    className="absolute left-0 right-0 border-t border-border/30 z-[2] select-none"
+                    className="absolute left-0 right-0 z-[2] select-none"
                     style={{ top: lvl * ROW_H, height: ROW_H, cursor: hasNodes ? "grab" : undefined, touchAction: hasNodes ? "pan-y" : undefined }}
                     onPointerDown={hasNodes ? (e) => handleLevelPointerDown(e, lvl) : undefined}
                     onPointerMove={hasNodes ? handleLevelPointerMove : undefined}
