@@ -702,7 +702,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                   <TableRow>
                     <TableHead className="w-[24px] px-2.5" />
                     <TableHead className="text-[10px] px-2.5 w-[80px] text-center">ID</TableHead>
-                    <TableHead className="text-[10px] px-2.5 text-center w-[28px]">Qual.</TableHead>
+                    <TableHead className="text-[10px] px-1 text-center w-[40px]">Qual.</TableHead>
                     <TableHead className="text-[10px] px-2.5 w-auto">Nome</TableHead>
                     {!isMobile && (
                       <TableHead className="text-[10px] px-2.5 w-[100px]">Origem</TableHead>
@@ -726,7 +726,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                         <TableCell className={cn("px-2.5 py-1.5 text-[11px] tabular-nums truncate text-center", m.isDirect && "font-bold")}>
                           {m.id}
                         </TableCell>
-                        <TableCell className="px-2.5 py-1.5 text-center">
+                        <TableCell className="px-1 py-1.5 text-center w-[40px]">
                           <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
                         </TableCell>
                         <TableCell className={cn("px-2.5 py-1.5 text-[11px] truncate", m.isDirect && "font-bold")}>
@@ -788,7 +788,7 @@ export function UnilevelTab({ searchQuery }: Props) {
                                 <TableCell className="px-2.5 py-1.5 text-[11px] tabular-nums text-center w-[80px]">
                                   {m.id}
                                 </TableCell>
-                                <TableCell className="px-2.5 py-1.5 text-center w-[28px]">
+                                <TableCell className="px-1 py-1.5 text-center w-[40px]">
                                   <span style={{ color: q.color }} className="text-xs" title={q.label}>{q.icon}</span>
                                 </TableCell>
                                 <TableCell className="px-2.5 py-1.5 text-[11px] truncate w-auto">
