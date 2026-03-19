@@ -72,8 +72,8 @@ export default function Financeiro() {
 
     // Add two entries to banco extract (positive)
     setBancoExtract((prev) => [
-      { date: todayStr, description: "Conversão de bônus", value: amount },
-      { date: todayStr, description: "Extra de conversão", value: bonus },
+      { date: todayStr, description: "Transferência de bônus", value: amount },
+      { date: todayStr, description: "Extra de transferência", value: bonus },
       ...prev,
     ]);
   }

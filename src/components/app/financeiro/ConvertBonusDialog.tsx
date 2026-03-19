@@ -79,7 +79,7 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
             <DialogHeader>
               <DialogTitle className="flex items-center justify-center gap-2">
                 <ArrowRightLeft className="h-5 w-5" />
-                Converter Bônus em Saldo
+                Transferir Bônus para Carteira
               </DialogTitle>
               <DialogDescription className="text-center">
                 Saldo de bônus disponível: <strong>{formatCurrency(availableBonus, currency)}</strong>
@@ -88,7 +88,7 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
 
             <div className="space-y-4 mt-3">
               <div>
-                <Label htmlFor="convert-amount">Valor a converter ({currency.symbol})</Label>
+                <Label htmlFor="convert-amount">Valor a transferir ({currency.symbol})</Label>
                 <Input
                   id="convert-amount"
                   type="text"
@@ -113,7 +113,7 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
               {numAmount > 0 && !exceedsBalance && (
                 <div className="rounded-md border border-app-card-border p-3 space-y-1.5 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Valor convertido</span>
+                    <span className="text-muted-foreground">Valor transferido</span>
                     <span>{formatCurrency(numAmount, currency)}</span>
                   </div>
                   <div className="flex justify-between">
@@ -121,7 +121,7 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
                     <span className="text-[hsl(var(--success))] font-medium">+{formatCurrency(extraAmount, currency)}</span>
                   </div>
                   <div className="border-t border-border/40 pt-1.5 flex justify-between font-bold">
-                    <span>Crédito no Carteira</span>
+                    <span>Crédito na carteira</span>
                     <span className="text-primary">{formatCurrency(totalCredit, currency)}</span>
                   </div>
                 </div>
@@ -137,7 +137,7 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
                     className="mt-0.5"
                   />
                   <label htmlFor="confirm-convert" className="text-xs text-muted-foreground leading-relaxed cursor-pointer select-none">
-                    Confirmo que quero converter meus bônus para saldo no Carteira. Sei que essa operação é imediata e{" "}
+                    Confirmo que quero transferir meus bônus para saldo na carteira. Sei que essa operação é imediata e{" "}
                     <strong className="text-destructive font-semibold">não pode ser desfeita</strong>.
                   </label>
                 </div>
@@ -153,7 +153,7 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
         {/* Step 2: PIN */}
         {step === "pin" && (
           <PinStepContent
-            description="Enviamos um PIN de 6 dígitos para o seu e-mail. Digite abaixo para confirmar a conversão de bônus."
+            description="Enviamos um PIN de 6 dígitos para o seu e-mail. Digite abaixo para confirmar a transferência de bônus."
             onSubmit={handlePinSubmit}
             onResend={() => { /* TODO: call send-pin endpoint */ }}
             onBack={() => setStep("amount")}
@@ -165,13 +165,15 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
           <form onSubmit={(e) => { e.preventDefault(); handleClose(false); }}>
             <div className="flex flex-col items-center gap-3 py-4 text-center">
               <CheckCircle className="h-14 w-14 text-[hsl(var(--success))]" />
-              <h3 className="text-lg font-bold text-primary">Conversão Realizada!</h3>
+              <h3 className="text-lg font-bold text-primary">Transferência Realizada!</h3>
               <p className="text-sm text-muted-foreground">
-                Seu bônus foi convertido com sucesso.<br />O valor já está disponível no seu Carteira.
+                Seu bônus foi transferido com sucesso.
+                <br />
+                O valor já está disponível na sua carteira.
               </p>
               <div className="rounded-md border border-app-card-border p-3 w-full space-y-1.5 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Bônus convertido</span>
+                  <span className="text-muted-foreground">Bônus transferido</span>
                   <span>{formatCurrency(numAmount, currency)}</span>
                 </div>
                 <div className="flex justify-between">
@@ -179,7 +181,7 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
                   <span className="text-[hsl(var(--success))] font-medium">+{formatCurrency(extraAmount, currency)}</span>
                 </div>
                 <div className="border-t border-border/40 pt-1.5 flex justify-between font-bold">
-                  <span>Creditado no Carteira</span>
+                  <span>Creditado na carteira</span>
                   <span className="text-primary">{formatCurrency(totalCredit, currency)}</span>
                 </div>
               </div>

@@ -111,4 +111,4 @@ export const mockUserQualification = {
   expirationDate: "2026-04-30",
 };
 
-export const WITHDRAW_FEE_PERCENT = 4;
+export const WITHDRAW_FEE_PERCENT = 20;
