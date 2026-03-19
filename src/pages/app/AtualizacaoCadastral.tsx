@@ -487,11 +487,11 @@ export default function AtualizacaoCadastral() {
             </div>
             {financialType === "pix" && (
               <div className="space-y-1.5">
-                <Label>Chave PIX</Label>
+                <Label>{t("atualiz.pixKey")}</Label>
                 <Input
                   value={pixKey}
                   onChange={(e) => { setPixKey(e.target.value); clearError("pixKey"); }}
-                  placeholder="CPF, e-mail, telefone ou chave aleatória"
+                  placeholder={t("atualiz.pixPlaceholder")}
                   className={errorClass("pixKey")}
                 />
                 {fieldErrors.pixKey && <p className="text-xs text-destructive">{fieldErrors.pixKey}</p>}
