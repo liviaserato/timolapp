@@ -37,12 +37,7 @@ const initialRecords: ClosingRecord[] = [
   { id: "5", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestDisplay: "Fernanda Lima", guestSub: "TML-9402", date: "2026-03-12", franchiseType: "Ouro", confirmed: false },
 ];
 
-const initialInvites: InviteRequest[] = [
-  { id: "inv-1", sponsorId: "TML-6102", sponsorName: "Luciana Braga", sponsorPhone: "+55 11 98765-4321", requestedAt: "2026-03-18" },
-  { id: "inv-2", sponsorId: "TML-7744", sponsorName: "Eduardo Martins", sponsorPhone: "+55 21 91234-5678", requestedAt: "2026-03-19" },
-];
-
-const qualificationRequirements = [
+const initialRecordsData: ClosingRecord[] = [
   { label: "Possuir franquia Prata ou superior", met: true },
   { label: "Estar com a franquia ativa", met: true },
   { label: "Manter 3 diretos ativos, cada um com pelo menos 150 pontos", met: true },
