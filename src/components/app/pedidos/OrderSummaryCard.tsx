@@ -373,7 +373,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-primary text-base">
               <Package className="h-4 w-4" />
-              Produtos adquiridos
+              {t("orders.allProducts")}
             </DialogTitle>
           </DialogHeader>
           <p className="text-xs text-muted-foreground -mt-2 mb-1">{periodLabel}</p>
