@@ -360,7 +360,7 @@ export default function Pedidos() {
         </DashboardCard>
 
         {/* Pedidos em Cards */}
-        <DashboardCard icon={Package} title="Pedidos">
+        <DashboardCard icon={Package} title={t("pedidos.orders")}>
           {/* Filtros — mobile: filter first, search second */}
           <div className="mt-2 flex flex-col sm:flex-row gap-2">
             <Select value={statusFilter} onValueChange={handleStatusChange}>
