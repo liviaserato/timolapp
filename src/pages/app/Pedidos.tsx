@@ -240,6 +240,7 @@ function handleTrackingClick(e: React.MouseEvent, tracking: string) {
 
 export default function Pedidos() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [detailOrder, setDetailOrder] = useState<Order | null>(null);
