@@ -1,16 +1,15 @@
 import { useState } from "react";
-import { GitFork, Network, Repeat, Trophy, ChevronRight } from "lucide-react";
+import { GitFork, Network, Trophy, ChevronRight } from "lucide-react";
 import { BinaryTab } from "@/components/app/rede/BinaryTab";
 import { UnilevelTab } from "@/components/app/rede/UnilevelTab";
 import { LiderFechamentoTab } from "@/components/app/rede/LiderFechamentoTab";
 import { cn } from "@/lib/utils";
 
-type RedeView = "menu" | "binario" | "unilevel" | "residual" | "lider";
+type RedeView = "menu" | "binario" | "unilevel" | "lider";
 
 const menuItems: { key: RedeView; icon: typeof GitFork; title: string; description: string }[] = [
   { key: "binario", icon: GitFork, title: "Binário", description: "Visualize sua árvore binária, pernas e pontuação." },
   { key: "unilevel", icon: Network, title: "Unilevel", description: "Explore todos os níveis da sua rede de indicações." },
-  { key: "residual", icon: Repeat, title: "Bônus Residual", description: "Acompanhe seus ganhos recorrentes por período." },
   { key: "lider", icon: Trophy, title: "Líder de Fechamento", description: "Veja seu desempenho e ranking de liderança." },
 ];
 
@@ -37,7 +36,6 @@ export default function Rede() {
 
         {view === "binario" && <BinaryTab />}
         {view === "unilevel" && <UnilevelTab searchQuery={search} />}
-        {view === "residual" && <PlaceholderContent label="Bônus Residual" />}
         {view === "lider" && <LiderFechamentoTab />}
       </div>
     );
@@ -69,16 +67,6 @@ export default function Rede() {
           );
         })}
       </div>
-    </div>
-  );
-}
-
-function PlaceholderContent({ label }: { label: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      <p className="text-sm text-muted-foreground">
-        A seção <strong>{label}</strong> será disponibilizada em breve.
-      </p>
     </div>
   );
 }

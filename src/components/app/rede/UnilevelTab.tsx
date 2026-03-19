@@ -21,6 +21,7 @@ import {
   mockUnilevelTree, flattenUnilevelTree, qualificationLevelLimits,
   FlatUnilevelMember, UnilevelNode,
 } from "./unilevel-mock-data";
+import { BonusRedeCard } from "./BonusRedeCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 /* ── Sort ── */
@@ -314,6 +315,9 @@ export function UnilevelTab({ searchQuery }: Props) {
             </div>
           </CardContent>
         </Card>
+
+        {/* Bônus de Rede */}
+        <BonusRedeCard tree={mockUnilevelTree} />
       </div>
 
       {/* ═══ Filters ═══ */}
