@@ -65,50 +65,13 @@ export function IndicarFranquiaDialog({ open, onOpenChange }: IndicarFranquiaDia
           <p className="text-sm text-muted-foreground text-center leading-relaxed">
             Que legal que você quer indicar alguém!
             <br />
-            Escolha a forma mais fácil para você:
+            Compartilhe seu link pessoal:
           </p>
 
-          {/* Option 1: Direct link */}
-          <div className="rounded-xl border border-border bg-accent/40 p-4 space-y-2.5 text-center">
-            <p className="text-sm font-semibold text-foreground">
-              Envie o link de cadastro
-            </p>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Peça para a pessoa acessar o site abaixo e
-              <br />
-              digitar o seu ID
-              {" "}
-              <span className="font-bold text-foreground">{franchiseId}</span>
-              {" "}
-              como patrocinador:
-            </p>
-            <div className="flex items-center justify-center gap-1.5">
-              <a
-                href={cadastroLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-primary font-medium underline underline-offset-2 break-all"
-              >
-                {cadastroLink}
-              </a>
-              <button
-                onClick={handleCopyCadastro}
-                className="shrink-0 text-muted-foreground hover:text-primary transition-colors"
-                title="Copiar link"
-              >
-                {copiedCadastro ? (
-                  <Check className="h-3.5 w-3.5 text-emerald-600" />
-                ) : (
-                  <Copy className="h-3.5 w-3.5" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Option 2: Referral link */}
+          {/* Referral link */}
           <div className="rounded-xl border border-border bg-accent/40 p-4 space-y-3 text-center">
             <p className="text-sm font-semibold text-foreground">
-              Ou compartilhe seu link pessoal
+              Compartilhe seu link pessoal
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed">
               Com esse link, seu ID já vai preenchido automaticamente — mais fácil impossível! 😄
