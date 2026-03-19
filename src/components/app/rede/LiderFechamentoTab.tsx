@@ -103,26 +103,6 @@ export function LiderFechamentoTab() {
     setTimeout(() => setCopiedRecordId(null), 2000);
   };
 
-  const handleAcceptInvite = (invite: InviteRequest, link: string) => {
-    setInvites((prev) => prev.filter((i) => i.id !== invite.id));
-    const now = new Date();
-    const newRecord: ClosingRecord = {
-      id: `accepted-${invite.id}`,
-      sponsorId: invite.sponsorId,
-      sponsorName: invite.sponsorName,
-      guestDisplay: link,
-      guestSub: "Aguardando cadastro",
-      date: now.toISOString().split("T")[0],
-      franchiseType: "—",
-      confirmed: null,
-    };
-    setRecords((prev) => [newRecord, ...prev]);
-  };
-
-  const handleRejectInvite = (inviteId: string) => {
-    setInvites((prev) => prev.filter((i) => i.id !== inviteId));
-  };
-
   const getStatusBadge = (confirmed: boolean | null) => {
     if (confirmed === null) return <Badge variant="outline" className="text-xs border-warning text-warning">Pendente</Badge>;
     if (confirmed) return <Badge className="bg-success text-success-foreground text-xs">Sim</Badge>;
