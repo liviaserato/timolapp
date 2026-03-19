@@ -87,7 +87,7 @@ function calculateBonusRede(tree: UnilevelNode): BonusRedeResult {
 function calculatePotentialTier(tree: UnilevelNode): BonusTier | null {
   const directs = tree.children ?? [];
 
-  for (const tier of bonusTiers) {
+  for (const tier of allTiersForPotential) {
     const cappedPoints = directs.map((d) => Math.min(d.volume, tier.vmePerDirect));
     const total = cappedPoints.reduce((s, v) => s + v, 0);
     if (total >= tier.target) {
