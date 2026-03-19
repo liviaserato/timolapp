@@ -296,7 +296,7 @@ export default function AtualizacaoCadastral() {
 
       <div className="flex flex-col gap-3">
         {/* ── Dados Pessoais ── */}
-        <DashboardCard icon={User} title="Dados Pessoais">
+        <DashboardCard icon={User} title={t("atualiz.personalData")}>
           <div className="mt-2 space-y-3">
             <div className="space-y-1.5">
               <Label>Nome Completo</Label>
