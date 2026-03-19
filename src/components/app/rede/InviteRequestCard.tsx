@@ -64,38 +64,51 @@ export function InviteRequestCard({ invites, onAccept, onReject }: Props) {
     <>
       <DashboardCard icon={UserCheck} title="Convites Recebidos">
         <div className="mt-2 space-y-3">
-          <p className="text-sm text-muted-foreground">
-            Você recebeu {invites.length === 1 ? "uma solicitação" : `${invites.length} solicitações`} para atuar como <strong>Líder de Fechamento</strong>.
-          </p>
-          <div className="space-y-2">
-            {invites.map((inv) => (
-              <div key={inv.id} className="rounded-lg border p-3 flex flex-col sm:flex-row sm:items-center gap-3">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{inv.sponsorName}</p>
-                  <p className="text-xs text-muted-foreground">{inv.sponsorId}</p>
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="flex items-center justify-between w-full text-left"
+          >
+            <p className="text-sm text-muted-foreground">
+              Você recebeu {invites.length === 1 ? "uma solicitação" : `${invites.length} solicitações`} para atuar como <strong>Líder de Fechamento</strong>.
+            </p>
+            {expanded ? (
+              <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0 ml-2" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 ml-2" />
+            )}
+          </button>
+          {expanded && (
+            <div className="space-y-2">
+              {invites.map((inv) => (
+                <div key={inv.id} className="rounded-lg border p-3 flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{inv.sponsorName}</p>
+                    <p className="text-xs text-muted-foreground">{inv.sponsorId}</p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 border-destructive text-destructive hover:bg-destructive/10"
+                      onClick={() => handleReject(inv.id)}
+                    >
+                      <X className="h-3.5 w-3.5 mr-1" />
+                      Rejeitar
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="h-8"
+                      onClick={() => handleAcceptClick(inv)}
+                    >
+                      <Check className="h-3.5 w-3.5 mr-1" />
+                      Aceitar
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-8 border-destructive text-destructive hover:bg-destructive/10"
-                    onClick={() => handleReject(inv.id)}
-                  >
-                    <X className="h-3.5 w-3.5 mr-1" />
-                    Rejeitar
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="h-8"
-                    onClick={() => handleAcceptClick(inv)}
-                  >
-                    <Check className="h-3.5 w-3.5 mr-1" />
-                    Aceitar
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </DashboardCard>
 
