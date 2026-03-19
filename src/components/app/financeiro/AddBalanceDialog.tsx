@@ -1,12 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CurrencyConfig, formatCurrency } from "./currency-helpers";
-import { CheckCircle, QrCode, CreditCard, ArrowLeft } from "lucide-react";
+import { CheckCircle, QrCode, CreditCard, ArrowLeft, Copy, Clock, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
-type Step = "amount" | "payment" | "success";
+type Step = "amount" | "payment" | "pix-pending" | "success";
 
 interface Props {
   open: boolean;
@@ -50,6 +51,94 @@ function isExpiryValid(expiry: string): boolean {
   if (year < currentYear) return false;
   if (year === currentYear && month < currentMonth) return false;
   return true;
+}
+
+function PixPendingStep({ amount, currency, onConfirmed, onBack }: {
+  amount: number;
+  currency: CurrencyConfig;
+  onConfirmed: () => void;
+  onBack: () => void;
+}) {
+  const [checking, setChecking] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(30 * 60);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, []);
+
+  const minutes = Math.floor(secondsLeft / 60);
+  const seconds = secondsLeft % 60;
+  const timeDisplay = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+  async function handleCheck() {
+    setChecking(true);
+    await new Promise((r) => setTimeout(r, 2000));
+    setChecking(false);
+    onConfirmed();
+  }
+
+  return (
+    <div>
+      <DialogHeader>
+        <DialogTitle className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onBack}
+            className="inline-flex items-center justify-center rounded-sm p-1 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Voltar"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          Aguardando Pagamento
+        </DialogTitle>
+      </DialogHeader>
+
+      <div className="flex flex-col items-center gap-4 mt-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-warning/10">
+          <Clock className="h-7 w-7 text-warning" />
+        </div>
+
+        <div className="text-center space-y-1">
+          <p className="text-sm text-muted-foreground">
+            Estamos aguardando a confirmação do seu pagamento via PIX no valor de:
+          </p>
+          <p className="text-xl font-bold text-primary">{formatCurrency(amount, currency)}</p>
+        </div>
+
+        <div className="rounded-md border border-app-card-border bg-muted/30 px-4 py-2 text-center">
+          <p className="text-xs text-muted-foreground">Tempo restante</p>
+          <p className="text-lg font-mono font-bold text-foreground">{timeDisplay}</p>
+        </div>
+
+        <p className="text-xs text-muted-foreground text-center leading-relaxed">
+          O pagamento será identificado automaticamente.
+          <br />
+          Caso já tenha pago, clique abaixo para verificar.
+        </p>
+
+        <Button className="w-full" onClick={handleCheck} disabled={checking}>
+          {checking ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              Verificando...
+            </>
+          ) : (
+            "Verificar pagamento"
+          )}
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 export function AddBalanceDialog({ open, onOpenChange, currency }: Props) {
@@ -211,6 +300,21 @@ export function AddBalanceDialog({ open, onOpenChange, currency }: Props) {
                   <p className="text-xs text-muted-foreground text-center">
                     Escaneie o QR Code acima com o app do seu banco.
                   </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5 text-xs"
+                    onClick={() => {
+                      navigator.clipboard.writeText("00020126360014BR.GOV.BCB.PIX0114mock-pix-key5204000053039865802BR");
+                      toast.success("Código PIX copiado!");
+                    }}
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                    Copiar código PIX
+                  </Button>
+                  <Button className="w-full" onClick={() => setStep("pix-pending")}>
+                    Já paguei
+                  </Button>
                 </div>
               ) : (
                 <form id="card-form" onSubmit={(e) => { e.preventDefault(); setStep("success"); }}>
@@ -269,19 +373,27 @@ export function AddBalanceDialog({ open, onOpenChange, currency }: Props) {
                       />
                     </div>
                   </div>
+                  <Button
+                    className="w-full mt-4"
+                    type="submit"
+                    disabled={!cardValid}
+                  >
+                    Pagar
+                  </Button>
                 </form>
               )}
-              <Button
-                className="w-full mt-4"
-                type={method === "card" ? "submit" : "button"}
-                form={method === "card" ? "card-form" : undefined}
-                onClick={method === "pix" ? () => setStep("success") : undefined}
-                disabled={method === "card" && !cardValid}
-              >
-                {method === "pix" ? "Já paguei" : "Pagar"}
-              </Button>
             </div>
           </>
+        )}
+
+        {/* PIX Pending */}
+        {step === "pix-pending" && (
+          <PixPendingStep
+            amount={numAmount}
+            currency={currency}
+            onConfirmed={() => setStep("success")}
+            onBack={() => setStep("payment")}
+          />
         )}
 
         {step === "success" && (
