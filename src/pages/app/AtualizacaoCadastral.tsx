@@ -332,10 +332,10 @@ export default function AtualizacaoCadastral() {
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label>{mockApiData.documentCountryCode === "BR" ? "Documento (CPF)" : "Documento"}</Label>
+              <Label>{mockApiData.documentCountryCode === "BR" ? t("atualiz.documentCpf") : t("atualiz.document")}</Label>
               <Input value={mockApiData.document} readOnly disabled className="bg-muted/50 cursor-not-allowed" />
               <p className="text-[11px] text-muted-foreground">
-                O documento não pode ser alterado por aqui. Caso haja divergência, utilize o botão abaixo.
+                {t("atualiz.documentHint")}
               </p>
             </div>
             {mockApiData.documentCountryCode !== "BR" && (
