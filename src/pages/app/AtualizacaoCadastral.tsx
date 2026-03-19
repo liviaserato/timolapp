@@ -197,10 +197,9 @@ export default function AtualizacaoCadastral() {
       setUsernameError(t("atualiz.usernameMaxChars"));
       return;
     }
-    setUsernameChecking(true);
     const timer = setTimeout(() => {
       const taken = username.toLowerCase() === "admin";
-      setUsernameError(taken ? "Este usuário já está em uso" : "");
+      setUsernameError(taken ? t("atualiz.usernameTaken") : "");
       setUsernameChecking(false);
     }, 600);
     return () => clearTimeout(timer);
