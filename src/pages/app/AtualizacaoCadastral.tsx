@@ -402,7 +402,7 @@ export default function AtualizacaoCadastral() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="sm:col-span-2 space-y-1.5">
-                <Label>Rua / Logradouro</Label>
+                <Label>{t("atualiz.street")}</Label>
                 <Input
                   value={street}
                   onChange={(e) => { setStreet(e.target.value); clearError("street"); }}
