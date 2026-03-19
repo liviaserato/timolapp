@@ -808,7 +808,7 @@ export function NewFranchiseDialog({
                 {bancoBalance > 0 && (
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium">Usar saldo do Carteira</Label>
+                      <Label className="text-sm font-medium">Usar saldo da carteira</Label>
                       <span className="text-sm text-muted-foreground">Disponível {formatPrice(bancoBalance)}</span>
                     </div>
                     <div className="relative">

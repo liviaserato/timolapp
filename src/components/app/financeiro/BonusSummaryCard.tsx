@@ -69,7 +69,7 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, onConv
               onClick={onConvertBonus}
             >
               <ArrowRightLeft className="h-3.5 w-3.5" />
-              Converter bônus em saldo
+              Transferir bônus para carteira
             </Button>
           </div>
         )}
