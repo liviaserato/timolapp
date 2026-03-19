@@ -24,6 +24,7 @@ import SectionPlaceholder from "./pages/app/SectionPlaceholder";
 import EmailPreviews from "./pages/app/EmailPreviews";
 import AssistirAoVivo from "./pages/app/AssistirAoVivo";
 import Rede from "./pages/app/Rede";
+import Clientes from "./pages/app/Clientes";
 import AtualizacaoCadastral from "./pages/app/AtualizacaoCadastral";
 import NotFound from "./pages/NotFound";
 
