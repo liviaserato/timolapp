@@ -119,12 +119,9 @@ export function LiderFechamentoTab() {
     <div className="space-y-4">
       {/* Why become a leader card */}
       <DashboardCard icon={Gift} title="Por que ser um Líder de Fechamento?">
-        <div className="mt-2 space-y-2">
+        <div className="mt-2">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Além de ajudar outras pessoas a se desenvolverem no negócio, você é reconhecido com um <strong>presente exclusivo</strong> a cada fechamento realizado com sucesso.
-          </p>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Dependendo da franquia adquirida pelo convidado, você recebe de presente um <strong>Combo Mini</strong> ou um <strong>Combo Mega</strong>.
+            Além de ajudar outras pessoas a se desenvolverem no negócio, você é reconhecido com um 🎁 <strong>presente exclusivo</strong> a cada fechamento realizado com sucesso. Dependendo da franquia adquirida pelo convidado, você recebe de presente um <strong>Combo Mini</strong> ou um <strong>Combo Mega</strong>.
           </p>
         </div>
       </DashboardCard>
