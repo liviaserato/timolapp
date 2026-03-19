@@ -465,12 +465,12 @@ export default function AtualizacaoCadastral() {
         </DashboardCard>
 
         {/* ── Dados Financeiros ── */}
-        <DashboardCard icon={Landmark} title="Dados Financeiros">
+        <DashboardCard icon={Landmark} title={t("atualiz.financial")}>
           <div className="mt-2 space-y-3">
             <div className="flex items-start gap-2 rounded-md border border-primary/20 bg-primary/5 p-3">
               <Info className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
               <p className="text-xs text-muted-foreground leading-relaxed">
-                A conta informada deve estar no nome do titular da franquia.
+                {t("atualiz.financialHint")}
               </p>
             </div>
             <div className="space-y-1.5">
