@@ -110,17 +110,20 @@ export default function Dashboard() {
         {/* Resumo Financeiro */}
         <DashboardCard icon={DollarSign} title="Resumo Financeiro">
           <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="rounded-md border border-success/30 bg-success/5 p-3 text-center">
+            <div className="rounded-md border border-success/30 bg-success/5 p-3 text-center flex flex-col justify-center">
               <p className="text-xs text-muted-foreground">Bônus a Receber</p>
               <p className="text-lg font-bold text-success">{formatCurrency(mockBonusSummary.nextFriday, currency)}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">Pagamento: {nextFridayFormatted}</p>
             </div>
-            <div className="rounded-md border border-app-card-border p-3 text-center">
+            <div className="rounded-md border border-app-card-border p-3 text-center flex flex-col justify-center">
               <p className="text-xs text-muted-foreground">Saldo para Compras</p>
               <p className="text-lg font-bold text-primary">{formatCurrency(mockBancoTimol.available, currency)}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5 invisible">—</p>
             </div>
-            <div className="rounded-md border border-app-card-border p-3 text-center">
+            <div className="rounded-md border border-app-card-border p-3 text-center flex flex-col justify-center">
               <p className="text-xs text-muted-foreground">Pontos Unilevel</p>
               <p className="text-lg font-bold text-primary">{mockUserQualification.totalPoints.toLocaleString("pt-BR")}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5 invisible">—</p>
             </div>
             <div className="rounded-md border border-app-card-border p-3 text-center">
               <p className="text-xs text-muted-foreground">Qualificação Atual</p>
