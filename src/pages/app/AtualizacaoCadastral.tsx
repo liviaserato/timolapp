@@ -319,9 +319,9 @@ export default function AtualizacaoCadastral() {
                 {fieldErrors.birthDate && <p className="text-xs text-destructive">{fieldErrors.birthDate}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label>Gênero</Label>
+                <Label>{t("atualiz.gender")}</Label>
                 <Select value={gender} onValueChange={(v) => { setGender(v); clearError("gender"); }}>
-                  <SelectTrigger className={errorClass("gender")}><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectTrigger className={errorClass("gender")}><SelectValue placeholder={t("atualiz.select")} /></SelectTrigger>
                   <SelectContent>
                     {genderOptions.map((g) => (
                       <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
