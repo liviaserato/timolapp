@@ -28,6 +28,7 @@ export function InviteRequestCard({ invites, onAccept, onReject }: Props) {
   const [generatedLink, setGeneratedLink] = useState("");
   const [linkCopied, setLinkCopied] = useState(false);
   const [accepted, setAccepted] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const handleAcceptClick = (invite: InviteRequest) => {
     setSelectedInvite(invite);
