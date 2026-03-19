@@ -500,7 +500,7 @@ export default function AtualizacaoCadastral() {
             {financialType === "bank" && (
               <>
                 <div className="space-y-1.5">
-                  <Label>Banco</Label>
+                  <Label>{t("atualiz.bank")}</Label>
                   <Input
                     value={bank}
                     onChange={(e) => { setBank(e.target.value); clearError("bank"); }}
