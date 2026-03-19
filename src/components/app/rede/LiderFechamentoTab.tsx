@@ -12,6 +12,7 @@ import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from "@/components/ui/table";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { InviteRequestCard, type InviteRequest } from "./InviteRequestCard";
 
 /* ─── Mock data ────────────────────────────────────────────── */
@@ -49,12 +50,14 @@ const qualificationRequirements = [
 /* ─── Component ────────────────────────────────────────────── */
 
 export function LiderFechamentoTab() {
+  const isMobile = useIsMobile();
   const [requestOpen, setRequestOpen] = useState(false);
   const [leaderId, setLeaderId] = useState("");
   const [leaderValidated, setLeaderValidated] = useState<null | { name: string; qualified: boolean }>(null);
   const [searching, setSearching] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [copiedRecordId, setCopiedRecordId] = useState<string | null>(null);
 
   const [invites, setInvites] = useState<InviteRequest[]>(initialInvites);
   const [records, setRecords] = useState<ClosingRecord[]>(initialRecords);
@@ -95,16 +98,23 @@ export function LiderFechamentoTab() {
     setTimeout(() => setLinkCopied(false), 2000);
   };
 
+  const handleCopyRecordLink = (recordId: string, link: string) => {
+    navigator.clipboard.writeText(`https://${link}`);
+    setCopiedRecordId(recordId);
+    toast.success("Link copiado!");
+    setTimeout(() => setCopiedRecordId(null), 2000);
+  };
+
   const handleAcceptInvite = (invite: InviteRequest, link: string) => {
     setInvites((prev) => prev.filter((i) => i.id !== invite.id));
-    // Add pending record to history
+    const now = new Date();
     const newRecord: ClosingRecord = {
       id: `accepted-${invite.id}`,
       sponsorId: invite.sponsorId,
       sponsorName: invite.sponsorName,
       guestDisplay: link,
       guestSub: "Aguardando cadastro",
-      date: new Date().toISOString().split("T")[0],
+      date: now.toISOString().split("T")[0],
       franchiseType: "—",
       confirmed: null,
     };
@@ -113,6 +123,12 @@ export function LiderFechamentoTab() {
 
   const handleRejectInvite = (inviteId: string) => {
     setInvites((prev) => prev.filter((i) => i.id !== inviteId));
+  };
+
+  const getStatusBadge = (confirmed: boolean | null) => {
+    if (confirmed === null) return <Badge variant="outline" className="text-xs border-warning text-warning">Pendente</Badge>;
+    if (confirmed) return <Badge className="bg-success text-success-foreground text-xs">Sim</Badge>;
+    return <Badge variant="outline" className="text-xs border-destructive text-destructive">Não</Badge>;
   };
 
   return (
@@ -174,10 +190,11 @@ export function LiderFechamentoTab() {
               <div className="pt-1 mt-auto">
                 <Button
                   onClick={() => { resetModal(); setRequestOpen(true); }}
-                  className="w-full sm:w-auto"
+                  className="w-full"
+                  size="sm"
                 >
-                  <HandHelping className="h-4 w-4 mr-1" />
-                  Solicitar apoio de um líder
+                  <HandHelping className="h-4 w-4 mr-1 shrink-0" />
+                  <span className="truncate">Solicitar apoio de um líder</span>
                 </Button>
               </div>
             </div>
@@ -206,64 +223,117 @@ export function LiderFechamentoTab() {
         </div>
       </div>
 
-      {/* Closing history table */}
+      {/* Closing history */}
       <DashboardCard icon={Trophy} title="Histórico de Fechamentos">
         <div className="mt-2">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-table-header">
-                <TableHead>Patrocinador</TableHead>
-                <TableHead>Convidado</TableHead>
-                <TableHead className="hidden sm:table-cell">Data</TableHead>
-                <TableHead className="hidden sm:table-cell">Franquia</TableHead>
-                <TableHead className="text-center">Adquiriu?</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          {isMobile ? (
+            /* ── Mobile: card layout ── */
+            <div className="space-y-3">
               {records.map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell>
+                <div key={r.id} className="rounded-lg border p-3 space-y-2">
+                  <div className="flex items-center justify-between">
                     <div className="text-xs">
                       <span className="font-medium text-foreground">{r.sponsorName}</span>
                       <br />
                       <span className="text-muted-foreground">{r.sponsorId}</span>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-xs">
-                      {r.confirmed === null ? (
-                        <>
-                          <span className="font-mono text-primary truncate block max-w-[180px]">{r.guestDisplay}</span>
-                          <span className="text-muted-foreground italic">{r.guestSub}</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="font-medium text-foreground">{r.guestDisplay}</span>
-                          <br />
-                          <span className="text-muted-foreground">{r.guestSub}</span>
-                        </>
-                      )}
+                    {getStatusBadge(r.confirmed)}
+                  </div>
+
+                  <div className="border-t pt-2 space-y-1.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="text-xs text-muted-foreground shrink-0">Convidado</span>
+                      <div className="text-xs text-right min-w-0">
+                        {r.confirmed === null ? (
+                          <div className="flex items-center gap-1.5 justify-end">
+                            <span className="font-mono text-primary truncate max-w-[160px]">{r.guestDisplay}</span>
+                            <button
+                              onClick={() => handleCopyRecordLink(r.id, r.guestDisplay)}
+                              className="text-muted-foreground hover:text-foreground shrink-0"
+                            >
+                              {copiedRecordId === r.id ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <span className="font-medium text-foreground">{r.guestDisplay}</span>
+                            <br />
+                            <span className="text-muted-foreground">{r.guestSub}</span>
+                          </>
+                        )}
+                      </div>
                     </div>
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
-                    {new Date(r.date).toLocaleDateString("pt-BR")}
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell">
-                    <Badge variant="outline" className="text-xs">{r.franchiseType}</Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {r.confirmed === null ? (
-                      <Badge variant="outline" className="text-xs border-warning text-warning">Pendente</Badge>
-                    ) : r.confirmed ? (
-                      <Badge className="bg-success text-success-foreground text-xs">Sim</Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-xs border-destructive text-destructive">Não</Badge>
-                    )}
-                  </TableCell>
-                </TableRow>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Data</span>
+                      <span className="text-xs text-muted-foreground">{new Date(r.date).toLocaleDateString("pt-BR")}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Franquia</span>
+                      <Badge variant="outline" className="text-xs">{r.franchiseType}</Badge>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </TableBody>
-          </Table>
+            </div>
+          ) : (
+            /* ── Desktop: table layout ── */
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-table-header">
+                  <TableHead>Patrocinador</TableHead>
+                  <TableHead>Convidado</TableHead>
+                  <TableHead>Data</TableHead>
+                  <TableHead>Franquia</TableHead>
+                  <TableHead className="text-center">Adquiriu?</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {records.map((r) => (
+                  <TableRow key={r.id}>
+                    <TableCell>
+                      <div className="text-xs">
+                        <span className="font-medium text-foreground">{r.sponsorName}</span>
+                        <br />
+                        <span className="text-muted-foreground">{r.sponsorId}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-xs">
+                        {r.confirmed === null ? (
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono text-primary truncate max-w-[180px]">{r.guestDisplay}</span>
+                            <button
+                              onClick={() => handleCopyRecordLink(r.id, r.guestDisplay)}
+                              className="text-muted-foreground hover:text-foreground shrink-0"
+                            >
+                              {copiedRecordId === r.id ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
+                            </button>
+                            <br />
+                            <span className="text-muted-foreground italic">{r.guestSub}</span>
+                          </div>
+                        ) : (
+                          <>
+                            <span className="font-medium text-foreground">{r.guestDisplay}</span>
+                            <br />
+                            <span className="text-muted-foreground">{r.guestSub}</span>
+                          </>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {new Date(r.date).toLocaleDateString("pt-BR")}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="text-xs">{r.franchiseType}</Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {getStatusBadge(r.confirmed)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </div>
       </DashboardCard>
 
@@ -336,13 +406,14 @@ export function LiderFechamentoTab() {
                 </div>
               )}
 
-              <DialogFooter>
+              <DialogFooter className="flex-col sm:flex-row gap-2">
                 <DialogClose asChild>
-                  <Button variant="outline">Cancelar</Button>
+                  <Button variant="outline" className="w-full sm:w-auto">Cancelar</Button>
                 </DialogClose>
                 <Button
                   onClick={handleSendRequest}
                   disabled={!leaderValidated?.qualified}
+                  className="w-full sm:w-auto"
                 >
                   Enviar solicitação
                 </Button>
