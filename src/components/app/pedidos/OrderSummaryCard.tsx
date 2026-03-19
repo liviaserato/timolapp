@@ -180,7 +180,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
       type="button"
       onClick={() => setVisible((v) => !v)}
       className="p-1.5 rounded-md bg-card border-2 border-app-card-border hover:bg-muted/60 transition-colors"
-      aria-label={visible ? "Ocultar valores" : "Mostrar valores"}
+      aria-label={visible ? t("orders.hideValues") : t("orders.showValues")}
     >
       {visible ? (
         <Eye className="h-4 w-4 text-muted-foreground" />
