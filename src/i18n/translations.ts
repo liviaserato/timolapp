@@ -1612,8 +1612,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "indicar.clickToCopy": "Click to copy link",
     "indicar.shareBtn": "Share link",
     "indicar.shareTitle": "Timol — Franchise Referral",
-    "indicar.shareText": "Hi! I want to refer you to Timol 💧
-Use my link to register:",
+    "indicar.shareText": "Hi! I want to refer you to Timol 💧\nUse my link to register:",
     "common.close": "Close",
     "common.back": "Back",
     "common.cancel": "Cancel",
