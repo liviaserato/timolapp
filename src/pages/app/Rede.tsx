@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { GitFork, Network, Trophy, ChevronRight } from "lucide-react";
 import { BinaryTab } from "@/components/app/rede/BinaryTab";
 import { UnilevelTab } from "@/components/app/rede/UnilevelTab";
@@ -14,8 +15,14 @@ const menuItems: { key: RedeView; icon: typeof GitFork; title: string; descripti
 ];
 
 export default function Rede() {
+  const location = useLocation();
   const [view, setView] = useState<RedeView>("menu");
   const [search, setSearch] = useState("");
+
+  // Reset to menu when navigating to this page via sidebar/link
+  useEffect(() => {
+    setView("menu");
+  }, [location.key]);
 
   if (view !== "menu") {
     const item = menuItems.find((m) => m.key === view);
