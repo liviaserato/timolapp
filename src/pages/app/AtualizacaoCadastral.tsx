@@ -348,7 +348,7 @@ export default function AtualizacaoCadastral() {
         </DashboardCard>
 
         {/* ── Contato ── */}
-        <DashboardCard icon={Mail} title="Contato">
+        <DashboardCard icon={Mail} title={t("atualiz.contact")}>
           <div className="mt-2 space-y-3">
             <div className="space-y-1.5">
               <Label>E-mail ativo</Label>
