@@ -22,10 +22,10 @@ export default function Configuracoes() {
   return (
     <div className="space-y-6">
       {/* Page header */}
-      <div>
-        <h1 className="text-xl font-bold text-foreground">Configurações</h1>
-        <p className="text-sm text-muted-foreground">Gerencie suas preferências</p>
-      </div>
+      <header className="mb-4">
+        <h1 className="text-2xl font-bold text-primary">Configurações</h1>
+        <p className="text-sm text-muted-foreground mt-1">Gerencie suas preferências</p>
+      </header>
 
       {/* Language */}
       <DashboardCard icon={Globe} title="Idioma">
