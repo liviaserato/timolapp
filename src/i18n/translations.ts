@@ -802,8 +802,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "indicar.clickToCopy": "Clique para copiar o link",
     "indicar.shareBtn": "Compartilhar link",
     "indicar.shareTitle": "Timol — Indicação de Franquia",
-    "indicar.shareText": "Oi! Vim te indicar a Timol 💧
-Use meu link para se cadastrar:",
+    "indicar.shareText": "Oi! Vim te indicar a Timol 💧\nUse meu link para se cadastrar:",
     "common.close": "Fechar",
     "common.back": "Voltar",
     "common.cancel": "Cancelar",
