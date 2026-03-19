@@ -198,6 +198,7 @@ export function BinaryTab() {
             <CardContent className="p-4 text-center">
               <h2 className="text-lg font-bold" style={{ color: "#003885" }}>{currentRoot.name}</h2>
               <p className="text-xs text-muted-foreground">ID {currentRoot.id}</p>
+              {navHistory.length === 0 && <SpilloverSettings />}
             </CardContent>
           </Card>
 
