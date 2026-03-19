@@ -89,7 +89,7 @@ export default function Configuracoes() {
             <label
               key={opt.value}
               htmlFor={`contact-${opt.value}`}
-              className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium cursor-pointer transition-colors ${
+              className={`flex items-center gap-1.5 sm:gap-2 rounded-lg border px-2.5 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium cursor-pointer transition-colors ${
                 contactPreference === opt.value
                   ? "border-primary bg-primary/5 text-primary"
                   : "border-border bg-card text-muted-foreground hover:bg-accent/40"
