@@ -56,7 +56,7 @@ export function SpilloverSettings() {
   }
 
   return (
-    <div className="mt-3 pt-3 border-t border-border/40 space-y-2.5">
+    <div className="mt-3 pt-3 space-y-2.5">
       <p className="text-[11px] font-medium text-muted-foreground text-center">
         Derramamento de novas franquias
       </p>
