@@ -325,7 +325,7 @@ export default function Pedidos() {
                     <p className="text-xl font-bold">{b.title}</p>
                     <p className="text-sm mt-1 opacity-90">{b.subtitle}</p>
                     <Button size="sm" variant="secondary" className="mt-3 text-xs font-semibold">
-                      Ver oferta
+                      {t("pedidos.seeOffer")}
                     </Button>
                   </div>
                 </CarouselItem>
