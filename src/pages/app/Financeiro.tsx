@@ -8,7 +8,7 @@ import { ConvertBonusDialog } from "@/components/app/financeiro/ConvertBonusDial
 import { BonusExtractTable } from "@/components/app/financeiro/BonusExtractTable";
 import { BancoTimolExtractTable } from "@/components/app/financeiro/BancoTimolExtractTable";
 import { getCurrencyConfig } from "@/components/app/financeiro/currency-helpers";
-import { TrendingUp, Landmark } from "lucide-react";
+import { TrendingUp, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   mockBonusSummary,
