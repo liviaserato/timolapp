@@ -36,7 +36,6 @@ export default function Rede() {
 
         {view === "binario" && <BinaryTab />}
         {view === "unilevel" && <UnilevelTab searchQuery={search} />}
-        {view === "residual" && <PlaceholderContent label="Bônus Residual" />}
         {view === "lider" && <LiderFechamentoTab />}
       </div>
     );
