@@ -199,9 +199,9 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
             <div className="flex items-center gap-1 justify-center sm:justify-start">
               {([
-                { key: "30d", label: "30 dias", icon: CalendarDays },
-                { key: "month", label: "Mês", icon: Calendar },
-                { key: "custom", label: "Período", icon: CalendarRange },
+                { key: "30d", label: t("orders.30days"), icon: CalendarDays },
+                { key: "month", label: t("orders.month"), icon: Calendar },
+                { key: "custom", label: t("orders.period"), icon: CalendarRange },
               ] as const).map((m) => (
                 <button
                   key={m.key}
