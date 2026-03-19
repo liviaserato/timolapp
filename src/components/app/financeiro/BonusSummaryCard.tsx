@@ -1,12 +1,18 @@
-import { TrendingUp, ArrowRightLeft } from "lucide-react";
+import { TrendingUp, ArrowRightLeft, CalendarClock } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { CurrencyConfig, formatCurrency } from "./currency-helpers";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 function getNextFriday(): Date {
   const now = new Date();
-  const day = now.getDay(); // 0=Sun … 6=Sat
-  const daysUntilFriday = (5 - day + 7) % 7 || 7; // if today is Friday, next Friday
+  const day = now.getDay();
+  const daysUntilFriday = (5 - day + 7) % 7 || 7;
   const friday = new Date(now);
   friday.setDate(now.getDate() + daysUntilFriday);
   return friday;
@@ -30,13 +36,23 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, onConv
       title="Bônus"
       tooltip="Os bônus são pagos às sextas-feiras, 14 dias após o pagamento do pedido."
     >
-      {/* Body */}
       <div className="flex-1">
         <div className="mt-3 flex flex-row sm:flex-col gap-3">
           <div className="rounded-md border border-success/30 bg-success/5 p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center">
-            <p className="text-xs text-muted-foreground">Bônus a Receber</p>
+            <div className="flex items-center justify-center gap-1.5">
+              <p className="text-xs text-muted-foreground">Bônus a Receber</p>
+              <TooltipProvider delayDuration={200}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <CalendarClock className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p className="text-xs">Pagamento em {formattedDate}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <p className="text-lg font-bold text-success">{formatCurrency(nextFriday, currency)}</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">Pagamento: {formattedDate}</p>
           </div>
           <div className="rounded-md border border-app-card-border p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center">
             <p className="text-xs text-muted-foreground">Valores em<br className="lg:hidden" /> processamento</p>
@@ -44,7 +60,6 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, onConv
           </div>
         </div>
 
-        {/* Convert bonus button */}
         {hasBonus && onConvertBonus && (
           <div className="mt-3">
             <Button
@@ -59,7 +74,6 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, onConv
           </div>
         )}
       </div>
-
     </DashboardCard>
   );
 }
