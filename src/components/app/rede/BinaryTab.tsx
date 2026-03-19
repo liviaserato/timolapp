@@ -368,7 +368,11 @@ function LegTable({ title, members, onNavigate }: { title: string; members: Netw
                   const q = qualificationConfig[m.qualification] ?? qualificationConfig.consultor;
                   const isDirect = m.type === "direct";
                   return (
-                    <TableRow key={m.id} className="cursor-pointer hover:bg-accent/40" onClick={() => onNavigate(m.id)}>
+                    <TableRow
+                      key={m.id}
+                      className={cn(isDirect ? "cursor-pointer hover:bg-accent/40" : "opacity-80")}
+                      onClick={isDirect ? () => onNavigate(m.id) : undefined}
+                    >
                       <TableCell className="px-1 py-1.5">
                         <div className={cn("h-2 w-2 rounded-full mx-auto", m.active ? "bg-success" : "bg-destructive")} />
                       </TableCell>
