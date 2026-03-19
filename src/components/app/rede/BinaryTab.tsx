@@ -189,6 +189,15 @@ export function BinaryTab() {
 
           {/* Diagnostic - left column */}
           <DiagnosticCard weakerSide={weakerSide} diff={diff} />
+
+          {/* Spillover settings - only at root */}
+          {navHistory.length === 0 && (
+            <Card>
+              <CardContent className="p-4">
+                <SpilloverSettings />
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* ═══ RIGHT COLUMN: Analytics ═══ */}
@@ -198,7 +207,6 @@ export function BinaryTab() {
             <CardContent className="p-4 text-center">
               <h2 className="text-lg font-bold" style={{ color: "#003885" }}>{currentRoot.name}</h2>
               <p className="text-xs text-muted-foreground">ID {currentRoot.id}</p>
-              {navHistory.length === 0 && <SpilloverSettings />}
             </CardContent>
           </Card>
 
