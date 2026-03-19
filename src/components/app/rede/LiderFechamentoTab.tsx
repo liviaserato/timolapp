@@ -42,6 +42,7 @@ const initialInvites: InviteRequest[] = [
 ];
 
 const qualificationRequirements = [
+  { label: "Possuir franquia Prata ou superior", met: true },
   { label: "Estar com a franquia ativa", met: true },
   { label: "Manter 3 diretos ativos, cada um com pelo menos 150 pontos", met: true },
   { label: "Ter concluído o curso Líder de Fechamento", met: false },
