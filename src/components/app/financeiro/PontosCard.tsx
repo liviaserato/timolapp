@@ -34,7 +34,6 @@ export function PontosCard({ currentQualification, totalPoints, expiringPoints, 
           <div className="rounded-md border border-app-card-border p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center">
             <p className="text-xs text-muted-foreground">Pontos<br className="lg:hidden" /> Unilevel</p>
             <p className="text-lg font-bold text-primary">{totalPoints.toLocaleString("pt-BR")}</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5 invisible">—</p>
           </div>
           <div className="rounded-md border border-app-card-border p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center">
             <p className="text-xs text-muted-foreground">Qualificação<br className="lg:hidden" /> Atual</p>
