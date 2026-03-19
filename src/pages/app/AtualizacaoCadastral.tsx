@@ -190,11 +190,11 @@ export default function AtualizacaoCadastral() {
     }
     const usernameRegex = /^[a-z0-9._]*$/;
     if (!usernameRegex.test(username)) {
-      setUsernameError("Apenas letras minúsculas, números, ponto e underline");
+      setUsernameError(t("atualiz.usernameOnlyChars"));
       return;
     }
     if (username.length > 20) {
-      setUsernameError("Máximo 20 caracteres");
+      setUsernameError(t("atualiz.usernameMaxChars"));
       return;
     }
     setUsernameChecking(true);
