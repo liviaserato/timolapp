@@ -1,7 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Hand, DollarSign, Target, Newspaper, ShoppingCart, Users, BookOpen, GraduationCap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { DashboardCard } from "@/components/app/DashboardCard";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { OrderSummaryCard } from "@/components/app/pedidos/OrderSummaryCard";
 import { IndicarFranquiaDialog } from "@/components/app/IndicarFranquiaDialog";
