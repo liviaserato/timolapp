@@ -187,9 +187,6 @@ export function BinaryTab() {
             </CardContent>
           </Card>
 
-          {/* Diagnostic - left column */}
-          <DiagnosticCard weakerSide={weakerSide} diff={diff} />
-
           {/* Spillover settings - only at root */}
           {navHistory.length === 0 && (
             <Card>
@@ -198,6 +195,9 @@ export function BinaryTab() {
               </CardContent>
             </Card>
           )}
+
+          {/* Diagnostic - left column */}
+          <DiagnosticCard weakerSide={weakerSide} diff={diff} />
         </div>
 
         {/* ═══ RIGHT COLUMN: Analytics ═══ */}
