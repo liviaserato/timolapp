@@ -115,7 +115,7 @@ export default function Dashboard() {
               <p className="text-lg font-bold text-success">{formatCurrency(mockBonusSummary.nextFriday, currency)}</p>
             </div>
             <div className="rounded-md border border-app-card-border p-3 text-center">
-              <p className="text-xs text-muted-foreground">Saldo Banco Timol</p>
+              <p className="text-xs text-muted-foreground">Saldo para Compras</p>
               <p className="text-lg font-bold text-primary">{formatCurrency(mockBancoTimol.available, currency)}</p>
             </div>
             <div className="rounded-md border border-app-card-border p-3 text-center">
