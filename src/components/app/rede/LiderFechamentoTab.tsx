@@ -207,7 +207,7 @@ export function LiderFechamentoTab() {
           {isMobile ? (
             /* ── Mobile: card layout ── */
             <div className="space-y-3">
-              {records.map((r) => (
+              {allRecords.map((r) => (
                 <div key={r.id} className="rounded-lg border p-3 space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="text-xs">
