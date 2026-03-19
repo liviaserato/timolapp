@@ -41,6 +41,7 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, onConv
           <div className="rounded-md border border-app-card-border p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center">
             <p className="text-xs text-muted-foreground">Valores em<br className="lg:hidden" /> processamento</p>
             <p className="text-sm font-medium text-muted-foreground">{formatCurrency(awaitingRelease, currency)}</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5 invisible">—</p>
           </div>
         </div>
 
