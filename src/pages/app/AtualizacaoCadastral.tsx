@@ -382,7 +382,7 @@ export default function AtualizacaoCadastral() {
         </DashboardCard>
 
         {/* ── Endereço ── */}
-        <DashboardCard icon={MapPin} title="Endereço">
+        <DashboardCard icon={MapPin} title={t("atualiz.address")}>
           <div className="mt-2 space-y-3">
             <div className="space-y-1.5">
               <Label>País</Label>
