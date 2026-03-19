@@ -389,7 +389,7 @@ export default function AtualizacaoCadastral() {
               <Input value={country} readOnly disabled className="bg-muted/50" />
             </div>
             <div className="space-y-1.5">
-              <Label>CEP</Label>
+              <Label>{t("atualiz.zipCode")}</Label>
               <div className="relative">
                 <Input
                   value={zipCode}
