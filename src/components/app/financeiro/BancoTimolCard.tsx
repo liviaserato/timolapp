@@ -13,7 +13,7 @@ interface Props {
 
 export function BancoTimolCard({ available, pendingWithdrawal, currency, onAddBalance, onWithdraw }: Props) {
   return (
-    <DashboardCard icon={Wallet} title="Carteira">
+    <DashboardCard icon={Wallet} title="Carteira" tooltip="O saldo da Carteira Timol é formado pela diferença entre o valor da venda ao cliente final e o valor pago à Timol. Esse crédito pode ser utilizado na compra de produtos ou transferido para outros IDs.">
       {/* Body */}
       <div className="flex-1">
         <div className="mt-3 flex flex-row sm:flex-col gap-3">
