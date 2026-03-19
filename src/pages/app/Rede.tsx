@@ -15,8 +15,14 @@ const menuItems: { key: RedeView; icon: typeof GitFork; title: string; descripti
 ];
 
 export default function Rede() {
+  const location = useLocation();
   const [view, setView] = useState<RedeView>("menu");
   const [search, setSearch] = useState("");
+
+  // Reset to menu when navigating to this page via sidebar/link
+  useEffect(() => {
+    setView("menu");
+  }, [location.key]);
 
   if (view !== "menu") {
     const item = menuItems.find((m) => m.key === view);
