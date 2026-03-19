@@ -58,6 +58,7 @@ const App = () => (
               <Route path="suporte" element={<Suporte />} />
               <Route path="rede" element={<Rede />} />
               <Route path="clientes" element={<Clientes />} />
+              <Route path="configuracoes" element={<Configuracoes />} />
               <Route path="configuracoes/emails" element={<EmailPreviews />} />
               <Route path="atualizacao-cadastral" element={<AtualizacaoCadastral />} />
               <Route path=":section" element={<SectionPlaceholder />} />
