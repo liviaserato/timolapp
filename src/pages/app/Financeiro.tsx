@@ -10,6 +10,7 @@ import { BancoTimolExtractTable } from "@/components/app/financeiro/BancoTimolEx
 import { getCurrencyConfig } from "@/components/app/financeiro/currency-helpers";
 import { TrendingUp, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageContext";
 import {
   mockBonusSummary,
   mockBancoTimol,
@@ -28,12 +29,12 @@ type ExtractView = "bonus" | "banco";
 
 export default function Financeiro() {
   const currency = getCurrencyConfig(FRANCHISE_COUNTRY, FRANCHISE_CURRENCY);
+  const { t } = useLanguage();
   const [addBalanceOpen, setAddBalanceOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [convertBonusOpen, setConvertBonusOpen] = useState(false);
   const [activeExtract, setActiveExtract] = useState<ExtractView>("bonus");
 
-  // Local state for mutable data (will be replaced by real API later)
   const [bonusSummary, setBonusSummary] = useState(mockBonusSummary);
   const [bancoTimol, setBancoTimol] = useState(mockBancoTimol);
   const [bonusExtract, setBonusExtract] = useState<BonusExtractRow[]>(mockBonusExtract);
@@ -43,34 +44,12 @@ export default function Financeiro() {
 
   function handleConvert(amount: number, bonus: number, total: number) {
     const todayStr = new Date().toISOString().slice(0, 10);
-
-    // Update bonus summary
-    setBonusSummary((prev) => ({
-      ...prev,
-      nextFriday: Math.max(0, prev.nextFriday - amount),
-    }));
-
-    // Update carteira balance
-    setBancoTimol((prev) => ({
-      ...prev,
-      available: prev.available + total,
-    }));
-
-    // Add entry to bonus extract (negative)
+    setBonusSummary((prev) => ({ ...prev, nextFriday: Math.max(0, prev.nextFriday - amount) }));
+    setBancoTimol((prev) => ({ ...prev, available: prev.available + total }));
     setBonusExtract((prev) => [
-      {
-        date: todayStr,
-        orderNumber: "—",
-        id: "—",
-        qualification: "lider",
-        type: "Depósito" as const,
-        points: null,
-        value: -amount,
-      },
+      { date: todayStr, orderNumber: "—", id: "—", qualification: "lider", type: "Depósito" as const, points: null, value: -amount },
       ...prev,
     ]);
-
-    // Add two entries to banco extract (positive)
     setBancoExtract((prev) => [
       { date: todayStr, description: "Transferência de bônus", value: amount },
       { date: todayStr, description: "Extra de transferência", value: bonus },
@@ -81,13 +60,10 @@ export default function Financeiro() {
   return (
     <div>
       <header className="mb-4">
-        <h1 className="text-2xl font-bold text-primary">Financeiro</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Acompanhe seus ganhos e tenha controle total do seu dinheiro
-        </p>
+        <h1 className="text-2xl font-bold text-primary">{t("fin.title")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("fin.subtitle")}</p>
       </header>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
         <BonusSummaryCard
           nextFriday={bonusSummary.nextFriday}
@@ -110,16 +86,11 @@ export default function Financeiro() {
         />
       </div>
 
-      {/* Separator */}
       <div className="mt-6 mb-4 border-t border-app-card-border" />
 
-      {/* Extract title */}
-      <h2 className="text-xl font-bold text-primary">Extrato</h2>
-      <p className="text-sm text-muted-foreground mt-1 mb-3">
-        Acompanhe as movimentações financeiras e de pontos geradas pelos pedidos e operações da sua rede
-      </p>
+      <h2 className="text-xl font-bold text-primary">{t("fin.extract")}</h2>
+      <p className="text-sm text-muted-foreground mt-1 mb-3">{t("fin.extractSubtitle")}</p>
 
-      {/* Extract selector cards */}
       <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
@@ -139,9 +110,9 @@ export default function Financeiro() {
           </div>
           <div className="min-w-0">
             <p className={cn("text-sm font-bold", activeExtract === "bonus" ? "text-primary" : "text-foreground")}>
-              Bônus e Pontos
+              {t("fin.bonusAndPoints")}
             </p>
-            <p className="text-[11px] text-muted-foreground hidden sm:block">Comissões, pedidos e resgates</p>
+            <p className="text-[11px] text-muted-foreground hidden sm:block">{t("fin.bonusAndPointsSub")}</p>
           </div>
         </button>
         <button
@@ -162,14 +133,13 @@ export default function Financeiro() {
           </div>
           <div className="min-w-0">
             <p className={cn("text-sm font-bold", activeExtract === "banco" ? "text-primary" : "text-foreground")}>
-              Carteira
+              {t("fin.wallet")}
             </p>
-            <p className="text-[11px] text-muted-foreground hidden sm:block">Depósitos, compras e resgates</p>
+            <p className="text-[11px] text-muted-foreground hidden sm:block">{t("fin.walletSub")}</p>
           </div>
         </button>
       </div>
 
-      {/* Active extract */}
       <div className="mt-4">
         {activeExtract === "bonus" ? (
           <BonusExtractTable data={bonusExtract} currency={currency} />
@@ -178,7 +148,6 @@ export default function Financeiro() {
         )}
       </div>
 
-      {/* Dialogs */}
       <AddBalanceDialog open={addBalanceOpen} onOpenChange={setAddBalanceOpen} currency={currency} />
       <WithdrawDialog
         open={withdrawOpen}

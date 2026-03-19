@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "@/i18n/LanguageContext";
 import {
   ShoppingCart,
   Package,
@@ -239,6 +240,7 @@ function handleTrackingClick(e: React.MouseEvent, tracking: string) {
 
 export default function Pedidos() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [detailOrder, setDetailOrder] = useState<Order | null>(null);
@@ -302,8 +304,8 @@ export default function Pedidos() {
   return (
     <div>
       <header className="mb-4">
-        <h1 className="text-2xl font-bold text-primary">Pedidos</h1>
-        <p className="text-sm text-muted-foreground mt-1">Gerencie seus pedidos e acompanhe entregas</p>
+        <h1 className="text-2xl font-bold text-primary">{t("pedidos.title")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("pedidos.subtitle")}</p>
       </header>
 
       <section className="flex flex-col gap-2">
@@ -323,7 +325,7 @@ export default function Pedidos() {
                     <p className="text-xl font-bold">{b.title}</p>
                     <p className="text-sm mt-1 opacity-90">{b.subtitle}</p>
                     <Button size="sm" variant="secondary" className="mt-3 text-xs font-semibold">
-                      Ver oferta
+                      {t("pedidos.seeOffer")}
                     </Button>
                   </div>
                 </CarouselItem>
@@ -335,30 +337,30 @@ export default function Pedidos() {
         </div>
 
         {/* Realizar Pedido */}
-        <DashboardCard icon={ShoppingCart} title="Novo Pedido">
+        <DashboardCard icon={ShoppingCart} title={t("pedidos.newOrder")}>
           <div className="mt-2 flex flex-col gap-3">
             <p className="text-sm text-muted-foreground">
-              Acesse o catálogo, faça seu pedido ou indique uma nova franquia.
+              {t("pedidos.newOrderDesc")}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <Button className="gap-2 w-full" onClick={() => navigate("/app/pedidos/realizar")}>
                 <ShoppingCart className="h-4 w-4" />
-                Realizar Pedido
+                {t("pedidos.placeOrder")}
               </Button>
               <Button variant="outline" className="gap-2 w-full" onClick={() => setIndicarOpen(true)}>
                 <Users className="h-4 w-4" />
-                Indicar Franquia
+                {t("pedidos.referFranchise")}
               </Button>
               <Button variant="outline" className="gap-2 w-full truncate">
                 <BookOpen className="h-4 w-4 shrink-0" />
-                <span className="truncate">Catálogo Produtos</span>
+                <span className="truncate">{t("pedidos.productCatalog")}</span>
               </Button>
             </div>
           </div>
         </DashboardCard>
 
         {/* Pedidos em Cards */}
-        <DashboardCard icon={Package} title="Pedidos">
+        <DashboardCard icon={Package} title={t("pedidos.orders")}>
           {/* Filtros — mobile: filter first, search second */}
           <div className="mt-2 flex flex-col sm:flex-row gap-2">
             <Select value={statusFilter} onValueChange={handleStatusChange}>
@@ -367,19 +369,19 @@ export default function Pedidos() {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos" className="hover:bg-muted/60 cursor-pointer">Todos</SelectItem>
-                <SelectItem value="pendente" className="hover:bg-muted/60 cursor-pointer">Pendente</SelectItem>
-                <SelectItem value="confirmado" className="hover:bg-muted/60 cursor-pointer">Confirmado</SelectItem>
-                <SelectItem value="enviado" className="hover:bg-muted/60 cursor-pointer">Enviado</SelectItem>
-                <SelectItem value="disponivel_retirada" className="hover:bg-muted/60 cursor-pointer">Disp. p/ Retirada</SelectItem>
-                <SelectItem value="entregue" className="hover:bg-muted/60 cursor-pointer">Entregue</SelectItem>
-                <SelectItem value="cancelado" className="hover:bg-muted/60 cursor-pointer">Cancelado</SelectItem>
+                <SelectItem value="todos" className="hover:bg-muted/60 cursor-pointer">{t("pedidos.all")}</SelectItem>
+                <SelectItem value="pendente" className="hover:bg-muted/60 cursor-pointer">{t("pedidos.pending")}</SelectItem>
+                <SelectItem value="confirmado" className="hover:bg-muted/60 cursor-pointer">{t("pedidos.confirmed")}</SelectItem>
+                <SelectItem value="enviado" className="hover:bg-muted/60 cursor-pointer">{t("pedidos.shipped")}</SelectItem>
+                <SelectItem value="disponivel_retirada" className="hover:bg-muted/60 cursor-pointer">{t("pedidos.readyForPickup")}</SelectItem>
+                <SelectItem value="entregue" className="hover:bg-muted/60 cursor-pointer">{t("pedidos.delivered")}</SelectItem>
+                <SelectItem value="cancelado" className="hover:bg-muted/60 cursor-pointer">{t("pedidos.cancelled")}</SelectItem>
               </SelectContent>
             </Select>
             <div className="relative flex-1 sm:order-1">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
-                placeholder="Buscar por nº, produto ou data..."
+                placeholder={t("pedidos.searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 className="h-8 pl-8 text-xs rounded-md"

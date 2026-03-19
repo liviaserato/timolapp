@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 import iconPedidos from "@/assets/icon-sidebar-pedidos.svg";
 import iconFinanceiro from "@/assets/icon-sidebar-financeiro.svg";
@@ -9,15 +10,16 @@ import iconRede from "@/assets/icon-sidebar-rede.svg";
 import iconTreinamentos from "@/assets/icon-sidebar-treinamentos.svg";
 
 const footerItems = [
-  { label: "Financeiro", icon: iconFinanceiro, path: "/app/financeiro" },
-  { label: "Pedidos", icon: iconPedidos, path: "/app/pedidos" },
-  { label: "Clientes", icon: iconClientes, path: "/app/clientes" },
-  { label: "Rede", icon: iconRede, path: "/app/rede" },
-  { label: "FAT", icon: iconTreinamentos, path: "/app/treinamentos" },
+  { labelKey: "nav.financeiro", icon: iconFinanceiro, path: "/app/financeiro" },
+  { labelKey: "nav.pedidos", icon: iconPedidos, path: "/app/pedidos" },
+  { labelKey: "nav.clientes", icon: iconClientes, path: "/app/clientes" },
+  { labelKey: "nav.rede", icon: iconRede, path: "/app/rede" },
+  { labelKey: "nav.fat", icon: iconTreinamentos, path: "/app/treinamentos" },
 ];
 
 export function AppFooter() {
   const { pathname } = useLocation();
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(true);
   const hasScrolled = useRef(false);
   const lastScrollY = useRef(0);
@@ -43,7 +45,6 @@ export function AppFooter() {
   }, []);
 
   useEffect(() => {
-    // The scrollable element is the <main> inside AppLayout
     const mainEl = document.querySelector("main");
     if (!mainEl) return;
     mainEl.addEventListener("scroll", handleScroll, { passive: true });
@@ -59,22 +60,25 @@ export function AppFooter() {
       )}
     >
       <nav className="flex w-full max-w-[820px] items-center justify-between px-4">
-        {footerItems.map((item) => (
-          <Link
-            key={item.path}
-            to={item.path}
-            className={cn(
-              "group flex flex-1 flex-col items-center justify-center gap-1.5 text-[11px] text-primary-foreground/80 hover:text-primary-foreground transition-colors",
-              pathname.startsWith(item.path) && "text-primary-foreground font-semibold"
-            )}
-          >
-            <img src={item.icon} alt="" className="h-6 w-6" />
-            <span className={cn(
-              "border-b border-transparent transition-all duration-200 group-hover:border-primary-foreground/60 pb-0.5",
-              pathname.startsWith(item.path) && "border-primary-foreground"
-            )}>{item.label}</span>
-          </Link>
-        ))}
+        {footerItems.map((item) => {
+          const label = t(item.labelKey);
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={cn(
+                "group flex flex-1 flex-col items-center justify-center gap-1.5 text-[11px] text-primary-foreground/80 hover:text-primary-foreground transition-colors",
+                pathname.startsWith(item.path) && "text-primary-foreground font-semibold"
+              )}
+            >
+              <img src={item.icon} alt="" className="h-6 w-6" />
+              <span className={cn(
+                "border-b border-transparent transition-all duration-200 group-hover:border-primary-foreground/60 pb-0.5",
+                pathname.startsWith(item.path) && "border-primary-foreground"
+              )}>{label}</span>
+            </Link>
+          );
+        })}
       </nav>
     </footer>
   );

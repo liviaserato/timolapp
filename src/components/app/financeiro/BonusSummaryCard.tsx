@@ -2,6 +2,7 @@ import { TrendingUp, ArrowRightLeft, CalendarClock } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { CurrencyConfig, formatCurrency } from "./currency-helpers";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/i18n/LanguageContext";
 import {
   Tooltip,
   TooltipContent,
@@ -26,28 +27,25 @@ interface Props {
 }
 
 export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, onConvertBonus }: Props) {
+  const { t } = useLanguage();
   const hasBonus = nextFriday > 0 || awaitingRelease > 0;
   const nextFridayDate = getNextFriday();
   const formattedDate = nextFridayDate.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
 
   return (
-    <DashboardCard
-      icon={TrendingUp}
-      title="Bônus"
-      tooltip="Os bônus são pagos às sextas-feiras, 14 dias após o pagamento do pedido."
-    >
+    <DashboardCard icon={TrendingUp} title={t("fin.bonus")} tooltip={t("fin.bonusTooltip")}>
       <div className="flex-1">
         <div className="mt-3 flex flex-row sm:flex-col gap-3">
           <div className="rounded-md border border-success/30 bg-success/5 p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center">
             <div className="flex items-center justify-center gap-1.5">
-              <p className="text-xs text-muted-foreground">Bônus a Receber</p>
+              <p className="text-xs text-muted-foreground">{t("fin.bonusToReceive")}</p>
               <TooltipProvider delayDuration={200}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <CalendarClock className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent side="top">
-                    <p className="text-xs">Pagamento em {formattedDate}</p>
+                    <p className="text-xs">{t("fin.paymentOn")} {formattedDate}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -55,21 +53,16 @@ export function BonusSummaryCard({ nextFriday, awaitingRelease, currency, onConv
             <p className="text-lg font-bold text-success">{formatCurrency(nextFriday, currency)}</p>
           </div>
           <div className="rounded-md border border-app-card-border p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center">
-            <p className="text-xs text-muted-foreground">Valores em<br className="lg:hidden" /> processamento</p>
+            <p className="text-xs text-muted-foreground">{t("fin.processingValues")}</p>
             <p className="text-sm font-medium text-muted-foreground">{formatCurrency(awaitingRelease, currency)}</p>
           </div>
         </div>
 
         {hasBonus && onConvertBonus && (
           <div className="mt-3">
-            <Button
-              variant="outline"
-              size="default"
-              className="w-full text-xs gap-1.5 h-auto min-h-[2rem] lg:min-h-[2.25rem] py-1.5 whitespace-normal leading-tight"
-              onClick={onConvertBonus}
-            >
+            <Button variant="outline" size="default" className="w-full text-xs gap-1.5 h-auto min-h-[2rem] lg:min-h-[2.25rem] py-1.5 whitespace-normal leading-tight" onClick={onConvertBonus}>
               <ArrowRightLeft className="h-3.5 w-3.5" />
-              Transferir bônus para carteira
+              {t("fin.transferBonusToWallet")}
             </Button>
           </div>
         )}

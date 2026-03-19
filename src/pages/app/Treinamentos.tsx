@@ -4,6 +4,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Filter, ExternalLink, Calendar, Star } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 import type { EventType } from "@/components/app/treinamentos/types";
 import { DAYS, DAYS_FULL, weekEvents, typeConfig, quickLinks } from "@/components/app/treinamentos/constants";
@@ -16,6 +17,7 @@ export default function Treinamentos() {
   const todayDow = today.getDay();
   const todayIndex = todayDow === 0 ? 6 : todayDow - 1;
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
 
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [selectedType, setSelectedType] = useState<EventType | "all">("all");
@@ -59,10 +61,8 @@ export default function Treinamentos() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-primary">Treinamentos</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Acompanhe a programação semanal de lives, treinamentos e eventos especiais.
-        </p>
+        <h1 className="text-2xl font-bold text-primary">{t("treinamentos.title")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("treinamentos.subtitle")}</p>
       </div>
 
       {/* Quick links */}
@@ -82,8 +82,6 @@ export default function Treinamentos() {
         ))}
       </div>
 
-      {/* Today section moved to Dashboard */}
-
       {/* Weekly schedule */}
       <Card>
         <CardHeader className="pb-3">
@@ -91,7 +89,7 @@ export default function Treinamentos() {
             <div className="flex flex-col gap-1">
               <CardTitle className="text-base flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-primary" />
-                Programação Semanal
+                {t("treinamentos.weeklySchedule")}
               </CardTitle>
               {selectedDateLabel && (
                 <p className="text-sm text-muted-foreground ml-6">{selectedDateLabel}</p>
@@ -100,10 +98,10 @@ export default function Treinamentos() {
             <Select value={selectedType} onValueChange={(v) => setSelectedType(v as EventType | "all")}>
               <SelectTrigger className="w-auto h-8 text-xs gap-1.5 px-3 shrink-0">
                 <Filter className="h-3.5 w-3.5 text-muted-foreground" />
-                <SelectValue placeholder="Categoria" />
+                <SelectValue placeholder={t("treinamentos.allCategories")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas as categorias</SelectItem>
+                <SelectItem value="all">{t("treinamentos.allCategories")}</SelectItem>
                 {(Object.keys(typeConfig) as EventType[]).map((type) => {
                   const cfg = typeConfig[type];
                   return (
@@ -125,7 +123,7 @@ export default function Treinamentos() {
             onValueChange={(v) => setSelectedDay(v === "all" ? null : Number(v))}
           >
             <TabsList className="flex w-full h-auto gap-0.5 p-0.5">
-              <TabsTrigger value="all" className="text-xs px-2 flex-1 min-w-0">Todos</TabsTrigger>
+              <TabsTrigger value="all" className="text-xs px-2 flex-1 min-w-0">{t("rede.all")}</TabsTrigger>
               {DAYS.map((d, i) => (
                 <TabsTrigger
                   key={i}
@@ -141,7 +139,7 @@ export default function Treinamentos() {
           <div className="space-y-2" style={{ minHeight: "340px" }}>
             {filteredEvents.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-6">
-                Nenhum evento neste dia.
+                {t("treinamentos.noEvents")}
               </p>
             ) : selectedDay === null ? (
               (() => {

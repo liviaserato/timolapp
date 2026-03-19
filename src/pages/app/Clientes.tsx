@@ -6,24 +6,23 @@ import { LojaVirtualCard } from "@/components/app/clientes/LojaVirtualCard";
 import { VendasClientesSection } from "@/components/app/clientes/VendasClientesSection";
 import { NovoClienteDialog } from "@/components/app/clientes/NovoClienteDialog";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Clientes() {
   const [novoClienteOpen, setNovoClienteOpen] = useState(false);
+  const { t } = useLanguage();
 
   return (
     <div className="space-y-5 pb-8">
-      {/* Loja Virtual / Catálogo */}
       <LojaVirtualCard />
 
-      {/* Material de Apoio */}
-      <DashboardCard icon={BookOpen} title="Material de Apoio">
+      <DashboardCard icon={BookOpen} title={t("clientes.supportMaterial")}>
         <MaterialApoioSection />
       </DashboardCard>
 
-      {/* Controle de Vendas */}
       <DashboardCard
         icon={Users}
-        title="Controle de Vendas"
+        title={t("clientes.salesControl")}
         headerRight={
           <Button
             size="sm"
@@ -31,7 +30,7 @@ export default function Clientes() {
             onClick={() => setNovoClienteOpen(true)}
           >
             <Plus className="h-3.5 w-3.5" />
-            Novo Cliente
+            {t("clientes.newClient")}
           </Button>
         }
       >

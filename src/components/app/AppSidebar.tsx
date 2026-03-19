@@ -4,6 +4,7 @@ import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebarState } from "@/pages/AppLayout";
 import { logout } from "@/lib/api";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 import iconPainelInicial from "@/assets/icon-sidebar-painel-inicial.svg";
 import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
@@ -19,18 +20,18 @@ import iconSuporte from "@/assets/icon-sidebar-suporte.svg";
 import iconConfiguracoes from "@/assets/icon-sidebar-configuracoes.svg";
 
 const navItems = [
-  { label: "Painel Inicial", path: "/app", icon: iconPainelInicial },
-  { label: "Cadastro", path: "/app/cadastro", icon: iconCadastro },
-  { label: "Financeiro", path: "/app/financeiro", icon: iconFinanceiro },
-  { label: "Rede", path: "/app/rede", icon: iconRede },
-  { label: "Clientes", path: "/app/clientes", icon: iconClientes },
-  { label: "Treinamentos", path: "/app/treinamentos", icon: iconTreinamentos },
-  { label: "Pedidos", path: "/app/pedidos", icon: iconPedidos },
-  { label: "Suporte", path: "/app/suporte", icon: iconSuporte },
+  { labelKey: "nav.dashboard", path: "/app", icon: iconPainelInicial },
+  { labelKey: "nav.cadastro", path: "/app/cadastro", icon: iconCadastro },
+  { labelKey: "nav.financeiro", path: "/app/financeiro", icon: iconFinanceiro },
+  { labelKey: "nav.rede", path: "/app/rede", icon: iconRede },
+  { labelKey: "nav.clientes", path: "/app/clientes", icon: iconClientes },
+  { labelKey: "nav.treinamentos", path: "/app/treinamentos", icon: iconTreinamentos },
+  { labelKey: "nav.pedidos", path: "/app/pedidos", icon: iconPedidos },
+  { labelKey: "nav.suporte", path: "/app/suporte", icon: iconSuporte },
 ];
 
 const bottomItems = [
-  { label: "Configurações", path: "/app/configuracoes", icon: iconConfiguracoes },
+  { labelKey: "nav.configuracoes", path: "/app/configuracoes", icon: iconConfiguracoes },
 ];
 
 interface AppSidebarNavProps {
@@ -41,6 +42,7 @@ interface AppSidebarNavProps {
 export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavProps) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const isActive = (path: string) => {
     if (path === "/app") return pathname === "/app";
@@ -50,23 +52,26 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
   const navItemClass =
     "flex h-11 items-center gap-3 px-4 text-[15px] font-medium leading-none text-primary-foreground/90 transition-colors hover:bg-[hsl(var(--app-sidebar-hover))] whitespace-nowrap overflow-hidden border-l-[3px] border-transparent";
 
-  const renderLink = (item: { label: string; path: string; icon: string }) => (
-    <Link
-      key={item.path}
-      to={item.path}
-      onClick={onNavigate}
-      title={collapsed ? item.label : undefined}
-      className={cn(
-        navItemClass,
-        isActive(item.path) && "bg-[hsl(var(--app-sidebar-hover))] text-primary-foreground font-semibold border-l-primary-foreground"
-      )}
-    >
-      <span className="flex h-5 w-5 shrink-0 items-center justify-center">
-        <img src={item.icon} alt="" className="h-5 w-5 object-contain" />
-      </span>
-      {!collapsed && <span>{item.label}</span>}
-    </Link>
-  );
+  const renderLink = (item: { labelKey: string; path: string; icon: string }) => {
+    const label = t(item.labelKey);
+    return (
+      <Link
+        key={item.path}
+        to={item.path}
+        onClick={onNavigate}
+        title={collapsed ? label : undefined}
+        className={cn(
+          navItemClass,
+          isActive(item.path) && "bg-[hsl(var(--app-sidebar-hover))] text-primary-foreground font-semibold border-l-primary-foreground"
+        )}
+      >
+        <span className="flex h-5 w-5 shrink-0 items-center justify-center">
+          <img src={item.icon} alt="" className="h-5 w-5 object-contain" />
+        </span>
+        {!collapsed && <span>{label}</span>}
+      </Link>
+    );
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -81,14 +86,14 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
           <Link
             to="/app/atualizacao-cadastral"
             onClick={onNavigate}
-            title={collapsed ? "Atualização Cadastral" : undefined}
+            title={collapsed ? t("nav.atualizacaoCadastral") : undefined}
             className={cn(
               "flex items-center justify-center gap-2 rounded-md px-3 py-2 text-xs font-semibold transition-colors",
               "bg-primary-foreground/15 text-primary-foreground hover:bg-primary-foreground/25",
               isActive("/app/atualizacao-cadastral") && "bg-primary-foreground/25"
             )}
           >
-            {!collapsed && <span>Atualização Cadastral</span>}
+            {!collapsed && <span>{t("nav.atualizacaoCadastral")}</span>}
             {collapsed && <span className="text-[10px]">Atual.</span>}
           </Link>
         </div>
@@ -104,13 +109,13 @@ export function AppSidebarNav({ collapsed = false, onNavigate }: AppSidebarNavPr
               onNavigate?.();
               logout();
             }}
-            title={collapsed ? "Sair" : undefined}
+            title={collapsed ? t("nav.sair") : undefined}
             className={navItemClass}
           >
             <span className="flex h-5 w-5 shrink-0 items-center justify-center">
               <LogOut className="h-5 w-5 shrink-0" />
             </span>
-            {!collapsed && <span>Sair</span>}
+            {!collapsed && <span>{t("nav.sair")}</span>}
           </button>
         </nav>
       </div>

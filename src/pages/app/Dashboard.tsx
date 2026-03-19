@@ -14,6 +14,7 @@ import { mockBonusSummary, mockBancoTimol, mockUserQualification, qualificationL
 import { getCurrencyConfig, formatCurrency } from "@/components/app/financeiro/currency-helpers";
 import { InviteRequestCard } from "@/components/app/rede/InviteRequestCard";
 import { useInvites } from "@/contexts/InviteContext";
+import { useLanguage } from "@/i18n/LanguageContext";
 import {
   Carousel,
   CarouselContent,
@@ -21,12 +22,6 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "@/components/ui/carousel";
-
-const challenges = [
-  { id: "meta1", label: "Desafio 1: Aumentar Vendas" },
-  { id: "meta2", label: "Desafio 2: Fidelizar Clientes" },
-  { id: "meta3", label: "Desafio 3: Expandir Rede" },
-];
 
 const mockOrders = [
   {
@@ -60,6 +55,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [indicarOpen, setIndicarOpen] = useState(false);
   const { invites, handleAcceptInvite, handleRejectInvite } = useInvites();
+  const { t } = useLanguage();
 
   const today = new Date();
   const todayDow = today.getDay();
@@ -78,26 +74,32 @@ export default function Dashboard() {
     });
   }, [todayIndex]);
 
-  const todayLabel = `Hoje – ${DAYS_FULL[todayIndex]}, ${today.toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}`;
+  const todayLabel = `${t("dash.today")} – ${DAYS_FULL[todayIndex]}, ${today.toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}`;
 
   const currency = getCurrencyConfig("BR", "BRL");
   const q = qualificationLabels[mockUserQualification.current];
 
+  const challenges = [
+    { id: "meta1", label: t("dash.challenge1") },
+    { id: "meta2", label: t("dash.challenge2") },
+    { id: "meta3", label: t("dash.challenge3") },
+  ];
+
   return (
     <div>
       <header className="mb-4">
-        <h1 className="text-2xl font-bold text-primary">Painel Inicial</h1>
-        <p className="text-sm text-muted-foreground mt-1">Visão geral da sua franquia</p>
+        <h1 className="text-2xl font-bold text-primary">{t("dash.title")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("dash.subtitle")}</p>
       </header>
 
       <section className="flex flex-col gap-2">
         {/* Boas Vindas */}
-        <DashboardCard icon={Hand} title="Boas Vindas">
+        <DashboardCard icon={Hand} title={t("dash.welcome")}>
           <p className="mt-1 text-sm">
-            Olá, <strong>Lívia Serato</strong>
+            {t("dash.greeting")} <strong>Lívia Serato</strong>
           </p>
           <p className="text-sm text-muted-foreground italic mt-1">
-            "Faça hoje melhor do que ontem e amanhã melhor do que hoje!"
+            "{t("dash.quote")}"
           </p>
         </DashboardCard>
 
@@ -118,22 +120,22 @@ export default function Dashboard() {
         />
 
         {/* Resumo Financeiro */}
-        <DashboardCard icon={DollarSign} title="Resumo Financeiro">
+        <DashboardCard icon={DollarSign} title={t("dash.financialSummary")}>
           <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="rounded-md border border-success/30 bg-success/5 p-3 text-center">
-              <p className="text-xs text-muted-foreground">Bônus a Receber</p>
+              <p className="text-xs text-muted-foreground">{t("dash.bonusToReceive")}</p>
               <p className="text-lg font-bold text-success">{formatCurrency(mockBonusSummary.nextFriday, currency)}</p>
             </div>
             <div className="rounded-md border border-app-card-border p-3 text-center">
-              <p className="text-xs text-muted-foreground">Saldo para Compras</p>
+              <p className="text-xs text-muted-foreground">{t("dash.balanceForPurchases")}</p>
               <p className="text-lg font-bold text-primary">{formatCurrency(mockBancoTimol.available, currency)}</p>
             </div>
             <div className="rounded-md border border-app-card-border p-3 text-center">
-              <p className="text-xs text-muted-foreground">Pontos Unilevel</p>
+              <p className="text-xs text-muted-foreground">{t("dash.unilevelPoints")}</p>
               <p className="text-lg font-bold text-primary">{mockUserQualification.totalPoints.toLocaleString("pt-BR")}</p>
             </div>
             <div className="rounded-md border border-app-card-border p-3 text-center">
-              <p className="text-xs text-muted-foreground">Qualificação Atual</p>
+              <p className="text-xs text-muted-foreground">{t("dash.currentQualification")}</p>
               {q && (
                 <p className="text-sm font-semibold text-primary flex items-center justify-center gap-1.5 mt-1">
                   <span className="text-base">{q.icon}</span>
@@ -144,14 +146,11 @@ export default function Dashboard() {
           </div>
         </DashboardCard>
 
-
-
-
         {/* Movimentação de Pedidos */}
         <OrderSummaryCard orders={mockOrders} />
 
         {/* Metas e Desafios */}
-        <DashboardCard icon={Target} title="Metas e Desafios">
+        <DashboardCard icon={Target} title={t("dash.goals")}>
           <div className="mt-2 flex flex-col gap-2">
             {challenges.map((c) => (
               <label key={c.id} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -163,9 +162,9 @@ export default function Dashboard() {
         </DashboardCard>
 
         {/* Timol News */}
-        <DashboardCard icon={Newspaper} title="Timol News">
+        <DashboardCard icon={Newspaper} title={t("dash.news")}>
           <p className="text-sm text-muted-foreground mt-1">
-            Notícias, atualizações e promoções da Timol
+            {t("dash.newsSubtitle")}
           </p>
           <div className="mt-3">
             <Carousel className="w-full">
