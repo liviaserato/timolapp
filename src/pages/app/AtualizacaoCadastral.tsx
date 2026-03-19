@@ -368,7 +368,7 @@ export default function AtualizacaoCadastral() {
               {fieldErrors.email && !emailError && <p className="text-xs text-destructive">{fieldErrors.email}</p>}
             </div>
             <div className="space-y-1.5">
-              <Label>Telefone</Label>
+              <Label>{t("atualiz.phone")}</Label>
               <PhoneInput
                 countryIso2={phoneDdi}
                 number={phoneNumber}
