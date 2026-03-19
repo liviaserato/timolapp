@@ -12,6 +12,7 @@ import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from "@/components/ui/table";
 import { toast } from "sonner";
+import { InviteRequestCard, type InviteRequest } from "./InviteRequestCard";
 
 /* ─── Mock data ────────────────────────────────────────────── */
 
@@ -19,19 +20,24 @@ interface ClosingRecord {
   id: string;
   sponsorId: string;
   sponsorName: string;
-  guestId: string;
-  guestName: string;
+  guestDisplay: string;
+  guestSub: string;
   date: string;
   franchiseType: string;
-  confirmed: boolean;
+  confirmed: boolean | null; // null = pending
 }
 
-const mockRecords: ClosingRecord[] = [
-  { id: "1", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestId: "TML-8832", guestName: "Ana Paula Ferreira", date: "2025-12-10", franchiseType: "Ouro", confirmed: true },
-  { id: "2", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestId: "TML-9011", guestName: "Roberto Silva", date: "2026-01-15", franchiseType: "Prata", confirmed: true },
-  { id: "3", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestId: "TML-9201", guestName: "Juliana Costa", date: "2026-02-20", franchiseType: "Bronze", confirmed: false },
-  { id: "4", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestId: "TML-9350", guestName: "Marcos Oliveira", date: "2026-03-05", franchiseType: "Platina", confirmed: true },
-  { id: "5", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestId: "TML-9402", guestName: "Fernanda Lima", date: "2026-03-12", franchiseType: "Ouro", confirmed: false },
+const initialRecords: ClosingRecord[] = [
+  { id: "1", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestDisplay: "Ana Paula Ferreira", guestSub: "TML-8832", date: "2025-12-10", franchiseType: "Ouro", confirmed: true },
+  { id: "2", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestDisplay: "Roberto Silva", guestSub: "TML-9011", date: "2026-01-15", franchiseType: "Prata", confirmed: true },
+  { id: "3", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestDisplay: "Juliana Costa", guestSub: "TML-9201", date: "2026-02-20", franchiseType: "Bronze", confirmed: false },
+  { id: "4", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestDisplay: "Marcos Oliveira", guestSub: "TML-9350", date: "2026-03-05", franchiseType: "Platina", confirmed: true },
+  { id: "5", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestDisplay: "Fernanda Lima", guestSub: "TML-9402", date: "2026-03-12", franchiseType: "Ouro", confirmed: false },
+];
+
+const initialInvites: InviteRequest[] = [
+  { id: "inv-1", sponsorId: "TML-6102", sponsorName: "Luciana Braga", sponsorPhone: "+55 11 98765-4321", requestedAt: "2026-03-18" },
+  { id: "inv-2", sponsorId: "TML-7744", sponsorName: "Eduardo Martins", sponsorPhone: "+55 21 91234-5678", requestedAt: "2026-03-19" },
 ];
 
 const qualificationRequirements = [
@@ -49,6 +55,9 @@ export function LiderFechamentoTab() {
   const [searching, setSearching] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+
+  const [invites, setInvites] = useState<InviteRequest[]>(initialInvites);
+  const [records, setRecords] = useState<ClosingRecord[]>(initialRecords);
 
   const allMet = qualificationRequirements.every((r) => r.met);
   const mockLink = "indiquei.timol/id4521&lider7890";
@@ -86,6 +95,26 @@ export function LiderFechamentoTab() {
     setTimeout(() => setLinkCopied(false), 2000);
   };
 
+  const handleAcceptInvite = (invite: InviteRequest, link: string) => {
+    setInvites((prev) => prev.filter((i) => i.id !== invite.id));
+    // Add pending record to history
+    const newRecord: ClosingRecord = {
+      id: `accepted-${invite.id}`,
+      sponsorId: invite.sponsorId,
+      sponsorName: invite.sponsorName,
+      guestDisplay: link,
+      guestSub: "Aguardando cadastro",
+      date: new Date().toISOString().split("T")[0],
+      franchiseType: "—",
+      confirmed: null,
+    };
+    setRecords((prev) => [newRecord, ...prev]);
+  };
+
+  const handleRejectInvite = (inviteId: string) => {
+    setInvites((prev) => prev.filter((i) => i.id !== inviteId));
+  };
+
   return (
     <div className="space-y-4">
       {/* Why become a leader card */}
@@ -99,6 +128,13 @@ export function LiderFechamentoTab() {
           </p>
         </div>
       </DashboardCard>
+
+      {/* Invite requests card */}
+      <InviteRequestCard
+        invites={invites}
+        onAccept={handleAcceptInvite}
+        onReject={handleRejectInvite}
+      />
 
       {/* Top cards row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -150,7 +186,7 @@ export function LiderFechamentoTab() {
             </div>
           </DashboardCard>
 
-          {/* Active link card (simulating leader already confirmed) */}
+          {/* Active link card */}
           <DashboardCard icon={Link2} title="Link Ativo">
             <div className="mt-2 space-y-3">
               <div className="flex items-center gap-2">
@@ -187,7 +223,7 @@ export function LiderFechamentoTab() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockRecords.map((r) => (
+              {records.map((r) => (
                 <TableRow key={r.id}>
                   <TableCell>
                     <div className="text-xs">
@@ -198,9 +234,18 @@ export function LiderFechamentoTab() {
                   </TableCell>
                   <TableCell>
                     <div className="text-xs">
-                      <span className="font-medium text-foreground">{r.guestName}</span>
-                      <br />
-                      <span className="text-muted-foreground">{r.guestId}</span>
+                      {r.confirmed === null ? (
+                        <>
+                          <span className="font-mono text-primary truncate block max-w-[180px]">{r.guestDisplay}</span>
+                          <span className="text-muted-foreground italic">{r.guestSub}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="font-medium text-foreground">{r.guestDisplay}</span>
+                          <br />
+                          <span className="text-muted-foreground">{r.guestSub}</span>
+                        </>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
@@ -210,7 +255,9 @@ export function LiderFechamentoTab() {
                     <Badge variant="outline" className="text-xs">{r.franchiseType}</Badge>
                   </TableCell>
                   <TableCell className="text-center">
-                    {r.confirmed ? (
+                    {r.confirmed === null ? (
+                      <Badge variant="outline" className="text-xs border-warning text-warning">Pendente</Badge>
+                    ) : r.confirmed ? (
                       <Badge className="bg-success text-success-foreground text-xs">Sim</Badge>
                     ) : (
                       <Badge variant="outline" className="text-xs border-destructive text-destructive">Não</Badge>
