@@ -432,7 +432,7 @@ export default function AtualizacaoCadastral() {
                 {fieldErrors.city && <p className="text-xs text-destructive">{fieldErrors.city}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label>Estado</Label>
+                <Label>{t("atualiz.state")}</Label>
                 <Input value={state} onChange={(e) => setState(e.target.value)} />
               </div>
             </div>
