@@ -170,14 +170,13 @@ export default function AtualizacaoCadastral() {
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setEmailError("E-mail inválido");
+      setEmailError(t("atualiz.invalidEmail"));
       return;
     }
     setEmailChecking(true);
     const timer = setTimeout(() => {
-      // Mock: simulate API check
       const taken = email.toLowerCase() === "admin@timol.com";
-      setEmailError(taken ? "Este e-mail já está em uso" : "");
+      setEmailError(taken ? t("atualiz.emailTaken") : "");
       setEmailChecking(false);
     }, 600);
     return () => clearTimeout(timer);
