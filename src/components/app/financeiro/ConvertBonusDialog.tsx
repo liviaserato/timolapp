@@ -81,14 +81,13 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
                 <ArrowRightLeft className="h-5 w-5" />
                 Transferir Bônus para Carteira
               </DialogTitle>
-              <DialogDescription className="text-center">
-                Em vez dos bônus serem depositados na sua conta bancária, você pode transferi-los para a carteira e reutilizar o valor na compra de produtos e/ou transferência para outros IDs.
+              <p className="text-sm text-center text-muted-foreground">
+                Saldo disponível: <strong>{formatCurrency(availableBonus, currency)}</strong>
+              </p>
+              <DialogDescription className="text-center mt-2">
+                Transfira seus bônus para a carteira e reutilize o valor em compras ou transferências para outros IDs.
               </DialogDescription>
             </DialogHeader>
-
-            <p className="text-sm text-center text-muted-foreground">
-              Saldo de bônus disponível: <strong>{formatCurrency(availableBonus, currency)}</strong>
-            </p>
 
             <div className="space-y-4 mt-3">
               <div>

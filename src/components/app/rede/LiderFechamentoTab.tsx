@@ -57,7 +57,8 @@ export function LiderFechamentoTab() {
     // Simulated lookup
     setTimeout(() => {
       setSearching(false);
-      if (leaderId.toUpperCase().includes("TML")) {
+      const trimmed = leaderId.trim();
+      if (trimmed === "123" || trimmed.toUpperCase().includes("TML")) {
         setLeaderValidated({ name: "Patrícia Andrade", qualified: true });
       } else {
         setLeaderValidated({ name: "Usuário Teste", qualified: false });
