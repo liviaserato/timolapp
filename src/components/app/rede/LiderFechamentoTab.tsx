@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trophy, CheckSquare, Square, HandHelping, Search, X, Clock, Link2, Copy, Check } from "lucide-react";
+import { Trophy, HandHelping, Search, X, Check, Gift, Link2, Copy, Clock } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,19 +19,19 @@ interface ClosingRecord {
   id: string;
   sponsorId: string;
   sponsorName: string;
-  helpedId: string;
-  helpedName: string;
+  guestId: string;
+  guestName: string;
   date: string;
   franchiseType: string;
   confirmed: boolean;
 }
 
 const mockRecords: ClosingRecord[] = [
-  { id: "1", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", helpedId: "TML-8832", helpedName: "Ana Paula Ferreira", date: "2025-12-10", franchiseType: "Ouro", confirmed: true },
-  { id: "2", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", helpedId: "TML-9011", helpedName: "Roberto Silva", date: "2026-01-15", franchiseType: "Prata", confirmed: true },
-  { id: "3", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", helpedId: "TML-9201", helpedName: "Juliana Costa", date: "2026-02-20", franchiseType: "Bronze", confirmed: false },
-  { id: "4", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", helpedId: "TML-9350", helpedName: "Marcos Oliveira", date: "2026-03-05", franchiseType: "Platina", confirmed: true },
-  { id: "5", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", helpedId: "TML-9402", helpedName: "Fernanda Lima", date: "2026-03-12", franchiseType: "Ouro", confirmed: false },
+  { id: "1", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestId: "TML-8832", guestName: "Ana Paula Ferreira", date: "2025-12-10", franchiseType: "Ouro", confirmed: true },
+  { id: "2", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestId: "TML-9011", guestName: "Roberto Silva", date: "2026-01-15", franchiseType: "Prata", confirmed: true },
+  { id: "3", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestId: "TML-9201", guestName: "Juliana Costa", date: "2026-02-20", franchiseType: "Bronze", confirmed: false },
+  { id: "4", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestId: "TML-9350", guestName: "Marcos Oliveira", date: "2026-03-05", franchiseType: "Platina", confirmed: true },
+  { id: "5", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestId: "TML-9402", guestName: "Fernanda Lima", date: "2026-03-12", franchiseType: "Ouro", confirmed: false },
 ];
 
 const qualificationRequirements = [
@@ -48,13 +48,14 @@ export function LiderFechamentoTab() {
   const [leaderValidated, setLeaderValidated] = useState<null | { name: string; qualified: boolean }>(null);
   const [searching, setSearching] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const allMet = qualificationRequirements.every((r) => r.met);
+  const mockLink = "indiquei.timol/id4521&lider7890";
 
   const handleValidateLeader = () => {
     if (!leaderId.trim()) return;
     setSearching(true);
-    // Simulated lookup
     setTimeout(() => {
       setSearching(false);
       const trimmed = leaderId.trim();
@@ -78,8 +79,27 @@ export function LiderFechamentoTab() {
     setRequestSent(false);
   };
 
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(`https://${mockLink}`);
+    setLinkCopied(true);
+    toast.success("Link copiado!");
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
+
   return (
     <div className="space-y-4">
+      {/* Why become a leader card */}
+      <DashboardCard icon={Gift} title="Por que ser um Líder de Fechamento?">
+        <div className="mt-2 space-y-2">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Além de ajudar outras pessoas a se desenvolverem no negócio, você é reconhecido com um <strong>presente exclusivo</strong> a cada fechamento realizado com sucesso.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Dependendo da franquia adquirida pelo convidado, você recebe de presente um <strong>Combo Mini</strong> ou um <strong>Combo Mega</strong>.
+          </p>
+        </div>
+      </DashboardCard>
+
       {/* Top cards row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Qualification card */}
@@ -111,27 +131,46 @@ export function LiderFechamentoTab() {
         </DashboardCard>
 
         {/* Request support card */}
-        <DashboardCard icon={HandHelping} title="Solicitar Apoio">
-          <div className="space-y-3 mt-2 flex flex-col h-full">
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Precisa de ajuda para fechar uma franquia?{" "}
-              Um <strong>Líder de Fechamento</strong> qualificado pode te apoiar no processo.
-            </p>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Ao solicitar apoio, será gerado um link exclusivo de cadastro válido por 24 horas para um único franqueado.
-              O líder receberá um presente como reconhecimento pelo apoio.
-            </p>
-            <div className="pt-1 mt-auto">
-              <Button
-                onClick={() => { resetModal(); setRequestOpen(true); }}
-                className="w-full sm:w-auto"
-              >
-                <HandHelping className="h-4 w-4 mr-1" />
-                Solicitar apoio de um líder
-              </Button>
+        <div className="space-y-4">
+          <DashboardCard icon={HandHelping} title="Solicitar Apoio">
+            <div className="space-y-3 mt-2 flex flex-col h-full">
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Precisa de ajuda para fechar uma franquia?{" "}
+                Um <strong>Líder de Fechamento</strong> qualificado pode te apoiar no processo.
+              </p>
+              <div className="pt-1 mt-auto">
+                <Button
+                  onClick={() => { resetModal(); setRequestOpen(true); }}
+                  className="w-full sm:w-auto"
+                >
+                  <HandHelping className="h-4 w-4 mr-1" />
+                  Solicitar apoio de um líder
+                </Button>
+              </div>
             </div>
-          </div>
-        </DashboardCard>
+          </DashboardCard>
+
+          {/* Active link card (simulating leader already confirmed) */}
+          <DashboardCard icon={Link2} title="Link Ativo">
+            <div className="mt-2 space-y-3">
+              <div className="flex items-center gap-2">
+                <Badge className="bg-success text-success-foreground text-xs">Confirmado</Badge>
+                <span className="text-xs text-muted-foreground">Líder: <strong>Patrícia Andrade</strong></span>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border bg-muted/50 p-2.5">
+                <Link2 className="h-4 w-4 text-muted-foreground shrink-0" />
+                <span className="text-xs font-mono text-foreground truncate flex-1">{mockLink}</span>
+                <Button variant="ghost" size="sm" className="h-7 px-2 shrink-0" onClick={handleCopyLink}>
+                  {linkCopied ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
+                </Button>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Clock className="h-3.5 w-3.5" />
+                <span>Válido por <strong>24 horas</strong> • Apenas <strong>1 cadastro</strong></span>
+              </div>
+            </div>
+          </DashboardCard>
+        </div>
       </div>
 
       {/* Closing history table */}
@@ -141,7 +180,7 @@ export function LiderFechamentoTab() {
             <TableHeader>
               <TableRow className="bg-table-header">
                 <TableHead>Patrocinador</TableHead>
-                <TableHead>Apoiado</TableHead>
+                <TableHead>Convidado</TableHead>
                 <TableHead className="hidden sm:table-cell">Data</TableHead>
                 <TableHead className="hidden sm:table-cell">Franquia</TableHead>
                 <TableHead className="text-center">Adquiriu?</TableHead>
@@ -159,9 +198,9 @@ export function LiderFechamentoTab() {
                   </TableCell>
                   <TableCell>
                     <div className="text-xs">
-                      <span className="font-medium text-foreground">{r.helpedName}</span>
+                      <span className="font-medium text-foreground">{r.guestName}</span>
                       <br />
-                      <span className="text-muted-foreground">{r.helpedId}</span>
+                      <span className="text-muted-foreground">{r.guestId}</span>
                     </div>
                   </TableCell>
                   <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
