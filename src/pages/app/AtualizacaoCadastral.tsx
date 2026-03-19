@@ -554,7 +554,7 @@ export default function AtualizacaoCadastral() {
         </DashboardCard>
 
         {/* ── Contrato ── */}
-        <DashboardCard icon={FileCheck} title="Contrato Atualizado">
+        <DashboardCard icon={FileCheck} title={t("atualiz.updatedContract")}>
           <div className="mt-2 space-y-3">
             <div className="flex items-start gap-3">
               <Checkbox
