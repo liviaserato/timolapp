@@ -212,6 +212,21 @@ export function AddBalanceDialog({ open, onOpenChange, currency }: Props) {
                   <p className="text-xs text-muted-foreground text-center">
                     Escaneie o QR Code acima com o app do seu banco.
                   </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5 text-xs"
+                    onClick={() => {
+                      navigator.clipboard.writeText("00020126360014BR.GOV.BCB.PIX0114mock-pix-key5204000053039865802BR");
+                      toast.success("Código PIX copiado!");
+                    }}
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                    Copiar código PIX
+                  </Button>
+                  <Button className="w-full" onClick={() => setStep("pix-pending")}>
+                    Já paguei
+                  </Button>
                 </div>
               ) : (
                 <form id="card-form" onSubmit={(e) => { e.preventDefault(); setStep("success"); }}>
@@ -270,19 +285,27 @@ export function AddBalanceDialog({ open, onOpenChange, currency }: Props) {
                       />
                     </div>
                   </div>
+                  <Button
+                    className="w-full mt-4"
+                    type="submit"
+                    disabled={!cardValid}
+                  >
+                    Pagar
+                  </Button>
                 </form>
               )}
-              <Button
-                className="w-full mt-4"
-                type={method === "card" ? "submit" : "button"}
-                form={method === "card" ? "card-form" : undefined}
-                onClick={method === "pix" ? () => setStep("success") : undefined}
-                disabled={method === "card" && !cardValid}
-              >
-                {method === "pix" ? "Já paguei" : "Pagar"}
-              </Button>
             </div>
           </>
+        )}
+
+        {/* PIX Pending */}
+        {step === "pix-pending" && (
+          <PixPendingStep
+            amount={numAmount}
+            currency={currency}
+            onConfirmed={() => setStep("success")}
+            onBack={() => setStep("payment")}
+          />
         )}
 
         {step === "success" && (
