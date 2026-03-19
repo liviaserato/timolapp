@@ -2,6 +2,7 @@ import { useState } from "react";
 import { GitFork, Network, Repeat, Trophy, ChevronRight } from "lucide-react";
 import { BinaryTab } from "@/components/app/rede/BinaryTab";
 import { UnilevelTab } from "@/components/app/rede/UnilevelTab";
+import { LiderFechamentoTab } from "@/components/app/rede/LiderFechamentoTab";
 import { cn } from "@/lib/utils";
 
 type RedeView = "menu" | "binario" | "unilevel" | "residual" | "lider";
