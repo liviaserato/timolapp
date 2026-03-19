@@ -36,7 +36,7 @@ const mockRecords: ClosingRecord[] = [
 
 const qualificationRequirements = [
   { label: "Estar com a franquia ativa", met: true },
-  { label: "Ter pelo menos 3 diretos ativos", met: true },
+  { label: "Manter 3 diretos ativos, cada um com pelo menos 150 pontos", met: true },
   { label: "Ter concluído o curso Líder de Fechamento", met: false },
 ];
 
