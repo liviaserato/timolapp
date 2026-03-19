@@ -266,7 +266,7 @@ export function LiderFechamentoTab() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {records.map((r) => (
+                {allRecords.map((r) => (
                   <TableRow key={r.id}>
                     <TableCell>
                       <div className="text-xs">
