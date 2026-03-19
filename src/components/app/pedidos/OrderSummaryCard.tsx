@@ -100,7 +100,7 @@ type PeriodMode = "30d" | "month" | "custom";
 /* ── Component ── */
 
 export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const locale = localeMap[language] || ptBR;
   const [showAllProducts, setShowAllProducts] = useState(false);
   const [productTab, setProductTab] = useState<ProductCategory>("agua");
