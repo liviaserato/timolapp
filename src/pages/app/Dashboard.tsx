@@ -12,6 +12,8 @@ import { weekEvents, DAYS_FULL } from "@/components/app/treinamentos/constants";
 import { getEventStatus } from "@/components/app/treinamentos/helpers";
 import { mockBonusSummary, mockBancoTimol, mockUserQualification, qualificationLabels } from "@/components/app/financeiro/mock-data";
 import { getCurrencyConfig, formatCurrency } from "@/components/app/financeiro/currency-helpers";
+import { InviteRequestCard } from "@/components/app/rede/InviteRequestCard";
+import { useInvites } from "@/contexts/InviteContext";
 import {
   Carousel,
   CarouselContent,
