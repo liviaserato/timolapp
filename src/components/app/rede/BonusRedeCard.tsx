@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { TrendingUp, CheckCircle2, XCircle } from "lucide-react";
+import { TrendingUp, CheckCircle2, XCircle, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -71,6 +71,20 @@ function calculateBonusRede(tree: UnilevelNode): BonusRedeResult {
   };
 }
 
+/** Calculate the max tier the user COULD achieve if qualification wasn't a limit */
+function calculatePotentialTier(tree: UnilevelNode): BonusTier | null {
+  const directs = tree.children ?? [];
+
+  for (const tier of bonusTiers) {
+    const cappedPoints = directs.map((d) => Math.min(d.volume, tier.vmePerDirect));
+    const total = cappedPoints.reduce((s, v) => s + v, 0);
+    if (total >= tier.target) {
+      return tier;
+    }
+  }
+  return null;
+}
+
 interface BonusRedeCardProps {
   tree: UnilevelNode;
 }
@@ -78,6 +92,8 @@ interface BonusRedeCardProps {
 export function BonusRedeCard({ tree }: BonusRedeCardProps) {
   const result = useMemo(() => calculateBonusRede(tree), [tree]);
   const { achievedTier } = result;
+
+  const potentialTier = useMemo(() => calculatePotentialTier(tree), [tree]);
 
   const userQual = tree.qualification;
   const userTierIdx = getTierIndex(userQual);
@@ -97,6 +113,10 @@ export function BonusRedeCard({ tree }: BonusRedeCardProps) {
   const cappedTotal = cappedPoints.reduce((s, v) => s + v, 0);
   const directsAtVme = cappedPoints.filter((v, i) => v >= displayTier.vmePerDirect && directs[i].active).length;
 
+  // Show potential only if it's higher than the achieved/display tier
+  const showPotential = potentialTier && getTierIndex(potentialTier.key) < getTierIndex(displayTier.key);
+  const potentialQ = potentialTier ? (qualificationConfig[potentialTier.key] ?? qualificationConfig.consultor) : null;
+
   return (
     <Card className={cn(
       "col-span-2 md:col-span-4",
@@ -112,36 +132,66 @@ export function BonusRedeCard({ tree }: BonusRedeCardProps) {
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Bônus de Rede
-              </p>
-              {achieved ? (
-                <Badge variant="outline" className="text-[10px] border-success/40 text-success bg-success/10">
-                  <CheckCircle2 className="h-3 w-3 mr-0.5" /> Meta atingida
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="text-[10px] border-warning/40 text-warning bg-warning/10">
-                  <XCircle className="h-3 w-3 mr-0.5" /> Meta não atingida
-                </Badge>
+            <div className="flex flex-col md:flex-row md:gap-6">
+              {/* Column 1 — Current result */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Bônus de Rede
+                  </p>
+                  {achieved ? (
+                    <Badge variant="outline" className="text-[10px] border-success/40 text-success bg-success/10">
+                      <CheckCircle2 className="h-3 w-3 mr-0.5" /> Meta atingida
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-[10px] border-warning/40 text-warning bg-warning/10">
+                      <XCircle className="h-3 w-3 mr-0.5" /> Meta não atingida
+                    </Badge>
+                  )}
+                </div>
+
+                <p className="text-lg sm:text-xl font-bold" style={{ color: q.color }}>
+                  {displayTier.label}
+                </p>
+
+                <p className="text-sm font-semibold text-foreground mt-0.5">
+                  {cappedTotal.toLocaleString("pt-BR")} / {displayTier.target.toLocaleString("pt-BR")} pontos
+                </p>
+
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1">
+                  <span className="text-[11px] text-muted-foreground">
+                    ({displayTier.vmePerDirect.toLocaleString("pt-BR")} máx. por direto)
+                  </span>
+                  <span className="text-[11px] text-muted-foreground">
+                    {directsAtVme} direto{directsAtVme !== 1 ? "s" : ""} atingiram o VME
+                  </span>
+                </div>
+              </div>
+
+              {/* Column 2 — Potential tier (motivational) */}
+              {showPotential && potentialTier && potentialQ && (
+                <>
+                  <div className="hidden md:block w-px bg-border/60 self-stretch my-1" />
+                  <div className="mt-3 md:mt-0 pt-3 md:pt-0 border-t md:border-t-0 border-border/60 flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <Sparkles className="h-3.5 w-3.5 text-primary" />
+                      <p className="text-xs font-medium text-primary uppercase tracking-wide">
+                        Seu potencial
+                      </p>
+                    </div>
+
+                    <p className="text-lg sm:text-xl font-bold" style={{ color: potentialQ.color }}>
+                      {potentialTier.label}
+                    </p>
+
+                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed max-w-[280px]">
+                      Pela pontuação da sua rede, você poderia receber o bônus de{" "}
+                      <strong className="text-foreground">{potentialTier.label}</strong>.
+                      Que tal focar em subir sua qualificação?
+                    </p>
+                  </div>
+                </>
               )}
-            </div>
-
-            <p className="text-lg sm:text-xl font-bold" style={{ color: q.color }}>
-              {displayTier.label}
-            </p>
-
-            <p className="text-sm font-semibold text-foreground mt-0.5">
-              {cappedTotal.toLocaleString("pt-BR")} / {displayTier.target.toLocaleString("pt-BR")} pontos
-            </p>
-
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1">
-              <span className="text-[11px] text-muted-foreground">
-                ({displayTier.vmePerDirect.toLocaleString("pt-BR")} máx. por direto)
-              </span>
-              <span className="text-[11px] text-muted-foreground">
-                {directsAtVme} direto{directsAtVme !== 1 ? "s" : ""} atingiram o VME
-              </span>
             </div>
           </div>
         </div>
