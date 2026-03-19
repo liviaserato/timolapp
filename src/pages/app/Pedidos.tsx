@@ -369,13 +369,13 @@ export default function Pedidos() {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos" className="hover:bg-muted/60 cursor-pointer">Todos</SelectItem>
-                <SelectItem value="pendente" className="hover:bg-muted/60 cursor-pointer">Pendente</SelectItem>
-                <SelectItem value="confirmado" className="hover:bg-muted/60 cursor-pointer">Confirmado</SelectItem>
-                <SelectItem value="enviado" className="hover:bg-muted/60 cursor-pointer">Enviado</SelectItem>
-                <SelectItem value="disponivel_retirada" className="hover:bg-muted/60 cursor-pointer">Disp. p/ Retirada</SelectItem>
-                <SelectItem value="entregue" className="hover:bg-muted/60 cursor-pointer">Entregue</SelectItem>
-                <SelectItem value="cancelado" className="hover:bg-muted/60 cursor-pointer">Cancelado</SelectItem>
+                <SelectItem value="todos" className="hover:bg-muted/60 cursor-pointer">{t("pedidos.all")}</SelectItem>
+                <SelectItem value="pendente" className="hover:bg-muted/60 cursor-pointer">{t("pedidos.pending")}</SelectItem>
+                <SelectItem value="confirmado" className="hover:bg-muted/60 cursor-pointer">{t("pedidos.confirmed")}</SelectItem>
+                <SelectItem value="enviado" className="hover:bg-muted/60 cursor-pointer">{t("pedidos.shipped")}</SelectItem>
+                <SelectItem value="disponivel_retirada" className="hover:bg-muted/60 cursor-pointer">{t("pedidos.readyForPickup")}</SelectItem>
+                <SelectItem value="entregue" className="hover:bg-muted/60 cursor-pointer">{t("pedidos.delivered")}</SelectItem>
+                <SelectItem value="cancelado" className="hover:bg-muted/60 cursor-pointer">{t("pedidos.cancelled")}</SelectItem>
               </SelectContent>
             </Select>
             <div className="relative flex-1 sm:order-1">
