@@ -415,7 +415,7 @@ export default function AtualizacaoCadastral() {
                 <Input value={addrNumber} onChange={(e) => setAddrNumber(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Complemento</Label>
+                <Label>{t("atualiz.complement")}</Label>
                 <Input value={complement} onChange={(e) => setComplement(e.target.value)} />
               </div>
               <div className="space-y-1.5">
