@@ -460,7 +460,7 @@ export default function AtualizacaoCadastral() {
             </div>
             {usernameError && <p className="text-xs text-destructive">{usernameError}</p>}
             {fieldErrors.username && !usernameError && <p className="text-xs text-destructive">{fieldErrors.username}</p>}
-            <p className="text-[11px] text-muted-foreground">Letras minúsculas, números, ponto e underline. Máx. 20 caracteres.</p>
+            <p className="text-[11px] text-muted-foreground">{t("atualiz.usernameHint")}</p>
           </div>
         </DashboardCard>
 
