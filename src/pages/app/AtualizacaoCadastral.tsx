@@ -584,7 +584,7 @@ export default function AtualizacaoCadastral() {
           <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Encontrou alguma divergência no seu documento ou nas franquias listadas?
+              {t("atualiz.divergenceQuestion")}
             </p>
             <Button
               variant="link"
@@ -592,7 +592,7 @@ export default function AtualizacaoCadastral() {
               className="h-auto p-0 text-xs text-warning hover:text-warning/80 mt-0.5"
               onClick={() => { setDivergenceOpen(true); setDivergenceSent(false); setDivergenceText(""); }}
             >
-              Reportar divergência
+              {t("atualiz.reportDivergence")}
             </Button>
           </div>
         </div>
