@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { ArrowDownLeft, ArrowDownRight, Lightbulb, Search, ChevronRight, X, RotateCcw, PlayCircle, ArrowUpDown } from "lucide-react";
+import { SpilloverSettings } from "./SpilloverSettings";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
