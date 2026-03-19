@@ -519,7 +519,7 @@ export default function AtualizacaoCadastral() {
                     {fieldErrors.agency && <p className="text-xs text-destructive">{fieldErrors.agency}</p>}
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Conta</Label>
+                    <Label>{t("atualiz.account")}</Label>
                     <Input
                       value={account}
                       onChange={(e) => { setAccount(e.target.value); clearError("account"); }}
