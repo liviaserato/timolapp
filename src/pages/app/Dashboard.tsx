@@ -110,6 +110,13 @@ export default function Dashboard() {
           </DashboardCard>
         )}
 
+        {/* Convites Recebidos */}
+        <InviteRequestCard
+          invites={invites}
+          onAccept={handleAcceptInvite}
+          onReject={handleRejectInvite}
+        />
+
         {/* Resumo Financeiro */}
         <DashboardCard icon={DollarSign} title="Resumo Financeiro">
           <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
