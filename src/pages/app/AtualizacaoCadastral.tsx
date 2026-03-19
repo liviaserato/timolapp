@@ -299,7 +299,7 @@ export default function AtualizacaoCadastral() {
         <DashboardCard icon={User} title={t("atualiz.personalData")}>
           <div className="mt-2 space-y-3">
             <div className="space-y-1.5">
-              <Label>Nome Completo</Label>
+              <Label>{t("atualiz.fullName")}</Label>
               <Input
                 value={fullName}
                 onChange={(e) => { setFullName(e.target.value); clearError("fullName"); }}
