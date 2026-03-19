@@ -229,23 +229,23 @@ export default function AtualizacaoCadastral() {
   // ── validation ──
   const validate = (): boolean => {
     const errors: Record<string, string> = {};
-    if (!fullName.trim()) errors.fullName = "Este campo é obrigatório";
-    if (!birthDate) errors.birthDate = "Este campo é obrigatório";
-    if (!gender) errors.gender = "Este campo é obrigatório";
-    if (!email.trim()) errors.email = "Este campo é obrigatório";
+    const req = t("atualiz.requiredField");
+    if (!fullName.trim()) errors.fullName = req;
+    if (!birthDate) errors.birthDate = req;
+    if (!gender) errors.gender = req;
+    if (!email.trim()) errors.email = req;
     if (emailError) errors.email = emailError;
-    if (!phoneNumber.trim()) errors.phoneNumber = "Este campo é obrigatório";
-    if (!username.trim()) errors.username = "Este campo é obrigatório";
+    if (!phoneNumber.trim()) errors.phoneNumber = req;
+    if (!username.trim()) errors.username = req;
     if (usernameError) errors.username = usernameError;
-    if (!street.trim()) errors.street = "Este campo é obrigatório";
-    if (!city.trim()) errors.city = "Este campo é obrigatório";
-    if (!contractAccepted) errors.contract = "É necessário aceitar o contrato";
-    // Financial basic validation
-    if (financialType === "pix" && !pixKey.trim()) errors.pixKey = "Este campo é obrigatório";
+    if (!street.trim()) errors.street = req;
+    if (!city.trim()) errors.city = req;
+    if (!contractAccepted) errors.contract = t("atualiz.contractRequired");
+    if (financialType === "pix" && !pixKey.trim()) errors.pixKey = req;
     if (financialType === "bank" && (!bank.trim() || !agency.trim() || !account.trim())) {
-      if (!bank.trim()) errors.bank = "Este campo é obrigatório";
-      if (!agency.trim()) errors.agency = "Este campo é obrigatório";
-      if (!account.trim()) errors.account = "Este campo é obrigatório";
+      if (!bank.trim()) errors.bank = req;
+      if (!agency.trim()) errors.agency = req;
+      if (!account.trim()) errors.account = req;
     }
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
