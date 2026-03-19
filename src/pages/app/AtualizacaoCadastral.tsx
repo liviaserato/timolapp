@@ -440,7 +440,7 @@ export default function AtualizacaoCadastral() {
         </DashboardCard>
 
         {/* ── Usuário ── */}
-        <DashboardCard icon={KeyRound} title="Usuário">
+        <DashboardCard icon={KeyRound} title={t("atualiz.user")}>
           <div className="mt-2 space-y-1.5">
             <Label>Nome de usuário</Label>
             <div className="relative">
