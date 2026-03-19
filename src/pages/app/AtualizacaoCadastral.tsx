@@ -39,6 +39,7 @@ import {
   Info,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 /* ── mock data (simulating API response) ── */
 
@@ -104,23 +105,17 @@ const planColors: Record<string, string> = {
   platinum: "bg-indigo-400/15 text-indigo-700 border-indigo-400/30",
 };
 
-const genderOptions = [
-  { value: "male", label: "Masculino" },
-  { value: "female", label: "Feminino" },
-  { value: "other", label: "Outro" },
-];
-
-const financialTypeLabels: Record<string, string> = {
-  pix: "PIX",
-  bank: "Dados Bancários",
-  international: "Conta Internacional",
-  digital: "Carteira Digital",
-};
-
 /* ── component ── */
 
 export default function AtualizacaoCadastral() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
+
+  const genderOptions = [
+    { value: "male", label: t("atualiz.male") },
+    { value: "female", label: t("atualiz.female") },
+    { value: "other", label: t("atualiz.other") },
+  ];
 
   // Form state
   const [fullName, setFullName] = useState(mockApiData.fullName);
@@ -175,14 +170,13 @@ export default function AtualizacaoCadastral() {
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setEmailError("E-mail inválido");
+      setEmailError(t("atualiz.invalidEmail"));
       return;
     }
     setEmailChecking(true);
     const timer = setTimeout(() => {
-      // Mock: simulate API check
       const taken = email.toLowerCase() === "admin@timol.com";
-      setEmailError(taken ? "Este e-mail já está em uso" : "");
+      setEmailError(taken ? t("atualiz.emailTaken") : "");
       setEmailChecking(false);
     }, 600);
     return () => clearTimeout(timer);
@@ -196,17 +190,16 @@ export default function AtualizacaoCadastral() {
     }
     const usernameRegex = /^[a-z0-9._]*$/;
     if (!usernameRegex.test(username)) {
-      setUsernameError("Apenas letras minúsculas, números, ponto e underline");
+      setUsernameError(t("atualiz.usernameOnlyChars"));
       return;
     }
     if (username.length > 20) {
-      setUsernameError("Máximo 20 caracteres");
+      setUsernameError(t("atualiz.usernameMaxChars"));
       return;
     }
-    setUsernameChecking(true);
     const timer = setTimeout(() => {
       const taken = username.toLowerCase() === "admin";
-      setUsernameError(taken ? "Este usuário já está em uso" : "");
+      setUsernameError(taken ? t("atualiz.usernameTaken") : "");
       setUsernameChecking(false);
     }, 600);
     return () => clearTimeout(timer);
@@ -236,23 +229,23 @@ export default function AtualizacaoCadastral() {
   // ── validation ──
   const validate = (): boolean => {
     const errors: Record<string, string> = {};
-    if (!fullName.trim()) errors.fullName = "Este campo é obrigatório";
-    if (!birthDate) errors.birthDate = "Este campo é obrigatório";
-    if (!gender) errors.gender = "Este campo é obrigatório";
-    if (!email.trim()) errors.email = "Este campo é obrigatório";
+    const req = t("atualiz.requiredField");
+    if (!fullName.trim()) errors.fullName = req;
+    if (!birthDate) errors.birthDate = req;
+    if (!gender) errors.gender = req;
+    if (!email.trim()) errors.email = req;
     if (emailError) errors.email = emailError;
-    if (!phoneNumber.trim()) errors.phoneNumber = "Este campo é obrigatório";
-    if (!username.trim()) errors.username = "Este campo é obrigatório";
+    if (!phoneNumber.trim()) errors.phoneNumber = req;
+    if (!username.trim()) errors.username = req;
     if (usernameError) errors.username = usernameError;
-    if (!street.trim()) errors.street = "Este campo é obrigatório";
-    if (!city.trim()) errors.city = "Este campo é obrigatório";
-    if (!contractAccepted) errors.contract = "É necessário aceitar o contrato";
-    // Financial basic validation
-    if (financialType === "pix" && !pixKey.trim()) errors.pixKey = "Este campo é obrigatório";
+    if (!street.trim()) errors.street = req;
+    if (!city.trim()) errors.city = req;
+    if (!contractAccepted) errors.contract = t("atualiz.contractRequired");
+    if (financialType === "pix" && !pixKey.trim()) errors.pixKey = req;
     if (financialType === "bank" && (!bank.trim() || !agency.trim() || !account.trim())) {
-      if (!bank.trim()) errors.bank = "Este campo é obrigatório";
-      if (!agency.trim()) errors.agency = "Este campo é obrigatório";
-      if (!account.trim()) errors.account = "Este campo é obrigatório";
+      if (!bank.trim()) errors.bank = req;
+      if (!agency.trim()) errors.agency = req;
+      if (!account.trim()) errors.account = req;
     }
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -260,26 +253,26 @@ export default function AtualizacaoCadastral() {
 
   const handleSave = () => {
     if (!validate()) {
-      toast.error("Preencha todos os campos obrigatórios.");
+      toast.error(t("atualiz.fillRequired"));
       return;
     }
     setSaving(true);
     setTimeout(() => {
       setSaving(false);
-      toast.success("Dados atualizados com sucesso!");
+      toast.success(t("atualiz.savedSuccess"));
       navigate("/app");
     }, 1500);
   };
 
   const handleLater = () => {
-    toast.info("Você poderá concluir a atualização no próximo acesso.");
+    toast.info(t("atualiz.laterMsg"));
     navigate("/app");
   };
 
   const handleDivergenceSend = () => {
     if (!divergenceText.trim()) return;
     setDivergenceSent(true);
-    toast.success("Divergência registrada! Nossa equipe entrará em contato.");
+    toast.success(t("atualiz.divergenceSentToast"));
   };
 
   const clearError = (field: string) => {
@@ -295,18 +288,18 @@ export default function AtualizacaoCadastral() {
   return (
     <div className="max-w-xl mx-auto">
       <header className="mb-4">
-        <h1 className="text-2xl font-bold text-primary">Atualização Cadastral</h1>
+        <h1 className="text-2xl font-bold text-primary">{t("atualiz.title")}</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Confirme e atualize seus dados para continuar utilizando o app. Todos os campos devem estar preenchidos corretamente 😊
+          {t("atualiz.subtitle")}
         </p>
       </header>
 
       <div className="flex flex-col gap-3">
         {/* ── Dados Pessoais ── */}
-        <DashboardCard icon={User} title="Dados Pessoais">
+        <DashboardCard icon={User} title={t("atualiz.personalData")}>
           <div className="mt-2 space-y-3">
             <div className="space-y-1.5">
-              <Label>Nome Completo</Label>
+              <Label>{t("atualiz.fullName")}</Label>
               <Input
                 value={fullName}
                 onChange={(e) => { setFullName(e.target.value); clearError("fullName"); }}
@@ -316,7 +309,7 @@ export default function AtualizacaoCadastral() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label>Data de Nascimento</Label>
+                <Label>{t("atualiz.birthDate")}</Label>
                 <Input
                   type="date"
                   value={birthDate}
@@ -326,9 +319,9 @@ export default function AtualizacaoCadastral() {
                 {fieldErrors.birthDate && <p className="text-xs text-destructive">{fieldErrors.birthDate}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label>Gênero</Label>
+                <Label>{t("atualiz.gender")}</Label>
                 <Select value={gender} onValueChange={(v) => { setGender(v); clearError("gender"); }}>
-                  <SelectTrigger className={errorClass("gender")}><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectTrigger className={errorClass("gender")}><SelectValue placeholder={t("atualiz.select")} /></SelectTrigger>
                   <SelectContent>
                     {genderOptions.map((g) => (
                       <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
@@ -339,15 +332,15 @@ export default function AtualizacaoCadastral() {
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label>{mockApiData.documentCountryCode === "BR" ? "Documento (CPF)" : "Documento"}</Label>
+              <Label>{mockApiData.documentCountryCode === "BR" ? t("atualiz.documentCpf") : t("atualiz.document")}</Label>
               <Input value={mockApiData.document} readOnly disabled className="bg-muted/50 cursor-not-allowed" />
               <p className="text-[11px] text-muted-foreground">
-                O documento não pode ser alterado por aqui. Caso haja divergência, utilize o botão abaixo.
+                {t("atualiz.documentHint")}
               </p>
             </div>
             {mockApiData.documentCountryCode !== "BR" && (
               <div className="space-y-1.5">
-                <Label>País emissor do documento</Label>
+                <Label>{t("atualiz.issuingCountry")}</Label>
                 <Input value={mockApiData.documentCountryCode} readOnly disabled className="bg-muted/50 cursor-not-allowed" />
               </div>
             )}
@@ -355,10 +348,10 @@ export default function AtualizacaoCadastral() {
         </DashboardCard>
 
         {/* ── Contato ── */}
-        <DashboardCard icon={Mail} title="Contato">
+        <DashboardCard icon={Mail} title={t("atualiz.contact")}>
           <div className="mt-2 space-y-3">
             <div className="space-y-1.5">
-              <Label>E-mail ativo</Label>
+              <Label>{t("atualiz.activeEmail")}</Label>
               <div className="relative">
                 <Input
                   type="email"
@@ -375,7 +368,7 @@ export default function AtualizacaoCadastral() {
               {fieldErrors.email && !emailError && <p className="text-xs text-destructive">{fieldErrors.email}</p>}
             </div>
             <div className="space-y-1.5">
-              <Label>Telefone</Label>
+              <Label>{t("atualiz.phone")}</Label>
               <PhoneInput
                 countryIso2={phoneDdi}
                 number={phoneNumber}
@@ -389,14 +382,14 @@ export default function AtualizacaoCadastral() {
         </DashboardCard>
 
         {/* ── Endereço ── */}
-        <DashboardCard icon={MapPin} title="Endereço">
+        <DashboardCard icon={MapPin} title={t("atualiz.address")}>
           <div className="mt-2 space-y-3">
             <div className="space-y-1.5">
-              <Label>País</Label>
+              <Label>{t("atualiz.country")}</Label>
               <Input value={country} readOnly disabled className="bg-muted/50" />
             </div>
             <div className="space-y-1.5">
-              <Label>CEP</Label>
+              <Label>{t("atualiz.zipCode")}</Label>
               <div className="relative">
                 <Input
                   value={zipCode}
@@ -409,7 +402,7 @@ export default function AtualizacaoCadastral() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="sm:col-span-2 space-y-1.5">
-                <Label>Rua / Logradouro</Label>
+                <Label>{t("atualiz.street")}</Label>
                 <Input
                   value={street}
                   onChange={(e) => { setStreet(e.target.value); clearError("street"); }}
@@ -418,19 +411,19 @@ export default function AtualizacaoCadastral() {
                 {fieldErrors.street && <p className="text-xs text-destructive">{fieldErrors.street}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label>Número</Label>
+                <Label>{t("atualiz.number")}</Label>
                 <Input value={addrNumber} onChange={(e) => setAddrNumber(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Complemento</Label>
+                <Label>{t("atualiz.complement")}</Label>
                 <Input value={complement} onChange={(e) => setComplement(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Bairro</Label>
+                <Label>{t("atualiz.neighborhood")}</Label>
                 <Input value={neighborhood} onChange={(e) => setNeighborhood(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Cidade</Label>
+                <Label>{t("atualiz.city")}</Label>
                 <Input
                   value={city}
                   onChange={(e) => { setCity(e.target.value); clearError("city"); }}
@@ -439,7 +432,7 @@ export default function AtualizacaoCadastral() {
                 {fieldErrors.city && <p className="text-xs text-destructive">{fieldErrors.city}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label>Estado</Label>
+                <Label>{t("atualiz.state")}</Label>
                 <Input value={state} onChange={(e) => setState(e.target.value)} />
               </div>
             </div>
@@ -447,9 +440,9 @@ export default function AtualizacaoCadastral() {
         </DashboardCard>
 
         {/* ── Usuário ── */}
-        <DashboardCard icon={KeyRound} title="Usuário">
+        <DashboardCard icon={KeyRound} title={t("atualiz.user")}>
           <div className="mt-2 space-y-1.5">
-            <Label>Nome de usuário</Label>
+            <Label>{t("atualiz.username")}</Label>
             <div className="relative">
               <Input
                 value={username}
@@ -467,38 +460,38 @@ export default function AtualizacaoCadastral() {
             </div>
             {usernameError && <p className="text-xs text-destructive">{usernameError}</p>}
             {fieldErrors.username && !usernameError && <p className="text-xs text-destructive">{fieldErrors.username}</p>}
-            <p className="text-[11px] text-muted-foreground">Letras minúsculas, números, ponto e underline. Máx. 20 caracteres.</p>
+            <p className="text-[11px] text-muted-foreground">{t("atualiz.usernameHint")}</p>
           </div>
         </DashboardCard>
 
         {/* ── Dados Financeiros ── */}
-        <DashboardCard icon={Landmark} title="Dados Financeiros">
+        <DashboardCard icon={Landmark} title={t("atualiz.financial")}>
           <div className="mt-2 space-y-3">
             <div className="flex items-start gap-2 rounded-md border border-primary/20 bg-primary/5 p-3">
               <Info className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
               <p className="text-xs text-muted-foreground leading-relaxed">
-                A conta informada deve estar no nome do titular da franquia.
+                {t("atualiz.financialHint")}
               </p>
             </div>
             <div className="space-y-1.5">
-              <Label>Tipo de conta</Label>
+              <Label>{t("atualiz.accountType")}</Label>
               <Select value={financialType} onValueChange={(v: any) => setFinancialType(v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pix">PIX</SelectItem>
-                  <SelectItem value="bank">Dados Bancários</SelectItem>
-                  <SelectItem value="international">Conta Internacional</SelectItem>
-                  <SelectItem value="digital">Carteira Digital</SelectItem>
+                  <SelectItem value="bank">{t("atualiz.bankData")}</SelectItem>
+                  <SelectItem value="international">{t("atualiz.internationalAccount")}</SelectItem>
+                  <SelectItem value="digital">{t("atualiz.digitalWallet")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             {financialType === "pix" && (
               <div className="space-y-1.5">
-                <Label>Chave PIX</Label>
+                <Label>{t("atualiz.pixKey")}</Label>
                 <Input
                   value={pixKey}
                   onChange={(e) => { setPixKey(e.target.value); clearError("pixKey"); }}
-                  placeholder="CPF, e-mail, telefone ou chave aleatória"
+                  placeholder={t("atualiz.pixPlaceholder")}
                   className={errorClass("pixKey")}
                 />
                 {fieldErrors.pixKey && <p className="text-xs text-destructive">{fieldErrors.pixKey}</p>}
@@ -507,7 +500,7 @@ export default function AtualizacaoCadastral() {
             {financialType === "bank" && (
               <>
                 <div className="space-y-1.5">
-                  <Label>Banco</Label>
+                  <Label>{t("atualiz.bank")}</Label>
                   <Input
                     value={bank}
                     onChange={(e) => { setBank(e.target.value); clearError("bank"); }}
@@ -517,7 +510,7 @@ export default function AtualizacaoCadastral() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label>Agência</Label>
+                    <Label>{t("atualiz.agency")}</Label>
                     <Input
                       value={agency}
                       onChange={(e) => { setAgency(e.target.value); clearError("agency"); }}
@@ -526,7 +519,7 @@ export default function AtualizacaoCadastral() {
                     {fieldErrors.agency && <p className="text-xs text-destructive">{fieldErrors.agency}</p>}
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Conta</Label>
+                    <Label>{t("atualiz.account")}</Label>
                     <Input
                       value={account}
                       onChange={(e) => { setAccount(e.target.value); clearError("account"); }}
@@ -536,8 +529,8 @@ export default function AtualizacaoCadastral() {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Tipo (opcional)</Label>
-                  <Input placeholder="Corrente / Poupança" value={accountType} onChange={(e) => setAccountType(e.target.value)} />
+                  <Label>{t("atualiz.accountTypeOptional")}</Label>
+                  <Input placeholder={t("atualiz.accountTypePlaceholder")} value={accountType} onChange={(e) => setAccountType(e.target.value)} />
                 </div>
               </>
             )}
@@ -545,7 +538,7 @@ export default function AtualizacaoCadastral() {
         </DashboardCard>
 
         {/* ── Franquias ── */}
-        <DashboardCard icon={Gem} title="Minhas Franquias">
+        <DashboardCard icon={Gem} title={t("atualiz.myFranchises")}>
           <div className="mt-2 space-y-2">
             {mockApiData.franchises.map((f) => (
               <div key={f.franchiseId} className="flex items-center justify-between rounded-md border border-border/60 p-2.5">
@@ -561,7 +554,7 @@ export default function AtualizacaoCadastral() {
         </DashboardCard>
 
         {/* ── Contrato ── */}
-        <DashboardCard icon={FileCheck} title="Contrato Atualizado">
+        <DashboardCard icon={FileCheck} title={t("atualiz.updatedContract")}>
           <div className="mt-2 space-y-3">
             <div className="flex items-start gap-3">
               <Checkbox
@@ -571,15 +564,15 @@ export default function AtualizacaoCadastral() {
                 className={fieldErrors.contract ? "border-destructive" : ""}
               />
               <label htmlFor="contract" className="text-sm leading-relaxed cursor-pointer">
-                Declaro que li e concordo com o{" "}
+                {t("atualiz.contractCheckbox")}{" "}
                 <button
                   type="button"
                   className="text-primary underline underline-offset-2 hover:text-primary/80"
                   onClick={() => setContractOpen(true)}
                 >
-                  Contrato de Franquia TIMOL
+                  {t("atualiz.franchiseContract")}
                 </button>{" "}
-                e com as políticas atualizadas do sistema.
+                {t("atualiz.contractSuffix")}
               </label>
             </div>
             {fieldErrors.contract && <p className="text-xs text-destructive">{fieldErrors.contract}</p>}
@@ -591,7 +584,7 @@ export default function AtualizacaoCadastral() {
           <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Encontrou alguma divergência no seu documento ou nas franquias listadas?
+              {t("atualiz.divergenceQuestion")}
             </p>
             <Button
               variant="link"
@@ -599,7 +592,7 @@ export default function AtualizacaoCadastral() {
               className="h-auto p-0 text-xs text-warning hover:text-warning/80 mt-0.5"
               onClick={() => { setDivergenceOpen(true); setDivergenceSent(false); setDivergenceText(""); }}
             >
-              Reportar divergência
+              {t("atualiz.reportDivergence")}
             </Button>
           </div>
         </div>
@@ -612,7 +605,7 @@ export default function AtualizacaoCadastral() {
             className="flex-1 gap-2"
           >
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-            {saving ? "Salvando..." : "Salvar alterações"}
+            {saving ? t("atualiz.saving") : t("atualiz.saveChanges")}
           </Button>
           <Button
             variant="outline"
@@ -620,7 +613,7 @@ export default function AtualizacaoCadastral() {
             disabled={saving}
             className="flex-1"
           >
-            Atualizar depois
+            {t("atualiz.updateLater")}
           </Button>
         </div>
       </div>
@@ -634,34 +627,34 @@ export default function AtualizacaoCadastral() {
                 <CheckCircle2 className="h-7 w-7 text-success" />
               </div>
               <div className="text-center space-y-1">
-                <h3 className="text-lg font-semibold text-foreground">Divergência registrada</h3>
+                <h3 className="text-lg font-semibold text-foreground">{t("atualiz.divergenceRegistered")}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Nossa equipe analisará e entrará em contato.
+                  {t("atualiz.divergenceTeamMsg")}
                 </p>
               </div>
               <Button onClick={() => setDivergenceOpen(false)} className="mt-2 w-full max-w-[200px]">
-                Fechar
+                {t("common.close")}
               </Button>
             </div>
           ) : (
             <>
               <DialogHeader>
-                <DialogTitle>Reportar Divergência</DialogTitle>
+                <DialogTitle>{t("atualiz.reportDivergenceTitle")}</DialogTitle>
                 <DialogDescription>
-                  Descreva o problema encontrado no seu documento ou nas franquias listadas. Nossa equipe analisará o caso.
+                  {t("atualiz.reportDivergenceDesc")}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-3">
                 <Textarea
                   value={divergenceText}
                   onChange={(e) => setDivergenceText(e.target.value)}
-                  placeholder="Descreva a divergência encontrada..."
+                  placeholder={t("atualiz.describeDivergence")}
                   rows={4}
                 />
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setDivergenceOpen(false)}>Cancelar</Button>
-                <Button onClick={handleDivergenceSend} disabled={!divergenceText.trim()}>Enviar</Button>
+                <Button variant="outline" onClick={() => setDivergenceOpen(false)}>{t("common.cancel")}</Button>
+                <Button onClick={handleDivergenceSend} disabled={!divergenceText.trim()}>{t("atualiz.send")}</Button>
               </DialogFooter>
             </>
           )}

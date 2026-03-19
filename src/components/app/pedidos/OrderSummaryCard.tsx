@@ -100,7 +100,7 @@ type PeriodMode = "30d" | "month" | "custom";
 /* ── Component ── */
 
 export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const locale = localeMap[language] || ptBR;
   const [showAllProducts, setShowAllProducts] = useState(false);
   const [productTab, setProductTab] = useState<ProductCategory>("agua");
@@ -129,10 +129,10 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
 
   // Period label
   const periodLabel = useMemo(() => {
-    if (mode === "30d") return "Últimos 30 dias";
+    if (mode === "30d") return t("orders.last30days");
     if (mode === "month") return format(selectedMonth, "MMMM yyyy", { locale }).replace(/^\w/, (c) => c.toUpperCase());
     return `${format(from, "dd/MM/yy")} — ${format(to, "dd/MM/yy")}`;
-  }, [mode, selectedMonth, from, to]);
+  }, [mode, selectedMonth, from, to, t]);
 
   // Filter orders by period
   const filteredOrders = useMemo(() => {
@@ -180,7 +180,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
       type="button"
       onClick={() => setVisible((v) => !v)}
       className="p-1.5 rounded-md bg-card border-2 border-app-card-border hover:bg-muted/60 transition-colors"
-      aria-label={visible ? "Ocultar valores" : "Mostrar valores"}
+      aria-label={visible ? t("orders.hideValues") : t("orders.showValues")}
     >
       {visible ? (
         <Eye className="h-4 w-4 text-muted-foreground" />
@@ -192,16 +192,16 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
 
   return (
     <>
-      <DashboardCard icon={Package} title="Movimentação de Pedidos" headerRight={visibilityToggle}>
+      <DashboardCard icon={Package} title={t("orders.title")} headerRight={visibilityToggle}>
         {/* Period selector */}
         <div className="mt-2 flex flex-col gap-2">
           {/* Mode chips */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
             <div className="flex items-center gap-1 justify-center sm:justify-start">
               {([
-                { key: "30d", label: "30 dias", icon: CalendarDays },
-                { key: "month", label: "Mês", icon: Calendar },
-                { key: "custom", label: "Período", icon: CalendarRange },
+                { key: "30d", label: t("orders.30days"), icon: CalendarDays },
+                { key: "month", label: t("orders.month"), icon: Calendar },
+                { key: "custom", label: t("orders.period"), icon: CalendarRange },
               ] as const).map((m) => (
                 <button
                   key={m.key}
@@ -260,7 +260,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                   placeholder="Início"
                   locale={locale}
                 />
-                <span className="text-xs text-muted-foreground">até</span>
+                <span className="text-xs text-muted-foreground">{t("orders.until")}</span>
                 <DatePickerButton
                   date={customTo}
                   onSelect={(d) => setCustomTo(d)}
@@ -283,7 +283,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
                 <Package className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
-                <span className="text-[13px] sm:text-sm text-muted-foreground leading-tight">Produtos adquiridos</span>
+                <span className="text-[13px] sm:text-sm text-muted-foreground leading-tight">{t("orders.productsAcquired")}</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? totalUnits : HIDDEN}</p>
 
@@ -297,13 +297,13 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                       <span className="font-semibold text-foreground shrink-0">{qty}x</span>
                     </div>
                   ))}
-                  {sortedProducts.length > 3 && (
-                    <button
-                      type="button"
-                      onClick={() => setShowAllProducts(true)}
-                      className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5"
-                    >
-                      Ver todos <ChevronRight className="h-2.5 w-2.5" />
+                    {sortedProducts.length > 3 && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAllProducts(true)}
+                        className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5"
+                      >
+                        {t("orders.viewAll")} <ChevronRight className="h-2.5 w-2.5" />
                     </button>
                   )}
                 </div>
@@ -320,7 +320,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             <div className="rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-1">
                 <Users className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
-                <span className="text-[13px] sm:text-sm text-muted-foreground leading-tight">Franquias cadastradas</span>
+                <span className="text-[13px] sm:text-sm text-muted-foreground leading-tight">{t("orders.franchisesRegistered")}</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? totalFranchises : HIDDEN}</p>
 
@@ -351,7 +351,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             <div className="col-span-2 sm:col-span-1 rounded-lg border border-app-card-border p-3 flex flex-col items-center text-center">
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Award className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
-                <span className="text-[13px] sm:text-sm text-muted-foreground leading-tight">Bônus gerados</span>
+                <span className="text-[13px] sm:text-sm text-muted-foreground leading-tight">{t("orders.bonusGenerated")}</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? formatCurrency(bonusGenerated) : HIDDEN}</p>
 
@@ -359,7 +359,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
 
               <div className="flex items-center gap-1.5 mb-0.5">
                 <Star className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
-                <span className="text-[13px] sm:text-sm text-muted-foreground leading-tight">Pontos gerados</span>
+                <span className="text-[13px] sm:text-sm text-muted-foreground leading-tight">{t("orders.pointsGenerated")}</span>
               </div>
               <p className="text-xl font-bold text-primary">{visible ? pointsGenerated.toLocaleString("pt-BR") : HIDDEN}</p>
             </div>
@@ -373,7 +373,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-primary text-base">
               <Package className="h-4 w-4" />
-              Produtos adquiridos
+              {t("orders.allProducts")}
             </DialogTitle>
           </DialogHeader>
           <p className="text-xs text-muted-foreground -mt-2 mb-1">{periodLabel}</p>
@@ -402,7 +402,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             {(() => {
               const categoryProducts = sortedProducts.filter(([name]) => getCategory(name) === productTab);
               if (categoryProducts.length === 0) {
-                return <p className="text-center text-sm text-muted-foreground py-4">Nenhum produto nesta categoria.</p>;
+                return <p className="text-center text-sm text-muted-foreground py-4">{t("orders.noProductsCategory")}</p>;
               }
               return categoryProducts.map(([name, qty], idx) => (
                 <div

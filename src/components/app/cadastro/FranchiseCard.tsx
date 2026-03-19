@@ -7,10 +7,11 @@ import { cn } from "@/lib/utils";
 import { UpgradeDialog } from "./UpgradeDialog";
 import { NewFranchiseDialog } from "./NewFranchiseDialog";
 import { useFranchise } from "@/contexts/FranchiseContext";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 /* ── franchise status helper ── */
 
-function getFranchiseStatusInfo(activeUntil: string) {
+function getFranchiseStatusInfo(activeUntil: string, t: (key: string) => string) {
   const now = new Date();
   const expDate = new Date(activeUntil);
   const diffMs = expDate.getTime() - now.getTime();
@@ -22,8 +23,8 @@ function getFranchiseStatusInfo(activeUntil: string) {
       icon: ShieldX,
       colorClass: "text-destructive",
       bgClass: "bg-destructive/8 border-destructive/20",
-      message: "Bônus e pontos não estão sendo gerados. Adquira produtos ativáveis para reativar sua franquia!",
-      label: `Inativa desde ${expDate.toLocaleDateString("pt-BR")}`,
+      message: t("fc.expiredMsg"),
+      label: `${t("fc.inactiveSince")} ${expDate.toLocaleDateString("pt-BR")}`,
     };
   }
   if (diffDays <= 10) {
@@ -32,8 +33,8 @@ function getFranchiseStatusInfo(activeUntil: string) {
       icon: ShieldAlert,
       colorClass: "text-warning",
       bgClass: "bg-warning/8 border-warning/20",
-      message: `Vence em ${diffDays} dia${diffDays !== 1 ? "s" : ""}. Adquira produtos para renovar!`,
-      label: `Ativa até ${expDate.toLocaleDateString("pt-BR")}`,
+      message: t("fc.warningMsg").replace("{n}", String(diffDays)),
+      label: `${t("fc.activeUntil")} ${expDate.toLocaleDateString("pt-BR")}`,
     };
   }
   return {
@@ -41,30 +42,29 @@ function getFranchiseStatusInfo(activeUntil: string) {
     icon: ShieldCheck,
     colorClass: "text-success",
     bgClass: "bg-success/8 border-success/20",
-    message: "Franquia ativa para recebimento de bônus.",
-    label: `Ativa até ${expDate.toLocaleDateString("pt-BR")}`,
+    message: t("fc.activeMsg"),
+    label: `${t("fc.activeUntil")} ${expDate.toLocaleDateString("pt-BR")}`,
   };
 }
 
 /* ── qualification icons ── */
 
-const qualificationConfig: Record<string, { label: string; icon: string }> = {
-  consultor: { label: "Consultor", icon: "○" },
-  distribuidor: { label: "Distribuidor", icon: "◐" },
-  lider: { label: "Líder", icon: "●" },
-  rubi: { label: "Rubi", icon: "◆" },
-  esmeralda: { label: "Esmeralda", icon: "◈" },
-  diamante: { label: "Diamante", icon: "◇" },
-  "diamante-1": { label: "Diamante ★", icon: "◇★" },
-  "diamante-2": { label: "Diamante ★★", icon: "◇★★" },
-  "diamante-3": { label: "Diamante ★★★", icon: "◇★★★" },
-  "diamante-4": { label: "Diamante ★★★★", icon: "◇★★★★" },
-  "diamante-5": { label: "Diamante ★★★★★", icon: "◇★★★★★" },
-  "diamante-black": { label: "Diamante Black", icon: "◆◆" },
+const qualificationConfig: Record<string, { labelKey: string; icon: string }> = {
+  consultor: { labelKey: "qual.consultor", icon: "○" },
+  distribuidor: { labelKey: "qual.distribuidor", icon: "◐" },
+  lider: { labelKey: "qual.lider", icon: "●" },
+  rubi: { labelKey: "qual.rubi", icon: "◆" },
+  esmeralda: { labelKey: "qual.esmeralda", icon: "◈" },
+  diamante: { labelKey: "qual.diamante", icon: "◇" },
+  "diamante-1": { labelKey: "qual.diamante", icon: "◇★" },
+  "diamante-2": { labelKey: "qual.diamante", icon: "◇★★" },
+  "diamante-3": { labelKey: "qual.diamante", icon: "◇★★★" },
+  "diamante-4": { labelKey: "qual.diamante", icon: "◇★★★★" },
+  "diamante-5": { labelKey: "qual.diamante", icon: "◇★★★★★" },
+  "diamante-black": { labelKey: "qual.diamante", icon: "◆◆" },
 };
 
 const planOrder = ["bronze", "silver", "gold", "platinum"];
-const planLabels: Record<string, string> = { bronze: "Bronze", silver: "Prata", gold: "Ouro", platinum: "Platina" };
 
 /* ── mock user IDs data ── */
 
@@ -96,9 +96,17 @@ interface Props {
 }
 
 export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Props) {
+  const { t } = useLanguage();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [newFranchiseOpen, setNewFranchiseOpen] = useState(false);
   const { profiles: contextProfiles } = useFranchise();
+
+  const planLabels: Record<string, string> = {
+    bronze: t("franchise.bronze"),
+    silver: t("franchise.silver"),
+    gold: t("franchise.gold"),
+    platinum: t("franchise.platinum"),
+  };
 
   // Mock: user may have multiple IDs with different activity dates
   const baseFranchises: UserFranchise[] = [
@@ -129,7 +137,6 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
     ...userFranchises.filter((f) => f.franchiseId === franchiseId),
     ...userFranchises.filter((f) => f.franchiseId !== franchiseId).sort((a, b) => a.franchiseId.localeCompare(b.franchiseId)),
   ];
-
 
   const hasMultipleIds = sortedFranchises.length > 1;
   const [selectedTabIdx, setSelectedTabIdx] = useState(0);
@@ -165,13 +172,12 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
     el.scrollBy({ left: dir === "left" ? -120 : 120, behavior: "smooth" });
   };
 
-  const currentPlanIdx = planOrder.indexOf(viewing.planCode);
   const isMaxPlan = viewing.planCode === "platinum";
   const qual = qualificationConfig[viewing.qualification];
 
   return (
     <>
-      <DashboardCard icon={Gem} title="Franquia" className={className}>
+      <DashboardCard icon={Gem} title={t("fc.title")} className={className}>
         <div className="mt-1">
           {hasMultipleIds && (
             <div className="flex items-center gap-0.5 mb-3">
@@ -180,7 +186,7 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
                   type="button"
                   onClick={() => scroll("left")}
                   className="flex-shrink-0 p-0.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                  aria-label="Anterior"
+                  aria-label={t("fc.previous")}
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
@@ -209,7 +215,7 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
                   type="button"
                   onClick={() => scroll("right")}
                   className="flex-shrink-0 p-0.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                  aria-label="Próximo"
+                  aria-label={t("fc.next")}
                 >
                   <ChevronRight className="h-4 w-4" />
                 </button>
@@ -218,15 +224,15 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
           )}
 
           <div className="space-y-0">
-            <Row label="ID" value={viewing.franchiseId} />
-            <Row label="Franquia" value={planLabels[viewing.planCode] || viewing.planCode} />
-            <Row label="Patrocinador" value={viewing.sponsor} />
-            <Row label="Cadastro" value={viewing.registrationDate} />
-            <Row label="Qualificação" value={
+            <Row label={t("fc.id")} value={viewing.franchiseId} />
+            <Row label={t("fc.franchise")} value={planLabels[viewing.planCode] || viewing.planCode} />
+            <Row label={t("fc.sponsor")} value={viewing.sponsor} />
+            <Row label={t("fc.registration")} value={viewing.registrationDate} />
+            <Row label={t("fc.qualification")} value={
               qual ? (
                 <span className="flex items-center gap-1.5">
                   <span className="text-sm">{qual.icon}</span>
-                  {qual.label}
+                  {t(qual.labelKey)}
                 </span>
               ) : viewing.qualification
             } />
@@ -234,7 +240,7 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
 
           {/* Franchise status alert */}
           {(() => {
-            const status = getFranchiseStatusInfo(viewing.activeUntil);
+            const status = getFranchiseStatusInfo(viewing.activeUntil, t);
             const StatusIcon = status.icon;
             return (
               <div className={cn(
@@ -260,7 +266,7 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
                 onClick={() => setUpgradeOpen(true)}
               >
                 <ArrowUp className="h-3 w-3" />
-                Fazer upgrade
+                {t("fc.upgrade")}
               </Button>
             )}
             <Button
@@ -270,7 +276,7 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
               onClick={() => setNewFranchiseOpen(true)}
             >
               <Plus className="h-3 w-3" />
-              Nova franquia
+              {t("fc.newFranchise")}
             </Button>
           </div>
         </div>
