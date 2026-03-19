@@ -26,6 +26,7 @@ import AssistirAoVivo from "./pages/app/AssistirAoVivo";
 import Rede from "./pages/app/Rede";
 import Clientes from "./pages/app/Clientes";
 import AtualizacaoCadastral from "./pages/app/AtualizacaoCadastral";
+import Configuracoes from "./pages/app/Configuracoes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,6 +58,7 @@ const App = () => (
               <Route path="suporte" element={<Suporte />} />
               <Route path="rede" element={<Rede />} />
               <Route path="clientes" element={<Clientes />} />
+              <Route path="configuracoes" element={<Configuracoes />} />
               <Route path="configuracoes/emails" element={<EmailPreviews />} />
               <Route path="atualizacao-cadastral" element={<AtualizacaoCadastral />} />
               <Route path=":section" element={<SectionPlaceholder />} />
