@@ -385,7 +385,7 @@ export default function AtualizacaoCadastral() {
         <DashboardCard icon={MapPin} title={t("atualiz.address")}>
           <div className="mt-2 space-y-3">
             <div className="space-y-1.5">
-              <Label>País</Label>
+              <Label>{t("atualiz.country")}</Label>
               <Input value={country} readOnly disabled className="bg-muted/50" />
             </div>
             <div className="space-y-1.5">
