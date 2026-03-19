@@ -191,7 +191,7 @@ export function WithdrawDialog({ open, onOpenChange, currency, availableBalance 
                     </div>
                     <div>
                       <p className="text-sm font-bold text-foreground">Transferir para outro ID</p>
-                      <p className="text-[11px] text-muted-foreground">O ID recebedor precisa estar ativo</p>
+                      <p className="text-[11px] text-muted-foreground">Envie saldo para qualquer ID cadastrado</p>
                     </div>
                   </button>
                 </div>
