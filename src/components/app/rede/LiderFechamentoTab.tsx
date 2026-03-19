@@ -135,7 +135,7 @@ export function LiderFechamentoTab() {
   return (
     <div className="space-y-4">
       {/* Why become a leader card */}
-      <DashboardCard icon={Gift} title="Por que ser um Líder de Fechamento?">
+      <DashboardCard icon={Gift} title="Vantagens em ser Líder de Fechamento">
         <div className="mt-2">
           <p className="text-sm text-muted-foreground leading-relaxed">
             Além de contribuir para o desenvolvimento de outras pessoas no negócio, você é reconhecido com um 🎁 <strong className="text-primary">presente exclusivo</strong> a cada fechamento concluído com sucesso. De acordo com a franquia adquirida pelo convidado, você pode receber um <strong>Combo Mini</strong> ou um <strong>Combo Mega</strong>.
