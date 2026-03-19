@@ -58,10 +58,10 @@ export default function Rede() {
               onClick={() => setView(item.key)}
               className="flex flex-col items-start rounded-xl border border-border bg-card p-5 text-left transition-colors hover:border-primary/30 hover:shadow-sm"
             >
-              <div className="rounded-lg bg-primary p-2.5 mb-3">
+              <div className="rounded-lg bg-app-sidebar p-2.5 mb-3">
                 <Icon className="h-5 w-5 text-primary-foreground" />
               </div>
-              <p className="text-sm font-bold text-foreground">{item.title}</p>
+              <p className="text-base font-bold text-app-sidebar">{item.title}</p>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{item.description}</p>
               <ChevronRight className="h-4 w-4 text-muted-foreground mt-auto pt-2 self-end" />
             </button>
