@@ -1,12 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CurrencyConfig, formatCurrency } from "./currency-helpers";
-import { CheckCircle, QrCode, CreditCard, ArrowLeft } from "lucide-react";
+import { CheckCircle, QrCode, CreditCard, ArrowLeft, Copy, Clock, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
-type Step = "amount" | "payment" | "success";
+type Step = "amount" | "payment" | "pix-pending" | "success";
 
 interface Props {
   open: boolean;
