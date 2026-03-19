@@ -192,7 +192,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
 
   return (
     <>
-      <DashboardCard icon={Package} title="Movimentação de Pedidos" headerRight={visibilityToggle}>
+      <DashboardCard icon={Package} title={t("orders.title")} headerRight={visibilityToggle}>
         {/* Period selector */}
         <div className="mt-2 flex flex-col gap-2">
           {/* Mode chips */}
