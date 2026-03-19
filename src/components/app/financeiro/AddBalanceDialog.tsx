@@ -294,7 +294,6 @@ export function AddBalanceDialog({ open, onOpenChange, currency }: Props) {
                 <br />
                 com sucesso à sua carteira.
               </p>
-              </p>
               <Button type="submit" className="mt-2 w-full" autoFocus>
                 Fechar
               </Button>
