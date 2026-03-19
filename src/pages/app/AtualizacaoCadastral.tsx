@@ -529,8 +529,8 @@ export default function AtualizacaoCadastral() {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Tipo (opcional)</Label>
-                  <Input placeholder="Corrente / Poupança" value={accountType} onChange={(e) => setAccountType(e.target.value)} />
+                  <Label>{t("atualiz.accountTypeOptional")}</Label>
+                  <Input placeholder={t("atualiz.accountTypePlaceholder")} value={accountType} onChange={(e) => setAccountType(e.target.value)} />
                 </div>
               </>
             )}
