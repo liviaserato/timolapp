@@ -7,6 +7,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export interface InviteRequest {
   id: string;
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export function InviteRequestCard({ invites, onAccept, onReject }: Props) {
+  const { t } = useLanguage();
   const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
   const [selectedInvite, setSelectedInvite] = useState<InviteRequest | null>(null);
   const [generatedLink, setGeneratedLink] = useState("");
@@ -43,26 +45,30 @@ export function InviteRequestCard({ invites, onAccept, onReject }: Props) {
     if (!selectedInvite) return;
     setAccepted(true);
     onAccept(selectedInvite, generatedLink);
-    toast.success("Convite aceito! Link gerado com sucesso.");
+    toast.success(t("invite.accepted"));
   };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(`https://${generatedLink}`);
     setLinkCopied(true);
-    toast.success("Link copiado!");
+    toast.success(t("invite.linkCopied"));
     setTimeout(() => setLinkCopied(false), 2000);
   };
 
   const handleReject = (inviteId: string) => {
     onReject(inviteId);
-    toast("Convite recusado.");
+    toast(t("invite.rejected"));
   };
 
   if (invites.length === 0) return null;
 
+  const requestText = invites.length === 1
+    ? t("invite.oneRequest")
+    : t("invite.multipleRequests").replace("{n}", String(invites.length));
+
   return (
     <>
-      <DashboardCard icon={UserCheck} title="Convites Recebidos">
+      <DashboardCard icon={UserCheck} title={t("invite.title")}>
         <div className="mt-2 space-y-3">
           <button
             type="button"
@@ -70,7 +76,7 @@ export function InviteRequestCard({ invites, onAccept, onReject }: Props) {
             className="flex items-center justify-between w-full text-left"
           >
             <p className="text-sm text-muted-foreground">
-              Você recebeu {invites.length === 1 ? "uma solicitação" : `${invites.length} solicitações`} para atuar como <strong>Líder de Fechamento</strong>.
+              {requestText} {t("invite.toActAs")} <strong>{t("invite.closingLeader")}</strong>.
             </p>
             {expanded ? (
               <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0 ml-2" />
@@ -94,7 +100,7 @@ export function InviteRequestCard({ invites, onAccept, onReject }: Props) {
                       onClick={() => handleReject(inv.id)}
                     >
                       <X className="h-3.5 w-3.5 mr-1" />
-                      Rejeitar
+                      {t("invite.reject")}
                     </Button>
                     <Button
                       size="sm"
@@ -102,7 +108,7 @@ export function InviteRequestCard({ invites, onAccept, onReject }: Props) {
                       onClick={() => handleAcceptClick(inv)}
                     >
                       <Check className="h-3.5 w-3.5 mr-1" />
-                      Aceitar
+                      {t("invite.accept")}
                     </Button>
                   </div>
                 </div>
@@ -117,11 +123,11 @@ export function InviteRequestCard({ invites, onAccept, onReject }: Props) {
         <DialogContent className="max-w-md">
           <DialogHeader className="text-center items-center">
             <DialogTitle className="text-app-sidebar">
-              {accepted ? "Convite Aceito!" : "Aceitar Convite"}
+              {accepted ? t("invite.acceptedTitle") : t("invite.acceptTitle")}
             </DialogTitle>
             {!accepted && (
               <DialogDescription>
-                Confira os dados do patrocinador e confirme sua participação.
+                {t("invite.confirmDesc")}
               </DialogDescription>
             )}
           </DialogHeader>
@@ -134,11 +140,11 @@ export function InviteRequestCard({ invites, onAccept, onReject }: Props) {
                   <span className="text-sm font-medium text-foreground">{selectedInvite.sponsorId}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Nome</span>
+                  <span className="text-xs text-muted-foreground">{t("invite.name")}</span>
                   <span className="text-sm font-medium text-foreground">{selectedInvite.sponsorName}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Telefone</span>
+                  <span className="text-xs text-muted-foreground">{t("invite.phone")}</span>
                   <div className="flex items-center gap-1.5">
                     <Phone className="h-3.5 w-3.5 text-muted-foreground" />
                     <span className="text-sm text-foreground">{selectedInvite.sponsorPhone}</span>
@@ -148,21 +154,21 @@ export function InviteRequestCard({ invites, onAccept, onReject }: Props) {
 
               <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Ao aceitar, será gerado um <strong>link único</strong> de cadastro vinculado a este patrocinador.
+                  {t("invite.uniqueLink")}
                 </p>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Clock className="h-3.5 w-3.5" />
-                  <span>Válido por <strong>24 horas</strong> • Apenas <strong>1 cadastro</strong></span>
+                  <span><strong>{t("invite.validFor")}</strong> • <strong>{t("invite.oneRegistration")}</strong></span>
                 </div>
               </div>
 
               <DialogFooter className="flex-col sm:flex-row gap-2">
                 <DialogClose asChild>
-                  <Button variant="outline" className="w-full sm:w-auto">Cancelar</Button>
+                  <Button variant="outline" className="w-full sm:w-auto">{t("common.cancel")}</Button>
                 </DialogClose>
                 <Button onClick={handleConfirmAccept} className="w-full sm:w-auto">
                   <Check className="h-4 w-4 mr-1" />
-                  Confirmar e gerar link
+                  {t("invite.confirmGenerate")}
                 </Button>
               </DialogFooter>
             </div>
@@ -174,7 +180,7 @@ export function InviteRequestCard({ invites, onAccept, onReject }: Props) {
                 <Check className="h-6 w-6 text-success" />
               </div>
               <p className="text-sm text-center text-muted-foreground">
-                Link gerado para <strong>{selectedInvite.sponsorName}</strong>
+                {t("invite.linkGenerated")} <strong>{selectedInvite.sponsorName}</strong>
               </p>
 
               <div className="flex items-center gap-2 rounded-lg border bg-muted/50 p-2.5">
@@ -187,11 +193,11 @@ export function InviteRequestCard({ invites, onAccept, onReject }: Props) {
 
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground justify-center">
                 <Clock className="h-3.5 w-3.5" />
-                <span>Válido por <strong>24 horas</strong> • Apenas <strong>1 cadastro</strong></span>
+                <span><strong>{t("invite.validFor")}</strong> • <strong>{t("invite.oneRegistration")}</strong></span>
               </div>
 
               <DialogClose asChild>
-                <Button className="w-full">Entendido</Button>
+                <Button className="w-full">{t("invite.understood")}</Button>
               </DialogClose>
             </div>
           )}
