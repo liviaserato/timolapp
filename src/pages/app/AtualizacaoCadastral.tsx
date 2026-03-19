@@ -309,7 +309,7 @@ export default function AtualizacaoCadastral() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label>Data de Nascimento</Label>
+                <Label>{t("atualiz.birthDate")}</Label>
                 <Input
                   type="date"
                   value={birthDate}
