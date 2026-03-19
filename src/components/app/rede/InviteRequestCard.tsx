@@ -68,12 +68,12 @@ export function InviteRequestCard({ invites, onAccept, onReject }: Props) {
           </p>
           <div className="space-y-2">
             {invites.map((inv) => (
-              <div key={inv.id} className="rounded-lg border p-3 flex items-center gap-3">
+              <div key={inv.id} className="rounded-lg border p-3 flex flex-col sm:flex-row sm:items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{inv.sponsorName}</p>
                   <p className="text-xs text-muted-foreground">{inv.sponsorId}</p>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
                   <Button
                     size="sm"
                     variant="outline"
@@ -142,11 +142,11 @@ export function InviteRequestCard({ invites, onAccept, onReject }: Props) {
                 </div>
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="flex-col sm:flex-row gap-2">
                 <DialogClose asChild>
-                  <Button variant="outline">Cancelar</Button>
+                  <Button variant="outline" className="w-full sm:w-auto">Cancelar</Button>
                 </DialogClose>
-                <Button onClick={handleConfirmAccept}>
+                <Button onClick={handleConfirmAccept} className="w-full sm:w-auto">
                   <Check className="h-4 w-4 mr-1" />
                   Confirmar e gerar link
                 </Button>
