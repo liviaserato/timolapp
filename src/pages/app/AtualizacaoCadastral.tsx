@@ -288,9 +288,9 @@ export default function AtualizacaoCadastral() {
   return (
     <div className="max-w-xl mx-auto">
       <header className="mb-4">
-        <h1 className="text-2xl font-bold text-primary">Atualização Cadastral</h1>
+        <h1 className="text-2xl font-bold text-primary">{t("atualiz.title")}</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Confirme e atualize seus dados para continuar utilizando o app. Todos os campos devem estar preenchidos corretamente 😊
+          {t("atualiz.subtitle")}
         </p>
       </header>
 
