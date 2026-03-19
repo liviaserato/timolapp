@@ -402,7 +402,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
             {(() => {
               const categoryProducts = sortedProducts.filter(([name]) => getCategory(name) === productTab);
               if (categoryProducts.length === 0) {
-                return <p className="text-center text-sm text-muted-foreground py-4">Nenhum produto nesta categoria.</p>;
+                return <p className="text-center text-sm text-muted-foreground py-4">{t("orders.noProductsCategory")}</p>;
               }
               return categoryProducts.map(([name, qty], idx) => (
                 <div
