@@ -59,6 +59,7 @@ const mockOrders = [
 export default function Dashboard() {
   const navigate = useNavigate();
   const [indicarOpen, setIndicarOpen] = useState(false);
+  const { invites, handleAcceptInvite, handleRejectInvite } = useInvites();
 
   const today = new Date();
   const todayDow = today.getDay();
