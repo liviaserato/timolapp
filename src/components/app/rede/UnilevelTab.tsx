@@ -315,6 +315,9 @@ export function UnilevelTab({ searchQuery }: Props) {
             </div>
           </CardContent>
         </Card>
+
+        {/* Bônus de Rede */}
+        <BonusRedeCard tree={mockUnilevelTree} />
       </div>
 
       {/* ═══ Filters ═══ */}
