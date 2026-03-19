@@ -1,7 +1,6 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Hand, DollarSign, Target, Newspaper, ShoppingCart, Users, BookOpen, GraduationCap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { OrderSummaryCard } from "@/components/app/pedidos/OrderSummaryCard";
 import { IndicarFranquiaDialog } from "@/components/app/IndicarFranquiaDialog";
@@ -80,6 +79,17 @@ export default function Dashboard() {
   const currency = getCurrencyConfig("BR", "BRL");
   const q = qualificationLabels[mockUserQualification.current];
 
+  // Next Friday date for bonus
+  const nextFriday = useMemo(() => {
+    const now = new Date();
+    const day = now.getDay();
+    const daysUntil = (5 - day + 7) % 7 || 7;
+    const fri = new Date(now);
+    fri.setDate(now.getDate() + daysUntil);
+    return fri;
+  }, []);
+  const nextFridayFormatted = nextFriday.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+
   return (
     <div>
       <header className="mb-4">
@@ -110,17 +120,20 @@ export default function Dashboard() {
         {/* Resumo Financeiro */}
         <DashboardCard icon={DollarSign} title="Resumo Financeiro">
           <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="rounded-md border border-success/30 bg-success/5 p-3 text-center">
+            <div className="rounded-md border border-success/30 bg-success/5 p-3 text-center flex flex-col justify-center">
               <p className="text-xs text-muted-foreground">Bônus a Receber</p>
               <p className="text-lg font-bold text-success">{formatCurrency(mockBonusSummary.nextFriday, currency)}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">Pagamento: {nextFridayFormatted}</p>
             </div>
-            <div className="rounded-md border border-app-card-border p-3 text-center">
+            <div className="rounded-md border border-app-card-border p-3 text-center flex flex-col justify-center">
               <p className="text-xs text-muted-foreground">Saldo para Compras</p>
               <p className="text-lg font-bold text-primary">{formatCurrency(mockBancoTimol.available, currency)}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5 invisible">—</p>
             </div>
-            <div className="rounded-md border border-app-card-border p-3 text-center">
+            <div className="rounded-md border border-app-card-border p-3 text-center flex flex-col justify-center">
               <p className="text-xs text-muted-foreground">Pontos Unilevel</p>
               <p className="text-lg font-bold text-primary">{mockUserQualification.totalPoints.toLocaleString("pt-BR")}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5 invisible">—</p>
             </div>
             <div className="rounded-md border border-app-card-border p-3 text-center">
               <p className="text-xs text-muted-foreground">Qualificação Atual</p>

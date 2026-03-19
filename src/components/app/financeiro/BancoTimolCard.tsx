@@ -20,6 +20,7 @@ export function BancoTimolCard({ available, pendingWithdrawal, currency, onAddBa
           <div className="rounded-md border border-app-card-border p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center min-w-0">
             <p className="text-xs text-muted-foreground">Saldo<br className="lg:hidden" /> para Compras</p>
             <p className="text-lg font-bold text-primary truncate">{formatCurrency(available, currency)}</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5 invisible">—</p>
           </div>
           {pendingWithdrawal > 0 && (
             <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-center flex-1 min-h-[72px] flex flex-col justify-center">
