@@ -474,14 +474,14 @@ export default function AtualizacaoCadastral() {
               </p>
             </div>
             <div className="space-y-1.5">
-              <Label>Tipo de conta</Label>
+              <Label>{t("atualiz.accountType")}</Label>
               <Select value={financialType} onValueChange={(v: any) => setFinancialType(v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pix">PIX</SelectItem>
-                  <SelectItem value="bank">Dados Bancários</SelectItem>
-                  <SelectItem value="international">Conta Internacional</SelectItem>
-                  <SelectItem value="digital">Carteira Digital</SelectItem>
+                  <SelectItem value="bank">{t("atualiz.bankData")}</SelectItem>
+                  <SelectItem value="international">{t("atualiz.internationalAccount")}</SelectItem>
+                  <SelectItem value="digital">{t("atualiz.digitalWallet")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
