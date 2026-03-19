@@ -37,7 +37,7 @@ const initialRecords: ClosingRecord[] = [
   { id: "5", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestDisplay: "Fernanda Lima", guestSub: "TML-9402", date: "2026-03-12", franchiseType: "Ouro", confirmed: false },
 ];
 
-const initialRecordsData: ClosingRecord[] = [
+const qualificationRequirements = [
   { label: "Possuir franquia Prata ou superior", met: true },
   { label: "Estar com a franquia ativa", met: true },
   { label: "Manter 3 diretos ativos, cada um com pelo menos 150 pontos", met: true },
@@ -56,9 +56,10 @@ export function LiderFechamentoTab() {
   const [linkCopied, setLinkCopied] = useState(false);
   const [copiedRecordId, setCopiedRecordId] = useState<string | null>(null);
 
-  const [invites, setInvites] = useState<InviteRequest[]>(initialInvites);
+  const { invites, handleAcceptInvite, handleRejectInvite, closingRecordsFromInvites } = useInvites();
   const [records, setRecords] = useState<ClosingRecord[]>(initialRecords);
 
+  const allRecords = [...closingRecordsFromInvites, ...records];
   const allMet = qualificationRequirements.every((r) => r.met);
   const mockLink = "indiquei.timol/id4521&lider7890";
 
