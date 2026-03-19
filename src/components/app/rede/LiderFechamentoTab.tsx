@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { InviteRequestCard, type InviteRequest } from "./InviteRequestCard";
+import { useInvites } from "@/contexts/InviteContext";
 
 /* ─── Mock data ────────────────────────────────────────────── */
 
@@ -36,11 +37,6 @@ const initialRecords: ClosingRecord[] = [
   { id: "5", sponsorId: "TML-4521", sponsorName: "Carlos Mendes", guestDisplay: "Fernanda Lima", guestSub: "TML-9402", date: "2026-03-12", franchiseType: "Ouro", confirmed: false },
 ];
 
-const initialInvites: InviteRequest[] = [
-  { id: "inv-1", sponsorId: "TML-6102", sponsorName: "Luciana Braga", sponsorPhone: "+55 11 98765-4321", requestedAt: "2026-03-18" },
-  { id: "inv-2", sponsorId: "TML-7744", sponsorName: "Eduardo Martins", sponsorPhone: "+55 21 91234-5678", requestedAt: "2026-03-19" },
-];
-
 const qualificationRequirements = [
   { label: "Possuir franquia Prata ou superior", met: true },
   { label: "Estar com a franquia ativa", met: true },
@@ -60,9 +56,10 @@ export function LiderFechamentoTab() {
   const [linkCopied, setLinkCopied] = useState(false);
   const [copiedRecordId, setCopiedRecordId] = useState<string | null>(null);
 
-  const [invites, setInvites] = useState<InviteRequest[]>(initialInvites);
+  const { invites, handleAcceptInvite, handleRejectInvite, closingRecordsFromInvites } = useInvites();
   const [records, setRecords] = useState<ClosingRecord[]>(initialRecords);
 
+  const allRecords = [...closingRecordsFromInvites, ...records];
   const allMet = qualificationRequirements.every((r) => r.met);
   const mockLink = "indiquei.timol/id4521&lider7890";
 
@@ -104,26 +101,6 @@ export function LiderFechamentoTab() {
     setCopiedRecordId(recordId);
     toast.success("Link copiado!");
     setTimeout(() => setCopiedRecordId(null), 2000);
-  };
-
-  const handleAcceptInvite = (invite: InviteRequest, link: string) => {
-    setInvites((prev) => prev.filter((i) => i.id !== invite.id));
-    const now = new Date();
-    const newRecord: ClosingRecord = {
-      id: `accepted-${invite.id}`,
-      sponsorId: invite.sponsorId,
-      sponsorName: invite.sponsorName,
-      guestDisplay: link,
-      guestSub: "Aguardando cadastro",
-      date: now.toISOString().split("T")[0],
-      franchiseType: "—",
-      confirmed: null,
-    };
-    setRecords((prev) => [newRecord, ...prev]);
-  };
-
-  const handleRejectInvite = (inviteId: string) => {
-    setInvites((prev) => prev.filter((i) => i.id !== inviteId));
   };
 
   const getStatusBadge = (confirmed: boolean | null) => {
@@ -230,7 +207,7 @@ export function LiderFechamentoTab() {
           {isMobile ? (
             /* ── Mobile: card layout ── */
             <div className="space-y-3">
-              {records.map((r) => (
+              {allRecords.map((r) => (
                 <div key={r.id} className="rounded-lg border p-3 space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="text-xs">
@@ -289,7 +266,7 @@ export function LiderFechamentoTab() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {records.map((r) => (
+                {allRecords.map((r) => (
                   <TableRow key={r.id}>
                     <TableCell>
                       <div className="text-xs">

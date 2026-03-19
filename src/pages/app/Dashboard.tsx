@@ -12,6 +12,8 @@ import { weekEvents, DAYS_FULL } from "@/components/app/treinamentos/constants";
 import { getEventStatus } from "@/components/app/treinamentos/helpers";
 import { mockBonusSummary, mockBancoTimol, mockUserQualification, qualificationLabels } from "@/components/app/financeiro/mock-data";
 import { getCurrencyConfig, formatCurrency } from "@/components/app/financeiro/currency-helpers";
+import { InviteRequestCard } from "@/components/app/rede/InviteRequestCard";
+import { useInvites } from "@/contexts/InviteContext";
 import {
   Carousel,
   CarouselContent,
@@ -57,6 +59,7 @@ const mockOrders = [
 export default function Dashboard() {
   const navigate = useNavigate();
   const [indicarOpen, setIndicarOpen] = useState(false);
+  const { invites, handleAcceptInvite, handleRejectInvite } = useInvites();
 
   const today = new Date();
   const todayDow = today.getDay();
@@ -106,6 +109,13 @@ export default function Dashboard() {
             </div>
           </DashboardCard>
         )}
+
+        {/* Convites Recebidos */}
+        <InviteRequestCard
+          invites={invites}
+          onAccept={handleAcceptInvite}
+          onReject={handleRejectInvite}
+        />
 
         {/* Resumo Financeiro */}
         <DashboardCard icon={DollarSign} title="Resumo Financeiro">
