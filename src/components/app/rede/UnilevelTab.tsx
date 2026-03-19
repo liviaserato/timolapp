@@ -21,6 +21,7 @@ import {
   mockUnilevelTree, flattenUnilevelTree, qualificationLevelLimits,
   FlatUnilevelMember, UnilevelNode,
 } from "./unilevel-mock-data";
+import { BonusRedeCard } from "./BonusRedeCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 /* ── Sort ── */
