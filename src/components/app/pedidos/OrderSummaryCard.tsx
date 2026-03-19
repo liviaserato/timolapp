@@ -297,13 +297,13 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                       <span className="font-semibold text-foreground shrink-0">{qty}x</span>
                     </div>
                   ))}
-                  {sortedProducts.length > 3 && (
-                    <button
-                      type="button"
-                      onClick={() => setShowAllProducts(true)}
-                      className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5"
-                    >
-                      Ver todos <ChevronRight className="h-2.5 w-2.5" />
+                    {sortedProducts.length > 3 && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAllProducts(true)}
+                        className="mt-2 text-[11px] text-primary hover:underline flex items-center gap-0.5"
+                      >
+                        {t("orders.viewAll")} <ChevronRight className="h-2.5 w-2.5" />
                     </button>
                   )}
                 </div>
