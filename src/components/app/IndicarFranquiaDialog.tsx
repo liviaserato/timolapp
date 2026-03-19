@@ -19,16 +19,8 @@ export function IndicarFranquiaDialog({ open, onOpenChange }: IndicarFranquiaDia
   const { selected } = useFranchise();
   const franchiseId = selected?.franchiseId ?? "000000";
   const referralLink = `https://indiquei.timol/${franchiseId}`;
-  const cadastroLink = "https://www.timol.com.br/cadastro-nova-franquia";
 
-  const [copiedCadastro, setCopiedCadastro] = useState(false);
   const [copiedReferral, setCopiedReferral] = useState(false);
-
-  const handleCopyCadastro = async () => {
-    await navigator.clipboard.writeText(cadastroLink);
-    setCopiedCadastro(true);
-    setTimeout(() => setCopiedCadastro(false), 2500);
-  };
 
   const handleCopyReferral = async () => {
     await navigator.clipboard.writeText(referralLink);
