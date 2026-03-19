@@ -194,18 +194,18 @@ export default function Checkout() {
               </div>
             ) : editingAddress ? (
               <div className="space-y-2">
-                <div className="grid grid-cols-[1fr_auto] gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <Input
                     value={editAddress.street}
                     onChange={(e) => setEditAddress({ ...editAddress, street: e.target.value })}
                     placeholder="Rua *"
-                    className="h-8 text-xs"
+                    className="col-span-2 h-8 text-xs"
                   />
                   <Input
                     value={editAddress.number}
                     onChange={(e) => setEditAddress({ ...editAddress, number: e.target.value })}
                     placeholder="Nº *"
-                    className="h-8 text-xs w-20"
+                    className="h-8 text-xs"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -222,12 +222,12 @@ export default function Checkout() {
                     className="h-8 text-xs"
                   />
                 </div>
-                <div className={cn("grid gap-2", isMobile ? "grid-cols-2" : "grid-cols-3")}>
+                <div className={cn("grid gap-2", isMobile ? "grid-cols-2" : "grid-cols-5")}>
                   <Input
                     value={editAddress.city}
                     onChange={(e) => setEditAddress({ ...editAddress, city: e.target.value })}
                     placeholder="Cidade *"
-                    className="h-8 text-xs"
+                    className={cn("h-8 text-xs", isMobile ? "col-span-1" : "col-span-3")}
                   />
                   <Input
                     value={editAddress.state}
