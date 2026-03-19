@@ -281,23 +281,23 @@ function DiagnosticCard({ weakerSide, diff }: { weakerSide: string; diff: number
           <Lightbulb className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold text-foreground">Qual perna devo concentrar?</span>
         </div>
-        <p className="text-sm leading-snug text-muted-foreground">
-          Seus bônus binários são calculados com base na pontuação da perna menor.
-        </p>
         {isBalanced ? (
-          <p className="text-sm leading-snug text-muted-foreground mt-1.5">
+          <p className="text-sm leading-snug text-muted-foreground">
             No momento, as pernas estão equilibradas. As próximas movimentações definirão qual será a perna menor.
           </p>
         ) : (
           <>
-            <p className="text-sm leading-snug mt-1.5">
-              No momento, a perna menor é a <strong>{weakerSide}</strong>, com <strong>{diff.toLocaleString("pt-BR")} pontos</strong> a menos que a {strongerSide}.
+            <p className="text-sm leading-snug text-muted-foreground">
+              No momento, a perna menor é a <strong className="text-foreground">{weakerSide}</strong>, com <strong className="text-foreground">{diff.toLocaleString("pt-BR")} pontos</strong> a menos que a {strongerSide}.
             </p>
             <p className="text-sm leading-snug text-muted-foreground mt-1.5">
               Foque no desenvolvimento da perna {weakerSide} para aumentar seus ganhos e equilibrar sua rede.
             </p>
           </>
         )}
+        <p className="text-[11px] leading-snug text-muted-foreground mt-3">
+          * Seus bônus binários são calculados com base na pontuação da perna menor.
+        </p>
       </CardContent>
     </Card>
   );
