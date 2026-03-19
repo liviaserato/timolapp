@@ -4,6 +4,7 @@ import { AppHeader } from "@/components/app/AppHeader";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { AppFooter } from "@/components/app/AppFooter";
 import { FranchiseProvider } from "@/contexts/FranchiseContext";
+import { InviteProvider } from "@/contexts/InviteContext";
 
 interface SidebarContextType {
   expanded: boolean;
