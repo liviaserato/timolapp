@@ -564,15 +564,15 @@ export default function AtualizacaoCadastral() {
                 className={fieldErrors.contract ? "border-destructive" : ""}
               />
               <label htmlFor="contract" className="text-sm leading-relaxed cursor-pointer">
-                Declaro que li e concordo com o{" "}
+                {t("atualiz.contractCheckbox")}{" "}
                 <button
                   type="button"
                   className="text-primary underline underline-offset-2 hover:text-primary/80"
                   onClick={() => setContractOpen(true)}
                 >
-                  Contrato de Franquia TIMOL
+                  {t("atualiz.franchiseContract")}
                 </button>{" "}
-                e com as políticas atualizadas do sistema.
+                {t("atualiz.contractSuffix")}
               </label>
             </div>
             {fieldErrors.contract && <p className="text-xs text-destructive">{fieldErrors.contract}</p>}
