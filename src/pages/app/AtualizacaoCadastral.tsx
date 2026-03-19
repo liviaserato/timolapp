@@ -538,7 +538,7 @@ export default function AtualizacaoCadastral() {
         </DashboardCard>
 
         {/* ── Franquias ── */}
-        <DashboardCard icon={Gem} title="Minhas Franquias">
+        <DashboardCard icon={Gem} title={t("atualiz.myFranchises")}>
           <div className="mt-2 space-y-2">
             {mockApiData.franchises.map((f) => (
               <div key={f.franchiseId} className="flex items-center justify-between rounded-md border border-border/60 p-2.5">
