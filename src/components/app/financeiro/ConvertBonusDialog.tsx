@@ -121,7 +121,7 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
                     <span className="text-[hsl(var(--success))] font-medium">+{formatCurrency(extraAmount, currency)}</span>
                   </div>
                   <div className="border-t border-border/40 pt-1.5 flex justify-between font-bold">
-                    <span>Crédito no Banco Timol</span>
+                    <span>Crédito no Carteira</span>
                     <span className="text-primary">{formatCurrency(totalCredit, currency)}</span>
                   </div>
                 </div>
@@ -137,7 +137,7 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
                     className="mt-0.5"
                   />
                   <label htmlFor="confirm-convert" className="text-xs text-muted-foreground leading-relaxed cursor-pointer select-none">
-                    Confirmo que quero converter meus bônus para saldo no Banco Timol. Sei que essa operação é imediata e{" "}
+                    Confirmo que quero converter meus bônus para saldo no Carteira. Sei que essa operação é imediata e{" "}
                     <strong className="text-destructive font-semibold">não pode ser desfeita</strong>.
                   </label>
                 </div>
@@ -167,7 +167,7 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
               <CheckCircle className="h-14 w-14 text-[hsl(var(--success))]" />
               <h3 className="text-lg font-bold text-primary">Conversão Realizada!</h3>
               <p className="text-sm text-muted-foreground">
-                Seu bônus foi convertido com sucesso.<br />O valor já está disponível no seu Banco Timol.
+                Seu bônus foi convertido com sucesso.<br />O valor já está disponível no seu Carteira.
               </p>
               <div className="rounded-md border border-app-card-border p-3 w-full space-y-1.5 text-sm">
                 <div className="flex justify-between">
@@ -179,7 +179,7 @@ export function ConvertBonusDialog({ open, onOpenChange, currency, availableBonu
                   <span className="text-[hsl(var(--success))] font-medium">+{formatCurrency(extraAmount, currency)}</span>
                 </div>
                 <div className="border-t border-border/40 pt-1.5 flex justify-between font-bold">
-                  <span>Creditado no Banco Timol</span>
+                  <span>Creditado no Carteira</span>
                   <span className="text-primary">{formatCurrency(totalCredit, currency)}</span>
                 </div>
               </div>

@@ -92,7 +92,7 @@ const mockOrders: Order[] = [
     total: 429.6, status: "confirmado",
     subtotal: 429.6, freight: 0,
     pointsUnilevel: 86, pointsBinary: 20,
-    payments: [{ method: "Saldo Banco Timol", value: 15 }, { method: "PIX", value: 414.6 }],
+    payments: [{ method: "Saldo Carteira", value: 15 }, { method: "PIX", value: 414.6 }],
     delivery: {
       type: "entrega",
       address: "Rua das Flores 123",

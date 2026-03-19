@@ -50,7 +50,7 @@ export default function Financeiro() {
       nextFriday: Math.max(0, prev.nextFriday - amount),
     }));
 
-    // Update banco timol balance
+    // Update carteira balance
     setBancoTimol((prev) => ({
       ...prev,
       available: prev.available + total,

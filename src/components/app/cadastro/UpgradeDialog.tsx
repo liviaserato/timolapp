@@ -624,11 +624,11 @@ export function UpgradeDialog({
                   )}
                 </div>
 
-                {/* Banco Timol balance */}
+                {/* Carteira balance */}
                 {bancoBalance > 0 && (
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium">Usar saldo do Banco Timol</Label>
+                      <Label className="text-sm font-medium">Usar saldo do Carteira</Label>
                       <span className="text-sm text-muted-foreground">Disponível {formatPrice(bancoBalance)}</span>
                     </div>
                     <div className="relative">
@@ -841,7 +841,7 @@ export function UpgradeDialog({
                   <ConfirmRow label="Desconto cupom" value={`(${formatPrice(couponAmount)})`} />
                 )}
                 {paymentResult?.balanceUsed && paymentResult.balanceUsed > 0 && (
-                  <ConfirmRow label="Saldo Banco Timol" value={`(${formatPrice(paymentResult.balanceUsed)})`} />
+                  <ConfirmRow label="Saldo Carteira" value={`(${formatPrice(paymentResult.balanceUsed)})`} />
                 )}
                 {paymentResult?.method === "credit-card" && paymentResult.cardLast4 && (
                   <>

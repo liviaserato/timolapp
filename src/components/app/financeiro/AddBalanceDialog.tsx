@@ -62,7 +62,7 @@ export function AddBalanceDialog({ open, onOpenChange, currency }: Props) {
           <form onSubmit={handleSubmitAmount}>
             <DialogHeader>
               <DialogTitle>Adicionar Saldo</DialogTitle>
-              <DialogDescription>Informe o valor que deseja adicionar ao Banco Timol.</DialogDescription>
+              <DialogDescription>Informe o valor que deseja adicionar ao Carteira.</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 mt-2">
               <div>
@@ -190,7 +190,7 @@ export function AddBalanceDialog({ open, onOpenChange, currency }: Props) {
               <CheckCircle className="h-14 w-14 text-[hsl(var(--success))]" />
               <h3 className="text-lg font-bold text-primary">Saldo Adicionado!</h3>
               <p className="text-sm text-muted-foreground">
-                O valor de <strong>{formatCurrency(numAmount, currency)}</strong> foi adicionado com sucesso ao seu Banco Timol.
+                O valor de <strong>{formatCurrency(numAmount, currency)}</strong> foi adicionado com sucesso ao seu Carteira.
               </p>
               <Button type="submit" className="mt-2 w-full" autoFocus>
                 Fechar
