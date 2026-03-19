@@ -605,7 +605,7 @@ export default function AtualizacaoCadastral() {
             className="flex-1 gap-2"
           >
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-            {saving ? "Salvando..." : "Salvar alterações"}
+            {saving ? t("atualiz.saving") : t("atualiz.saveChanges")}
           </Button>
           <Button
             variant="outline"
@@ -613,7 +613,7 @@ export default function AtualizacaoCadastral() {
             disabled={saving}
             className="flex-1"
           >
-            Atualizar depois
+            {t("atualiz.updateLater")}
           </Button>
         </div>
       </div>
@@ -627,34 +627,34 @@ export default function AtualizacaoCadastral() {
                 <CheckCircle2 className="h-7 w-7 text-success" />
               </div>
               <div className="text-center space-y-1">
-                <h3 className="text-lg font-semibold text-foreground">Divergência registrada</h3>
+                <h3 className="text-lg font-semibold text-foreground">{t("atualiz.divergenceRegistered")}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Nossa equipe analisará e entrará em contato.
+                  {t("atualiz.divergenceTeamMsg")}
                 </p>
               </div>
               <Button onClick={() => setDivergenceOpen(false)} className="mt-2 w-full max-w-[200px]">
-                Fechar
+                {t("common.close")}
               </Button>
             </div>
           ) : (
             <>
               <DialogHeader>
-                <DialogTitle>Reportar Divergência</DialogTitle>
+                <DialogTitle>{t("atualiz.reportDivergenceTitle")}</DialogTitle>
                 <DialogDescription>
-                  Descreva o problema encontrado no seu documento ou nas franquias listadas. Nossa equipe analisará o caso.
+                  {t("atualiz.reportDivergenceDesc")}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-3">
                 <Textarea
                   value={divergenceText}
                   onChange={(e) => setDivergenceText(e.target.value)}
-                  placeholder="Descreva a divergência encontrada..."
+                  placeholder={t("atualiz.describeDivergence")}
                   rows={4}
                 />
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setDivergenceOpen(false)}>Cancelar</Button>
-                <Button onClick={handleDivergenceSend} disabled={!divergenceText.trim()}>Enviar</Button>
+                <Button variant="outline" onClick={() => setDivergenceOpen(false)}>{t("common.cancel")}</Button>
+                <Button onClick={handleDivergenceSend} disabled={!divergenceText.trim()}>{t("atualiz.send")}</Button>
               </DialogFooter>
             </>
           )}
