@@ -70,13 +70,3 @@ export default function Rede() {
     </div>
   );
 }
-
-function PlaceholderContent({ label }: { label: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      <p className="text-sm text-muted-foreground">
-        A seção <strong>{label}</strong> será disponibilizada em breve.
-      </p>
-    </div>
-  );
-}
