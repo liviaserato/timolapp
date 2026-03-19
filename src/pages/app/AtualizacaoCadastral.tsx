@@ -105,23 +105,17 @@ const planColors: Record<string, string> = {
   platinum: "bg-indigo-400/15 text-indigo-700 border-indigo-400/30",
 };
 
-const genderOptions = [
-  { value: "male", label: "Masculino" },
-  { value: "female", label: "Feminino" },
-  { value: "other", label: "Outro" },
-];
-
-const financialTypeLabels: Record<string, string> = {
-  pix: "PIX",
-  bank: "Dados Bancários",
-  international: "Conta Internacional",
-  digital: "Carteira Digital",
-};
-
 /* ── component ── */
 
 export default function AtualizacaoCadastral() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
+
+  const genderOptions = [
+    { value: "male", label: t("atualiz.male") },
+    { value: "female", label: t("atualiz.female") },
+    { value: "other", label: t("atualiz.other") },
+  ];
 
   // Form state
   const [fullName, setFullName] = useState(mockApiData.fullName);
