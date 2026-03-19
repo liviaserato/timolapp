@@ -411,7 +411,7 @@ export default function AtualizacaoCadastral() {
                 {fieldErrors.street && <p className="text-xs text-destructive">{fieldErrors.street}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label>Número</Label>
+                <Label>{t("atualiz.number")}</Label>
                 <Input value={addrNumber} onChange={(e) => setAddrNumber(e.target.value)} />
               </div>
               <div className="space-y-1.5">
