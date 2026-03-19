@@ -253,26 +253,26 @@ export default function AtualizacaoCadastral() {
 
   const handleSave = () => {
     if (!validate()) {
-      toast.error("Preencha todos os campos obrigatórios.");
+      toast.error(t("atualiz.fillRequired"));
       return;
     }
     setSaving(true);
     setTimeout(() => {
       setSaving(false);
-      toast.success("Dados atualizados com sucesso!");
+      toast.success(t("atualiz.savedSuccess"));
       navigate("/app");
     }, 1500);
   };
 
   const handleLater = () => {
-    toast.info("Você poderá concluir a atualização no próximo acesso.");
+    toast.info(t("atualiz.laterMsg"));
     navigate("/app");
   };
 
   const handleDivergenceSend = () => {
     if (!divergenceText.trim()) return;
     setDivergenceSent(true);
-    toast.success("Divergência registrada! Nossa equipe entrará em contato.");
+    toast.success(t("atualiz.divergenceSentToast"));
   };
 
   const clearError = (field: string) => {
