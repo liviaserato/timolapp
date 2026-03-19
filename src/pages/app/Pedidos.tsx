@@ -304,8 +304,8 @@ export default function Pedidos() {
   return (
     <div>
       <header className="mb-4">
-        <h1 className="text-2xl font-bold text-primary">Pedidos</h1>
-        <p className="text-sm text-muted-foreground mt-1">Gerencie seus pedidos e acompanhe entregas</p>
+        <h1 className="text-2xl font-bold text-primary">{t("pedidos.title")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("pedidos.subtitle")}</p>
       </header>
 
       <section className="flex flex-col gap-2">
