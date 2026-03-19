@@ -26,6 +26,7 @@ import AssistirAoVivo from "./pages/app/AssistirAoVivo";
 import Rede from "./pages/app/Rede";
 import Clientes from "./pages/app/Clientes";
 import AtualizacaoCadastral from "./pages/app/AtualizacaoCadastral";
+import Configuracoes from "./pages/app/Configuracoes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
