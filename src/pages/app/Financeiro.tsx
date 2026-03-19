@@ -8,7 +8,7 @@ import { ConvertBonusDialog } from "@/components/app/financeiro/ConvertBonusDial
 import { BonusExtractTable } from "@/components/app/financeiro/BonusExtractTable";
 import { BancoTimolExtractTable } from "@/components/app/financeiro/BancoTimolExtractTable";
 import { getCurrencyConfig } from "@/components/app/financeiro/currency-helpers";
-import { TrendingUp, Landmark } from "lucide-react";
+import { TrendingUp, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   mockBonusSummary,
@@ -50,7 +50,7 @@ export default function Financeiro() {
       nextFriday: Math.max(0, prev.nextFriday - amount),
     }));
 
-    // Update banco timol balance
+    // Update carteira balance
     setBancoTimol((prev) => ({
       ...prev,
       available: prev.available + total,
@@ -156,13 +156,13 @@ export default function Financeiro() {
         >
           <div className={cn(
             "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
-            activeExtract === "banco" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+           activeExtract === "banco" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
           )}>
-            <Landmark className="h-4 w-4" />
+            <Wallet className="h-4 w-4" />
           </div>
           <div className="min-w-0">
             <p className={cn("text-sm font-bold", activeExtract === "banco" ? "text-primary" : "text-foreground")}>
-              Banco Timol
+              Carteira
             </p>
             <p className="text-[11px] text-muted-foreground hidden sm:block">Depósitos, compras e resgates</p>
           </div>
