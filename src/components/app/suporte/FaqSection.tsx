@@ -32,8 +32,8 @@ const faqData: Record<string, { pergunta: string; resposta: string }[]> = {
     { pergunta: "Como altero meu e-mail de acesso?", resposta: "Acesse Meus Dados > Contato e clique no ícone de edição ao lado do e-mail. Um código de verificação será enviado ao novo endereço para confirmar a alteração." },
   ],
   financeiro: [
-    { pergunta: "Como funciona o Carteira?", resposta: "O Carteira é sua carteira digital dentro do sistema. Você pode adicionar saldo, utilizar para pagamentos de pedidos e também realizar transferências para sua conta bancária." },
-    { pergunta: "Quando recebo meu bônus?", resposta: "Os bônus são calculados semanalmente e disponibilizados às terças-feiras. O valor pode ser convertido em saldo no Carteira ou resgatado para conta bancária." },
+    { pergunta: "Como funciona a Carteira?", resposta: "A Carteira é sua carteira digital dentro do sistema. Você pode adicionar saldo, utilizar para pagamentos de pedidos e também realizar transferências para sua conta bancária." },
+    { pergunta: "Quando recebo meu bônus?", resposta: "Os bônus são calculados semanalmente e disponibilizados às terças-feiras. O valor pode ser convertido em saldo na Carteira ou resgatado para conta bancária." },
     { pergunta: "Como resgato meu saldo?", resposta: "Acesse Financeiro > Carteira e clique em 'Resgatar / Transferir'. Informe o valor e confirme com seu PIN de segurança. O prazo para crédito é de até 3 dias úteis." },
   ],
   franquia: [
