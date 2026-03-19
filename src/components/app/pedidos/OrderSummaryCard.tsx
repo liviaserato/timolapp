@@ -260,7 +260,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                   placeholder="Início"
                   locale={locale}
                 />
-                <span className="text-xs text-muted-foreground">até</span>
+                <span className="text-xs text-muted-foreground">{t("orders.until")}</span>
                 <DatePickerButton
                   date={customTo}
                   onSelect={(d) => setCustomTo(d)}
