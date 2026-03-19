@@ -419,7 +419,7 @@ export default function AtualizacaoCadastral() {
                 <Input value={complement} onChange={(e) => setComplement(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Bairro</Label>
+                <Label>{t("atualiz.neighborhood")}</Label>
                 <Input value={neighborhood} onChange={(e) => setNeighborhood(e.target.value)} />
               </div>
               <div className="space-y-1.5">
