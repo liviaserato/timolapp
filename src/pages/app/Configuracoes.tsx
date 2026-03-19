@@ -14,23 +14,22 @@ const languageOptions: { code: Language; label: string; flag: string }[] = [
 ];
 
 export default function Configuracoes() {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const [notifications, setNotifications] = useState(true);
   const [acceptPromotions, setAcceptPromotions] = useState(true);
   const [contactPreference, setContactPreference] = useState("whatsapp");
 
   return (
     <div className="space-y-6">
-      {/* Page header */}
       <header className="mb-4">
-        <h1 className="text-2xl font-bold text-primary">Configurações</h1>
-        <p className="text-sm text-muted-foreground mt-1">Gerencie suas preferências</p>
+        <h1 className="text-2xl font-bold text-primary">{t("config.title")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("config.subtitle")}</p>
       </header>
 
       {/* Language */}
-      <DashboardCard icon={Globe} title="Idioma">
+      <DashboardCard icon={Globe} title={t("config.language")}>
         <p className="text-xs text-muted-foreground mb-3">
-          Selecione o idioma em que deseja visualizar o aplicativo.
+          {t("config.languageDesc")}
         </p>
         <div className="flex flex-wrap gap-2">
           {languageOptions.map((opt) => (
@@ -51,13 +50,13 @@ export default function Configuracoes() {
       </DashboardCard>
 
       {/* Notifications & Promotions */}
-      <DashboardCard icon={Bell} title="Notificações e Comunicações">
+      <DashboardCard icon={Bell} title={t("config.notifications")}>
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <Label htmlFor="notifications" className="text-sm font-medium">Permitir notificações</Label>
+              <Label htmlFor="notifications" className="text-sm font-medium">{t("config.allowNotifications")}</Label>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Receba alertas sobre pedidos, bônus e atualizações da rede.
+                {t("config.notificationsDesc")}
               </p>
             </div>
             <Switch id="notifications" checked={notifications} onCheckedChange={setNotifications} />
@@ -65,9 +64,9 @@ export default function Configuracoes() {
           <div className="border-t border-border" />
           <div className="flex items-center justify-between gap-4">
             <div>
-              <Label htmlFor="promotions" className="text-sm font-medium">Aceitar receber promoções</Label>
+              <Label htmlFor="promotions" className="text-sm font-medium">{t("config.acceptPromotions")}</Label>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Receba ofertas exclusivas, novidades de produtos e campanhas especiais.
+                {t("config.promotionsDesc")}
               </p>
             </div>
             <Switch id="promotions" checked={acceptPromotions} onCheckedChange={setAcceptPromotions} />
@@ -76,14 +75,14 @@ export default function Configuracoes() {
       </DashboardCard>
 
       {/* Contact preference */}
-      <DashboardCard icon={MessageSquare} title="Preferência de Contato">
+      <DashboardCard icon={MessageSquare} title={t("config.contactPreference")}>
         <p className="text-xs text-muted-foreground mb-3">
-          Como você prefere ser contactado pela equipe Timol?
+          {t("config.contactPreferenceDesc")}
         </p>
         <RadioGroup value={contactPreference} onValueChange={setContactPreference} className="flex flex-wrap gap-2">
           {[
             { value: "email", label: "E-mail" },
-            { value: "phone", label: "Ligação" },
+            { value: "phone", label: t("config.call") },
             { value: "whatsapp", label: "WhatsApp" },
           ].map((opt) => (
             <label

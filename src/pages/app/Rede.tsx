@@ -5,21 +5,22 @@ import { BinaryTab } from "@/components/app/rede/BinaryTab";
 import { UnilevelTab } from "@/components/app/rede/UnilevelTab";
 import { LiderFechamentoTab } from "@/components/app/rede/LiderFechamentoTab";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type RedeView = "menu" | "binario" | "unilevel" | "lider";
-
-const menuItems: { key: RedeView; icon: typeof GitFork; title: string; description: string }[] = [
-  { key: "binario", icon: GitFork, title: "Binário", description: "Visualize sua árvore binária, pernas e pontuação." },
-  { key: "unilevel", icon: Network, title: "Unilevel", description: "Explore todos os níveis da sua rede de indicações." },
-  { key: "lider", icon: Trophy, title: "Líder de Fechamento", description: "Veja seu desempenho e ranking de liderança." },
-];
 
 export default function Rede() {
   const location = useLocation();
   const [view, setView] = useState<RedeView>("menu");
   const [search, setSearch] = useState("");
+  const { t } = useLanguage();
 
-  // Reset to menu when navigating to this page via sidebar/link
+  const menuItems: { key: RedeView; icon: typeof GitFork; titleKey: string; descKey: string }[] = [
+    { key: "binario", icon: GitFork, titleKey: "rede.binary", descKey: "rede.binaryDesc" },
+    { key: "unilevel", icon: Network, titleKey: "rede.unilevel", descKey: "rede.unilevelDesc" },
+    { key: "lider", icon: Trophy, titleKey: "rede.lider", descKey: "rede.liderDesc" },
+  ];
+
   useEffect(() => {
     setView("menu");
   }, [location.key]);
@@ -36,8 +37,8 @@ export default function Rede() {
             <ChevronRight className="h-5 w-5 rotate-180" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-primary">{item?.title}</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{item?.description}</p>
+            <h1 className="text-2xl font-bold text-primary">{item ? t(item.titleKey) : ""}</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">{item ? t(item.descKey) : ""}</p>
           </div>
         </div>
 
@@ -51,8 +52,8 @@ export default function Rede() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold text-primary">Minha Rede</h1>
-        <p className="text-sm text-muted-foreground mt-1">Acompanhe a estrutura e o desempenho da sua rede de franqueados</p>
+        <h1 className="text-2xl font-bold text-primary">{t("rede.title")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("rede.subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -67,8 +68,8 @@ export default function Rede() {
               <div className="rounded-lg bg-app-sidebar p-2.5 mb-3">
                 <Icon className="h-5 w-5 text-primary-foreground" />
               </div>
-              <p className="text-base font-bold text-app-sidebar">{item.title}</p>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{item.description}</p>
+              <p className="text-base font-bold text-app-sidebar">{t(item.titleKey)}</p>
+              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{t(item.descKey)}</p>
               <ChevronRight className="h-4 w-4 text-muted-foreground mt-auto pt-2 self-end" />
             </button>
           );
