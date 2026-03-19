@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { ArrowDownLeft, ArrowDownRight, Lightbulb, Search, ChevronRight, X, RotateCcw, PlayCircle, ArrowUpDown } from "lucide-react";
+import { SpilloverSettings } from "./SpilloverSettings";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -197,6 +198,7 @@ export function BinaryTab() {
             <CardContent className="p-4 text-center">
               <h2 className="text-lg font-bold" style={{ color: "#003885" }}>{currentRoot.name}</h2>
               <p className="text-xs text-muted-foreground">ID {currentRoot.id}</p>
+              {navHistory.length === 0 && <SpilloverSettings />}
             </CardContent>
           </Card>
 
