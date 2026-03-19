@@ -340,7 +340,7 @@ export default function AtualizacaoCadastral() {
             </div>
             {mockApiData.documentCountryCode !== "BR" && (
               <div className="space-y-1.5">
-                <Label>País emissor do documento</Label>
+                <Label>{t("atualiz.issuingCountry")}</Label>
                 <Input value={mockApiData.documentCountryCode} readOnly disabled className="bg-muted/50 cursor-not-allowed" />
               </div>
             )}
