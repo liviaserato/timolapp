@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserCheck, X, Check, Copy, Clock, Link2, Phone } from "lucide-react";
+import { UserCheck, X, Check, Copy, Clock, Link2, Phone, ChevronDown, ChevronUp } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
