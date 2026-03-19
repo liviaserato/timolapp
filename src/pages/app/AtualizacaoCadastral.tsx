@@ -423,7 +423,7 @@ export default function AtualizacaoCadastral() {
                 <Input value={neighborhood} onChange={(e) => setNeighborhood(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Cidade</Label>
+                <Label>{t("atualiz.city")}</Label>
                 <Input
                   value={city}
                   onChange={(e) => { setCity(e.target.value); clearError("city"); }}
