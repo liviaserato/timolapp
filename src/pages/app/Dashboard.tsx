@@ -79,6 +79,17 @@ export default function Dashboard() {
   const currency = getCurrencyConfig("BR", "BRL");
   const q = qualificationLabels[mockUserQualification.current];
 
+  // Next Friday date for bonus
+  const nextFriday = useMemo(() => {
+    const now = new Date();
+    const day = now.getDay();
+    const daysUntil = (5 - day + 7) % 7 || 7;
+    const fri = new Date(now);
+    fri.setDate(now.getDate() + daysUntil);
+    return fri;
+  }, []);
+  const nextFridayFormatted = nextFriday.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+
   return (
     <div>
       <header className="mb-4">
