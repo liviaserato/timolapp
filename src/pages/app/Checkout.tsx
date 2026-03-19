@@ -208,12 +208,12 @@ export default function Checkout() {
                     className="h-8 text-xs"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <Input
                     value={editAddress.complement}
                     onChange={(e) => setEditAddress({ ...editAddress, complement: e.target.value })}
                     placeholder="Complemento"
-                    className="h-8 text-xs"
+                    className="col-span-2 h-8 text-xs"
                   />
                   <Input
                     value={editAddress.neighborhood}
@@ -222,25 +222,27 @@ export default function Checkout() {
                     className="h-8 text-xs"
                   />
                 </div>
-                <div className={cn("grid gap-2", isMobile ? "grid-cols-2" : "grid-cols-5")}>
+                <div className="grid grid-cols-3 gap-2">
                   <Input
                     value={editAddress.city}
                     onChange={(e) => setEditAddress({ ...editAddress, city: e.target.value })}
                     placeholder="Cidade *"
-                    className={cn("h-8 text-xs", isMobile ? "col-span-1" : "col-span-3")}
+                    className="col-span-2 h-8 text-xs"
                   />
-                  <Input
-                    value={editAddress.state}
-                    onChange={(e) => setEditAddress({ ...editAddress, state: e.target.value })}
-                    placeholder="UF *"
-                    className="h-8 text-xs"
-                  />
-                  <Input
-                    value={editAddress.cep}
-                    onChange={(e) => setEditAddress({ ...editAddress, cep: e.target.value })}
-                    placeholder="CEP *"
-                    className={cn("h-8 text-xs", isMobile && "col-span-2")}
-                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      value={editAddress.state}
+                      onChange={(e) => setEditAddress({ ...editAddress, state: e.target.value })}
+                      placeholder="UF *"
+                      className="h-8 text-xs"
+                    />
+                    <Input
+                      value={editAddress.cep}
+                      onChange={(e) => setEditAddress({ ...editAddress, cep: e.target.value })}
+                      placeholder="CEP *"
+                      className="h-8 text-xs"
+                    />
+                  </div>
                 </div>
                 <div className="flex gap-2 pt-1">
                   <Button size="sm" className="text-xs h-8" onClick={handleSaveAddress}>Salvar</Button>
