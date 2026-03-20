@@ -46,6 +46,7 @@ function daysBetween(from: string, to: string): number {
 }
 
 export function BonusExtractTable({ data, currency }: Props) {
+  const { t, language } = useLanguage();
   const [filterMode, setFilterMode] = useState<"month" | "custom">("month");
   const [monthRef, setMonthRef] = useState(new Date());
   const [dateFrom, setDateFrom] = useState("");
@@ -54,6 +55,7 @@ export function BonusExtractTable({ data, currency }: Props) {
   const [searchId, setSearchId] = useState("");
   const [page, setPage] = useState(0);
   const searchRef = useRef<HTMLInputElement>(null);
+  const locale = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
 
   function toggleType(type: string) {
     setSelectedTypes((prev) => {
@@ -189,7 +191,7 @@ export function BonusExtractTable({ data, currency }: Props) {
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="text-xs font-medium min-w-[120px] text-center">
-                {getMonthLabel(monthRef)}
+                {getMonthLabel(monthRef, locale)}
               </span>
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth} disabled={isCurrentMonth}>
                 <ChevronRight className="h-4 w-4" />
