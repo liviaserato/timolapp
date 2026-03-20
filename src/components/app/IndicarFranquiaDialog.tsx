@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Share2, Copy, Check } from "lucide-react";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useFranchise } from "@/contexts/FranchiseContext";
+import { useLanguage } from "@/i18n/LanguageContext";
 import timolLogo from "@/assets/logo-timol-azul-escuro.svg";
 
 interface IndicarFranquiaDialogProps {
@@ -17,9 +15,9 @@ interface IndicarFranquiaDialogProps {
 
 export function IndicarFranquiaDialog({ open, onOpenChange }: IndicarFranquiaDialogProps) {
   const { selected } = useFranchise();
+  const { t } = useLanguage();
   const franchiseId = selected?.franchiseId ?? "000000";
   const referralLink = `https://indiquei.timol/${franchiseId}`;
-
   const [copiedReferral, setCopiedReferral] = useState(false);
 
   const handleCopyReferral = async () => {
@@ -32,13 +30,11 @@ export function IndicarFranquiaDialog({ open, onOpenChange }: IndicarFranquiaDia
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Timol — Indicação de Franquia",
-          text: `Oi! Vim te indicar a Timol 💧\nUse meu link para se cadastrar:`,
+          title: "Timol — " + t("ind.title"),
+          text: t("ind.intro"),
           url: referralLink,
         });
-      } catch {
-        // user cancelled share
-      }
+      } catch { /* user cancelled */ }
     }
   };
 
@@ -48,55 +44,38 @@ export function IndicarFranquiaDialog({ open, onOpenChange }: IndicarFranquiaDia
         <DialogHeader className="items-center text-center gap-2">
           <img src={timolLogo} alt="Timol" className="h-8 mx-auto" />
           <DialogTitle className="text-lg font-bold text-primary">
-            Indicar Franquia
+            {t("ind.title")}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-5 mt-1">
-          {/* Friendly intro */}
           <p className="text-sm text-muted-foreground text-center leading-relaxed">
-            Que legal que você quer indicar alguém!
-            <br />
-            Compartilhe seu link pessoal:
+            {t("ind.intro")}
           </p>
 
-          {/* Referral link */}
           <div className="rounded-xl border border-border bg-accent/40 p-4 space-y-3 text-center">
             <p className="text-sm font-semibold text-foreground">
-              Compartilhe seu link pessoal
+              {t("ind.shareLink")}
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Com esse link, seu ID já vai preenchido automaticamente — mais fácil impossível! 😄
+              {t("ind.shareDesc")}
             </p>
 
-            {/* Referral URL display */}
             <div className="space-y-1">
               <div
                 onClick={handleCopyReferral}
                 className="flex items-center gap-2 rounded-lg bg-background border border-border px-3 py-2 justify-center cursor-pointer hover:border-primary transition-colors"
-                title="Clique para copiar o link"
               >
-                <span className="text-xs font-medium text-foreground truncate">
-                  {referralLink}
-                </span>
+                <span className="text-xs font-medium text-foreground truncate">{referralLink}</span>
                 <span className="shrink-0 text-muted-foreground">
-                  {copiedReferral ? (
-                    <Check className="h-4 w-4 text-emerald-600" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
+                  {copiedReferral ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
                 </span>
               </div>
             </div>
 
-            {/* Share button — hidden on desktop (lg+), visible on mobile/tablet */}
-            <Button
-              onClick={handleShare}
-              className="w-full gap-2 rounded-xl lg:hidden"
-              size="default"
-            >
+            <Button onClick={handleShare} className="w-full gap-2 rounded-xl lg:hidden" size="default">
               <Share2 className="h-4 w-4" />
-              Compartilhar link
+              {t("ind.shareBtn")}
             </Button>
           </div>
         </div>

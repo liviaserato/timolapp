@@ -6,6 +6,7 @@ import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { CurrencyConfig, formatCurrencySplit } from "./currency-helpers";
 import { BonusExtractRow, movementTypes, qualificationLabels } from "./mock-data";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Props {
   data: BonusExtractRow[];
@@ -14,8 +15,8 @@ interface Props {
 
 const PAGE_SIZE = 30;
 
-function getMonthLabel(date: Date): string {
-  return date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+function getMonthLabel(date: Date, locale: string): string {
+  return date.toLocaleDateString(locale, { month: "long", year: "numeric" });
 }
 
 function getMonthRange(date: Date): { from: string; to: string } {
@@ -197,7 +198,7 @@ export function BonusExtractTable({ data, currency }: Props) {
           ) : (
             <div className="flex gap-2 items-center shrink-0">
               <Input type="date" className="h-8 w-[148px] text-xs" max={todayStr} value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(0); }} />
-              <span className="text-xs text-muted-foreground">até</span>
+              <span className="text-xs text-muted-foreground">{t("ext.to")}</span>
               <Input type="date" className="h-8 w-[148px] text-xs" max={todayStr} value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(0); }} />
             </div>
           )}

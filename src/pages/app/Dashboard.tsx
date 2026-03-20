@@ -74,7 +74,7 @@ export default function Dashboard() {
     });
   }, [todayIndex]);
 
-  const todayLabel = `${t("dash.today")} – ${DAYS_FULL[todayIndex]}, ${today.toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}`;
+  const todayLabel = `${t("dash.today")} – ${DAYS_FULL[todayIndex]}, ${today.toLocaleDateString(t("dash.dateLocale"), { day: "numeric", month: "long" })}`;
 
   const currency = getCurrencyConfig("BR", "BRL");
   const q = qualificationLabels[mockUserQualification.current];
@@ -132,7 +132,7 @@ export default function Dashboard() {
             </div>
             <div className="rounded-md border border-app-card-border p-3 text-center">
               <p className="text-xs text-muted-foreground">{t("dash.unilevelPoints")}</p>
-              <p className="text-lg font-bold text-primary">{mockUserQualification.totalPoints.toLocaleString("pt-BR")}</p>
+              <p className="text-lg font-bold text-primary">{mockUserQualification.totalPoints.toLocaleString(t("dash.dateLocale"))}</p>
             </div>
             <div className="rounded-md border border-app-card-border p-3 text-center">
               <p className="text-xs text-muted-foreground">{t("dash.currentQualification")}</p>
