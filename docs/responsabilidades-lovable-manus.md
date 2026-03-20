@@ -6,14 +6,14 @@
 
 ## 1. Visão Geral do Ecossistema Timol
 
-| Sistema | Descrição | Público-alvo | i18n |
-|---------|-----------|--------------|------|
-| **Timol App** | Escritório virtual do franqueado | Franqueados | PT / EN / ES |
-| **Timol System** | Painel administrativo interno | Equipe Timol | Apenas PT |
-| **Timol Flix** | Hub de material de apoio ao franqueado | Franqueados | A definir |
-| **Timol Estoque** | Gestão de estoque e logística | Equipe Timol | Apenas PT |
-| **Timol Money** | Gestão financeira e pagamentos | Equipe Timol | Apenas PT |
-| **Timol FAT** | Plataforma de treinamentos | Franqueados + Equipe | A definir |
+| Sistema           | Descrição                              | Público-alvo         | i18n         |
+| ----------------- | -------------------------------------- | -------------------- | ------------ |
+| **Timol App**     | Escritório virtual do franqueado       | Franqueados          | PT / EN / ES |
+| **Timol System**  | Painel administrativo interno          | Equipe Timol         | Apenas PT    |
+| **Timol Flix**    | Hub de material de apoio ao franqueado | Franqueados + Equipe | PT / EN / ES |
+| **Timol Estoque** | Gestão de estoque e logística          | Equipe Timol         | Apenas PT    |
+| **Timol Money**   | Gestão financeira e pagamentos         | Equipe Timol         | Apenas PT    |
+| **Timol FAT**     | Plataforma de treinamentos             | Franqueados + Equipe | PT / EN / ES |
 
 ### Conexão entre sistemas
 
@@ -28,30 +28,30 @@
 
 ### 🎨 Lovable (Frontend)
 
-| Área | Detalhes |
-|------|----------|
-| **UI/UX** | Componentes React, Tailwind CSS, shadcn/ui, design system |
-| **Layout e responsividade** | Sidebar, header, cards, tabelas, modais, mobile-first |
+| Área                           | Detalhes                                                                                                          |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| **UI/UX**                      | Componentes React, Tailwind CSS, shadcn/ui, design system                                                         |
+| **Layout e responsividade**    | Sidebar, header, cards, tabelas, modais, mobile-first                                                             |
 | **Internacionalização (i18n)** | Gerencia traduções por sistema (PT/EN/ES). Controle 100% do frontend — cada sistema decide se precisa de tradução |
-| **Consumo de APIs** | Todas as chamadas HTTP via `src/lib/api/` com tipagem TypeScript |
-| **Validações client-side** | Máscaras de input, formatos, campos obrigatórios antes de enviar ao backend |
-| **Estado local** | Carrinho, filtros, abas, dados de sessão, contextos React |
-| **Fluxos visuais** | Wizards de cadastro, fluxos de pagamento (UI), onboarding |
-| **Dados mock** | Dados fictícios para montar e testar telas antes da API estar pronta |
+| **Consumo de APIs**            | Todas as chamadas HTTP via `src/lib/api/` com tipagem TypeScript                                                  |
+| **Validações client-side**     | Máscaras de input, formatos, campos obrigatórios antes de enviar ao backend                                       |
+| **Estado local**               | Carrinho, filtros, abas, dados de sessão, contextos React                                                         |
+| **Fluxos visuais**             | Wizards de cadastro, fluxos de pagamento (UI), onboarding                                                         |
+| **Dados mock**                 | Dados fictícios para montar e testar telas antes da API estar pronta                                              |
 
 ### ⚙️ Manus (Backend)
 
-| Área | Detalhes |
-|------|----------|
-| **APIs REST** | Endpoints .NET Core que o frontend consome |
-| **Autenticação / JWT** | Login, geração e validação de tokens, refresh, permissões por role |
-| **Banco de dados** | Modelagem, migrations, queries, índices, integridade |
-| **Regras de negócio** | Cálculo de bônus, qualificação de rede, comissões, pontuação, graduações |
-| **Pagamentos** | Processamento Stripe/Pix, webhooks, conciliação |
-| **Comunicações** | Envio de emails transacionais, notificações push, mensagens WhatsApp |
-| **CRON jobs** | Tarefas agendadas (verificar cadastros incompletos, expirar tokens, etc.) |
-| **Integrações externas** | Gateways de pagamento, APIs de terceiros, serviços de envio |
-| **Segurança** | Rate limiting, bloqueio de login, proteção contra brute force |
+| Área                     | Detalhes                                                                  |
+| ------------------------ | ------------------------------------------------------------------------- |
+| **APIs REST**            | Endpoints .NET Core que o frontend consome                                |
+| **Autenticação / JWT**   | Login, geração e validação de tokens, refresh, permissões por role        |
+| **Banco de dados**       | Modelagem, migrations, queries, índices, integridade                      |
+| **Regras de negócio**    | Cálculo de bônus, qualificação de rede, comissões, pontuação, graduações  |
+| **Pagamentos**           | Processamento Stripe/Pix, webhooks, conciliação                           |
+| **Comunicações**         | Envio de emails transacionais, notificações push, mensagens WhatsApp      |
+| **CRON jobs**            | Tarefas agendadas (verificar cadastros incompletos, expirar tokens, etc.) |
+| **Integrações externas** | Gateways de pagamento, APIs de terceiros, serviços de envio               |
+| **Segurança**            | Rate limiting, bloqueio de login, proteção contra brute force             |
 
 ---
 
@@ -114,24 +114,24 @@ Ambos os lados consultam o arquivo `docs/api-contract.md` como fonte da verdade 
 
 ### Módulos implementados (UI)
 
-| Módulo | Rota | Status |
-|--------|------|--------|
-| Dashboard / Painel Inicial | `/app` | ✅ Completo |
-| Cadastro (dados pessoais, endereço, financeiro, documentos, franquias) | `/app/cadastro` | ✅ Completo |
-| Atualização Cadastral | `/app/atualizacao-cadastral` | ✅ Completo |
-| Financeiro (carteira, bônus, pontos, extrato) | `/app/financeiro` | ✅ Completo |
-| Rede — Binário | `/app/rede` (aba Binário) | ✅ Completo |
-| Rede — Unilevel | `/app/rede` (aba Unilevel) | ✅ Completo |
-| Rede — Líder de Fechamento | `/app/rede` (aba Líder) | ✅ Completo |
-| Pedidos (histórico) | `/app/pedidos` | ✅ Completo |
-| Realizar Pedido (loja + carrinho) | `/app/realizar-pedido` | ✅ Completo |
-| Checkout + Pagamento | `/app/checkout` | ✅ Completo |
-| Clientes (vendas, loja virtual, material de apoio) | `/app/clientes` | ✅ Completo |
-| Treinamentos (agenda, ao vivo) | `/app/treinamentos` | ✅ Completo |
-| Suporte (tickets, FAQ, mapa) | `/app/suporte` | ✅ Completo |
-| Configurações | `/app/configuracoes` | ✅ Completo |
-| Login + Recuperação de senha | `/` | ✅ Completo |
-| Cadastro novo franqueado (wizard 4 etapas) | `/cadastro/:sponsorId` | ✅ Completo |
+| Módulo                                                                 | Rota                         | Status      |
+| ---------------------------------------------------------------------- | ---------------------------- | ----------- |
+| Dashboard / Painel Inicial                                             | `/app`                       | ✅ Completo |
+| Cadastro (dados pessoais, endereço, financeiro, documentos, franquias) | `/app/cadastro`              | ✅ Completo |
+| Atualização Cadastral                                                  | `/app/atualizacao-cadastral` | ✅ Completo |
+| Financeiro (carteira, bônus, pontos, extrato)                          | `/app/financeiro`            | ✅ Completo |
+| Rede — Binário                                                         | `/app/rede` (aba Binário)    | ✅ Completo |
+| Rede — Unilevel                                                        | `/app/rede` (aba Unilevel)   | ✅ Completo |
+| Rede — Líder de Fechamento                                             | `/app/rede` (aba Líder)      | ✅ Completo |
+| Pedidos (histórico)                                                    | `/app/pedidos`               | ✅ Completo |
+| Realizar Pedido (loja + carrinho)                                      | `/app/realizar-pedido`       | ✅ Completo |
+| Checkout + Pagamento                                                   | `/app/checkout`              | ✅ Completo |
+| Clientes (vendas, loja virtual, material de apoio)                     | `/app/clientes`              | ✅ Completo |
+| Treinamentos (agenda, ao vivo)                                         | `/app/treinamentos`          | ✅ Completo |
+| Suporte (tickets, FAQ, mapa)                                           | `/app/suporte`               | ✅ Completo |
+| Configurações                                                          | `/app/configuracoes`         | ✅ Completo |
+| Login + Recuperação de senha                                           | `/`                          | ✅ Completo |
+| Cadastro novo franqueado (wizard 4 etapas)                             | `/cadastro/:sponsorId`       | ✅ Completo |
 
 ### APIs já consumidas pelo frontend
 
@@ -184,7 +184,9 @@ POST /api/support/ticket-feedback → feedback de ticket fechado
 # Contexto: Ecossistema Timol — Papel do Backend (Manus)
 
 ## Sua função
+
 Você é responsável pelo backend de todos os sistemas Timol. Isso inclui:
+
 - APIs REST (.NET Core)
 - Autenticação (JWT, login, permissões, roles, SSO entre sistemas)
 - Banco de dados (modelagem, migrations, queries)
@@ -195,31 +197,36 @@ Você é responsável pelo backend de todos os sistemas Timol. Isso inclui:
 - Segurança (rate limiting, bloqueio de login por tentativas, proteção contra brute force)
 
 ## O que você NÃO faz
+
 - Não cria componentes visuais (React, HTML, CSS) — isso é feito pelo Lovable
 - Não gerencia traduções (i18n) — controle 100% do frontend
 - Não decide layout, cores ou UX — apenas fornece dados via API
 - Não aplica máscaras de input ou validações visuais
 
 ## Sistemas do ecossistema
-| Sistema | Descrição | Público |
-|---------|-----------|---------|
-| Timol App | Escritório virtual do franqueado | Franqueados |
-| Timol System | Painel administrativo interno | Equipe Timol |
-| Timol Flix | Hub de material de apoio | Franqueados |
-| Timol Estoque | Gestão de estoque/logística | Equipe Timol |
-| Timol Money | Gestão financeira | Equipe Timol |
-| Timol FAT | Plataforma de treinamentos | Franqueados + Equipe |
+
+| Sistema       | Descrição                        | Público              |
+| ------------- | -------------------------------- | -------------------- |
+| Timol App     | Escritório virtual do franqueado | Franqueados          |
+| Timol System  | Painel administrativo interno    | Equipe Timol         |
+| Timol Flix    | Hub de material de apoio         | Franqueados          |
+| Timol Estoque | Gestão de estoque/logística      | Equipe Timol         |
+| Timol Money   | Gestão financeira                | Equipe Timol         |
+| Timol FAT     | Plataforma de treinamentos       | Franqueados + Equipe |
 
 Todos compartilham o mesmo banco de dados e sistema de autenticação (login único/SSO).
 
 ## Fluxo de trabalho com o Frontend (Lovable)
+
 1. O Lovable cria a tela com dados mock e define o contrato da API
 2. Você implementa o endpoint seguindo o contrato
 3. O Lovable conecta a API real
 4. Referência compartilhada: docs/api-contract.md
 
 ## Estado atual do Timol App (frontend já construído)
+
 O Timol App já possui todas as telas implementadas no frontend:
+
 - Login, cadastro de franqueado (wizard 4 etapas), recuperação de senha
 - Dashboard, Cadastro (dados pessoais/endereço/financeiro/documentos/franquias)
 - Financeiro (carteira, bônus, pontos, extrato com filtros)
@@ -231,6 +238,7 @@ O Timol App já possui todas as telas implementadas no frontend:
 - Configurações (preferências, idioma, email previews)
 
 ### APIs que o frontend já consome (e que você precisa implementar):
+
 - POST /api/auth/login, forgot-password, verify-pin, reset-password, forgot-username, change-password
 - GET /api/sponsors/:id, GET /api/sponsors/suggest
 - POST /api/people/document-check, email-check, username-check, register-pending, register-complete
@@ -242,10 +250,11 @@ O Timol App já possui todas as telas implementadas no frontend:
 O contrato detalhado de cada endpoint está em docs/api-contract.md.
 
 ## Regra importante
+
 Se eu te pedir algo que é responsabilidade do frontend (layout, tradução, componente visual),
 me avise: "Isso é responsabilidade do Lovable (frontend). Posso ajudar com a parte de dados/API."
 ```
 
 ---
 
-*Este documento é mantido pelo Lovable e deve ser atualizado sempre que novos módulos ou APIs forem adicionados.*
+_Este documento é mantido pelo Lovable e deve ser atualizado sempre que novos módulos ou APIs forem adicionados._
