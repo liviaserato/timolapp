@@ -38,12 +38,6 @@ import { cn } from "@/lib/utils";
 
 type ProductCategory = "agua" | "beleza" | "dia-a-dia";
 
-const categoryLabels: Record<ProductCategory, string> = {
-  agua: "Água Saudável",
-  beleza: "Beleza/Auto Cuidado",
-  "dia-a-dia": "Dia a Dia",
-};
-
 const productCategoryMap: Record<string, ProductCategory> = {
   "Combo Mega": "agua",
   "Combo Mini": "agua",
@@ -56,6 +50,15 @@ const productCategoryMap: Record<string, ProductCategory> = {
 
 function getCategory(name: string): ProductCategory {
   return productCategoryMap[name] || "dia-a-dia";
+}
+
+function getFranchiseLabel(type: string, t: (key: string) => string) {
+  const normalized = type.toLowerCase();
+  if (normalized === "bronze") return t("franchise.bronze");
+  if (normalized === "prata" || normalized === "silver") return t("franchise.silver");
+  if (normalized === "ouro" || normalized === "gold") return t("franchise.gold");
+  if (normalized === "platina" || normalized === "platinum") return t("franchise.platinum");
+  return type;
 }
 
 /* ── Types ── */
@@ -102,6 +105,12 @@ type PeriodMode = "30d" | "month" | "custom";
 export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
   const { language, t } = useLanguage();
   const locale = localeMap[language] || ptBR;
+  const localeCode = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
+  const categoryLabels: Record<ProductCategory, string> = {
+    agua: t("orders.categoryWater"),
+    beleza: t("orders.categoryBeauty"),
+    "dia-a-dia": t("orders.categoryDaily"),
+  };
   const [showAllProducts, setShowAllProducts] = useState(false);
   const [productTab, setProductTab] = useState<ProductCategory>("agua");
   const [visible, setVisible] = useState(true);
@@ -159,10 +168,10 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
 
   // 3) Franquias cadastradas (mock)
   const franchiseDistribution: FranchiseDistribution[] = [
-    { type: "Platina", count: 1, dotColor: "bg-zinc-600" },
-    { type: "Ouro", count: 1, dotColor: "bg-yellow-500" },
-    { type: "Prata", count: 2, dotColor: "bg-slate-400" },
-    { type: "Bronze", count: 3, dotColor: "bg-amber-700" },
+    { type: "platinum", count: 1, dotColor: "bg-zinc-600" },
+    { type: "gold", count: 1, dotColor: "bg-yellow-500" },
+    { type: "silver", count: 2, dotColor: "bg-slate-400" },
+    { type: "bronze", count: 3, dotColor: "bg-amber-700" },
   ];
   const totalFranchises = franchiseDistribution.reduce((s, f) => s + f.count, 0);
 
@@ -257,7 +266,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                   date={customFrom}
                   onSelect={(d) => setCustomFrom(d)}
                   maxDate={customTo || today}
-                  placeholder="Início"
+                  placeholder={t("orders.start")}
                   locale={locale}
                 />
                 <span className="text-xs text-muted-foreground">{t("orders.until")}</span>
@@ -266,7 +275,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                   onSelect={(d) => setCustomTo(d)}
                   minDate={customFrom}
                   maxDate={today}
-                  placeholder="Fim"
+                  placeholder={t("orders.end")}
                   locale={locale}
                 />
               </div>
@@ -332,7 +341,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                     <div key={f.type} className="flex items-center justify-between text-[11px]">
                       <div className="flex items-center gap-1.5">
                         <span className={cn("h-2 w-2 rounded-full shrink-0", f.dotColor)} />
-                        <span className="text-muted-foreground">{f.type}</span>
+                        <span className="text-muted-foreground">{getFranchiseLabel(f.type, t)}</span>
                       </div>
                       <span className="font-semibold text-foreground">{f.count}</span>
                     </div>
@@ -353,7 +362,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                 <Award className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
                 <span className="text-[13px] sm:text-sm text-muted-foreground leading-tight">{t("orders.bonusGenerated")}</span>
               </div>
-              <p className="text-xl font-bold text-primary">{visible ? formatCurrency(bonusGenerated) : HIDDEN}</p>
+              <p className="text-xl font-bold text-primary">{visible ? bonusGenerated.toLocaleString(localeCode, { style: "currency", currency: "BRL" }) : HIDDEN}</p>
 
               <div className="my-2 w-full border-t border-app-card-border/50" />
 
@@ -361,7 +370,7 @@ export function OrderSummaryCard({ orders }: OrderSummaryCardProps) {
                 <Star className="h-5 w-5 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
                 <span className="text-[13px] sm:text-sm text-muted-foreground leading-tight">{t("orders.pointsGenerated")}</span>
               </div>
-              <p className="text-xl font-bold text-primary">{visible ? pointsGenerated.toLocaleString("pt-BR") : HIDDEN}</p>
+              <p className="text-xl font-bold text-primary">{visible ? pointsGenerated.toLocaleString(localeCode) : HIDDEN}</p>
             </div>
           </div>
         </div>

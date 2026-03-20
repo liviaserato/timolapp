@@ -6,12 +6,15 @@ import { Calendar, Clock, Play, Hourglass, Youtube } from "lucide-react";
 import type { WeekEvent } from "./types";
 import { typeConfig } from "./constants";
 import { getEventStatus, getDateForDayIndex } from "./helpers";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayIndex: number }) {
+  const { language, t } = useLanguage();
   const cfg = typeConfig[event.type];
   const status = getEventStatus(event, todayIndex);
   const eventDate = getDateForDayIndex(event.dayIndex);
-  const dateStr = eventDate.toLocaleDateString("pt-BR", { day: "numeric", month: "long" });
+  const locale = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
+  const dateStr = eventDate.toLocaleDateString(locale, { day: "numeric", month: "long" });
   const [imageOpen, setImageOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -31,7 +34,7 @@ export function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayI
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
                 </span>
-                AO VIVO
+                {t("trn.liveBadge")}
               </span>
             )}
           </div>
@@ -57,17 +60,17 @@ export function TodayEventCard({ event, todayIndex }: { event: WeekEvent; todayI
             {status === "live" ? (
               <Button size="sm" className="gap-1.5 text-[11px] w-full bg-red-600 hover:bg-red-700 h-7 overflow-hidden" onClick={handleWatch} disabled={!event.youtubeUrl}>
                 <Youtube className="h-3.5 w-3.5 shrink-0" />
-                <span className="truncate">Assista ao vivo</span>
+                <span className="truncate">{t("trn.watchLive")}</span>
               </Button>
             ) : status === "past" ? (
               <Button size="sm" variant="outline" className="gap-1.5 text-[11px] w-full h-7 overflow-hidden" onClick={handleWatch} disabled={!event.youtubeUrl}>
                 <Play className="h-3 w-3 shrink-0" />
-                <span className="truncate">Assistir gravação</span>
+                <span className="truncate">{t("trn.watchRecording")}</span>
               </Button>
             ) : (
               <Button size="sm" variant="outline" className="gap-1.5 text-[11px] w-full h-7 overflow-hidden" disabled>
                 <Hourglass className="h-3 w-3 shrink-0" />
-                <span className="truncate">Em breve</span>
+                <span className="truncate">{t("trn.soon")}</span>
               </Button>
             )}
           </div>

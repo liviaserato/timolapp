@@ -8,7 +8,7 @@ import { IndicarFranquiaDialog } from "@/components/app/IndicarFranquiaDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { TodayCarousel } from "@/components/app/treinamentos/TodayCarousel";
-import { weekEvents, DAYS_FULL } from "@/components/app/treinamentos/constants";
+import { weekEvents } from "@/components/app/treinamentos/constants";
 import { getEventStatus } from "@/components/app/treinamentos/helpers";
 import { mockBonusSummary, mockBancoTimol, mockUserQualification, qualificationLabels } from "@/components/app/financeiro/mock-data";
 import { getCurrencyConfig, formatCurrency } from "@/components/app/financeiro/currency-helpers";
@@ -74,7 +74,17 @@ export default function Dashboard() {
     });
   }, [todayIndex]);
 
-  const todayLabel = `${t("dash.today")} – ${DAYS_FULL[todayIndex]}, ${today.toLocaleDateString(t("dash.dateLocale"), { day: "numeric", month: "long" })}`;
+  const weekdayLabels = [
+    t("trn.monday"),
+    t("trn.tuesday"),
+    t("trn.wednesday"),
+    t("trn.thursday"),
+    t("trn.friday"),
+    t("trn.saturday"),
+    t("trn.sunday"),
+  ];
+
+  const todayLabel = `${t("dash.today")} – ${weekdayLabels[todayIndex]}, ${today.toLocaleDateString(t("dash.dateLocale"), { day: "numeric", month: "long" })}`;
 
   const currency = getCurrencyConfig("BR", "BRL");
   const q = qualificationLabels[mockUserQualification.current];
