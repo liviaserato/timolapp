@@ -11,7 +11,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 
 /* ── franchise status helper ── */
 
-function getFranchiseStatusInfo(activeUntil: string, t: (key: string) => string) {
+function getFranchiseStatusInfo(activeUntil: string, t: (key: string) => string, locale: string) {
   const now = new Date();
   const expDate = new Date(activeUntil);
   const diffMs = expDate.getTime() - now.getTime();
@@ -24,7 +24,7 @@ function getFranchiseStatusInfo(activeUntil: string, t: (key: string) => string)
       colorClass: "text-destructive",
       bgClass: "bg-destructive/8 border-destructive/20",
       message: t("fc.expiredMsg"),
-      label: `${t("fc.inactiveSince")} ${expDate.toLocaleDateString("pt-BR")}`,
+      label: `${t("fc.inactiveSince")} ${expDate.toLocaleDateString(locale)}`,
     };
   }
   if (diffDays <= 10) {
@@ -34,7 +34,7 @@ function getFranchiseStatusInfo(activeUntil: string, t: (key: string) => string)
       colorClass: "text-warning",
       bgClass: "bg-warning/8 border-warning/20",
       message: t("fc.warningMsg").replace("{n}", String(diffDays)),
-      label: `${t("fc.activeUntil")} ${expDate.toLocaleDateString("pt-BR")}`,
+      label: `${t("fc.activeUntil")} ${expDate.toLocaleDateString(locale)}`,
     };
   }
   return {
@@ -43,7 +43,7 @@ function getFranchiseStatusInfo(activeUntil: string, t: (key: string) => string)
     colorClass: "text-success",
     bgClass: "bg-success/8 border-success/20",
     message: t("fc.activeMsg"),
-    label: `${t("fc.activeUntil")} ${expDate.toLocaleDateString("pt-BR")}`,
+    label: `${t("fc.activeUntil")} ${expDate.toLocaleDateString(locale)}`,
   };
 }
 
@@ -96,7 +96,8 @@ interface Props {
 }
 
 export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Props) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const locale = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [newFranchiseOpen, setNewFranchiseOpen] = useState(false);
   const { profiles: contextProfiles } = useFranchise();
@@ -126,7 +127,7 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
       franchiseId: p.franchiseId,
       planCode: p.planCode ?? "bronze",
       sponsor: `ID ${franchiseId}`,
-      registrationDate: new Date().toLocaleDateString("pt-BR"),
+      registrationDate: new Date().toLocaleDateString(locale),
       qualification: "consultor",
       activeUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
     }));
@@ -240,7 +241,7 @@ export function FranchiseCard({ franchiseId, planCode, sponsor, className }: Pro
 
           {/* Franchise status alert */}
           {(() => {
-            const status = getFranchiseStatusInfo(viewing.activeUntil, t);
+            const status = getFranchiseStatusInfo(viewing.activeUntil, t, locale);
             const StatusIcon = status.icon;
             return (
               <div className={cn(
