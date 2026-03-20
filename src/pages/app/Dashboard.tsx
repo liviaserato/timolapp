@@ -132,7 +132,7 @@ export default function Dashboard() {
             </div>
             <div className="rounded-md border border-app-card-border p-3 text-center">
               <p className="text-xs text-muted-foreground">{t("dash.unilevelPoints")}</p>
-              <p className="text-lg font-bold text-primary">{mockUserQualification.totalPoints.toLocaleString("pt-BR")}</p>
+              <p className="text-lg font-bold text-primary">{mockUserQualification.totalPoints.toLocaleString(t("dash.dateLocale"))}</p>
             </div>
             <div className="rounded-md border border-app-card-border p-3 text-center">
               <p className="text-xs text-muted-foreground">{t("dash.currentQualification")}</p>
