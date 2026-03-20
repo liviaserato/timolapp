@@ -74,7 +74,7 @@ export default function Dashboard() {
     });
   }, [todayIndex]);
 
-  const todayLabel = `${t("dash.today")} – ${DAYS_FULL[todayIndex]}, ${today.toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}`;
+  const todayLabel = `${t("dash.today")} – ${DAYS_FULL[todayIndex]}, ${today.toLocaleDateString(t("dash.dateLocale"), { day: "numeric", month: "long" })}`;
 
   const currency = getCurrencyConfig("BR", "BRL");
   const q = qualificationLabels[mockUserQualification.current];
