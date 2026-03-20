@@ -6,6 +6,7 @@ import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { CurrencyConfig, formatCurrencySplit } from "./currency-helpers";
 import { BonusExtractRow, movementTypes, qualificationLabels } from "./mock-data";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Props {
   data: BonusExtractRow[];
