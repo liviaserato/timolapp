@@ -15,8 +15,8 @@ interface Props {
 
 const PAGE_SIZE = 30;
 
-function getMonthLabel(date: Date): string {
-  return date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+function getMonthLabel(date: Date, locale: string): string {
+  return date.toLocaleDateString(locale, { month: "long", year: "numeric" });
 }
 
 function getMonthRange(date: Date): { from: string; to: string } {
