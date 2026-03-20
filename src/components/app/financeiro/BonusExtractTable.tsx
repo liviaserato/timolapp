@@ -46,6 +46,7 @@ function daysBetween(from: string, to: string): number {
 }
 
 export function BonusExtractTable({ data, currency }: Props) {
+  const { t, language } = useLanguage();
   const [filterMode, setFilterMode] = useState<"month" | "custom">("month");
   const [monthRef, setMonthRef] = useState(new Date());
   const [dateFrom, setDateFrom] = useState("");
@@ -54,6 +55,7 @@ export function BonusExtractTable({ data, currency }: Props) {
   const [searchId, setSearchId] = useState("");
   const [page, setPage] = useState(0);
   const searchRef = useRef<HTMLInputElement>(null);
+  const locale = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
 
   function toggleType(type: string) {
     setSelectedTypes((prev) => {
