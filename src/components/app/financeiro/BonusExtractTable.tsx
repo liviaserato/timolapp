@@ -191,7 +191,7 @@ export function BonusExtractTable({ data, currency }: Props) {
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="text-xs font-medium min-w-[120px] text-center">
-                {getMonthLabel(monthRef)}
+                {getMonthLabel(monthRef, locale)}
               </span>
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth} disabled={isCurrentMonth}>
                 <ChevronRight className="h-4 w-4" />
