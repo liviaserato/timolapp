@@ -26,12 +26,21 @@ export interface LoginResponse {
 }
 
 export async function login(req: LoginRequest): Promise<LoginResponse> {
-  const data = await api.post<LoginResponse>("/api/auth/login", {
+  const raw = await api.post<LoginResponse & { token?: string; user?: Record<string, unknown> }>("/api/auth/login", {
     username: req.username.trim().toLowerCase(),
     password: req.password,
     rememberMe: req.rememberMe,
     systemId: "timol-app",
   }, { auth: false });
+
+  // Accept both `accessToken` (Timol API) and `token` (Manus backend)
+  const token = raw.accessToken || raw.token || "";
+  const data: LoginResponse = {
+    accessToken: token,
+    expiresAt: raw.expiresAt || "",
+    franchiseId: raw.franchiseId || (raw.user as Record<string, unknown>)?.franchiseId as string | undefined,
+    fullName: raw.fullName || (raw.user as Record<string, unknown>)?.fullName as string | undefined,
+  };
 
   // Store the token
   setAccessToken(data.accessToken, req.rememberMe);
