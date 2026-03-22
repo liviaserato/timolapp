@@ -143,7 +143,18 @@ export function AppHeader() {
                     <img src={iconConfiguracoes} alt="" className="h-4 w-4 invert-0 brightness-0" /> {t("nav.configuracoes")}
                   </Link>
                 </DropdownMenuItem>
-                <div className="mx-1 my-1 h-px bg-muted" />
+                {isAdmin && (
+                  <>
+                    <div className="mx-1 my-1 h-px bg-muted" />
+                    <DropdownMenuItem
+                      onClick={() => navigate(isInternalView ? "/app" : "/internal")}
+                      className="flex items-center gap-2"
+                    >
+                      <ArrowLeftRight className="h-4 w-4" />
+                      {isInternalView ? t("header.viewFranchisee") : t("header.viewStaff")}
+                    </DropdownMenuItem>
+                  </>
+                )}
                 <DropdownMenuItem
                   onClick={() => logout()}
                   className="flex items-center gap-2"
