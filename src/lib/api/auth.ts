@@ -24,6 +24,7 @@ export interface LoginResponse {
   expiresAt: string;
   franchiseId?: string;
   fullName?: string;
+  role?: string;
 }
 
 export async function login(req: LoginRequest): Promise<LoginResponse> {
