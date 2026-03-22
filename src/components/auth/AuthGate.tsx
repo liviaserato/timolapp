@@ -65,11 +65,14 @@ export function AuthGate({ children, mode, allowedRoles = "any" }: AuthGateProps
 
   // Guest route: redirect authenticated users to their home
   if (mode === "guest" && authed) {
-    return <Navigate to={homeForRole(getUserRole())} replace />;
+    const target = homeForRole(getUserRole());
+    console.log("[AuthGate] Guest route, user is authed → redirecting to", target);
+    return <Navigate to={target} replace />;
   }
 
   // Protected route: redirect unauthenticated users to login
   if (mode === "protected" && !authed) {
+    console.log("[AuthGate] Protected route, user NOT authed → redirecting to /");
     return <Navigate to="/" replace />;
   }
 

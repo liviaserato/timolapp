@@ -61,10 +61,13 @@ const Login = () => {
       return;
     }
 
-    setLoading(false);
     const role = getUserRole();
+    const token = localStorage.getItem("timol_access_token") || sessionStorage.getItem("timol_access_token");
+    console.log("[LOGIN] Success! role:", role, "token:", token?.substring(0, 20), "...");
     const home = role && ["staff", "admin", "superadmin"].includes(role) ? "/internal" : "/app";
-    navigate(home);
+    console.log("[LOGIN] Navigating to:", home);
+    setLoading(false);
+    navigate(home, { replace: true });
   };
 
   return (
