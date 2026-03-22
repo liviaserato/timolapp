@@ -482,9 +482,8 @@ export const SponsorScreen = ({ onNext }: Props) => {
       <button
         type="button"
         onClick={() => navigate("/login")}
-        className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors mt-3"
+        className="text-xs text-muted-foreground hover:text-primary transition-colors mt-3"
       >
-        <ArrowLeft className="h-3.5 w-3.5" />
         {t("sponsor.backToLogin")}
       </button>
 
