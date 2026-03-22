@@ -62,7 +62,9 @@ const Login = () => {
     }
 
     setLoading(false);
-    navigate("/app");
+    const role = getUserRole();
+    const home = role && ["staff", "admin", "superadmin"].includes(role) ? "/internal" : "/app";
+    navigate(home);
   };
 
   return (
