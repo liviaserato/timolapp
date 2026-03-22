@@ -27,9 +27,9 @@ const navItems = [
   { labelKey: "nav.clientes", path: "/app/clientes", icon: iconClientes },
   { labelKey: "nav.produtos", path: "/app/produtos", icon: iconProdutos },
   { labelKey: "nav.pedidos", path: "/app/pedidos", icon: iconPedidos },
+  { labelKey: "nav.treinamentos", path: "/app/treinamentos", icon: iconTreinamentos },
   { labelKey: "nav.comercial", path: "/app/comercial", icon: iconComercial },
   { labelKey: "nav.relatorios", path: "/app/relatorios", icon: iconRelatorios },
-  { labelKey: "nav.treinamentos", path: "/app/treinamentos", icon: iconTreinamentos },
   { labelKey: "nav.suporte", path: "/app/suporte", icon: iconSuporte },
 ];
 
