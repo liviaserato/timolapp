@@ -74,15 +74,21 @@ export function AuthGate({ children, mode, allowedRoles = "any" }: AuthGateProps
   }
 
   // Role check: redirect if user doesn't have the right role group
+  // Admins can access BOTH /app and /internal — no redirect for them
   if (mode === "protected" && authed && allowedRoles !== "any") {
     const role = getUserRole();
-    const isInternal = role && ["staff", "admin", "superadmin"].includes(role);
+    const isAdmin = role === "admin" || role === "superadmin";
 
-    if (allowedRoles === "internal" && !isInternal) {
-      return <Navigate to="/app" replace />;
-    }
-    if (allowedRoles === "franchisee" && isInternal) {
-      return <Navigate to="/internal" replace />;
+    // Admins bypass role restrictions — they can view both environments
+    if (!isAdmin) {
+      const isInternal = role && ["staff"].includes(role);
+
+      if (allowedRoles === "internal" && !isInternal) {
+        return <Navigate to="/app" replace />;
+      }
+      if (allowedRoles === "franchisee" && isInternal) {
+        return <Navigate to="/internal" replace />;
+      }
     }
   }
 

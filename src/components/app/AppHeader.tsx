@@ -47,10 +47,26 @@ export function AppHeader() {
         </Link>
       </div>
 
-      {/* Center: title (desktop only) */}
-      <p className="pointer-events-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-lg font-semibold text-primary-foreground hidden lg:block">
-        {t("header.digitalOffice")}
-      </p>
+      {/* Center: title + admin switcher (desktop only) */}
+      <div className="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center gap-3">
+        <p className="pointer-events-none whitespace-nowrap text-lg font-semibold text-primary-foreground">
+          {t("header.digitalOffice")}
+        </p>
+        {isAdmin && (
+          <button
+            onClick={() => navigate(isInternalView ? "/app" : "/internal")}
+            className="flex items-center gap-1.5 rounded-full bg-primary-foreground/15 hover:bg-primary-foreground/25 px-3 py-1 text-xs font-medium text-primary-foreground transition-colors"
+            title={isInternalView ? t("header.switchToFranchisee") : t("header.switchToStaff")}
+          >
+            <ArrowLeftRight className="h-3.5 w-3.5" />
+            {isInternalView ? (
+              <><Store className="h-3.5 w-3.5" /> {t("header.viewFranchisee")}</>
+            ) : (
+              <><ShieldCheck className="h-3.5 w-3.5" /> {t("header.viewStaff")}</>
+            )}
+          </button>
+        )}
+      </div>
 
       {/* Right: user info + avatar */}
       <div className="flex items-center gap-4 shrink-0">
