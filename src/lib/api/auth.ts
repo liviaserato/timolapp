@@ -31,7 +31,7 @@ export async function login(req: LoginRequest): Promise<LoginResponse> {
     username: req.username.trim().toLowerCase(),
     password: req.password,
     rememberMe: req.rememberMe,
-    systemId: "timol-app",
+    systemId: "timol-system",
   }, { auth: false });
 
   // Accept both `accessToken` (Timol API) and `token` (Manus backend)
