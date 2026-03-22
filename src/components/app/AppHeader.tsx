@@ -17,9 +17,14 @@ import iconConfiguracoes from "@/assets/icon-sidebar-configuracoes.svg";
 
 export function AppHeader() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toggle } = useSidebarState();
   const { profiles, selected, setSelectedId, hasMultiple } = useFranchise();
   const { t } = useLanguage();
+
+  const role = getUserRole();
+  const isAdmin = role === "admin" || role === "superadmin";
+  const isInternalView = location.pathname.startsWith("/internal");
 
   return (
     <header style={{ paddingTop: "env(safe-area-inset-top, 0px)" }} className="shrink-0 z-30 flex min-h-[70px] items-center justify-between gap-4 bg-gradient-to-b from-app-header to-app-header-gradient px-5 pr-6 shadow-sm">
