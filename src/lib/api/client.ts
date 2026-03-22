@@ -102,6 +102,9 @@ async function request<T>(
 
   const url = `${getBaseUrl()}${path}`;
 
+  // Debug log for development
+  console.log(`[API] ${method} ${url}`);
+
   const res = await fetch(url, {
     method,
     headers,

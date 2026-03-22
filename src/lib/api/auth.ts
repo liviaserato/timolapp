@@ -1,6 +1,7 @@
 /**
  * Authentication API endpoints
  * POST /api/auth/login
+ * GET  /api/auth/me
  * POST /api/auth/password/recovery-target
  * POST /api/auth/password/request-pin
  * POST /api/auth/password/verify-pin
