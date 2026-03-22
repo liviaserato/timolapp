@@ -6,9 +6,9 @@
 const TOKEN_KEY = "timol_access_token";
 const STORAGE_MODE_KEY = "timol_remember_me";
 
-// Base URL — defaults to Timol production API
+// Base URL — supports VITE_API_URL (Manus) or VITE_API_BASE_URL (legacy)
 function getBaseUrl(): string {
-  return import.meta.env.VITE_API_BASE_URL || "https://www.timolweb.com.br";
+  return import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "https://www.timolweb.com.br";
 }
 
 // ─── Token Management ──────────────────────────────────────────
@@ -101,6 +101,9 @@ async function request<T>(
   }
 
   const url = `${getBaseUrl()}${path}`;
+
+  // Debug log for development
+  console.log(`[API] ${method} ${url}`);
 
   const res = await fetch(url, {
     method,

@@ -1,6 +1,7 @@
 /**
  * Authentication API endpoints
  * POST /api/auth/login
+ * GET  /api/auth/me
  * POST /api/auth/password/recovery-target
  * POST /api/auth/password/request-pin
  * POST /api/auth/password/verify-pin
@@ -26,12 +27,21 @@ export interface LoginResponse {
 }
 
 export async function login(req: LoginRequest): Promise<LoginResponse> {
-  const data = await api.post<LoginResponse>("/api/auth/login", {
+  const raw = await api.post<LoginResponse & { token?: string; user?: Record<string, unknown> }>("/api/auth/login", {
     username: req.username.trim().toLowerCase(),
     password: req.password,
     rememberMe: req.rememberMe,
     systemId: "timol-app",
   }, { auth: false });
+
+  // Accept both `accessToken` (Timol API) and `token` (Manus backend)
+  const token = raw.accessToken || raw.token || "";
+  const data: LoginResponse = {
+    accessToken: token,
+    expiresAt: raw.expiresAt || "",
+    franchiseId: raw.franchiseId || (raw.user as Record<string, unknown>)?.franchiseId as string | undefined,
+    fullName: raw.fullName || (raw.user as Record<string, unknown>)?.fullName as string | undefined,
+  };
 
   // Store the token
   setAccessToken(data.accessToken, req.rememberMe);
@@ -110,4 +120,19 @@ export interface ForgotUsernameResponse {
 /** Recover username by email or document */
 export async function forgotUsername(req: ForgotUsernameRequest): Promise<ForgotUsernameResponse> {
   return api.post<ForgotUsernameResponse>("/api/auth/username/forgot", req, { auth: false });
+}
+
+// ─── Get Current User ───────────────────────────────────────────
+
+export interface GetMeResponse {
+  role: string;
+  fullName?: string;
+  franchiseId?: string;
+  username?: string;
+  email?: string;
+}
+
+/** Get authenticated user info */
+export async function getMe(): Promise<GetMeResponse> {
+  return api.get<GetMeResponse>("/api/auth/me");
 }
