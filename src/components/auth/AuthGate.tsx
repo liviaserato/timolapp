@@ -4,7 +4,7 @@ import { isAuthenticated, clearAccessToken, getUserRole } from "@/lib/api";
 import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 
 // ⚠️ TEMPORARY: Set to false when the real API is ready
-const DEV_BYPASS = true;
+const DEV_BYPASS = false;
 
 type AuthMode = "guest" | "protected";
 
