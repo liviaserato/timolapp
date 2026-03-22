@@ -5,6 +5,7 @@
 
 const TOKEN_KEY = "timol_access_token";
 const STORAGE_MODE_KEY = "timol_remember_me";
+const ROLE_KEY = "timol_user_role";
 
 // Base URL — supports VITE_API_URL (Manus) or VITE_API_BASE_URL (legacy)
 function getBaseUrl(): string {
@@ -41,6 +42,22 @@ export function clearAccessToken(): void {
   localStorage.removeItem(TOKEN_KEY);
   sessionStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(STORAGE_MODE_KEY);
+  localStorage.removeItem(ROLE_KEY);
+  sessionStorage.removeItem(ROLE_KEY);
+}
+
+export function setUserRole(role: string, rememberMe: boolean): void {
+  localStorage.removeItem(ROLE_KEY);
+  sessionStorage.removeItem(ROLE_KEY);
+  if (rememberMe) {
+    localStorage.setItem(ROLE_KEY, role);
+  } else {
+    sessionStorage.setItem(ROLE_KEY, role);
+  }
+}
+
+export function getUserRole(): string | null {
+  return localStorage.getItem(ROLE_KEY) || sessionStorage.getItem(ROLE_KEY);
 }
 
 export function isAuthenticated(): boolean {

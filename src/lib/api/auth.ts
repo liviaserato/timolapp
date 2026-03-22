@@ -9,7 +9,7 @@
  * POST /api/auth/username/forgot
  */
 
-import { api, setAccessToken, clearAccessToken } from "./client";
+import { api, setAccessToken, setUserRole, clearAccessToken } from "./client";
 
 // ─── Login ─────────────────────────────────────────────────────
 
@@ -24,6 +24,7 @@ export interface LoginResponse {
   expiresAt: string;
   franchiseId?: string;
   fullName?: string;
+  role?: string;
 }
 
 export async function login(req: LoginRequest): Promise<LoginResponse> {
@@ -41,10 +42,14 @@ export async function login(req: LoginRequest): Promise<LoginResponse> {
     expiresAt: raw.expiresAt || "",
     franchiseId: raw.franchiseId || (raw.user as Record<string, unknown>)?.franchiseId as string | undefined,
     fullName: raw.fullName || (raw.user as Record<string, unknown>)?.fullName as string | undefined,
+    role: raw.role || (raw.user as Record<string, unknown>)?.role as string | undefined,
   };
 
-  // Store the token
+  // Store the token and role
   setAccessToken(data.accessToken, req.rememberMe);
+  if (data.role) {
+    setUserRole(data.role, req.rememberMe);
+  }
 
   return data;
 }

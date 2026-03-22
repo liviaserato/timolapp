@@ -6,7 +6,7 @@
  */
 
 // Client utilities
-export { getAccessToken, setAccessToken, clearAccessToken, isAuthenticated, api, ApiRequestError } from "./client";
+export { getAccessToken, setAccessToken, clearAccessToken, isAuthenticated, getUserRole, setUserRole, api, ApiRequestError } from "./client";
 export type { ApiError } from "./client";
 
 // Auth
