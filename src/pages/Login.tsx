@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, LogIn, UserPlus, RotateCcw } from "lucide-react";
-import { setAccessToken, getUserRole } from "@/lib/api/client";
+import { getUserRole } from "@/lib/api/client";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { ResumeRegistrationPopup } from "@/components/screens/ResumeRegistrationPopup";
 import { ForgotPasswordPopup } from "@/components/login/ForgotPasswordPopup";
