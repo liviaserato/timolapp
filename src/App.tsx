@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -5,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { AuthGate } from "@/components/auth/AuthGate";
+import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Continue from "./pages/Continue";
@@ -29,6 +31,14 @@ import AtualizacaoCadastral from "./pages/app/AtualizacaoCadastral";
 import Configuracoes from "./pages/app/Configuracoes";
 import NotFound from "./pages/NotFound";
 
+// Lazy-loaded internal (staff) pages — separate bundle
+const InternalLayout = lazy(() => import("./pages/InternalLayout"));
+const InternalDashboard = lazy(() => import("./pages/internal/InternalDashboard"));
+
+const LazyFallback = () => (
+  <FullScreenTimolLoader mode="page" title="Carregando..." className="bg-background" />
+);
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -45,7 +55,8 @@ const App = () => (
             <Route path="/continue/:token" element={<Continue />} />
             <Route path="/pendentes" element={<AuthGate mode="protected"><PendingRegistrations /></AuthGate>} />
             
-            <Route path="/app" element={<AuthGate mode="protected"><AppLayout /></AuthGate>}>
+            {/* Franchisee routes */}
+            <Route path="/app" element={<AuthGate mode="protected" allowedRoles="franchisee"><AppLayout /></AuthGate>}>
               <Route index element={<Dashboard />} />
               <Route path="cadastro" element={<Cadastro />} />
               <Route path="financeiro" element={<Financeiro />} />
@@ -63,6 +74,18 @@ const App = () => (
               <Route path="atualizacao-cadastral" element={<AtualizacaoCadastral />} />
               <Route path=":section" element={<SectionPlaceholder />} />
             </Route>
+
+            {/* Internal (staff) routes — lazy loaded */}
+            <Route path="/internal" element={
+              <AuthGate mode="protected" allowedRoles="internal">
+                <Suspense fallback={<LazyFallback />}>
+                  <InternalLayout />
+                </Suspense>
+              </AuthGate>
+            }>
+              <Route index element={<Suspense fallback={<LazyFallback />}><InternalDashboard /></Suspense>} />
+            </Route>
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
