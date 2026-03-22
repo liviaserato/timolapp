@@ -1,17 +1,33 @@
 import { ReactNode, useEffect, useState, useCallback } from "react";
 import { Navigate } from "react-router-dom";
-import { isAuthenticated, clearAccessToken } from "@/lib/api";
+import { isAuthenticated, clearAccessToken, getUserRole } from "@/lib/api";
 import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 
 // ⚠️ TEMPORARY: Set to false when the real API is ready
 const DEV_BYPASS = true;
 
+type AuthMode = "guest" | "protected";
+
+/** Which roles are allowed on this route group */
+type AllowedRoles = "any" | "franchisee" | "internal";
+
 interface AuthGateProps {
   children: ReactNode;
-  mode: "guest" | "protected";
+  mode: AuthMode;
+  /** Restrict to specific role group. Default: "any" */
+  allowedRoles?: AllowedRoles;
 }
 
-export function AuthGate({ children, mode }: AuthGateProps) {
+/** Returns the correct home path for a given role */
+function homeForRole(role: string | null): string {
+  if (!role) return "/app";
+  // staff, admin, superadmin → /internal
+  if (["staff", "admin", "superadmin"].includes(role)) return "/internal";
+  // franchisee or unknown → /app
+  return "/app";
+}
+
+export function AuthGate({ children, mode, allowedRoles = "any" }: AuthGateProps) {
   const [checked, setChecked] = useState(false);
   const [authed, setAuthed] = useState(false);
 
@@ -47,12 +63,27 @@ export function AuthGate({ children, mode }: AuthGateProps) {
     );
   }
 
+  // Guest route: redirect authenticated users to their home
+  if (mode === "guest" && authed) {
+    return <Navigate to={homeForRole(getUserRole())} replace />;
+  }
+
+  // Protected route: redirect unauthenticated users to login
   if (mode === "protected" && !authed) {
     return <Navigate to="/" replace />;
   }
 
-  if (mode === "guest" && authed) {
-    return <Navigate to="/app" replace />;
+  // Role check: redirect if user doesn't have the right role group
+  if (mode === "protected" && authed && allowedRoles !== "any") {
+    const role = getUserRole();
+    const isInternal = role && ["staff", "admin", "superadmin"].includes(role);
+
+    if (allowedRoles === "internal" && !isInternal) {
+      return <Navigate to="/app" replace />;
+    }
+    if (allowedRoles === "franchisee" && isInternal) {
+      return <Navigate to="/internal" replace />;
+    }
   }
 
   return <>{children}</>;

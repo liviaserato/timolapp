@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, LogIn, UserPlus, RotateCcw, FlaskConical } from "lucide-react";
-import { setAccessToken } from "@/lib/api/client";
+import { setAccessToken, getUserRole } from "@/lib/api/client";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { ResumeRegistrationPopup } from "@/components/screens/ResumeRegistrationPopup";
 import { ForgotPasswordPopup } from "@/components/login/ForgotPasswordPopup";
@@ -62,7 +62,9 @@ const Login = () => {
     }
 
     setLoading(false);
-    navigate("/app");
+    const role = getUserRole();
+    const home = role && ["staff", "admin", "superadmin"].includes(role) ? "/internal" : "/app";
+    navigate(home);
   };
 
   return (
