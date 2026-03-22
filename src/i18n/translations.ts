@@ -3610,7 +3610,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.financeiro": "Financiero",
     "nav.rede": "Red",
     "nav.clientes": "Clientes",
-    "nav.productos": "Productos",
+    "nav.produtos": "Productos",
     "nav.pedidos": "Pedidos",
     "nav.comercial": "Comercial",
     "nav.relatorios": "Informes",
