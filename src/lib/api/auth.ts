@@ -121,3 +121,18 @@ export interface ForgotUsernameResponse {
 export async function forgotUsername(req: ForgotUsernameRequest): Promise<ForgotUsernameResponse> {
   return api.post<ForgotUsernameResponse>("/api/auth/username/forgot", req, { auth: false });
 }
+
+// ─── Get Current User ───────────────────────────────────────────
+
+export interface GetMeResponse {
+  role: string;
+  fullName?: string;
+  franchiseId?: string;
+  username?: string;
+  email?: string;
+}
+
+/** Get authenticated user info */
+export async function getMe(): Promise<GetMeResponse> {
+  return api.get<GetMeResponse>("/api/auth/me");
+}

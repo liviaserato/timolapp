@@ -10,8 +10,8 @@ export { getAccessToken, setAccessToken, clearAccessToken, isAuthenticated, api,
 export type { ApiError } from "./client";
 
 // Auth
-export { login, logout, passwordRecoveryTarget, passwordRequestPin, passwordVerifyPin, passwordReset, forgotUsername } from "./auth";
-export type { LoginRequest, LoginResponse, RecoveryTargetResponse, VerifyPinResponse, ForgotUsernameRequest, ForgotUsernameByEmail, ForgotUsernameByDocument, ForgotUsernameResponse } from "./auth";
+export { login, logout, passwordRecoveryTarget, passwordRequestPin, passwordVerifyPin, passwordReset, forgotUsername, getMe } from "./auth";
+export type { LoginRequest, LoginResponse, RecoveryTargetResponse, VerifyPinResponse, ForgotUsernameRequest, ForgotUsernameByEmail, ForgotUsernameByDocument, ForgotUsernameResponse, GetMeResponse } from "./auth";
 
 // Sponsors
 export { searchSponsor, suggestSponsors } from "./sponsors";
