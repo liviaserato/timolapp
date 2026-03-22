@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, ChevronDown, User, Star, LogOut, ArrowLeftRight, ShieldCheck, Store } from "lucide-react";
+import { Menu, ChevronDown, User, Star, LogOut, Store, ShieldCheck } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,7 +28,7 @@ export function AppHeader() {
 
   return (
     <header style={{ paddingTop: "env(safe-area-inset-top, 0px)" }} className="shrink-0 z-30 flex min-h-[70px] items-center justify-between gap-4 bg-gradient-to-b from-app-header to-app-header-gradient px-5 pr-6 shadow-sm">
-      {/* Left: toggle + logo */}
+      {/* Left: toggle + logo + admin switcher */}
       <div className="flex items-center gap-4">
         <button
           onClick={toggle}
@@ -45,27 +45,39 @@ export function AppHeader() {
             className="h-[clamp(28px,7vw,40px)] w-auto object-contain"
           />
         </Link>
+
+        {/* Admin environment switcher — radio style */}
+        {isAdmin && (
+          <div className="hidden md:flex flex-col gap-0.5 ml-2 rounded-lg bg-primary-foreground/10 px-3 py-1.5">
+            <label
+              onClick={() => !isInternalView || navigate("/app")}
+              className="flex items-center gap-2 cursor-pointer text-xs text-primary-foreground hover:text-primary-foreground/90 transition-colors"
+            >
+              <span className={`flex h-3.5 w-3.5 items-center justify-center rounded-full border ${!isInternalView ? "border-primary-foreground bg-primary-foreground" : "border-primary-foreground/50"}`}>
+                {!isInternalView && <span className="h-1.5 w-1.5 rounded-full bg-app-sidebar" />}
+              </span>
+              <Store className="h-3 w-3" />
+              <span className="font-medium">Franqueado</span>
+            </label>
+            <label
+              onClick={() => isInternalView || navigate("/internal")}
+              className="flex items-center gap-2 cursor-pointer text-xs text-primary-foreground hover:text-primary-foreground/90 transition-colors"
+            >
+              <span className={`flex h-3.5 w-3.5 items-center justify-center rounded-full border ${isInternalView ? "border-primary-foreground bg-primary-foreground" : "border-primary-foreground/50"}`}>
+                {isInternalView && <span className="h-1.5 w-1.5 rounded-full bg-app-sidebar" />}
+              </span>
+              <ShieldCheck className="h-3 w-3" />
+              <span className="font-medium">Equipe Interna</span>
+            </label>
+          </div>
+        )}
       </div>
 
-      {/* Center: title + admin switcher (desktop only) */}
+      {/* Center: title (desktop only) */}
       <div className="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center gap-3">
         <p className="pointer-events-none whitespace-nowrap text-lg font-semibold text-primary-foreground">
           {t("header.digitalOffice")}
         </p>
-        {isAdmin && (
-          <button
-            onClick={() => navigate(isInternalView ? "/app" : "/internal")}
-            className="flex items-center gap-1.5 rounded-full bg-primary-foreground/15 hover:bg-primary-foreground/25 px-3 py-1 text-xs font-medium text-primary-foreground transition-colors"
-            title={isInternalView ? t("header.switchToFranchisee") : t("header.switchToStaff")}
-          >
-            <ArrowLeftRight className="h-3.5 w-3.5" />
-            {isInternalView ? (
-              <><Store className="h-3.5 w-3.5" /> {t("header.viewFranchisee")}</>
-            ) : (
-              <><ShieldCheck className="h-3.5 w-3.5" /> {t("header.viewStaff")}</>
-            )}
-          </button>
-        )}
       </div>
 
       {/* Right: user info + avatar */}
@@ -150,8 +162,11 @@ export function AppHeader() {
                       onClick={() => navigate(isInternalView ? "/app" : "/internal")}
                       className="flex items-center gap-2"
                     >
-                      <ArrowLeftRight className="h-4 w-4" />
-                      {isInternalView ? t("header.viewFranchisee") : t("header.viewStaff")}
+                      {isInternalView ? (
+                        <><Store className="h-4 w-4" /> Franqueado</>
+                      ) : (
+                        <><ShieldCheck className="h-4 w-4" /> Equipe Interna</>
+                      )}
                     </DropdownMenuItem>
                   </>
                 )}

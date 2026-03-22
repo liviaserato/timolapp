@@ -1,19 +1,39 @@
-import { useLocation, Link } from "react-router-dom";
-import { LogOut, LayoutDashboard, Users, FileText, Settings, ShieldCheck } from "lucide-react";
+import { useLocation, Link, useNavigate } from "react-router-dom";
+import { LogOut, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useInternalSidebarState } from "@/pages/InternalLayout";
 import { logout } from "@/lib/api";
 import { useLanguage } from "@/i18n/LanguageContext";
 
+import iconPainelInicial from "@/assets/icon-sidebar-painel-inicial.svg";
+import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
+import iconRede from "@/assets/icon-sidebar-rede.svg";
+import iconClientes from "@/assets/icon-sidebar-clientes.svg";
+import iconProdutos from "@/assets/icon-sidebar-produtos.svg";
+import iconPedidos from "@/assets/icon-sidebar-pedidos.svg";
+import iconFinanceiro from "@/assets/icon-sidebar-financeiro.svg";
+import iconComercial from "@/assets/icon-sidebar-comercial.svg";
+import iconRelatorios from "@/assets/icon-sidebar-relatorios.svg";
+import iconTreinamentos from "@/assets/icon-sidebar-treinamentos.svg";
+import iconSuporte from "@/assets/icon-sidebar-suporte.svg";
+import iconConfiguracoes from "@/assets/icon-sidebar-configuracoes.svg";
+
 const navItems = [
-  { labelKey: "internal.nav.dashboard", path: "/internal", icon: LayoutDashboard },
-  { labelKey: "internal.nav.registrations", path: "/internal/cadastros", icon: FileText },
-  { labelKey: "internal.nav.franchisees", path: "/internal/franqueados", icon: Users },
-  { labelKey: "internal.nav.permissions", path: "/internal/permissoes", icon: ShieldCheck },
+  { labelKey: "nav.dashboard", path: "/internal", icon: iconPainelInicial },
+  { labelKey: "nav.cadastro", path: "/internal/cadastros", icon: iconCadastro },
+  { labelKey: "nav.financeiro", path: "/internal/financeiro", icon: iconFinanceiro },
+  { labelKey: "nav.rede", path: "/internal/rede", icon: iconRede },
+  { labelKey: "nav.clientes", path: "/internal/clientes", icon: iconClientes },
+  { labelKey: "nav.produtos", path: "/internal/produtos", icon: iconProdutos },
+  { labelKey: "nav.pedidos", path: "/internal/pedidos", icon: iconPedidos },
+  { labelKey: "nav.treinamentos", path: "/internal/treinamentos", icon: iconTreinamentos },
+  { labelKey: "nav.comercial", path: "/internal/comercial", icon: iconComercial },
+  { labelKey: "nav.relatorios", path: "/internal/relatorios", icon: iconRelatorios },
+  { labelKey: "nav.suporte", path: "/internal/suporte", icon: iconSuporte },
 ];
 
 const bottomItems = [
-  { labelKey: "internal.nav.settings", path: "/internal/configuracoes", icon: Settings },
+  { labelKey: "nav.configuracoes", path: "/internal/configuracoes", icon: iconConfiguracoes },
 ];
 
 interface InternalSidebarNavProps {
@@ -23,6 +43,7 @@ interface InternalSidebarNavProps {
 
 export function InternalSidebarNav({ collapsed = false, onNavigate }: InternalSidebarNavProps) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const { t } = useLanguage();
 
   const isActive = (path: string) => {
@@ -33,9 +54,8 @@ export function InternalSidebarNav({ collapsed = false, onNavigate }: InternalSi
   const navItemClass =
     "flex h-11 items-center gap-3 px-4 text-[15px] font-medium leading-none text-primary-foreground/90 transition-colors hover:bg-[hsl(var(--app-sidebar-hover))] whitespace-nowrap overflow-hidden border-l-[3px] border-transparent";
 
-  const renderLink = (item: { labelKey: string; path: string; icon: React.ComponentType<{ className?: string }> }) => {
+  const renderLink = (item: { labelKey: string; path: string; icon: string }) => {
     const label = t(item.labelKey);
-    const Icon = item.icon;
     return (
       <Link
         key={item.path}
@@ -48,7 +68,7 @@ export function InternalSidebarNav({ collapsed = false, onNavigate }: InternalSi
         )}
       >
         <span className="flex h-5 w-5 shrink-0 items-center justify-center">
-          <Icon className="h-5 w-5" />
+          <img src={item.icon} alt="" className="h-5 w-5 object-contain" />
         </span>
         {!collapsed && <span>{label}</span>}
       </Link>
@@ -74,9 +94,12 @@ export function InternalSidebarNav({ collapsed = false, onNavigate }: InternalSi
 
       {/* Bottom section */}
       <div className="mt-auto">
+        {/* Separator */}
         <div className="mx-3 border-t border-primary-foreground/20" />
+
         <nav className="flex flex-col py-2">
           {bottomItems.map(renderLink)}
+
           <button
             onClick={() => {
               onNavigate?.();
