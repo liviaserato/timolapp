@@ -42,6 +42,7 @@ export async function login(req: LoginRequest): Promise<LoginResponse> {
     expiresAt: raw.expiresAt || "",
     franchiseId: raw.franchiseId || (raw.user as Record<string, unknown>)?.franchiseId as string | undefined,
     fullName: raw.fullName || (raw.user as Record<string, unknown>)?.fullName as string | undefined,
+    role: raw.role || (raw.user as Record<string, unknown>)?.role as string | undefined,
   };
 
   // Store the token
