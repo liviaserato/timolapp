@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { WizardData } from "@/types/wizard";
-import { Search, Users, X, RefreshCw, Loader2 } from "lucide-react";
+import { Search, Users, X, RefreshCw, Loader2, Home } from "lucide-react";
 import timolLogoAzul from "@/assets/logo-timol-azul-escuro.svg";
 import whatsappIcon from "@/assets/icon-logo-whatsapp.svg";
 import { countries, getCountryName } from "@/data/countries";
@@ -482,8 +482,9 @@ export const SponsorScreen = ({ onNext }: Props) => {
       <button
         type="button"
         onClick={() => navigate("/login")}
-        className="text-xs text-muted-foreground hover:text-primary transition-colors mt-3"
+        className="flex items-center justify-center gap-1.5 w-full text-xs text-muted-foreground hover:text-primary transition-colors mt-3"
       >
+        <Home className="h-3.5 w-3.5" />
         {t("sponsor.backToLogin")}
       </button>
 
