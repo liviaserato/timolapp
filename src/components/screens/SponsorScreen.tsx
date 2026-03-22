@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { WizardData } from "@/types/wizard";
-import { Search, Users, X, RefreshCw, Loader2 } from "lucide-react";
+import { Search, Users, X, RefreshCw, Loader2, ArrowLeft } from "lucide-react";
 import timolLogoAzul from "@/assets/logo-timol-azul-escuro.svg";
 import whatsappIcon from "@/assets/icon-logo-whatsapp.svg";
 import { countries, getCountryName } from "@/data/countries";
@@ -23,6 +24,7 @@ type NoSponsorStep = "how-continue" | "find-sponsor";
 
 export const SponsorScreen = ({ onNext }: Props) => {
   const { t, language } = useLanguage();
+  const navigate = useNavigate();
   const [sponsorId, setSponsorId] = useState("");
   const [foundSponsor, setFoundSponsor] = useState<{ id: string; name: string; city: string; state: string; countryFlag: string; countryName: string; photo: string } | null>(null);
   const [showNoSponsorBox, setShowNoSponsorBox] = useState(false);
@@ -475,6 +477,16 @@ export const SponsorScreen = ({ onNext }: Props) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Back to login */}
+      <button
+        type="button"
+        onClick={() => navigate("/login")}
+        className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors mt-3"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+        {t("sponsor.backToLogin")}
+      </button>
 
       {/* No Sponsor Modal — opens directly with "how-continue" */}
       {showNoSponsorBox && (
