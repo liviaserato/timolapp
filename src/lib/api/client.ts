@@ -5,6 +5,7 @@
 
 const TOKEN_KEY = "timol_access_token";
 const STORAGE_MODE_KEY = "timol_remember_me";
+const ROLE_KEY = "timol_user_role";
 
 // Base URL — supports VITE_API_URL (Manus) or VITE_API_BASE_URL (legacy)
 function getBaseUrl(): string {
