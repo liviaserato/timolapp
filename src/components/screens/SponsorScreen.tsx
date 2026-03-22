@@ -482,8 +482,9 @@ export const SponsorScreen = ({ onNext }: Props) => {
       <button
         type="button"
         onClick={() => navigate("/login")}
-        className="text-xs text-muted-foreground hover:text-primary transition-colors mt-3"
+        className="flex items-center justify-center gap-1.5 w-full text-xs text-muted-foreground hover:text-primary transition-colors mt-3"
       >
+        <Home className="h-3.5 w-3.5" />
         {t("sponsor.backToLogin")}
       </button>
 
