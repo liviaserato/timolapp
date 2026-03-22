@@ -77,16 +77,8 @@ export function InternalSidebarNav({ collapsed = false, onNavigate }: InternalSi
 
   return (
     <div className="flex flex-col h-full">
-      {/* Staff badge */}
-      <div className="px-4 py-3">
-        <div className={cn(
-          "flex items-center gap-2 rounded-md bg-primary-foreground/10 px-3 py-1.5 text-xs font-bold text-primary-foreground uppercase tracking-wider",
-          collapsed && "justify-center px-1"
-        )}>
-          <ShieldCheck className="h-4 w-4 shrink-0" />
-          {!collapsed && <span>Staff</span>}
-        </div>
-      </div>
+      {/* Spacer */}
+      <div className="py-2" />
 
       <nav className="flex flex-col py-1 flex-1">
         {navItems.map(renderLink)}
