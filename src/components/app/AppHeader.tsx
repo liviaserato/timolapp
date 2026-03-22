@@ -1,5 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
-import { Menu, ChevronDown, User, Star, LogOut } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Menu, ChevronDown, User, Star, LogOut, ArrowLeftRight, ShieldCheck, Store } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSidebarState } from "@/pages/AppLayout";
 import { useFranchise } from "@/contexts/FranchiseContext";
-import { logout } from "@/lib/api";
+import { logout, getUserRole } from "@/lib/api";
 import { useLanguage } from "@/i18n/LanguageContext";
 import timolLogoBranco from "@/assets/logo-timol-branco.svg";
 import iconSuporte from "@/assets/icon-sidebar-suporte.svg";
