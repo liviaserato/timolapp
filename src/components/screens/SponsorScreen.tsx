@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { WizardData } from "@/types/wizard";
-import { Search, Users, X, RefreshCw, Loader2 } from "lucide-react";
+import { Search, Users, X, RefreshCw, Loader2, Home } from "lucide-react";
 import timolLogoAzul from "@/assets/logo-timol-azul-escuro.svg";
 import whatsappIcon from "@/assets/icon-logo-whatsapp.svg";
 import { countries, getCountryName } from "@/data/countries";
