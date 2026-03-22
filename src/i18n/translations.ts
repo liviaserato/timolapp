@@ -3238,6 +3238,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "sponsor.card.description": "Ingresa el ID de tu Patrocinador",
     "sponsor.id.placeholder": "Ingresa el ID",
     "sponsor.noSponsor": "Aún no tengo patrocinador",
+    "sponsor.backToLogin": "Ya soy franquiciado, volver al login",
     "sponsor.noSponsorBox.howTitle": "¿Cómo deseas continuar?",
     "sponsor.noSponsorBox.howDescription": "Elige cómo prefieres seguir:",
     "sponsor.noSponsorBox.random": "Indicar un patrocinador en mi ciudad",
