@@ -9,7 +9,7 @@
  * POST /api/auth/username/forgot
  */
 
-import { api, setAccessToken, clearAccessToken } from "./client";
+import { api, setAccessToken, setUserRole, clearAccessToken } from "./client";
 
 // ─── Login ─────────────────────────────────────────────────────
 
