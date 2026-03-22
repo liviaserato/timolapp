@@ -24,6 +24,7 @@ type NoSponsorStep = "how-continue" | "find-sponsor";
 
 export const SponsorScreen = ({ onNext }: Props) => {
   const { t, language } = useLanguage();
+  const navigate = useNavigate();
   const [sponsorId, setSponsorId] = useState("");
   const [foundSponsor, setFoundSponsor] = useState<{ id: string; name: string; city: string; state: string; countryFlag: string; countryName: string; photo: string } | null>(null);
   const [showNoSponsorBox, setShowNoSponsorBox] = useState(false);
