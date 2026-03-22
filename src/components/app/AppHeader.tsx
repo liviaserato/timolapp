@@ -1,5 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
-import { Menu, ChevronDown, User, Star, LogOut } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Menu, ChevronDown, User, Star, LogOut, ArrowLeftRight, ShieldCheck, Store } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSidebarState } from "@/pages/AppLayout";
 import { useFranchise } from "@/contexts/FranchiseContext";
-import { logout } from "@/lib/api";
+import { logout, getUserRole } from "@/lib/api";
 import { useLanguage } from "@/i18n/LanguageContext";
 import timolLogoBranco from "@/assets/logo-timol-branco.svg";
 import iconSuporte from "@/assets/icon-sidebar-suporte.svg";
@@ -17,9 +17,14 @@ import iconConfiguracoes from "@/assets/icon-sidebar-configuracoes.svg";
 
 export function AppHeader() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toggle } = useSidebarState();
   const { profiles, selected, setSelectedId, hasMultiple } = useFranchise();
   const { t } = useLanguage();
+
+  const role = getUserRole();
+  const isAdmin = role === "admin" || role === "superadmin";
+  const isInternalView = location.pathname.startsWith("/internal");
 
   return (
     <header style={{ paddingTop: "env(safe-area-inset-top, 0px)" }} className="shrink-0 z-30 flex min-h-[70px] items-center justify-between gap-4 bg-gradient-to-b from-app-header to-app-header-gradient px-5 pr-6 shadow-sm">
@@ -42,10 +47,26 @@ export function AppHeader() {
         </Link>
       </div>
 
-      {/* Center: title (desktop only) */}
-      <p className="pointer-events-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-lg font-semibold text-primary-foreground hidden lg:block">
-        {t("header.digitalOffice")}
-      </p>
+      {/* Center: title + admin switcher (desktop only) */}
+      <div className="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center gap-3">
+        <p className="pointer-events-none whitespace-nowrap text-lg font-semibold text-primary-foreground">
+          {t("header.digitalOffice")}
+        </p>
+        {isAdmin && (
+          <button
+            onClick={() => navigate(isInternalView ? "/app" : "/internal")}
+            className="flex items-center gap-1.5 rounded-full bg-primary-foreground/15 hover:bg-primary-foreground/25 px-3 py-1 text-xs font-medium text-primary-foreground transition-colors"
+            title={isInternalView ? t("header.switchToFranchisee") : t("header.switchToStaff")}
+          >
+            <ArrowLeftRight className="h-3.5 w-3.5" />
+            {isInternalView ? (
+              <><Store className="h-3.5 w-3.5" /> {t("header.viewFranchisee")}</>
+            ) : (
+              <><ShieldCheck className="h-3.5 w-3.5" /> {t("header.viewStaff")}</>
+            )}
+          </button>
+        )}
+      </div>
 
       {/* Right: user info + avatar */}
       <div className="flex items-center gap-4 shrink-0">
@@ -122,7 +143,18 @@ export function AppHeader() {
                     <img src={iconConfiguracoes} alt="" className="h-4 w-4 invert-0 brightness-0" /> {t("nav.configuracoes")}
                   </Link>
                 </DropdownMenuItem>
-                <div className="mx-1 my-1 h-px bg-muted" />
+                {isAdmin && (
+                  <>
+                    <div className="mx-1 my-1 h-px bg-muted" />
+                    <DropdownMenuItem
+                      onClick={() => navigate(isInternalView ? "/app" : "/internal")}
+                      className="flex items-center gap-2"
+                    >
+                      <ArrowLeftRight className="h-4 w-4" />
+                      {isInternalView ? t("header.viewFranchisee") : t("header.viewStaff")}
+                    </DropdownMenuItem>
+                  </>
+                )}
                 <DropdownMenuItem
                   onClick={() => logout()}
                   className="flex items-center gap-2"
