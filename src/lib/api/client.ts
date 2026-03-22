@@ -8,7 +8,7 @@ const STORAGE_MODE_KEY = "timol_remember_me";
 
 // Base URL — supports VITE_API_URL (Manus) or VITE_API_BASE_URL (legacy)
 function getBaseUrl(): string {
-  return import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "https://www.timolweb.com.br";
+  return import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "https://3001-islx8717rpj8ilx2h03mq-b2e90ed3.us2.manus.computer";
 }
 
 // ─── Token Management ──────────────────────────────────────────
