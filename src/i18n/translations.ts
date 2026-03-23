@@ -73,7 +73,7 @@ export const translations: Record<Language, Record<string, string>> = {
     // Document check popup
     "docCheck.title": "Documento já cadastrado",
     "docCheck.exists.line1": "Este documento já possui uma franquia cadastrada no sistema.",
-    "docCheck.exists.line2": "Para adquirir outra franquia, acesse pelo seu Escritório Digital.",
+    "docCheck.exists.line2": "Se deseja adquirir uma nova franquia com este documento, faça login no seu Escritório Digital e acesse o menu Cadastro → Franquias, onde encontrará a opção para adicionar uma nova franquia.",
     "docCheck.exists.close": "Entendi",
     "docCheck.error.invalid": "Documento inválido. Verifique e tente novamente.",
     "docCheck.error.network": "Não foi possível validar o documento. Verifique sua conexão e tente novamente.",
