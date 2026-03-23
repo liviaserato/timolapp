@@ -3293,7 +3293,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     "docCheck.title": "Documento ya registrado",
     "docCheck.exists.line1": "Este documento ya tiene una franquicia registrada en el sistema.",
-    "docCheck.exists.line2": "Para adquirir otra franquicia, acceda por su Escritorio Digital.",
+    "docCheck.exists.line2": "Para adquirir una nueva franquicia con este documento, inicie sesión en su Escritorio Digital y acceda al menú Registro → Franquicias, donde encontrará la opción para agregar una nueva franquicia.",
     "docCheck.exists.close": "Entendido",
     "docCheck.error.invalid": "Documento inválido. Verifique e intente nuevamente.",
     "docCheck.error.network": "No fue posible validar el documento. Verifique su conexión e intente nuevamente.",
