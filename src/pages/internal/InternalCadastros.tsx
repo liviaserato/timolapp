@@ -86,7 +86,8 @@ const planColors: Record<string, string> = {
 };
 
 function getMonthLabel(date: Date): string {
-  return date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const m = date.toLocaleDateString("pt-BR", { month: "long" });
+  return `${m.charAt(0).toUpperCase()}${m.slice(1)} ${date.getFullYear()}`;
 }
 
 function getMonthRange(date: Date): { from: string; to: string } {
@@ -119,8 +120,40 @@ export default function InternalCadastros() {
 
   const hasFilters = franchiseStatus !== "all" || activationStatus !== "all" || qualification !== "all" || planType !== "all" || city !== "all" || search.trim() !== "" || dateFilterMode !== "off";
 
+  /* Helper: filter list excluding one specific filter to know what's available */
+  const getFilteredExcluding = (exclude: string) => {
+    let list = mockFranchisees as Franchisee[];
+    if (exclude !== "franchiseStatus" && franchiseStatus !== "all") list = list.filter(f => f.franchiseStatus === franchiseStatus);
+    if (exclude !== "activationStatus" && activationStatus !== "all") list = list.filter(f => f.activationStatus === activationStatus);
+    if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => f.qualification === qualification);
+    if (exclude !== "planType" && planType !== "all") list = list.filter(f => f.planCode === planType);
+    if (exclude !== "city" && city !== "all") list = list.filter(f => f.city === city);
+    if (dateFilterMode === "month") {
+      const range = getMonthRange(monthRef);
+      list = list.filter(f => f.createdAt >= range.from && f.createdAt <= range.to);
+    } else if (dateFilterMode === "custom") {
+      if (dateFrom) list = list.filter(f => f.createdAt >= dateFrom);
+      if (dateTo) list = list.filter(f => f.createdAt <= dateTo);
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter(f =>
+        f.fullName.toLowerCase().includes(q) || f.franchiseId.includes(q) || f.document.includes(q) ||
+        f.email.toLowerCase().includes(q) || f.phone.includes(q) || f.username.toLowerCase().includes(q) ||
+        f.city.toLowerCase().includes(q) || f.sponsorName.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  };
+
+  const availableFranchiseStatuses = useMemo(() => new Set(getFilteredExcluding("franchiseStatus").map(f => f.franchiseStatus)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availableActivationStatuses = useMemo(() => new Set(getFilteredExcluding("activationStatus").map(f => f.activationStatus)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => f.qualification)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => f.planCode)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availableCities = useMemo(() => new Set(getFilteredExcluding("city").map(f => f.city)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+
   const filtered = useMemo(() => {
-    let list = mockFranchisees;
+    let list = mockFranchisees as Franchisee[];
     if (franchiseStatus !== "all") list = list.filter(f => f.franchiseStatus === franchiseStatus);
     if (activationStatus !== "all") list = list.filter(f => f.activationStatus === activationStatus);
     if (qualification !== "all") list = list.filter(f => f.qualification === qualification);
@@ -172,20 +205,71 @@ export default function InternalCadastros() {
 
       <DashboardCard icon={Search} title="Buscar Franqueado">
         <div className="mt-2 space-y-3">
-          {/* Search input */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Nome, ID, documento, e-mail, telefone, usuário, cidade..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="pl-9 pr-9"
-            />
-            {search && (
-              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                <X className="h-4 w-4" />
-              </button>
-            )}
+          {/* Search input + Date filter on same row */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Nome, ID, documento, e-mail, telefone, usuário, cidade..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="pl-9 pr-9 h-9 text-xs"
+              />
+              {search && (
+                <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-xs text-muted-foreground shrink-0">Data cadastro:</span>
+              <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setDateFilterMode(dateFilterMode === "month" ? "off" : "month")}
+                  className={`px-3 h-9 text-xs font-medium transition-colors min-w-[52px] text-center ${
+                    dateFilterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  Mês
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (dateFilterMode === "custom") { setDateFilterMode("off"); }
+                    else { setDateFilterMode("custom"); setDateTo(todayStr); }
+                  }}
+                  className={`px-3 h-9 text-xs font-medium transition-colors min-w-[52px] text-center ${
+                    dateFilterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  Período
+                </button>
+              </div>
+
+              {dateFilterMode === "month" && (
+                <div className="flex items-center gap-0 shrink-0">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setMonthRef(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-xs font-medium min-w-[120px] text-center">
+                    {getMonthLabel(monthRef)}
+                  </span>
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { if (!isCurrentMonth) setMonthRef(d => new Date(d.getFullYear(), d.getMonth() + 1, 1)); }} disabled={isCurrentMonth}>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+
+              {dateFilterMode === "custom" && (
+                <div className="flex gap-2 items-center shrink-0">
+                  <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
+                  <span className="text-xs text-muted-foreground">até</span>
+                  <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateTo} onChange={e => setDateTo(e.target.value)} />
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Dropdowns row */}
@@ -194,9 +278,9 @@ export default function InternalCadastros() {
               <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Status Franquia" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Status Franquia</SelectItem>
-                <SelectItem value="active">Ativa</SelectItem>
-                <SelectItem value="suspended">Suspensa</SelectItem>
-                <SelectItem value="cancelled">Cancelada</SelectItem>
+                <SelectItem value="active" disabled={!availableFranchiseStatuses.has("active")} className={!availableFranchiseStatuses.has("active") ? "opacity-40" : ""}>Ativa</SelectItem>
+                <SelectItem value="suspended" disabled={!availableFranchiseStatuses.has("suspended")} className={!availableFranchiseStatuses.has("suspended") ? "opacity-40" : ""}>Suspensa</SelectItem>
+                <SelectItem value="cancelled" disabled={!availableFranchiseStatuses.has("cancelled")} className={!availableFranchiseStatuses.has("cancelled") ? "opacity-40" : ""}>Cancelada</SelectItem>
               </SelectContent>
             </Select>
 
@@ -204,9 +288,9 @@ export default function InternalCadastros() {
               <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Ativação" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Ativação</SelectItem>
-                <SelectItem value="activated">Ativada</SelectItem>
-                <SelectItem value="pending">Pendente</SelectItem>
-                <SelectItem value="inactive">Inativa</SelectItem>
+                <SelectItem value="activated" disabled={!availableActivationStatuses.has("activated")} className={!availableActivationStatuses.has("activated") ? "opacity-40" : ""}>Ativada</SelectItem>
+                <SelectItem value="pending" disabled={!availableActivationStatuses.has("pending")} className={!availableActivationStatuses.has("pending") ? "opacity-40" : ""}>Pendente</SelectItem>
+                <SelectItem value="inactive" disabled={!availableActivationStatuses.has("inactive")} className={!availableActivationStatuses.has("inactive") ? "opacity-40" : ""}>Inativa</SelectItem>
               </SelectContent>
             </Select>
 
@@ -214,12 +298,12 @@ export default function InternalCadastros() {
               <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Qualificação" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Qualificação</SelectItem>
-                <SelectItem value="starter">Starter</SelectItem>
-                <SelectItem value="bronze">Bronze</SelectItem>
-                <SelectItem value="silver">Prata</SelectItem>
-                <SelectItem value="gold">Ouro</SelectItem>
-                <SelectItem value="platinum">Platina</SelectItem>
-                <SelectItem value="diamond">Diamante</SelectItem>
+                <SelectItem value="starter" disabled={!availableQualifications.has("starter")} className={!availableQualifications.has("starter") ? "opacity-40" : ""}>Starter</SelectItem>
+                <SelectItem value="bronze" disabled={!availableQualifications.has("bronze")} className={!availableQualifications.has("bronze") ? "opacity-40" : ""}>Bronze</SelectItem>
+                <SelectItem value="silver" disabled={!availableQualifications.has("silver")} className={!availableQualifications.has("silver") ? "opacity-40" : ""}>Prata</SelectItem>
+                <SelectItem value="gold" disabled={!availableQualifications.has("gold")} className={!availableQualifications.has("gold") ? "opacity-40" : ""}>Ouro</SelectItem>
+                <SelectItem value="platinum" disabled={!availableQualifications.has("platinum")} className={!availableQualifications.has("platinum") ? "opacity-40" : ""}>Platina</SelectItem>
+                <SelectItem value="diamond" disabled={!availableQualifications.has("diamond")} className={!availableQualifications.has("diamond") ? "opacity-40" : ""}>Diamante</SelectItem>
               </SelectContent>
             </Select>
 
@@ -227,10 +311,10 @@ export default function InternalCadastros() {
               <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Tipo Franquia" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tipo Franquia</SelectItem>
-                <SelectItem value="bronze">Bronze</SelectItem>
-                <SelectItem value="silver">Prata</SelectItem>
-                <SelectItem value="gold">Ouro</SelectItem>
-                <SelectItem value="platinum">Platina</SelectItem>
+                <SelectItem value="bronze" disabled={!availablePlans.has("bronze")} className={!availablePlans.has("bronze") ? "opacity-40" : ""}>Bronze</SelectItem>
+                <SelectItem value="silver" disabled={!availablePlans.has("silver")} className={!availablePlans.has("silver") ? "opacity-40" : ""}>Prata</SelectItem>
+                <SelectItem value="gold" disabled={!availablePlans.has("gold")} className={!availablePlans.has("gold") ? "opacity-40" : ""}>Ouro</SelectItem>
+                <SelectItem value="platinum" disabled={!availablePlans.has("platinum")} className={!availablePlans.has("platinum") ? "opacity-40" : ""}>Platina</SelectItem>
               </SelectContent>
             </Select>
 
@@ -239,60 +323,10 @@ export default function InternalCadastros() {
               <SelectContent>
                 <SelectItem value="all">Cidade</SelectItem>
                 {uniqueCities.map(c => (
-                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                  <SelectItem key={c} value={c} disabled={!availableCities.has(c)} className={!availableCities.has(c) ? "opacity-40" : ""}>{c}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </div>
-
-          {/* Date filter row */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-muted-foreground shrink-0">Data cadastro:</span>
-            <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
-              <button
-                type="button"
-                onClick={() => setDateFilterMode(dateFilterMode === "month" ? "off" : "month")}
-                className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
-                  dateFilterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-                }`}
-              >
-                Mês
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (dateFilterMode === "custom") { setDateFilterMode("off"); }
-                  else { setDateFilterMode("custom"); setDateTo(todayStr); }
-                }}
-                className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
-                  dateFilterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-                }`}
-              >
-                Período
-              </button>
-            </div>
-
-            {dateFilterMode === "month" && (
-              <div className="flex items-center gap-0 shrink-0 h-8">
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setMonthRef(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-xs font-medium min-w-[120px] text-center capitalize">
-                  {getMonthLabel(monthRef)}
-                </span>
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { if (!isCurrentMonth) setMonthRef(d => new Date(d.getFullYear(), d.getMonth() + 1, 1)); }} disabled={isCurrentMonth}>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-
-            {dateFilterMode === "custom" && (
-              <div className="flex gap-2 items-center shrink-0">
-                <Input type="date" className="h-8 w-[148px] text-xs" max={todayStr} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
-                <span className="text-xs text-muted-foreground">até</span>
-                <Input type="date" className="h-8 w-[148px] text-xs" max={todayStr} value={dateTo} onChange={e => setDateTo(e.target.value)} />
-              </div>
-            )}
           </div>
 
           {hasFilters && (
