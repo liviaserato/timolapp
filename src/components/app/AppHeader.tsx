@@ -15,6 +15,19 @@ import iconSuporte from "@/assets/icon-sidebar-suporte.svg";
 import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
 import iconConfiguracoes from "@/assets/icon-sidebar-configuracoes.svg";
 
+// Maps route segments between /app and /internal when they differ
+const routeMap: Record<string, string> = {
+  "cadastro": "cadastros",
+  "cadastros": "cadastro",
+};
+
+function mapRoute(currentPath: string, fromPrefix: string, toPrefix: string): string {
+  const segment = currentPath.replace(fromPrefix, "").replace(/^\//, "");
+  if (!segment) return toPrefix;
+  const mapped = routeMap[segment] ?? segment;
+  return `${toPrefix}/${mapped}`;
+}
+
 export function AppHeader() {
   const navigate = useNavigate();
   const location = useLocation();
