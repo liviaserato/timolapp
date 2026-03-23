@@ -73,7 +73,7 @@ export const translations: Record<Language, Record<string, string>> = {
     // Document check popup
     "docCheck.title": "Documento já cadastrado",
     "docCheck.exists.line1": "Este documento já possui uma franquia cadastrada no sistema.",
-    "docCheck.exists.line2": "Para adquirir outra franquia, acesse pelo seu Escritório Digital.",
+    "docCheck.exists.line2": "Se deseja adquirir uma nova franquia com este documento, faça login no seu Escritório Digital e acesse o menu Cadastro → Franquias, onde encontrará a opção para adicionar uma nova franquia.",
     "docCheck.exists.close": "Entendi",
     "docCheck.error.invalid": "Documento inválido. Verifique e tente novamente.",
     "docCheck.error.network": "Não foi possível validar o documento. Verifique sua conexão e tente novamente.",
@@ -1682,7 +1682,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     "docCheck.title": "Document already registered",
     "docCheck.exists.line1": "This document already has a franchise registered in the system.",
-    "docCheck.exists.line2": "To acquire another franchise, access through your Digital Office.",
+    "docCheck.exists.line2": "To acquire a new franchise with this document, log in to your Digital Office and go to the Registration menu → Franchises, where you'll find the option to add a new franchise.",
     "docCheck.exists.close": "Understood",
     "docCheck.error.invalid": "Invalid document. Please check and try again.",
     "docCheck.error.network": "Unable to validate the document. Check your connection and try again.",
@@ -3293,7 +3293,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     "docCheck.title": "Documento ya registrado",
     "docCheck.exists.line1": "Este documento ya tiene una franquicia registrada en el sistema.",
-    "docCheck.exists.line2": "Para adquirir otra franquicia, acceda por su Escritorio Digital.",
+    "docCheck.exists.line2": "Para adquirir una nueva franquicia con este documento, inicie sesión en su Escritorio Digital y acceda al menú Registro → Franquicias, donde encontrará la opción para agregar una nueva franquicia.",
     "docCheck.exists.close": "Entendido",
     "docCheck.error.invalid": "Documento inválido. Verifique e intente nuevamente.",
     "docCheck.error.network": "No fue posible validar el documento. Verifique su conexión e intente nuevamente.",
