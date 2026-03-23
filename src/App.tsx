@@ -34,6 +34,7 @@ import NotFound from "./pages/NotFound";
 // Lazy-loaded internal (staff) pages — separate bundle
 const InternalLayout = lazy(() => import("./pages/InternalLayout"));
 const InternalDashboard = lazy(() => import("./pages/internal/InternalDashboard"));
+const InternalCadastros = lazy(() => import("./pages/internal/InternalCadastros"));
 
 const LazyFallback = () => (
   <FullScreenTimolLoader mode="page" title="Carregando..." className="bg-background" />
