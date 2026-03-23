@@ -85,6 +85,7 @@ const App = () => (
               </AuthGate>
             }>
               <Route index element={<Suspense fallback={<LazyFallback />}><InternalDashboard /></Suspense>} />
+              <Route path="cadastros" element={<Suspense fallback={<LazyFallback />}><InternalCadastros /></Suspense>} />
             </Route>
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
