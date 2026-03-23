@@ -15,6 +15,19 @@ import iconSuporte from "@/assets/icon-sidebar-suporte.svg";
 import iconCadastro from "@/assets/icon-sidebar-cadastro.svg";
 import iconConfiguracoes from "@/assets/icon-sidebar-configuracoes.svg";
 
+// Maps route segments between /app and /internal when they differ
+const routeMap: Record<string, string> = {
+  "cadastro": "cadastros",
+  "cadastros": "cadastro",
+};
+
+function mapRoute(currentPath: string, fromPrefix: string, toPrefix: string): string {
+  const segment = currentPath.replace(fromPrefix, "").replace(/^\//, "");
+  if (!segment) return toPrefix;
+  const mapped = routeMap[segment] ?? segment;
+  return `${toPrefix}/${mapped}`;
+}
+
 export function AppHeader() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -50,7 +63,7 @@ export function AppHeader() {
         {isAdmin && (
           <div className="hidden md:flex flex-col gap-0.5 ml-2 rounded-lg bg-primary-foreground/10 px-3 py-1.5">
             <label
-              onClick={() => !isInternalView || navigate("/app")}
+              onClick={() => { if (isInternalView) navigate(mapRoute(location.pathname, "/internal", "/app")); }}
               className="flex items-center gap-2 cursor-pointer text-xs text-primary-foreground hover:text-primary-foreground/90 transition-colors"
             >
               <span className={`flex h-3.5 w-3.5 items-center justify-center rounded-full border ${!isInternalView ? "border-primary-foreground bg-primary-foreground" : "border-primary-foreground/50"}`}>
@@ -60,7 +73,7 @@ export function AppHeader() {
               <span className="font-medium">Franqueado</span>
             </label>
             <label
-              onClick={() => isInternalView || navigate("/internal")}
+              onClick={() => { if (!isInternalView) navigate(mapRoute(location.pathname, "/app", "/internal")); }}
               className="flex items-center gap-2 cursor-pointer text-xs text-primary-foreground hover:text-primary-foreground/90 transition-colors"
             >
               <span className={`flex h-3.5 w-3.5 items-center justify-center rounded-full border ${isInternalView ? "border-primary-foreground bg-primary-foreground" : "border-primary-foreground/50"}`}>
@@ -159,7 +172,10 @@ export function AppHeader() {
                   <>
                     <div className="mx-1 my-1 h-px bg-muted" />
                     <DropdownMenuItem
-                      onClick={() => navigate(isInternalView ? "/app" : "/internal")}
+                      onClick={() => navigate(isInternalView
+                        ? mapRoute(location.pathname, "/internal", "/app")
+                        : mapRoute(location.pathname, "/app", "/internal")
+                      )}
                       className="flex items-center gap-2"
                     >
                       {isInternalView ? (
