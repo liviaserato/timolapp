@@ -34,6 +34,7 @@ import NotFound from "./pages/NotFound";
 // Lazy-loaded internal (staff) pages — separate bundle
 const InternalLayout = lazy(() => import("./pages/InternalLayout"));
 const InternalDashboard = lazy(() => import("./pages/internal/InternalDashboard"));
+const InternalCadastros = lazy(() => import("./pages/internal/InternalCadastros"));
 
 const LazyFallback = () => (
   <FullScreenTimolLoader mode="page" title="Carregando..." className="bg-background" />
@@ -84,6 +85,7 @@ const App = () => (
               </AuthGate>
             }>
               <Route index element={<Suspense fallback={<LazyFallback />}><InternalDashboard /></Suspense>} />
+              <Route path="cadastros" element={<Suspense fallback={<LazyFallback />}><InternalCadastros /></Suspense>} />
             </Route>
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
