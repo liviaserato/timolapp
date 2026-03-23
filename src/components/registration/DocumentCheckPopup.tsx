@@ -1,7 +1,8 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { X, AlertTriangle } from "lucide-react";
+import { X, AlertTriangle, LogIn } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   onClose: () => void;
@@ -9,6 +10,7 @@ interface Props {
 
 export const DocumentCheckPopup = ({ onClose }: Props) => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
@@ -29,9 +31,18 @@ export const DocumentCheckPopup = ({ onClose }: Props) => {
             <p className="font-medium">{t("docCheck.exists.line1")}</p>
             <p>{t("docCheck.exists.line2")}</p>
           </div>
-          <Button variant="outline" className="w-full" onClick={onClose}>
-            {t("docCheck.exists.close")}
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" className="flex-1" onClick={onClose}>
+              {t("docCheck.exists.close")}
+            </Button>
+            <Button
+              className="flex-1 gap-2"
+              onClick={() => navigate("/login")}
+            >
+              <LogIn className="h-4 w-4" />
+              {t("login.submit")}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
