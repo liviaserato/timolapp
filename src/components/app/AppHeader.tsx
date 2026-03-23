@@ -63,7 +63,7 @@ export function AppHeader() {
         {isAdmin && (
           <div className="hidden md:flex flex-col gap-0.5 ml-2 rounded-lg bg-primary-foreground/10 px-3 py-1.5">
             <label
-              onClick={() => !isInternalView || navigate("/app")}
+              onClick={() => { if (isInternalView) navigate(mapRoute(location.pathname, "/internal", "/app")); }}
               className="flex items-center gap-2 cursor-pointer text-xs text-primary-foreground hover:text-primary-foreground/90 transition-colors"
             >
               <span className={`flex h-3.5 w-3.5 items-center justify-center rounded-full border ${!isInternalView ? "border-primary-foreground bg-primary-foreground" : "border-primary-foreground/50"}`}>
@@ -73,7 +73,7 @@ export function AppHeader() {
               <span className="font-medium">Franqueado</span>
             </label>
             <label
-              onClick={() => isInternalView || navigate("/internal")}
+              onClick={() => { if (!isInternalView) navigate(mapRoute(location.pathname, "/app", "/internal")); }}
               className="flex items-center gap-2 cursor-pointer text-xs text-primary-foreground hover:text-primary-foreground/90 transition-colors"
             >
               <span className={`flex h-3.5 w-3.5 items-center justify-center rounded-full border ${isInternalView ? "border-primary-foreground bg-primary-foreground" : "border-primary-foreground/50"}`}>
