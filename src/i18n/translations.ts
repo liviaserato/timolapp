@@ -1682,7 +1682,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     "docCheck.title": "Document already registered",
     "docCheck.exists.line1": "This document already has a franchise registered in the system.",
-    "docCheck.exists.line2": "To acquire another franchise, access through your Digital Office.",
+    "docCheck.exists.line2": "To acquire a new franchise with this document, log in to your Digital Office and go to the Registration menu → Franchises, where you'll find the option to add a new franchise.",
     "docCheck.exists.close": "Understood",
     "docCheck.error.invalid": "Invalid document. Please check and try again.",
     "docCheck.error.network": "Unable to validate the document. Check your connection and try again.",
