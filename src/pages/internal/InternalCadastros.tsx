@@ -86,7 +86,8 @@ const planColors: Record<string, string> = {
 };
 
 function getMonthLabel(date: Date): string {
-  return date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const m = date.toLocaleDateString("pt-BR", { month: "long" });
+  return `${m.charAt(0).toUpperCase()}${m.slice(1)} ${date.getFullYear()}`;
 }
 
 function getMonthRange(date: Date): { from: string; to: string } {
