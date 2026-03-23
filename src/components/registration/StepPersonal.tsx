@@ -235,13 +235,16 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
                   </div>
                 )}
                 {docBlocked && !showDocCheck && (
-                  <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive flex items-start gap-2">
-                    <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                    <div className="space-y-1">
+                  <>
+                    <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive flex items-start gap-2">
+                      <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
                       <p>{t("docCheck.exists.line1")}</p>
+                    </div>
+                    <div className="rounded-md border bg-muted px-3 py-2 text-sm text-muted-foreground flex items-start gap-2">
+                      <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
                       <p>{t("docCheck.exists.line2")}</p>
                     </div>
-                  </div>
+                  </>
                 )}
 
                 {!!data.documentCountryCode && !foreignerHintDismissed && (
@@ -309,13 +312,16 @@ export const StepPersonal = ({ data, onChange, errors, docCheckError, docBlocked
               </div>
             )}
             {docBlocked && !showDocCheck && (
-              <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive flex items-start gap-2">
-                <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <div className="space-y-1">
+              <>
+                <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive flex items-start gap-2">
+                  <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
                   <p>{t("docCheck.exists.line1")}</p>
+                </div>
+                <div className="rounded-md border bg-muted px-3 py-2 text-sm text-muted-foreground flex items-start gap-2">
+                  <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
                   <p>{t("docCheck.exists.line2")}</p>
                 </div>
-              </div>
+              </>
             )}
           </div>
         );
