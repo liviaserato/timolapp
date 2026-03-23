@@ -172,7 +172,10 @@ export function AppHeader() {
                   <>
                     <div className="mx-1 my-1 h-px bg-muted" />
                     <DropdownMenuItem
-                      onClick={() => navigate(isInternalView ? "/app" : "/internal")}
+                      onClick={() => navigate(isInternalView
+                        ? mapRoute(location.pathname, "/internal", "/app")
+                        : mapRoute(location.pathname, "/app", "/internal")
+                      )}
                       className="flex items-center gap-2"
                     >
                       {isInternalView ? (
