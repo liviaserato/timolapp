@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Users, Filter, X, User, Phone, Mail, KeyRound, MapPin, ChevronRight } from "lucide-react";
+import { Search, Users, Filter, X, Phone, Mail, KeyRound, MapPin, ChevronRight, ChevronLeft } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 /* ── Types ── */
@@ -85,6 +85,20 @@ const planColors: Record<string, string> = {
   platinum: "bg-cyan-100 text-cyan-700 border-cyan-200",
 };
 
+function getMonthLabel(date: Date): string {
+  return date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+}
+
+function getMonthRange(date: Date): { from: string; to: string } {
+  const y = date.getFullYear();
+  const m = date.getMonth();
+  const first = new Date(y, m, 1);
+  const last = new Date(y, m + 1, 0);
+  return { from: first.toISOString().slice(0, 10), to: last.toISOString().slice(0, 10) };
+}
+
+const uniqueCities = Array.from(new Set(mockFranchisees.map(f => f.city))).sort();
+
 /* ── Component ── */
 export default function InternalCadastros() {
   const { t } = useLanguage();
@@ -93,16 +107,33 @@ export default function InternalCadastros() {
   const [activationStatus, setActivationStatus] = useState<string>("all");
   const [qualification, setQualification] = useState<string>("all");
   const [planType, setPlanType] = useState<string>("all");
+  const [city, setCity] = useState<string>("all");
 
-  const hasFilters = franchiseStatus !== "all" || activationStatus !== "all" || qualification !== "all" || planType !== "all" || search.trim() !== "";
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10);
+  const [dateFilterMode, setDateFilterMode] = useState<"off" | "month" | "custom">("off");
+  const [monthRef, setMonthRef] = useState(new Date());
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const isCurrentMonth = monthRef.getFullYear() === today.getFullYear() && monthRef.getMonth() === today.getMonth();
+
+  const hasFilters = franchiseStatus !== "all" || activationStatus !== "all" || qualification !== "all" || planType !== "all" || city !== "all" || search.trim() !== "" || dateFilterMode !== "off";
 
   const filtered = useMemo(() => {
     let list = mockFranchisees;
-
     if (franchiseStatus !== "all") list = list.filter(f => f.franchiseStatus === franchiseStatus);
     if (activationStatus !== "all") list = list.filter(f => f.activationStatus === activationStatus);
     if (qualification !== "all") list = list.filter(f => f.qualification === qualification);
     if (planType !== "all") list = list.filter(f => f.planCode === planType);
+    if (city !== "all") list = list.filter(f => f.city === city);
+
+    if (dateFilterMode === "month") {
+      const range = getMonthRange(monthRef);
+      list = list.filter(f => f.createdAt >= range.from && f.createdAt <= range.to);
+    } else if (dateFilterMode === "custom") {
+      if (dateFrom) list = list.filter(f => f.createdAt >= dateFrom);
+      if (dateTo) list = list.filter(f => f.createdAt <= dateTo);
+    }
 
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -117,9 +148,8 @@ export default function InternalCadastros() {
         f.sponsorName.toLowerCase().includes(q)
       );
     }
-
     return list;
-  }, [search, franchiseStatus, activationStatus, qualification, planType]);
+  }, [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
 
   const clearFilters = () => {
     setSearch("");
@@ -127,6 +157,10 @@ export default function InternalCadastros() {
     setActivationStatus("all");
     setQualification("all");
     setPlanType("all");
+    setCity("all");
+    setDateFilterMode("off");
+    setDateFrom("");
+    setDateTo("");
   };
 
   return (
@@ -136,7 +170,6 @@ export default function InternalCadastros() {
         <p className="text-sm text-muted-foreground mt-1">Busque e gerencie os cadastros de franqueados</p>
       </header>
 
-      {/* Search & Filters Card */}
       <DashboardCard icon={Search} title="Buscar Franqueado">
         <div className="mt-2 space-y-3">
           {/* Search input */}
@@ -155,12 +188,10 @@ export default function InternalCadastros() {
             )}
           </div>
 
-          {/* Filters row */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {/* Dropdowns row */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
             <Select value={franchiseStatus} onValueChange={setFranchiseStatus}>
-              <SelectTrigger className="h-9 text-xs">
-                <SelectValue placeholder="Status Franquia" />
-              </SelectTrigger>
+              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Status Franquia" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Status Franquia</SelectItem>
                 <SelectItem value="active">Ativa</SelectItem>
@@ -170,9 +201,7 @@ export default function InternalCadastros() {
             </Select>
 
             <Select value={activationStatus} onValueChange={setActivationStatus}>
-              <SelectTrigger className="h-9 text-xs">
-                <SelectValue placeholder="Ativação" />
-              </SelectTrigger>
+              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Ativação" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Ativação</SelectItem>
                 <SelectItem value="activated">Ativada</SelectItem>
@@ -182,9 +211,7 @@ export default function InternalCadastros() {
             </Select>
 
             <Select value={qualification} onValueChange={setQualification}>
-              <SelectTrigger className="h-9 text-xs">
-                <SelectValue placeholder="Qualificação" />
-              </SelectTrigger>
+              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Qualificação" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Qualificação</SelectItem>
                 <SelectItem value="starter">Starter</SelectItem>
@@ -197,9 +224,7 @@ export default function InternalCadastros() {
             </Select>
 
             <Select value={planType} onValueChange={setPlanType}>
-              <SelectTrigger className="h-9 text-xs">
-                <SelectValue placeholder="Tipo Franquia" />
-              </SelectTrigger>
+              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Tipo Franquia" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tipo Franquia</SelectItem>
                 <SelectItem value="bronze">Bronze</SelectItem>
@@ -208,6 +233,66 @@ export default function InternalCadastros() {
                 <SelectItem value="platinum">Platina</SelectItem>
               </SelectContent>
             </Select>
+
+            <Select value={city} onValueChange={setCity}>
+              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Cidade" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Cidade</SelectItem>
+                {uniqueCities.map(c => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Date filter row */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs text-muted-foreground shrink-0">Data cadastro:</span>
+            <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
+              <button
+                type="button"
+                onClick={() => setDateFilterMode(dateFilterMode === "month" ? "off" : "month")}
+                className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
+                  dateFilterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                Mês
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (dateFilterMode === "custom") { setDateFilterMode("off"); }
+                  else { setDateFilterMode("custom"); setDateTo(todayStr); }
+                }}
+                className={`px-3 py-1.5 text-xs font-medium transition-colors min-w-[52px] text-center ${
+                  dateFilterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                Período
+              </button>
+            </div>
+
+            {dateFilterMode === "month" && (
+              <div className="flex items-center gap-0 shrink-0 h-8">
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setMonthRef(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-xs font-medium min-w-[120px] text-center capitalize">
+                  {getMonthLabel(monthRef)}
+                </span>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { if (!isCurrentMonth) setMonthRef(d => new Date(d.getFullYear(), d.getMonth() + 1, 1)); }} disabled={isCurrentMonth}>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+
+            {dateFilterMode === "custom" && (
+              <div className="flex gap-2 items-center shrink-0">
+                <Input type="date" className="h-8 w-[148px] text-xs" max={todayStr} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
+                <span className="text-xs text-muted-foreground">até</span>
+                <Input type="date" className="h-8 w-[148px] text-xs" max={todayStr} value={dateTo} onChange={e => setDateTo(e.target.value)} />
+              </div>
+            )}
           </div>
 
           {hasFilters && (
@@ -252,7 +337,6 @@ export default function InternalCadastros() {
 function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
   return (
     <div className="rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
-      {/* Header row: Name + badges */}
       <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -266,23 +350,13 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
         <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0 mt-0.5 transition-colors" />
       </div>
 
-      {/* Badges row */}
       <div className="flex flex-wrap gap-1.5 mb-3">
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${planColors[f.planCode] || ""}`}>
-          {f.planLabel}
-        </Badge>
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[f.franchiseStatus]}`}>
-          {statusLabels[f.franchiseStatus]}
-        </Badge>
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[f.activationStatus]}`}>
-          {statusLabels[f.activationStatus]}
-        </Badge>
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${qualificationColors[f.qualification]}`}>
-          {qualificationLabels[f.qualification]}
-        </Badge>
+        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${planColors[f.planCode] || ""}`}>{f.planLabel}</Badge>
+        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[f.franchiseStatus]}`}>{statusLabels[f.franchiseStatus]}</Badge>
+        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[f.activationStatus]}`}>{statusLabels[f.activationStatus]}</Badge>
+        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${qualificationColors[f.qualification]}`}>{qualificationLabels[f.qualification]}</Badge>
       </div>
 
-      {/* Info grid: 2 columns */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
         <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
           <Mail className="h-3 w-3 shrink-0" />
