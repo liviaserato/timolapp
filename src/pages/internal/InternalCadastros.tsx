@@ -703,11 +703,11 @@ export default function InternalCadastros() {
                 )}
               </div>
               <Select value={sortBy} onValueChange={v => { setSortBy(v); scrollToSearch(); }}>
-                <SelectTrigger className="h-9 text-xs w-[180px]">
+                <SelectTrigger className="h-9 text-xs w-full sm:w-[180px]">
                   <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
-                  <SelectValue />
+                  <SelectValue placeholder={t("internal.cadastros.classify")} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="min-w-[var(--radix-select-trigger-width)] sm:min-w-[280px]">
                   <SelectItem value="recent">{t("internal.cadastros.sortRecent")}</SelectItem>
                   <SelectItem value="active_first">{t("internal.cadastros.sortActiveFirst")}</SelectItem>
                   <SelectItem value="qualification">{t("internal.cadastros.sortQualification")}</SelectItem>
@@ -716,55 +716,69 @@ export default function InternalCadastros() {
             </div>
 
             {/* Row 2: Filters */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 items-center">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 items-end">
               {/* Franchise Status - Checkboxes */}
-              <div className="flex items-center gap-3 h-9 px-2 rounded-md border border-input bg-background">
-                <label className="flex items-center gap-1.5 cursor-pointer">
-                  <Checkbox checked={showActive} onCheckedChange={(v) => { setShowActive(!!v); scrollToSearch(); }} className="h-3.5 w-3.5" />
-                  <span className="text-xs text-foreground">{t("internal.cadastros.statusActive")}</span>
-                </label>
-                <label className="flex items-center gap-1.5 cursor-pointer">
-                  <Checkbox checked={showInactive} onCheckedChange={(v) => { setShowInactive(!!v); scrollToSearch(); }} className="h-3.5 w-3.5" />
-                  <span className="text-xs text-foreground">{t("internal.cadastros.statusInactive")}</span>
-                </label>
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] text-muted-foreground/70 px-1">{t("internal.cadastros.franchiseStatusLegend")}</span>
+                <div className="flex items-center h-9 px-2 rounded-md border border-input bg-background">
+                  <div className="flex items-center gap-3 w-full justify-evenly">
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <Checkbox checked={showActive} onCheckedChange={(v) => { setShowActive(!!v); scrollToSearch(); }} className="h-3.5 w-3.5" />
+                      <span className="text-xs text-foreground">{t("internal.cadastros.statusActive")}</span>
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <Checkbox checked={showInactive} onCheckedChange={(v) => { setShowInactive(!!v); scrollToSearch(); }} className="h-3.5 w-3.5" />
+                      <span className="text-xs text-foreground">{t("internal.cadastros.statusInactive")}</span>
+                    </label>
+                  </div>
+                </div>
               </div>
 
               {/* Registration Status - Select */}
-              <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); scrollToSearch(); }}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.registrationStatusFilter")} /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
-                  <SelectItem value="concluido">{t("internal.cadastros.regCompleted")}</SelectItem>
-                  <SelectItem value="cancelado">{t("internal.cadastros.regCancelled")}</SelectItem>
-                  <SelectItem value="pendente">{t("internal.cadastros.regPending")}</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] text-muted-foreground/70 px-1">{t("internal.cadastros.registrationStatusLegend")}</span>
+                <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); scrollToSearch(); }}>
+                  <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.allStatuses")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
+                    <SelectItem value="pendente">{t("internal.cadastros.regPending")}</SelectItem>
+                    <SelectItem value="concluido">{t("internal.cadastros.regCompleted")}</SelectItem>
+                    <SelectItem value="cancelado">{t("internal.cadastros.regCancelled")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
               {/* Qualification */}
-              <Select value={qualification} onValueChange={v => { setQualification(v); scrollToSearch(); }}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.qualificationFilter")} /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("internal.cadastros.qualificationFilter")}</SelectItem>
-                  <SelectItem value="consultor" disabled={!availableQualifications.has("consultor")} className={!availableQualifications.has("consultor") ? "opacity-40" : ""}>{t("internal.cadastros.qualConsultor")}</SelectItem>
-                  <SelectItem value="distribuidor" disabled={!availableQualifications.has("distribuidor")} className={!availableQualifications.has("distribuidor") ? "opacity-40" : ""}>{t("internal.cadastros.qualDistribuidor")}</SelectItem>
-                  <SelectItem value="lider" disabled={!availableQualifications.has("lider")} className={!availableQualifications.has("lider") ? "opacity-40" : ""}>{t("internal.cadastros.qualLider")}</SelectItem>
-                  <SelectItem value="rubi" disabled={!availableQualifications.has("rubi")} className={!availableQualifications.has("rubi") ? "opacity-40" : ""}>{t("internal.cadastros.qualRubi")}</SelectItem>
-                  <SelectItem value="esmeralda" disabled={!availableQualifications.has("esmeralda")} className={!availableQualifications.has("esmeralda") ? "opacity-40" : ""}>{t("internal.cadastros.qualEsmeralda")}</SelectItem>
-                  <SelectItem value="diamante" disabled={!availableQualifications.has("diamante")} className={!availableQualifications.has("diamante") ? "opacity-40" : ""}>{t("internal.cadastros.qualDiamante")}</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] text-muted-foreground/70 px-1">{t("internal.cadastros.qualificationLegend")}</span>
+                <Select value={qualification} onValueChange={v => { setQualification(v); scrollToSearch(); }}>
+                  <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.allStatuses")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
+                    <SelectItem value="consultor" disabled={!availableQualifications.has("consultor")} className={!availableQualifications.has("consultor") ? "opacity-40" : ""}>{t("internal.cadastros.qualConsultor")}</SelectItem>
+                    <SelectItem value="distribuidor" disabled={!availableQualifications.has("distribuidor")} className={!availableQualifications.has("distribuidor") ? "opacity-40" : ""}>{t("internal.cadastros.qualDistribuidor")}</SelectItem>
+                    <SelectItem value="lider" disabled={!availableQualifications.has("lider")} className={!availableQualifications.has("lider") ? "opacity-40" : ""}>{t("internal.cadastros.qualLider")}</SelectItem>
+                    <SelectItem value="rubi" disabled={!availableQualifications.has("rubi")} className={!availableQualifications.has("rubi") ? "opacity-40" : ""}>{t("internal.cadastros.qualRubi")}</SelectItem>
+                    <SelectItem value="esmeralda" disabled={!availableQualifications.has("esmeralda")} className={!availableQualifications.has("esmeralda") ? "opacity-40" : ""}>{t("internal.cadastros.qualEsmeralda")}</SelectItem>
+                    <SelectItem value="diamante" disabled={!availableQualifications.has("diamante")} className={!availableQualifications.has("diamante") ? "opacity-40" : ""}>{t("internal.cadastros.qualDiamante")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
               {/* Plan Type */}
-              <Select value={planType} onValueChange={v => { setPlanType(v); scrollToSearch(); }}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.franchiseType")} /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("internal.cadastros.franchiseType")}</SelectItem>
-                  <SelectItem value="bronze" disabled={!availablePlans.has("bronze")} className={!availablePlans.has("bronze") ? "opacity-40" : ""}>{t("franchise.bronze")}</SelectItem>
-                  <SelectItem value="silver" disabled={!availablePlans.has("silver")} className={!availablePlans.has("silver") ? "opacity-40" : ""}>{t("franchise.silver")}</SelectItem>
-                  <SelectItem value="gold" disabled={!availablePlans.has("gold")} className={!availablePlans.has("gold") ? "opacity-40" : ""}>{t("franchise.gold")}</SelectItem>
-                  <SelectItem value="platinum" disabled={!availablePlans.has("platinum")} className={!availablePlans.has("platinum") ? "opacity-40" : ""}>{t("franchise.platinum")}</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] text-muted-foreground/70 px-1">{t("internal.cadastros.franchiseLegend")}</span>
+                <Select value={planType} onValueChange={v => { setPlanType(v); scrollToSearch(); }}>
+                  <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.allStatuses")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
+                    <SelectItem value="bronze" disabled={!availablePlans.has("bronze")} className={!availablePlans.has("bronze") ? "opacity-40" : ""}>{t("franchise.bronze")}</SelectItem>
+                    <SelectItem value="silver" disabled={!availablePlans.has("silver")} className={!availablePlans.has("silver") ? "opacity-40" : ""}>{t("franchise.silver")}</SelectItem>
+                    <SelectItem value="gold" disabled={!availablePlans.has("gold")} className={!availablePlans.has("gold") ? "opacity-40" : ""}>{t("franchise.gold")}</SelectItem>
+                    <SelectItem value="platinum" disabled={!availablePlans.has("platinum")} className={!availablePlans.has("platinum") ? "opacity-40" : ""}>{t("franchise.platinum")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             {hasFilters && (
