@@ -147,18 +147,8 @@ const planColors: Record<string, string> = {
 /** Primary franchise accessor — uses first franchise sorted by createdAt */
 const pf = (f: Franchisee): FranchiseEntry => f.franchises[0];
 
-function getMonthLabel(date: Date, locale: string): string {
-  const m = date.toLocaleDateString(locale, { month: "long" });
-  return `${m.charAt(0).toUpperCase()}${m.slice(1)} ${date.getFullYear()}`;
-}
 
-function getMonthRange(date: Date): { from: string; to: string } {
-  const y = date.getFullYear();
-  const m = date.getMonth();
-  const first = new Date(y, m, 1);
-  const last = new Date(y, m + 1, 0);
-  return { from: first.toISOString().slice(0, 10), to: last.toISOString().slice(0, 10) };
-}
+
 
 /* ── Registration status helpers (before component for filter use) ── */
 type RegistrationStatus = "concluido" | "cancelado" | "pendente";
