@@ -792,6 +792,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             <p className="text-xs text-muted-foreground">
               {t("internal.cadastros.registrationDate")}: {f.createdAt.split("-").reverse().join("/")}
             </p>
+            <div className="h-2" />
             <p className="text-xs text-foreground">
               Franquia {planLabels[f.planCode] || f.planCode}
             </p>
@@ -808,12 +809,17 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
           </div>
 
           {/* ── Column 2: Personal data ── */}
-          <div className="flex-1 min-w-0 space-y-1 text-xs text-muted-foreground">
-            <p className="flex items-center gap-1.5 truncate"><FileText className="h-3 w-3 shrink-0" />{docLabel}</p>
-            <p className="flex items-center gap-1.5"><Cake className="h-3 w-3 shrink-0" />{f.birthDate} · {f.gender}</p>
-            <p className="flex items-center gap-1.5"><KeyRound className="h-3 w-3 shrink-0" /><span className="truncate">{f.username}</span></p>
-            <p className="flex items-center gap-1.5"><Mail className="h-3 w-3 shrink-0" /><span className="truncate">{f.email}</span></p>
-            <p className="flex items-center gap-1.5"><Phone className="h-3 w-3 shrink-0" /><span className="truncate">{f.phone}</span></p>
+          <div className="flex-1 min-w-0 text-xs text-muted-foreground">
+            <div className="space-y-1">
+              <p className="flex items-center gap-1.5 truncate"><FileText className="h-3 w-3 shrink-0" />{docLabel}</p>
+              <p className="flex items-center gap-1.5"><Cake className="h-3 w-3 shrink-0" />{f.birthDate} · {f.gender}</p>
+            </div>
+            <div className="h-4" />
+            <div className="space-y-1">
+              <p className="flex items-center gap-1.5"><KeyRound className="h-3 w-3 shrink-0" /><span className="truncate">{f.username}</span></p>
+              <p className="flex items-center gap-1.5"><Mail className="h-3 w-3 shrink-0" /><span className="truncate">{f.email}</span></p>
+              <p className="flex items-center gap-1.5"><Phone className="h-3 w-3 shrink-0" /><span className="truncate">{f.phone}</span></p>
+            </div>
           </div>
 
           {/* ── Column 3: Actions ── */}
