@@ -51,7 +51,24 @@ const statusColors: Record<string, string> = {
   inactive: "bg-muted text-muted-foreground border-border",
 };
 
-/* Status/qualification labels will use t() inside the component */
+/* Status/qualification label keys mapped to translation keys */
+const statusLabelKeys: Record<string, string> = {
+  active: "internal.cadastros.statusActive",
+  suspended: "internal.cadastros.statusSuspended",
+  cancelled: "internal.cadastros.statusCancelled",
+  activated: "internal.cadastros.statusActivated",
+  pending: "internal.cadastros.statusPending",
+  inactive: "internal.cadastros.statusInactive",
+};
+
+const qualificationLabelKeys: Record<string, string> = {
+  starter: "internal.cadastros.qualStarter",
+  bronze: "internal.cadastros.qualBronze",
+  silver: "internal.cadastros.qualSilver",
+  gold: "internal.cadastros.qualGold",
+  platinum: "internal.cadastros.qualPlatinum",
+  diamond: "internal.cadastros.qualDiamond",
+};
 
 const qualificationColors: Record<string, string> = {
   starter: "bg-muted text-muted-foreground border-border",
