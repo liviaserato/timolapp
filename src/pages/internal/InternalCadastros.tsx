@@ -51,23 +51,7 @@ const statusColors: Record<string, string> = {
   inactive: "bg-muted text-muted-foreground border-border",
 };
 
-const statusLabels: Record<string, string> = {
-  active: "Ativa",
-  suspended: "Suspensa",
-  cancelled: "Cancelada",
-  activated: "Ativada",
-  pending: "Pendente",
-  inactive: "Inativa",
-};
-
-const qualificationLabels: Record<string, string> = {
-  starter: "Starter",
-  bronze: "Bronze",
-  silver: "Prata",
-  gold: "Ouro",
-  platinum: "Platina",
-  diamond: "Diamante",
-};
+/* Status/qualification labels will use t() inside the component */
 
 const qualificationColors: Record<string, string> = {
   starter: "bg-muted text-muted-foreground border-border",
