@@ -383,7 +383,7 @@ export default function InternalCadastros() {
               <div className="space-y-2">
                 <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
                   <MapPinned className="h-3.5 w-3.5" />
-                  Top Cidades
+                  {t("internal.cadastros.topCities")}
                 </h4>
                 <div className="space-y-1.5">
                   {topCities.length === 0 && (
