@@ -503,7 +503,7 @@ export default function InternalCadastros() {
 
           {/* Footer: abandoned registrations */}
           <p className="text-[11px] text-muted-foreground/70 pt-2 border-t border-app-card-border">
-            {t("internal.cadastros.abandonedFooter").replace("{count}", String(prevMonthAbandoned))}
+            {t("internal.cadastros.abandonedFooter").replace("{count}", String(2))}
           </p>
         </div>
       </DashboardCard>
