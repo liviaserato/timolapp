@@ -49,9 +49,6 @@ const mockFranchisees: Franchisee[] = [
   { id: "8", franchiseId: "100238", fullName: "Juan García López", document: "A12345678", birthDate: "03/11/1991", gender: "Masculino", email: "juan.garcia@email.com", phone: "+34 612 345 678", username: "juan.garcia", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "gold", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", paidAt: "2026-03-19" },
 ];
 
-/* Previous month mock for trend comparison */
-const prevMonthCompleted = 3;
-const prevMonthAbandoned = 2;
 
 /* ── Helpers ── */
 const statusColors: Record<string, string> = {
