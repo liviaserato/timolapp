@@ -267,14 +267,7 @@ export default function InternalCadastros() {
     if (planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     
     if (search.trim()) {
-      const q = search.toLowerCase().replace(/[.\-\/]/g, "");
-      list = list.filter(f => {
-        const norm = (s: string) => s.toLowerCase().replace(/[.\-\/]/g, "");
-        const anyFranchiseMatch = f.franchises.some(fr => norm(fr.franchiseId).includes(q) || norm(fr.sponsorName).includes(q));
-        return norm(f.fullName).includes(q) || anyFranchiseMatch || norm(f.document).includes(q) ||
-          norm(f.email).includes(q) || norm(f.phone).includes(q) || norm(f.username).includes(q) ||
-          norm(f.city).includes(q);
-      });
+      list = list.filter(f => matchesSearch(f, search, searchFields));
     }
     // Sort
     if (sortBy === "recent" || sortBy === "") {
