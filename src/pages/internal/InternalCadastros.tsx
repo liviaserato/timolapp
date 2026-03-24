@@ -792,6 +792,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             <p className="text-xs text-muted-foreground">
               {t("internal.cadastros.registrationDate")}: {f.createdAt.split("-").reverse().join("/")}
             </p>
+            <div className="h-2" />
             <p className="text-xs text-foreground">
               Franquia {planLabels[f.planCode] || f.planCode}
             </p>
@@ -808,29 +809,34 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
           </div>
 
           {/* ── Column 2: Personal data ── */}
-          <div className="flex-1 min-w-0 space-y-1 text-xs text-muted-foreground">
-            <p className="flex items-center gap-1.5 truncate"><FileText className="h-3 w-3 shrink-0" />{docLabel}</p>
-            <p className="flex items-center gap-1.5"><Cake className="h-3 w-3 shrink-0" />{f.birthDate} · {f.gender}</p>
-            <p className="flex items-center gap-1.5"><KeyRound className="h-3 w-3 shrink-0" /><span className="truncate">{f.username}</span></p>
-            <p className="flex items-center gap-1.5"><Mail className="h-3 w-3 shrink-0" /><span className="truncate">{f.email}</span></p>
-            <p className="flex items-center gap-1.5"><Phone className="h-3 w-3 shrink-0" /><span className="truncate">{f.phone}</span></p>
+          <div className="flex-1 min-w-0 text-xs text-muted-foreground">
+            <div className="space-y-1">
+              <p className="flex items-center gap-1.5 truncate"><FileText className="h-3 w-3 shrink-0" />{docLabel}</p>
+              <p className="flex items-center gap-1.5"><Cake className="h-3 w-3 shrink-0" />{f.birthDate} · {f.gender}</p>
+            </div>
+            <div className="h-4" />
+            <div className="space-y-1">
+              <p className="flex items-center gap-1.5"><KeyRound className="h-3 w-3 shrink-0" /><span className="truncate">{f.username}</span></p>
+              <p className="flex items-center gap-1.5"><Mail className="h-3 w-3 shrink-0" /><span className="truncate">{f.email}</span></p>
+              <p className="flex items-center gap-1.5"><Phone className="h-3 w-3 shrink-0" /><span className="truncate">{f.phone}</span></p>
+            </div>
           </div>
 
           {/* ── Column 3: Actions ── */}
           <div className="flex lg:flex-col flex-row flex-wrap gap-2 lg:w-[160px] shrink-0">
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none">
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none justify-start">
               <MapPinHouse className="h-3 w-3" />
               {t("internal.cadastros.btnAddresses")}
             </Button>
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none">
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none justify-start">
               <Landmark className="h-3 w-3" />
               {t("internal.cadastros.btnFinancial")}
             </Button>
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none">
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none justify-start">
               <Pencil className="h-3 w-3" />
               {t("internal.cadastros.btnEdit")}
             </Button>
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none">
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none justify-start">
               <Lock className="h-3 w-3" />
               {t("internal.cadastros.btnCredentials")}
             </Button>
