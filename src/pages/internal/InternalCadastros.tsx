@@ -282,7 +282,7 @@ export default function InternalCadastros() {
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   <span className="text-xs font-medium min-w-[120px] text-center">
-                    {getMonthLabel(monthRef)}
+                    {getMonthLabel(monthRef, dateLocale)}
                   </span>
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { if (!isCurrentMonth) setMonthRef(d => new Date(d.getFullYear(), d.getMonth() + 1, 1)); }} disabled={isCurrentMonth}>
                     <ChevronRight className="h-4 w-4" />
