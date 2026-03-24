@@ -407,18 +407,18 @@ export default function InternalCadastros() {
 
             {/* Activation status mini-badges */}
             <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-app-card-border">
-              <span className="text-xs text-muted-foreground">Ativação:</span>
+              <span className="text-xs text-muted-foreground">{t("internal.cadastros.activation")}:</span>
               <div className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                <span className="text-xs">Ativados <b>{activationBreakdown.activated}</b></span>
+                <span className="text-xs">{t("internal.cadastros.activated")} <b>{activationBreakdown.activated}</b></span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
-                <span className="text-xs">Pendentes <b>{activationBreakdown.pending}</b></span>
+                <span className="text-xs">{t("internal.cadastros.pendingPlural")} <b>{activationBreakdown.pending}</b></span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/40" />
-                <span className="text-xs">Inativos <b>{activationBreakdown.inactive}</b></span>
+                <span className="text-xs">{t("internal.cadastros.inactivePlural")} <b>{activationBreakdown.inactive}</b></span>
               </div>
             </div>
           </div>
