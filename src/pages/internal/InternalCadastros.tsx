@@ -259,23 +259,6 @@ export default function InternalCadastros() {
     setSearchFields([]);
   };
 
-  if (showPending) {
-    return (
-      <div>
-        <header className="mb-4">
-          <Button variant="ghost" size="sm" className="gap-1.5 mb-2 -ml-2 text-muted-foreground" onClick={() => setShowPending(false)}>
-            <ArrowLeft className="h-4 w-4" />
-            {t("internal.cadastros.title")}
-          </Button>
-          <h1 className="text-2xl font-bold text-primary">{t("internal.cadastros.pendingTitle")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t("internal.cadastros.pendingSubtitle")}</p>
-        </header>
-        <Suspense fallback={<FullScreenTimolLoader mode="page" title="Carregando..." className="min-h-[200px] bg-background" />}>
-          <PendingRegistrationsPanel />
-        </Suspense>
-      </div>
-    );
-  }
 
   return (
     <div>
