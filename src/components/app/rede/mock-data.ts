@@ -18,12 +18,19 @@ export interface NetworkMember {
 }
 
 export const qualificationConfig: Record<string, { label: string; icon: string; color: string }> = {
-  consultor:    { label: "Consultor",    icon: "○", color: "hsl(var(--muted-foreground))" },
-  distribuidor: { label: "Distribuidor", icon: "◐", color: "hsl(210, 60%, 50%)" },
-  lider:        { label: "Líder",        icon: "●", color: "hsl(210, 80%, 40%)" },
-  rubi:         { label: "Rubi",         icon: "◆", color: "hsl(0, 70%, 50%)" },
-  esmeralda:    { label: "Esmeralda",    icon: "◈", color: "hsl(142, 60%, 40%)" },
-  diamante:     { label: "Diamante",     icon: "◇", color: "hsl(270, 60%, 55%)" },
+  consultor:       { label: "Consultor",         icon: "○",    color: "hsl(var(--muted-foreground))" },
+  distribuidor:    { label: "Distribuidor",       icon: "◐",    color: "hsl(210, 60%, 50%)" },
+  lider:           { label: "Líder",              icon: "●",    color: "hsl(210, 80%, 40%)" },
+  rubi:            { label: "Rubi",               icon: "◆",    color: "hsl(0, 70%, 50%)" },
+  esmeralda:       { label: "Esmeralda",          icon: "◈",    color: "hsl(142, 60%, 40%)" },
+  diamante:        { label: "Diamante",           icon: "◇",    color: "hsl(270, 60%, 55%)" },
+  "diamante-1":    { label: "Diamante 1★",        icon: "◇★",   color: "hsl(270, 65%, 50%)" },
+  "diamante-2":    { label: "Diamante 2★",        icon: "◇★★",  color: "hsl(270, 70%, 48%)" },
+  "diamante-3":    { label: "Diamante 3★",        icon: "◇★★★", color: "hsl(270, 75%, 45%)" },
+  "diamante-4":    { label: "Diamante 4★",        icon: "◇★★★★", color: "hsl(270, 80%, 42%)" },
+  "diamante-5":    { label: "Diamante 5★",        icon: "◇★★★★★", color: "hsl(270, 85%, 40%)" },
+  "diamante-blue": { label: "Diamante Blue",      icon: "◇💎",  color: "hsl(220, 80%, 50%)" },
+  "diamante-black":{ label: "Diamante Black",     icon: "◆◆",   color: "hsl(0, 0%, 15%)" },
 };
 
 // Binary tree mock — 3 levels deep

@@ -937,6 +937,13 @@ export const translations: Record<Language, Record<string, string>> = {
     "qual.rubi": "Rubi",
     "qual.esmeralda": "Esmeralda",
     "qual.diamante": "Diamante",
+    "qual.diamante1": "Diamante 1★",
+    "qual.diamante2": "Diamante 2★",
+    "qual.diamante3": "Diamante 3★",
+    "qual.diamante4": "Diamante 4★",
+    "qual.diamante5": "Diamante 5★",
+    "qual.diamanteBlue": "Diamante Blue",
+    "qual.diamanteBlack": "Diamante Black",
 
     // OrderSummaryCard
     "orders.title": "Movimentação de Pedidos",
@@ -2632,6 +2639,13 @@ export const translations: Record<Language, Record<string, string>> = {
     "qual.rubi": "Ruby",
     "qual.esmeralda": "Emerald",
     "qual.diamante": "Diamond",
+    "qual.diamante1": "Diamond 1★",
+    "qual.diamante2": "Diamond 2★",
+    "qual.diamante3": "Diamond 3★",
+    "qual.diamante4": "Diamond 4★",
+    "qual.diamante5": "Diamond 5★",
+    "qual.diamanteBlue": "Diamond Blue",
+    "qual.diamanteBlack": "Diamond Black",
 
     // OrderSummaryCard
     "orders.title": "Order Activity",
@@ -4335,6 +4349,13 @@ export const translations: Record<Language, Record<string, string>> = {
     "qual.rubi": "Rubí",
     "qual.esmeralda": "Esmeralda",
     "qual.diamante": "Diamante",
+    "qual.diamante1": "Diamante 1★",
+    "qual.diamante2": "Diamante 2★",
+    "qual.diamante3": "Diamante 3★",
+    "qual.diamante4": "Diamante 4★",
+    "qual.diamante5": "Diamante 5★",
+    "qual.diamanteBlue": "Diamante Blue",
+    "qual.diamanteBlack": "Diamante Black",
 
     // OrderSummaryCard
     "orders.title": "Movimiento de Pedidos",

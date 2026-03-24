@@ -56,12 +56,13 @@ const qualificationConfig: Record<string, { labelKey: string; icon: string }> = 
   rubi: { labelKey: "qual.rubi", icon: "◆" },
   esmeralda: { labelKey: "qual.esmeralda", icon: "◈" },
   diamante: { labelKey: "qual.diamante", icon: "◇" },
-  "diamante-1": { labelKey: "qual.diamante", icon: "◇★" },
-  "diamante-2": { labelKey: "qual.diamante", icon: "◇★★" },
-  "diamante-3": { labelKey: "qual.diamante", icon: "◇★★★" },
-  "diamante-4": { labelKey: "qual.diamante", icon: "◇★★★★" },
-  "diamante-5": { labelKey: "qual.diamante", icon: "◇★★★★★" },
-  "diamante-black": { labelKey: "qual.diamante", icon: "◆◆" },
+  "diamante-1": { labelKey: "qual.diamante1", icon: "◇★" },
+  "diamante-2": { labelKey: "qual.diamante2", icon: "◇★★" },
+  "diamante-3": { labelKey: "qual.diamante3", icon: "◇★★★" },
+  "diamante-4": { labelKey: "qual.diamante4", icon: "◇★★★★" },
+  "diamante-5": { labelKey: "qual.diamante5", icon: "◇★★★★★" },
+  "diamante-blue": { labelKey: "qual.diamanteBlue", icon: "◇💎" },
+  "diamante-black": { labelKey: "qual.diamanteBlack", icon: "◆◆" },
 };
 
 const planOrder = ["bronze", "silver", "gold", "platinum"];

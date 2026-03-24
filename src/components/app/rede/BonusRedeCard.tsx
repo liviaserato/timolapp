@@ -24,18 +24,19 @@ const bonusTiers: BonusTier[] = [
 
 /** Extended tiers including Diamante levels — used only for potential simulation */
 const allTiersForPotential: BonusTier[] = [
-  { key: "diamante_black", label: "Diamante Black", target: 25000, vmePerDirect: 10000 },
-  { key: "diamante_5", label: "Diamante ★★★★★", target: 20000, vmePerDirect: 8000 },
-  { key: "diamante_4", label: "Diamante ★★★★", target: 16000, vmePerDirect: 6400 },
-  { key: "diamante_3", label: "Diamante ★★★", target: 12000, vmePerDirect: 4800 },
-  { key: "diamante_2", label: "Diamante ★★", target: 9000, vmePerDirect: 3600 },
-  { key: "diamante_1", label: "Diamante ★", target: 7000, vmePerDirect: 2800 },
+  { key: "diamante-black", label: "Diamante Black", target: 25000, vmePerDirect: 10000 },
+  { key: "diamante-blue", label: "Diamante Blue", target: 22000, vmePerDirect: 9000 },
+  { key: "diamante-5", label: "Diamante 5★", target: 20000, vmePerDirect: 8000 },
+  { key: "diamante-4", label: "Diamante 4★", target: 16000, vmePerDirect: 6400 },
+  { key: "diamante-3", label: "Diamante 3★", target: 12000, vmePerDirect: 4800 },
+  { key: "diamante-2", label: "Diamante 2★", target: 9000, vmePerDirect: 3600 },
+  { key: "diamante-1", label: "Diamante 1★", target: 7000, vmePerDirect: 2800 },
   { key: "diamante",   label: "Diamante", target: 5000, vmePerDirect: 2000 },
   ...bonusTiers,
 ];
 
 /* Tiers ordered from highest to lowest; the user can only achieve up to their own qualification */
-const tierOrder = ["diamante_black", "diamante_5", "diamante_4", "diamante_3", "diamante_2", "diamante_1", "diamante", "esmeralda", "rubi", "lider", "distribuidor", "consultor"];
+const tierOrder = ["diamante-black", "diamante-blue", "diamante-5", "diamante-4", "diamante-3", "diamante-2", "diamante-1", "diamante", "esmeralda", "rubi", "lider", "distribuidor", "consultor"];
 
 function getTierIndex(q: string) {
   return tierOrder.indexOf(q);
