@@ -185,8 +185,8 @@ export default function InternalCadastros() {
   const searchCardRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<string>("recent");
-  const [showActive, setShowActive] = useState(true);
-  const [showInactive, setShowInactive] = useState(true);
+  const [showActive, setShowActive] = useState(false);
+  const [showInactive, setShowInactive] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState<string>("all");
   const [qualification, setQualification] = useState<string>("all");
   const [planType, setPlanType] = useState<string>("all");
