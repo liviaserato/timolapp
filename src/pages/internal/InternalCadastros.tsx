@@ -78,7 +78,7 @@ const mockFranchisees: Franchisee[] = [
 
 
 /* ── Search helper ── */
-const norm = (s: string) => s.toLowerCase().replace(/[.\-\/\s\+\(\)]/g, "");
+const norm = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[.\-\/\s\+\(\)]/g, "");
 const isNumericSearch = (q: string) => /\d/.test(q) && !/[a-zA-ZÀ-ÿ]/.test(q);
 
 function matchesSearch(f: Franchisee, q: string, fields: string[]): boolean {
