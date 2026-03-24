@@ -199,7 +199,8 @@ export default function InternalCadastros() {
   const [dateTo, setDateTo] = useState("");
   const isCurrentMonth = monthRef.getFullYear() === today.getFullYear() && monthRef.getMonth() === today.getMonth();
 
-  const franchiseStatusFilter = (!showActive && !showInactive) ? "all" : (!showActive ? "inactive" : (!showInactive ? "active" : "all"));
+  // franchise status: both unchecked = no filter; one checked = filter to that; both checked = no filter
+  const franchiseStatusFilter: string = (showActive && !showInactive) ? "active" : (!showActive && showInactive) ? "inactive" : "all";
   const hasSearchFilters = (showActive || showInactive) || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || search.trim() !== "";
   const hasFilters = hasSearchFilters;
 
