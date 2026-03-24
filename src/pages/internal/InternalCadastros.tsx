@@ -18,6 +18,7 @@ import { qualificationConfig } from "@/components/app/rede/mock-data";
 interface Franchisee {
   id: string;
   franchiseId: string;
+  extraFranchiseIds?: string[];
   fullName: string;
   document: string;
   birthDate: string;
