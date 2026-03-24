@@ -328,7 +328,7 @@ export default function InternalCadastros() {
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
                 <div className="flex items-center justify-center gap-1.5 mb-1">
                   <UserX className="h-4 w-4 text-red-500" />
-                  <span className="text-xs text-muted-foreground">Suspensas / Canceladas</span>
+                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.suspendedCancelled")}</span>
                 </div>
                 <span className="text-2xl font-bold text-foreground">{franchiseStatusBreakdown.suspended + franchiseStatusBreakdown.cancelled}</span>
               </div>
