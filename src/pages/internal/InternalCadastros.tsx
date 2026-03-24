@@ -343,11 +343,11 @@ export default function InternalCadastros() {
                   {(["bronze", "silver", "gold", "platinum"] as const).map(plan => {
                     const count = planBreakdown[plan] || 0;
                     const pct = totalCadastros > 0 ? Math.round((count / totalCadastros) * 100) : 0;
-                    const labels: Record<string, string> = { bronze: "Bronze", silver: "Prata", gold: "Ouro", platinum: "Platina" };
+                    const planLabelKeys: Record<string, string> = { bronze: "internal.cadastros.qualBronze", silver: "internal.cadastros.qualSilver", gold: "internal.cadastros.qualGold", platinum: "internal.cadastros.qualPlatinum" };
                     const barColors: Record<string, string> = { bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400" };
                     return (
                       <div key={plan} className="flex items-center gap-2">
-                        <span className="text-xs w-14 shrink-0 text-muted-foreground">{labels[plan]}</span>
+                        <span className="text-xs w-14 shrink-0 text-muted-foreground">{t(planLabelKeys[plan])}</span>
                         <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
                           <div className={`h-full rounded-full ${barColors[plan]} transition-all`} style={{ width: `${Math.max(pct, 2)}%` }} />
                         </div>
