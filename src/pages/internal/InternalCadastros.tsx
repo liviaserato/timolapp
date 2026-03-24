@@ -484,16 +484,16 @@ export default function InternalCadastros() {
             {/* ─── Column 4: Tempo Médio de Ativação ─── */}
             <div className="flex flex-col gap-3">
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-2">
-                  <Clock className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardAvgActivation")}</span>
-                  <Tooltip delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipAvgActivation")}</TooltipContent>
-                  </Tooltip>
-                </div>
+                <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1">
+                      <Clock className="h-4 w-4 text-primary shrink-0" />
+                      <span>{t("internal.cadastros.cardAvgActivationLine1")}</span>
+                      <Info className="h-3 w-3 text-muted-foreground shrink-0" />
+                    </h3>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipAvgActivation")}</TooltipContent>
+                </Tooltip>
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-3xl font-bold text-foreground">{avgActivationDays}</span>
                   <span className="text-xs text-muted-foreground">{t("internal.cadastros.days")}</span>
