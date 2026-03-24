@@ -377,7 +377,7 @@ export default function InternalCadastros() {
                 <p className="text-[11px] text-muted-foreground mt-1 text-center">{pendingCount} {t("internal.cadastros.pendingRegistrations")}</p>
               </div>
               {/* Chart: by franchise type */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 px-2">
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.byFranchiseType")}</h4>
                 {(["bronze", "silver", "gold", "platinum"] as const).map(plan => {
                   const count = planBreakdown[plan] || 0;
@@ -420,7 +420,7 @@ export default function InternalCadastros() {
                 </div>
               </div>
               {/* Chart: qualification (active only) */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 px-2">
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.activeQualOnly")}</h4>
                 {(["starter", "bronze", "silver", "gold", "platinum", "diamond"] as const).map(q => {
                   const count = qualBreakdown[q] || 0;
@@ -457,7 +457,7 @@ export default function InternalCadastros() {
                 </div>
               </div>
               {/* Chart: top sponsors */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 px-2">
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.topSponsors")}</h4>
                 <HBarChart
                   items={topSponsors.map(s => ({ label: s.name, count: s.count, extra: `#${s.id}` }))}
@@ -487,7 +487,7 @@ export default function InternalCadastros() {
                 </div>
               </div>
               {/* Chart: top cities */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 px-2">
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
                   <MapPinned className="h-3.5 w-3.5" />
                   {t("internal.cadastros.topCities")}
