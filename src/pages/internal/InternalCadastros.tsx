@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
-  Search, Users, Filter, X, Phone, Mail, KeyRound, MapPin, ChevronRight, ChevronLeft,
+  Search, Users, Filter, X, Phone, Mail, MapPin, ChevronRight, ChevronLeft,
   BarChart3, UserCheck, UserX, MapPinned, Info, Clock, Trophy, Layers, TrendingUp, TrendingDown,
   Calendar, Award, ArrowDownRight, ArrowUpRight, MapPinHouse, Landmark, Pencil, Lock,
   FileText, Cake, Gem
@@ -18,6 +18,7 @@ import { qualificationConfig } from "@/components/app/rede/mock-data";
 interface Franchisee {
   id: string;
   franchiseId: string;
+  extraFranchiseIds?: string[];
   fullName: string;
   document: string;
   birthDate: string;
@@ -48,7 +49,7 @@ const mockFranchisees: Franchisee[] = [
   { id: "4", franchiseId: "100234", fullName: "Roberto Almeida Filho", document: "321.654.987-00", birthDate: "05/06/1978", gender: "Masculino", email: "roberto.almeida@email.com", phone: "+55 41 96666-3333", username: "roberto.almeida", city: "Curitiba", state: "PR", country: "Brasil", countryFlag: "🇧🇷", planCode: "silver", planLabel: "Prata", franchiseStatus: "suspended", activationStatus: "inactive", qualification: "distribuidor", sponsorName: "Ana Costa", sponsorId: "100233", createdAt: "2026-03-08", paidAt: "2026-03-20" },
   { id: "5", franchiseId: "100235", fullName: "Fernanda Oliveira Santos", document: "654.321.987-00", birthDate: "18/09/1988", gender: "Feminino", email: "fernanda.santos@email.com", phone: "+55 51 95555-4444", username: "fernanda.santos", city: "Porto Alegre", state: "RS", country: "Brasil", countryFlag: "🇧🇷", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "lider", sponsorName: "Roberto Almeida", sponsorId: "100234", createdAt: "2026-03-01", paidAt: "2026-03-03" },
   { id: "6", franchiseId: "100236", fullName: "Pedro Henrique Lima", document: "789.123.456-00", birthDate: "30/01/1995", gender: "Masculino", email: "pedro.lima@email.com", phone: "+55 61 94444-5555", username: "pedro.lima", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "bronze", planLabel: "Bronze", franchiseStatus: "cancelled", activationStatus: "inactive", qualification: "consultor", sponsorName: "Fernanda Santos", sponsorId: "100235", createdAt: "2026-02-15", paidAt: null },
-  { id: "7", franchiseId: "100237", fullName: "Maria Silva", document: "111.222.333-00", birthDate: "12/07/1980", gender: "Feminino", email: "maria.silva@email.com", phone: "+55 11 93333-6666", username: "maria.silva", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "platinum", planLabel: "Platina", franchiseStatus: "active", activationStatus: "activated", qualification: "diamante", sponsorName: "Timol", sponsorId: "00001", createdAt: "2026-02-01", paidAt: "2026-02-02" },
+  { id: "7", franchiseId: "100237", fullName: "Maria Silva", extraFranchiseIds: ["100299"], document: "111.222.333-00", birthDate: "12/07/1980", gender: "Feminino", email: "maria.silva@email.com", phone: "+55 11 93333-6666", username: "maria.silva", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "platinum", planLabel: "Platina", franchiseStatus: "active", activationStatus: "activated", qualification: "diamante", sponsorName: "Timol", sponsorId: "00001", createdAt: "2026-02-01", paidAt: "2026-02-02" },
   { id: "8", franchiseId: "100238", fullName: "Juan García López", document: "A12345678", birthDate: "03/11/1991", gender: "Masculino", email: "juan.garcia@email.com", phone: "+34 612 345 678", username: "juan.garcia", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "esmeralda", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", paidAt: "2026-03-19" },
 ];
 
@@ -770,63 +771,79 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
     platinum: "Platina",
   };
 
-  // Document label
   const isBrazilian = f.country === "Brasil";
   const docLabel = isBrazilian ? `CPF: ${f.document}` : `${f.document} · ${f.countryFlag} ${f.country}`;
+
+  const allIds = [f.franchiseId, ...(f.extraFranchiseIds || [])];
 
   return (
     <div
       className={`rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] transition-shadow hover:shadow-md ${registrationStatusBorder[regStatus]} ${isCancelled ? "opacity-50" : ""}`}
     >
       <div className="p-4">
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* ── Column 1: Identity ── */}
-          <div className="flex-1 min-w-0 space-y-1">
-            <div className="flex items-center gap-2">
-              <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${isActive ? "bg-emerald-500" : "bg-red-500"}`} />
-              <span className="text-sm font-bold text-foreground">ID {f.franchiseId}</span>
-              <span className="text-xs text-muted-foreground">|</span>
-              <span className="text-sm text-foreground truncate">{f.fullName}</span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {t("internal.cadastros.sponsor")}: {f.sponsorName} (ID {f.sponsorId})
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {t("internal.cadastros.registrationDate")}: {f.createdAt.split("-").reverse().join("/")}
-            </p>
-            <div className="h-2" />
-            <p className="text-xs text-foreground flex items-center gap-1.5">
-              <Gem className="h-3 w-3 shrink-0" />
-              Franquia {planLabels[f.planCode] || f.planCode}
-            </p>
-            {qualConfig && (
-              <p className="text-xs flex items-center gap-1.5">
-                <span style={{ color: qualConfig.color }}>{qualConfig.icon}</span>
-                <span className="text-foreground">{t(qualificationLabelKeys[f.qualification])}</span>
+        <div className="flex flex-col lg:flex-row gap-x-6">
+          {/* ── Left side (Grids 1-3) ── */}
+          <div className="flex-1 min-w-0">
+            {/* ── Grid 1: Name + IDs + Sponsor ── */}
+            <div className="mb-3">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className={`h-2 w-2 rounded-full shrink-0 ${isActive ? "bg-emerald-500" : "bg-red-500"}`} />
+                <span className="text-sm font-bold text-foreground">{f.fullName}</span>
+                {allIds.map(id => (
+                  <Badge key={id} variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-medium">
+                    ID {id}
+                  </Badge>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5 ml-4">
+                {t("internal.cadastros.sponsor")}: {f.sponsorName} (ID {f.sponsorId})
               </p>
-            )}
-            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <MapPin className="h-3 w-3 shrink-0" />
-              <span className="truncate">{f.city}, {f.state} {f.countryFlag}</span>
-            </p>
-          </div>
+            </div>
 
-          {/* ── Column 2: Personal data ── */}
-          <div className="flex-1 min-w-0 text-xs text-muted-foreground">
-            {/* Spacer to align with 3rd line (Data de Cadastro) of col 1 */}
-            <div className="h-[calc(1lh+0.25rem)] hidden lg:block" />
-            <div className="h-[calc(1lh+0.25rem)] hidden lg:block" />
-            <div className="space-y-1">
-              <p className="flex items-center gap-1.5 truncate"><FileText className="h-3 w-3 shrink-0" />{docLabel}</p>
-              <p className="flex items-center gap-1.5"><Cake className="h-3 w-3 shrink-0" />{f.birthDate} · {f.gender}</p>
-              <p className="flex items-center gap-1.5"><KeyRound className="h-3 w-3 shrink-0" /><span className="truncate">{f.username}</span></p>
-              <p className="flex items-center gap-1.5"><Mail className="h-3 w-3 shrink-0" /><span className="truncate">{f.email}</span></p>
-              <p className="flex items-center gap-1.5"><Phone className="h-3 w-3 shrink-0" /><span className="truncate">{f.phone}</span></p>
+            {/* ── Grid 2 + Grid 3 side by side ── */}
+            <div className="flex flex-col sm:flex-row gap-x-8 gap-y-2">
+              {/* Grid 2: Registration details */}
+              <div className="space-y-1 min-w-0">
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <Calendar className="h-3 w-3 shrink-0 text-muted-foreground" />
+                  {t("internal.cadastros.registrationDate")}: {f.createdAt.split("-").reverse().join("/")}
+                </p>
+                <p className="text-xs text-foreground flex items-center gap-1.5">
+                  <Gem className="h-3 w-3 shrink-0 text-muted-foreground" />
+                  Franquia {planLabels[f.planCode] || f.planCode}
+                </p>
+                {qualConfig && (
+                  <p className="text-xs flex items-center gap-1.5">
+                    <span className="text-muted-foreground">{qualConfig.icon}</span>
+                    <span className="text-foreground">{t(qualificationLabelKeys[f.qualification])}</span>
+                  </p>
+                )}
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <MapPin className="h-3 w-3 shrink-0" />
+                  <span className="truncate">{f.city}, {f.state} {f.countryFlag}</span>
+                </p>
+              </div>
+
+              {/* Grid 3: Personal data */}
+              <div className="space-y-1 min-w-0">
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground truncate">
+                  <FileText className="h-3 w-3 shrink-0" />{docLabel}
+                </p>
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Cake className="h-3 w-3 shrink-0" />{f.birthDate} · {f.gender}
+                </p>
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Mail className="h-3 w-3 shrink-0" /><span className="truncate">{f.email}</span>
+                </p>
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Phone className="h-3 w-3 shrink-0" /><span className="truncate">{f.phone}</span>
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* ── Column 3: Actions ── */}
-          <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[170px] shrink-0">
+          {/* ── Grid 4: Actions (right side, full height) ── */}
+          <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[170px] shrink-0 mt-3 lg:mt-0">
             <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
               <MapPinHouse className="h-3 w-3" />
               {t("internal.cadastros.btnAddresses")}
