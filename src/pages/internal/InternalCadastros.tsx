@@ -793,7 +793,8 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
               {t("internal.cadastros.registrationDate")}: {f.createdAt.split("-").reverse().join("/")}
             </p>
             <div className="h-2" />
-            <p className="text-xs text-foreground">
+            <p className="text-xs text-foreground flex items-center gap-1.5">
+              <Gem className="h-3 w-3 shrink-0" />
               Franquia {planLabels[f.planCode] || f.planCode}
             </p>
             {qualConfig && (
@@ -810,6 +811,9 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
 
           {/* ── Column 2: Personal data ── */}
           <div className="flex-1 min-w-0 text-xs text-muted-foreground">
+            {/* Spacer to align with 3rd line (Data de Cadastro) of col 1 */}
+            <div className="h-[calc(1lh+0.25rem)] hidden lg:block" />
+            <div className="h-[calc(1lh+0.25rem)] hidden lg:block" />
             <div className="space-y-1">
               <p className="flex items-center gap-1.5 truncate"><FileText className="h-3 w-3 shrink-0" />{docLabel}</p>
               <p className="flex items-center gap-1.5"><Cake className="h-3 w-3 shrink-0" />{f.birthDate} · {f.gender}</p>
