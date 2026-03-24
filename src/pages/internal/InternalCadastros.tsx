@@ -112,7 +112,7 @@ export default function InternalCadastros() {
 
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
-  const [dateFilterMode, setDateFilterMode] = useState<"off" | "month" | "custom">("off");
+  const [dateFilterMode, setDateFilterMode] = useState<"off" | "month" | "custom">("month");
   const [monthRef, setMonthRef] = useState(new Date());
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
