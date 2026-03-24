@@ -803,40 +803,40 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             {/* ── Grid 2 + Grid 3 side by side ── */}
             <div className="flex flex-col sm:flex-row gap-x-8 gap-y-2">
               {/* Grid 2: Registration details */}
-              <div className="space-y-1 min-w-0">
-                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                  <Calendar className="h-3 w-3 shrink-0 text-muted-foreground" />
+              <div className="space-y-1.5 min-w-0">
+                <p className="text-sm text-foreground flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
                   {t("internal.cadastros.registrationDate")}: {f.createdAt.split("-").reverse().join("/")}
                 </p>
-                <p className="text-xs text-foreground flex items-center gap-1.5">
-                  <Gem className="h-3 w-3 shrink-0 text-muted-foreground" />
+                <p className="text-sm text-foreground flex items-center gap-1.5">
+                  <Gem className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
                   Franquia {planLabels[f.planCode] || f.planCode}
                 </p>
                 {qualConfig && (
-                  <p className="text-xs flex items-center gap-1.5">
-                    <span className="text-muted-foreground">{qualConfig.icon}</span>
+                  <p className="text-sm flex items-center gap-1.5">
+                    <span className="text-foreground/70">{qualConfig.icon}</span>
                     <span className="text-foreground">{t(qualificationLabelKeys[f.qualification])}</span>
                   </p>
                 )}
-                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <MapPin className="h-3 w-3 shrink-0" />
+                <p className="flex items-center gap-1.5 text-sm text-foreground">
+                  <MapPin className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
                   <span className="truncate">{f.city}, {f.state} {f.countryFlag}</span>
                 </p>
               </div>
 
               {/* Grid 3: Personal data */}
-              <div className="space-y-1 min-w-0">
-                <p className="flex items-center gap-1.5 text-xs text-muted-foreground truncate">
-                  <FileText className="h-3 w-3 shrink-0" />{docLabel}
+              <div className="space-y-1.5 min-w-0">
+                <p className="flex items-center gap-1.5 text-sm text-foreground truncate">
+                  <FileText className="h-3.5 w-3.5 shrink-0 text-foreground/70" />{docLabel}
                 </p>
-                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Cake className="h-3 w-3 shrink-0" />{f.birthDate} · {f.gender}
+                <p className="flex items-center gap-1.5 text-sm text-foreground">
+                  <Cake className="h-3.5 w-3.5 shrink-0 text-foreground/70" />{f.birthDate} · {f.gender}
                 </p>
-                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Mail className="h-3 w-3 shrink-0" /><span className="truncate">{f.email}</span>
+                <p className="flex items-center gap-1.5 text-sm text-foreground">
+                  <Mail className="h-3.5 w-3.5 shrink-0 text-foreground/70" /><span className="truncate">{f.email}</span>
                 </p>
-                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Phone className="h-3 w-3 shrink-0" /><span className="truncate">{f.phone}</span>
+                <p className="flex items-center gap-1.5 text-sm text-foreground">
+                  <Phone className="h-3.5 w-3.5 shrink-0 text-foreground/70" /><span className="truncate">{f.phone}</span>
                 </p>
               </div>
             </div>
