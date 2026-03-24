@@ -423,10 +423,65 @@ export default function InternalCadastros() {
 
       {/* ── Results ── */}
       <div className="mt-4 space-y-3">
-        {filtered.map(f => (
-          <FranchiseeCard key={f.id} franchisee={f} />
-        ))}
-        <RegistrationStatusLegend />
+        {!hasActiveFilters ? (
+          <p className="text-sm text-muted-foreground text-center py-8">
+            Use a busca ou os filtros acima para encontrar franqueados
+          </p>
+        ) : filtered.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-8">
+            Nenhum franqueado encontrado com os filtros selecionados
+          </p>
+        ) : (
+          <>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">
+                {filtered.length} {filtered.length === 1 ? "resultado encontrado" : "resultados encontrados"}
+              </p>
+            </div>
+            {paginatedResults.map(f => (
+              <FranchiseeCard key={f.id} franchisee={f} />
+            ))}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage === 1}
+                  onClick={() => { setCurrentPage(p => p - 1); searchCardRef.current?.scrollIntoView({ behavior: "smooth" }); }}
+                  className="h-8 text-xs"
+                >
+                  Anterior
+                </Button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => { setCurrentPage(page); searchCardRef.current?.scrollIntoView({ behavior: "smooth" }); }}
+                      className={cn(
+                        "h-8 w-8 rounded-md text-xs font-medium transition-colors",
+                        page === currentPage
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-accent text-muted-foreground"
+                      )}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage === totalPages}
+                  onClick={() => { setCurrentPage(p => p + 1); searchCardRef.current?.scrollIntoView({ behavior: "smooth" }); }}
+                  className="h-8 text-xs"
+                >
+                  Próximo
+                </Button>
+              </div>
+            )}
+            <RegistrationStatusLegend />
+          </>
+        )}
       </div>
     </div>
   );
