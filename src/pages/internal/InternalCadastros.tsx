@@ -260,29 +260,29 @@ export default function InternalCadastros() {
   };
 
   /* ── Dashboard metrics ── */
-  const completedCount = useMemo(() => filtered.filter(f => f.paidAt).length, [filtered]);
-  const pendingCount = useMemo(() => filtered.filter(f => !f.paidAt).length, [filtered]);
+  const completedCount = useMemo(() => filtered.filter(f => pf(f).paidAt).length, [filtered]);
+  const pendingCount = useMemo(() => filtered.filter(f => !pf(f).paidAt).length, [filtered]);
   const conversionRate = (completedCount + pendingCount) > 0 ? Math.round((completedCount / (completedCount + pendingCount)) * 100) : 0;
 
 
   // Franchise status
-  const activeCount = useMemo(() => filtered.filter(f => f.franchiseStatus === "active").length, [filtered]);
-  const inactiveCount = useMemo(() => filtered.filter(f => f.franchiseStatus !== "active").length, [filtered]);
+  const activeCount = useMemo(() => filtered.filter(f => pf(f).franchiseStatus === "active").length, [filtered]);
+  const inactiveCount = useMemo(() => filtered.filter(f => pf(f).franchiseStatus !== "active").length, [filtered]);
 
   // Avg franchises per franchisee (mock: unique sponsors who are active)
   const activeFranchisees = useMemo(() => {
-    const uniqueOwners = new Set(filtered.filter(f => f.franchiseStatus === "active").map(f => f.fullName));
+    const uniqueOwners = new Set(filtered.filter(f => pf(f).franchiseStatus === "active").map(f => f.fullName));
     return uniqueOwners.size;
   }, [filtered]);
   const avgFranchises = activeFranchisees > 0 ? (activeCount / activeFranchisees).toFixed(1) : "0";
 
   // Avg activation time (days between createdAt and paidAt)
   const avgActivationDays = useMemo(() => {
-    const completed = filtered.filter(f => f.paidAt);
+    const completed = filtered.filter(f => pf(f).paidAt);
     if (completed.length === 0) return 0;
     const totalDays = completed.reduce((sum, f) => {
-      const d1 = new Date(f.createdAt);
-      const d2 = new Date(f.paidAt!);
+      const d1 = new Date(pf(f).createdAt);
+      const d2 = new Date(pf(f).paidAt!);
       return sum + Math.max(0, Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
     }, 0);
     return Math.round(totalDays / completed.length);
@@ -291,15 +291,15 @@ export default function InternalCadastros() {
   // Plan breakdown
   const planBreakdown = useMemo(() => {
     const counts: Record<string, number> = { bronze: 0, silver: 0, gold: 0, platinum: 0 };
-    filtered.forEach(f => { if (counts[f.planCode] !== undefined) counts[f.planCode]++; });
+    filtered.forEach(f => { if (counts[pf(f).planCode] !== undefined) counts[pf(f).planCode]++; });
     return counts;
   }, [filtered]);
 
   // Qualification breakdown (active only)
   const qualBreakdown = useMemo(() => {
     const counts: Record<string, number> = { consultor: 0, distribuidor: 0, lider: 0, rubi: 0, esmeralda: 0, diamante: 0 };
-    filtered.filter(f => f.franchiseStatus === "active").forEach(f => {
-      if (counts[f.qualification] !== undefined) counts[f.qualification]++;
+    filtered.filter(f => pf(f).franchiseStatus === "active").forEach(f => {
+      if (counts[pf(f).qualification] !== undefined) counts[pf(f).qualification]++;
     });
     return counts;
   }, [filtered]);
@@ -308,9 +308,9 @@ export default function InternalCadastros() {
   const topSponsors = useMemo(() => {
     const map = new Map<string, { name: string; id: string; count: number }>();
     filtered.forEach(f => {
-      const existing = map.get(f.sponsorId);
+      const existing = map.get(pf(f).sponsorId);
       if (existing) existing.count++;
-      else map.set(f.sponsorId, { name: f.sponsorName, id: f.sponsorId, count: 1 });
+      else map.set(pf(f).sponsorId, { name: pf(f).sponsorName, id: pf(f).sponsorId, count: 1 });
     });
     return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 5);
   }, [filtered]);
@@ -785,7 +785,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
   const { t } = useLanguage();
   const regStatus = getRegistrationStatus(f);
   const isCancelled = regStatus === "cancelado";
-  const isActive = f.franchiseStatus === "active";
+  const isActive = pf(f).franchiseStatus === "active";
   const qualConfig = qualificationConfig[f.qualification];
 
   const planLabels: Record<string, string> = {
