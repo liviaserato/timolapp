@@ -764,9 +764,6 @@ export default function InternalCadastros() {
                   <SelectItem value="platinum" disabled={!availablePlans.has("platinum")} className={!availablePlans.has("platinum") ? "opacity-40" : ""}>{t("franchise.platinum")}</SelectItem>
                 </SelectContent>
               </Select>
-
-                )}
-              </div>
             </div>
 
             {hasFilters && (
