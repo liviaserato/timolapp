@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, lazy, Suspense } from "react";
+import { useState, useMemo, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Input } from "@/components/ui/input";
@@ -11,14 +11,13 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Search, X, Phone, Mail, MapPin,
   MapPinHouse, Landmark, Pencil, Lock,
-  FileText, Cake, Gem, ArrowUpDown, ClipboardList, ArrowLeft, Calendar,
+  FileText, Cake, Gem, ArrowUpDown, Calendar,
   MessageCircle, Bell, RotateCcw,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { qualificationConfig } from "@/components/app/rede/mock-data";
-import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 
-const PendingRegistrationsPanel = lazy(() => import("@/components/internal/PendingRegistrationsPanel"));
+
 
 /* ── Types ── */
 interface FranchiseEntry {
@@ -36,6 +35,7 @@ interface FranchiseEntry {
   recoveryEmailSentAt?: string | null;
   whatsappSentAt?: string | null;
   sponsorNotifiedAt?: string | null;
+  attendantName?: string | null;
 }
 
 interface Franchisee {
@@ -57,29 +57,29 @@ interface Franchisee {
 /* ── Mock Data ── */
 const mockFranchisees: Franchisee[] = [
   { id: "1", fullName: "Lívia Serato", document: "123.456.789-00", birthDate: "15/03/1990", gender: "female", email: "livia.serato@email.com", phone: "+55 11 99999-0000", username: "livia.serato", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
-    { franchiseId: "100231", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-02", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-05", recoveryEmailSentAt: null, whatsappSentAt: null, sponsorNotifiedAt: null },
+    { franchiseId: "100231", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-02", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-05", recoveryEmailSentAt: null, whatsappSentAt: null, sponsorNotifiedAt: null, attendantName: "Camila Souza" },
   ]},
   { id: "2", fullName: "Carlos Eduardo Mendes", document: "987.654.321-00", birthDate: "22/08/1985", gender: "male", email: "carlos.mendes@email.com", phone: "+55 21 98888-1111", username: "carlos.mendes", city: "Rio de Janeiro", state: "RJ", country: "Brasil", countryFlag: "🇧🇷", franchises: [
-    { franchiseId: "100232", sponsorName: "Lívia Serato", sponsorId: "100231", createdAt: "2026-03-10", planCode: "platinum", planLabel: "Platina", qualification: "rubi", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-12" },
+    { franchiseId: "100232", sponsorName: "Lívia Serato", sponsorId: "100231", createdAt: "2026-03-10", planCode: "platinum", planLabel: "Platina", qualification: "rubi", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-12", attendantName: "Camila Souza" },
   ]},
   { id: "3", fullName: "Ana Paula Costa", document: "456.789.123-00", birthDate: "10/12/1992", gender: "female", email: "ana.costa@email.com", phone: "+55 31 97777-2222", username: "ana.costa", city: "Belo Horizonte", state: "MG", country: "Brasil", countryFlag: "🇧🇷", franchises: [
     { franchiseId: "100233", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-15", planCode: "bronze", planLabel: "Bronze", qualification: "consultor", franchiseStatus: "active", activationStatus: "pending", paidAt: null, recoveryEmailSentAt: "2026-03-16T09:00:00Z", whatsappSentAt: "2026-03-17T11:00:00Z", sponsorNotifiedAt: null },
   ]},
   { id: "4", fullName: "Roberto Almeida Filho", document: "321.654.987-00", birthDate: "05/06/1978", gender: "male", email: "roberto.almeida@email.com", phone: "+55 41 96666-3333", username: "roberto.almeida", city: "Curitiba", state: "PR", country: "Brasil", countryFlag: "🇧🇷", franchises: [
-    { franchiseId: "100234", sponsorName: "Ana Costa", sponsorId: "100233", createdAt: "2026-03-08", planCode: "silver", planLabel: "Prata", qualification: "distribuidor", franchiseStatus: "suspended", activationStatus: "inactive", paidAt: "2026-03-20" },
+    { franchiseId: "100234", sponsorName: "Ana Costa", sponsorId: "100233", createdAt: "2026-03-08", planCode: "silver", planLabel: "Prata", qualification: "distribuidor", franchiseStatus: "suspended", activationStatus: "inactive", paidAt: "2026-03-20", attendantName: "Renata Dias" },
   ]},
   { id: "5", fullName: "Fernanda Oliveira Santos", document: "654.321.987-00", birthDate: "18/09/1988", gender: "female", email: "fernanda.santos@email.com", phone: "+55 51 95555-4444", username: "fernanda.santos", city: "Porto Alegre", state: "RS", country: "Brasil", countryFlag: "🇧🇷", franchises: [
-    { franchiseId: "100235", sponsorName: "Roberto Almeida", sponsorId: "100234", createdAt: "2026-03-01", planCode: "gold", planLabel: "Ouro", qualification: "lider", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-03" },
+    { franchiseId: "100235", sponsorName: "Roberto Almeida", sponsorId: "100234", createdAt: "2026-03-01", planCode: "gold", planLabel: "Ouro", qualification: "lider", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-03", attendantName: "Camila Souza" },
   ]},
   { id: "6", fullName: "Pedro Henrique Lima", document: "789.123.456-00", birthDate: "30/01/1995", gender: "male", email: "pedro.lima@email.com", phone: "+55 61 94444-5555", username: "pedro.lima", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
     { franchiseId: "100236", sponsorName: "Fernanda Santos", sponsorId: "100235", createdAt: "2026-02-15", planCode: "bronze", planLabel: "Bronze", qualification: "consultor", franchiseStatus: "cancelled", activationStatus: "inactive", paidAt: null },
   ]},
   { id: "7", fullName: "Maria Silva", document: "111.222.333-00", birthDate: "12/07/1980", gender: "female", email: "maria.silva@email.com", phone: "+55 11 93333-6666", username: "maria.silva", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
-    { franchiseId: "100237", sponsorName: "Timol", sponsorId: "00001", createdAt: "2026-02-01", planCode: "platinum", planLabel: "Platina", qualification: "diamante", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-02-02" },
-    { franchiseId: "100299", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-10", planCode: "gold", planLabel: "Ouro", qualification: "rubi", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-11" },
+    { franchiseId: "100237", sponsorName: "Timol", sponsorId: "00001", createdAt: "2026-02-01", planCode: "platinum", planLabel: "Platina", qualification: "diamante", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-02-02", attendantName: "Renata Dias" },
+    { franchiseId: "100299", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-10", planCode: "gold", planLabel: "Ouro", qualification: "rubi", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-11", attendantName: "Camila Souza" },
   ]},
   { id: "8", fullName: "Juan García López", document: "A12345678", birthDate: "03/11/1991", gender: "male", email: "juan.garcia@email.com", phone: "+34 612 345 678", username: "juan.garcia", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", franchises: [
-    { franchiseId: "100238", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-19", recoveryEmailSentAt: null, whatsappSentAt: null, sponsorNotifiedAt: null },
+    { franchiseId: "100238", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-19", recoveryEmailSentAt: null, whatsappSentAt: null, sponsorNotifiedAt: null, attendantName: "Camila Souza" },
   ]},
   /* Pending registrations with touchpoint data */
   { id: "9", fullName: "Juliana Ferreira Costa", document: "321.654.987-00", birthDate: "14/06/1993", gender: "female", email: "juliana.ferreira@email.com", phone: "+55 11 98765-4321", username: "juliana.ferreira", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
@@ -185,7 +185,7 @@ export default function InternalCadastros() {
   const dateLocale = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
   const searchCardRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState("");
-  const [showPending, setShowPending] = useState(false);
+  
   const [sortBy, setSortBy] = useState<string>("");
   const [showActive, setShowActive] = useState(false);
   const [showInactive, setShowInactive] = useState(false);
@@ -259,35 +259,14 @@ export default function InternalCadastros() {
     setSearchFields([]);
   };
 
-  if (showPending) {
-    return (
-      <div>
-        <header className="mb-4">
-          <Button variant="ghost" size="sm" className="gap-1.5 mb-2 -ml-2 text-muted-foreground" onClick={() => setShowPending(false)}>
-            <ArrowLeft className="h-4 w-4" />
-            {t("internal.cadastros.title")}
-          </Button>
-          <h1 className="text-2xl font-bold text-primary">{t("internal.cadastros.pendingTitle")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t("internal.cadastros.pendingSubtitle")}</p>
-        </header>
-        <Suspense fallback={<FullScreenTimolLoader mode="page" title="Carregando..." className="min-h-[200px] bg-background" />}>
-          <PendingRegistrationsPanel />
-        </Suspense>
-      </div>
-    );
-  }
 
   return (
     <div>
-      <header className="mb-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+      <header className="mb-4">
         <div>
           <h1 className="text-2xl font-bold text-primary">{t("internal.cadastros.title")}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t("internal.cadastros.subtitle")}</p>
         </div>
-        <Button variant="outline" size="sm" className="gap-1.5 shrink-0 self-start" onClick={() => setShowPending(true)}>
-          <ClipboardList className="h-4 w-4" />
-          {t("internal.cadastros.pendingBtn")}
-        </Button>
       </header>
 
       <div ref={searchCardRef}>
@@ -532,8 +511,13 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                     </p>
                   </div>
                 </div>
-                {/* Touchpoint icons: show for pendente and cancelado, hide for concluido */}
-                {!isCompleted && (
+                {isCompleted ? (
+                  <div className="shrink-0 text-right">
+                    <p className="text-xs text-muted-foreground">
+                      Atendente: <span className="font-medium text-foreground">{sel.attendantName ?? "—"}</span>
+                    </p>
+                  </div>
+                ) : (
                   <TouchpointIcons franchise={sel} />
                 )}
               </div>
