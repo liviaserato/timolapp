@@ -238,7 +238,7 @@ export default function InternalCadastros() {
   /* Search results (no date filter) */
   const filtered = useMemo(() => {
     let list = mockFranchisees as Franchisee[];
-    if (franchiseStatusFilter === "none") return [];
+    if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
     if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
     else if (franchiseStatusFilter === "inactive") list = list.filter(f => pf(f).franchiseStatus !== "active");
     if (registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
