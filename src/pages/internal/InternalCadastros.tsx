@@ -834,7 +834,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5 ml-4">
+              <p className="text-xs text-muted-foreground mt-0.5" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
                 {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
               </p>
             </div>
