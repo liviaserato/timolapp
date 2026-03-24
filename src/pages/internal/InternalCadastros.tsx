@@ -500,9 +500,14 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
-                {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
-              </p>
+              <div className="flex items-center gap-1.5 mt-0.5" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
+                <p className="text-xs text-muted-foreground flex-1 min-w-0 truncate">
+                  {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
+                </p>
+                {regStatus === "pendente" && (
+                  <TouchpointIcons franchise={sel} />
+                )}
+              </div>
             </div>
 
             {/* ── Grid 2 + Grid 3 side by side ── */}
