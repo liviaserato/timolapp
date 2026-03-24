@@ -705,12 +705,12 @@ export default function InternalCadastros() {
                 <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.qualificationFilter")} /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t("internal.cadastros.qualificationFilter")}</SelectItem>
-                  <SelectItem value="starter" disabled={!availableQualifications.has("starter")} className={!availableQualifications.has("starter") ? "opacity-40" : ""}>{t("internal.cadastros.qualStarter")}</SelectItem>
-                  <SelectItem value="bronze" disabled={!availableQualifications.has("bronze")} className={!availableQualifications.has("bronze") ? "opacity-40" : ""}>{t("internal.cadastros.qualBronze")}</SelectItem>
-                  <SelectItem value="silver" disabled={!availableQualifications.has("silver")} className={!availableQualifications.has("silver") ? "opacity-40" : ""}>{t("internal.cadastros.qualSilver")}</SelectItem>
-                  <SelectItem value="gold" disabled={!availableQualifications.has("gold")} className={!availableQualifications.has("gold") ? "opacity-40" : ""}>{t("internal.cadastros.qualGold")}</SelectItem>
-                  <SelectItem value="platinum" disabled={!availableQualifications.has("platinum")} className={!availableQualifications.has("platinum") ? "opacity-40" : ""}>{t("internal.cadastros.qualPlatinum")}</SelectItem>
-                  <SelectItem value="diamond" disabled={!availableQualifications.has("diamond")} className={!availableQualifications.has("diamond") ? "opacity-40" : ""}>{t("internal.cadastros.qualDiamond")}</SelectItem>
+                  <SelectItem value="consultor" disabled={!availableQualifications.has("consultor")} className={!availableQualifications.has("consultor") ? "opacity-40" : ""}>{t("internal.cadastros.qualConsultor")}</SelectItem>
+                  <SelectItem value="distribuidor" disabled={!availableQualifications.has("distribuidor")} className={!availableQualifications.has("distribuidor") ? "opacity-40" : ""}>{t("internal.cadastros.qualDistribuidor")}</SelectItem>
+                  <SelectItem value="lider" disabled={!availableQualifications.has("lider")} className={!availableQualifications.has("lider") ? "opacity-40" : ""}>{t("internal.cadastros.qualLider")}</SelectItem>
+                  <SelectItem value="rubi" disabled={!availableQualifications.has("rubi")} className={!availableQualifications.has("rubi") ? "opacity-40" : ""}>{t("internal.cadastros.qualRubi")}</SelectItem>
+                  <SelectItem value="esmeralda" disabled={!availableQualifications.has("esmeralda")} className={!availableQualifications.has("esmeralda") ? "opacity-40" : ""}>{t("internal.cadastros.qualEsmeralda")}</SelectItem>
+                  <SelectItem value="diamante" disabled={!availableQualifications.has("diamante")} className={!availableQualifications.has("diamante") ? "opacity-40" : ""}>{t("internal.cadastros.qualDiamante")}</SelectItem>
                 </SelectContent>
               </Select>
 
