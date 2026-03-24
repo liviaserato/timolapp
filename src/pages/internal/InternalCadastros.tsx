@@ -16,6 +16,9 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { qualificationConfig } from "@/components/app/rede/mock-data";
+import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
+
+const PendingRegistrationsPanel = lazy(() => import("@/components/internal/PendingRegistrationsPanel"));
 
 /* ── Types ── */
 interface FranchiseEntry {
