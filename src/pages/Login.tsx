@@ -230,6 +230,20 @@ const Login = () => {
                 {t("login.resumeRegistration")}
               </Button>
 
+
+              {import.meta.env.DEV && (
+                <Button
+                  variant="ghost"
+                  className="w-full text-xs text-muted-foreground/50 hover:text-muted-foreground"
+                  onClick={() => {
+                    setAccessToken("dev-bypass-token", true);
+                    setUserRole("admin", true);
+                    navigate("/internal", { replace: true });
+                  }}
+                >
+                  🔧 Entrar como Admin (Dev)
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
