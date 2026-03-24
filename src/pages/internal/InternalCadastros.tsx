@@ -211,7 +211,7 @@ export default function InternalCadastros() {
   const getFilteredExcluding = (exclude: string) => {
      let list = mockFranchisees as Franchisee[];
     if (exclude !== "franchiseStatus" && franchiseStatusFilter !== "all") {
-      if (franchiseStatusFilter === "none") list = [];
+      if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
       else if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
       else list = list.filter(f => pf(f).franchiseStatus !== "active");
     }
