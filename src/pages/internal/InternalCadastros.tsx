@@ -451,13 +451,13 @@ const registrationStatusBorder: Record<RegistrationStatus, string> = {
 /* ── Franchisee Result Card ── */
 function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
   const { t } = useLanguage();
-  // Sort franchises by createdAt ascending
   const sortedFranchises = useMemo(() => [...f.franchises].sort((a, b) => a.createdAt.localeCompare(b.createdAt)), [f.franchises]);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const sel = sortedFranchises[selectedIdx] || sortedFranchises[0];
 
   const regStatus = getRegistrationStatus(f, sel);
   const isCancelled = regStatus === "cancelado";
+  const isCompleted = regStatus === "concluido";
   const isActive = sel.franchiseStatus === "active";
   const qualConfig = qualificationConfig[sel.qualification];
 
@@ -471,6 +471,14 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
   const isBrazilian = f.country === "Brasil";
   const docLabel = isBrazilian ? `CPF: ${f.document}` : `${f.document} · ${f.countryFlag} ${f.country}`;
 
+  /* Franchise status dot tooltip */
+  const expirationDate = sel.paidAt
+    ? new Date(new Date(sel.paidAt).getTime() + 365 * 24 * 60 * 60 * 1000).toLocaleDateString("pt-BR")
+    : null;
+  const statusDotLabel = isActive
+    ? `${t("internal.cadastros.franchiseActive")}${expirationDate ? ` · Expira em ${expirationDate}` : ""}`
+    : t("internal.cadastros.franchiseInactive");
+
   return (
     <div
       className={`rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] transition-shadow hover:shadow-md ${registrationStatusBorder[regStatus]} ${isCancelled ? "opacity-50" : ""}`}
@@ -482,10 +490,21 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             {/* ── Grid 1: Name + IDs + Sponsor ── */}
             <div className="mb-3 pb-3 border-b border-border/50">
               <div className="flex items-center gap-3">
-                {/* Left: name + sponsor lines */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="h-3.5 w-3.5 shrink-0 flex items-center justify-center"><span className={`h-2 w-2 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`} /></span>
+                    <Tooltip delayDuration={0}>
+                      <TooltipTrigger asChild>
+                        <span
+                          className="h-3.5 w-3.5 shrink-0 flex items-center justify-center cursor-help"
+                          aria-label={statusDotLabel}
+                        >
+                          <span className={`h-2 w-2 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`} />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="text-xs max-w-[220px]">
+                        {statusDotLabel}
+                      </TooltipContent>
+                    </Tooltip>
                     <span className="text-base font-bold text-foreground mr-1">{f.fullName}</span>
                     {sortedFranchises.map((fr, idx) => (
                       <button
@@ -509,8 +528,8 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                     </p>
                   </div>
                 </div>
-                {/* Right: touchpoint icons centered vertically */}
-                {regStatus === "pendente" && (
+                {/* Touchpoint icons: show for pendente and cancelado, hide for concluido */}
+                {!isCompleted && (
                   <TouchpointIcons franchise={sel} />
                 )}
               </div>
@@ -518,7 +537,6 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
 
             {/* ── Grid 2 + Grid 3 side by side ── */}
             <div className="flex flex-col sm:flex-row gap-x-14 gap-y-2">
-              {/* Grid 2: Registration details */}
               <div className="space-y-1.5 min-w-0">
                 <p className="text-sm text-foreground flex items-center gap-1.5">
                   <Calendar className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
@@ -540,7 +558,6 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                 </p>
               </div>
 
-              {/* Grid 3: Personal data */}
               <div className="space-y-1.5 min-w-0">
                 <p className="flex items-center gap-1.5 text-sm text-foreground truncate">
                   <FileText className="h-3.5 w-3.5 shrink-0 text-foreground/70" />{docLabel}
@@ -558,10 +575,14 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             </div>
           </div>
 
-          {/* ── Grid 4: Actions (right side, full height) ── */}
+          {/* ── Grid 4: Actions ── */}
           {isCancelled ? (
-            <div className="flex items-center justify-center lg:w-[170px] shrink-0 mt-3 lg:mt-0 px-3">
+            <div className="flex flex-col items-center justify-center lg:w-[170px] shrink-0 mt-3 lg:mt-0 px-3 gap-3">
               <p className="text-xs text-muted-foreground italic text-center">{t("internal.cadastros.franchiseCancelledMsg")}</p>
+              <Button variant="ghost" size="sm" className="text-xs h-7 gap-1.5 text-muted-foreground hover:text-foreground">
+                <RotateCcw className="h-3 w-3" />
+                {t("internal.cadastros.reactivateRegistration")}
+              </Button>
             </div>
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[170px] shrink-0 mt-3 lg:mt-0">
