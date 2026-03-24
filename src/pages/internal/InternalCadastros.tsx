@@ -429,7 +429,7 @@ export default function InternalCadastros() {
               {/* Chart: qualification (active only) */}
               <div className="space-y-1.5 px-2">
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.activeQualOnly")}</h4>
-                {(["starter", "bronze", "silver", "gold", "platinum", "diamond"] as const).map(q => {
+                {(["consultor", "distribuidor", "lider", "rubi", "esmeralda", "diamante"] as const).map(q => {
                   const count = qualBreakdown[q] || 0;
                   const maxQ = Math.max(...Object.values(qualBreakdown), 1);
                   return (
