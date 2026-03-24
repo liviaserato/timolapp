@@ -383,7 +383,7 @@ export default function InternalCadastros() {
               </div>
               {/* Qualification */}
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterQualification")}</span>
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.qualificationFilter")}</span>
                 <Select value={qualification} onValueChange={v => { setQualification(v); activateCheckboxes(); }}>
                   <SelectTrigger className="h-9 text-xs">
                     <SelectValue />
