@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   Search, Users, Filter, X, Phone, Mail, KeyRound, MapPin, ChevronRight, ChevronLeft,
-  BarChart3, UserCheck, UserX, MapPinned, Info, Clock, Trophy, Layers
+  BarChart3, UserCheck, UserX, MapPinned, Info, Clock, Trophy, Layers, TrendingUp, TrendingDown,
+  Calendar, Award, ArrowDownRight, ArrowUpRight
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -109,7 +110,13 @@ function getMonthRange(date: Date): { from: string; to: string } {
 
 const uniqueCities = Array.from(new Set(mockFranchisees.map(f => f.city))).sort();
 
-/* ── Horizontal bar chart helper ── */
+/* ── Mock annual data ── */
+const annualDataCurrentYear: Record<number, number> = { 0: 12, 1: 18, 2: 8, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0 };
+const annualDataPreviousYear: Record<number, number> = { 0: 8, 1: 14, 2: 11, 3: 9, 4: 15, 5: 20, 6: 17, 7: 22, 8: 13, 9: 19, 10: 16, 11: 10 };
+const currentYearValue = new Date().getFullYear();
+const currentMonthIdx = new Date().getMonth();
+
+
 function HBarChart({ items, barColorClass = "bg-primary/60", labelWidth = "w-14" }: { items: { label: string; count: number; extra?: string; tooltip?: string }[]; barColorClass?: string; labelWidth?: string }) {
   const max = Math.max(...items.map(i => i.count), 1);
   return (
@@ -508,7 +515,151 @@ export default function InternalCadastros() {
         </div>
       </DashboardCard>
 
-      {/* ── Buscar Franqueado ── */}
+      {/* ── Visão Anual de Cadastros ── */}
+      <div className="mt-4">
+        <DashboardCard icon={Calendar} title={t("internal.cadastros.annualVision")}>
+          <div className="mt-2 space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* ─── Card 1: Total do Ano + Variação ─── */}
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-4 min-h-[120px] flex flex-col justify-center">
+                <div className="flex items-center justify-center gap-1.5 mb-2">
+                  <Users className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.annualTotal")}</span>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-[260px] text-xs">{t("internal.cadastros.annualTooltip")}</TooltipContent>
+                  </Tooltip>
+                </div>
+                {(() => {
+                  const totalCurrent = Object.entries(annualDataCurrentYear).filter(([m]) => Number(m) <= currentMonthIdx).reduce((s, [, v]) => s + v, 0);
+                  const totalPrev = Object.entries(annualDataPreviousYear).filter(([m]) => Number(m) <= currentMonthIdx).reduce((s, [, v]) => s + v, 0);
+                  const variation = totalPrev > 0 ? Math.round(((totalCurrent - totalPrev) / totalPrev) * 100) : 0;
+                  const isUp = variation >= 0;
+                  return (
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="text-3xl font-bold text-foreground">{totalCurrent}</span>
+                      <div className="flex items-center gap-1">
+                        {isUp ? <ArrowUpRight className="h-4 w-4 text-emerald-600" /> : <ArrowDownRight className="h-4 w-4 text-red-500" />}
+                        <span className={`text-sm font-semibold ${isUp ? "text-emerald-600" : "text-red-500"}`}>{isUp ? "+" : ""}{variation}%</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+                <p className="text-[10px] text-muted-foreground mt-1 text-center">{t("internal.cadastros.vsLastYear")}</p>
+              </div>
+
+              {/* ─── Card 2: Melhor e Pior mês ─── */}
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-4 min-h-[120px] flex flex-col justify-center">
+                <div className="flex items-center justify-center gap-1.5 mb-3">
+                  <Award className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.insightsTitle")}</span>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.bestWorstTooltip")}</TooltipContent>
+                  </Tooltip>
+                </div>
+                {(() => {
+                  const monthsWithData = Object.entries(annualDataCurrentYear)
+                    .filter(([m]) => Number(m) <= currentMonthIdx)
+                    .map(([m, v]) => ({ month: Number(m), count: v }));
+                  const best = monthsWithData.reduce((a, b) => b.count > a.count ? b : a, monthsWithData[0]);
+                  const worst = monthsWithData.reduce((a, b) => b.count < a.count ? b : a, monthsWithData[0]);
+                  const getMonthName = (m: number) => new Date(2026, m).toLocaleDateString(dateLocale, { month: "short" }).replace(".", "");
+                  return (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
+                          <span className="text-xs text-muted-foreground">{t("internal.cadastros.bestMonth")}</span>
+                        </div>
+                        <span className="text-sm font-semibold text-foreground capitalize">{getMonthName(best.month)} — {best.count}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <TrendingDown className="h-3.5 w-3.5 text-red-500" />
+                          <span className="text-xs text-muted-foreground">{t("internal.cadastros.worstMonth")}</span>
+                        </div>
+                        <span className="text-sm font-semibold text-foreground capitalize">{getMonthName(worst.month)} — {worst.count}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* ─── Card 3: Média Mensal ─── */}
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-4 min-h-[120px] flex flex-col justify-center">
+                <div className="flex items-center justify-center gap-1.5 mb-2">
+                  <BarChart3 className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.monthlyAvg")}</span>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.monthlyAvgTooltip")}</TooltipContent>
+                  </Tooltip>
+                </div>
+                {(() => {
+                  const total = Object.entries(annualDataCurrentYear).filter(([m]) => Number(m) <= currentMonthIdx).reduce((s, [, v]) => s + v, 0);
+                  const elapsedMonths = currentMonthIdx + 1;
+                  const avg = Math.round(total / elapsedMonths);
+                  return (
+                    <div className="flex items-baseline justify-center gap-1">
+                      <span className="text-3xl font-bold text-foreground">{avg}</span>
+                      <span className="text-xs text-muted-foreground">{t("internal.cadastros.registrationsPerMonth")}</span>
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+
+            {/* ─── Monthly evolution chart ─── */}
+            <div className="space-y-2">
+              <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.monthlyEvolution")}</h4>
+              <div className="flex items-center gap-4 mb-1">
+                <div className="flex items-center gap-1.5">
+                  <div className="h-2.5 w-2.5 rounded-sm bg-primary" />
+                  <span className="text-[10px] text-muted-foreground">{currentYearValue} ({t("internal.cadastros.currentYear")})</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="h-2.5 w-2.5 rounded-sm bg-primary/25" />
+                  <span className="text-[10px] text-muted-foreground">{currentYearValue - 1} ({t("internal.cadastros.previousYear")})</span>
+                </div>
+              </div>
+              <div className="space-y-1">
+                {Array.from({ length: 12 }, (_, i) => {
+                  const cur = annualDataCurrentYear[i] || 0;
+                  const prev = annualDataPreviousYear[i] || 0;
+                  const max = Math.max(...Object.values(annualDataCurrentYear), ...Object.values(annualDataPreviousYear), 1);
+                  const monthName = new Date(2026, i).toLocaleDateString(dateLocale, { month: "short" }).replace(".", "");
+                  const isFuture = i > currentMonthIdx;
+                  return (
+                    <div key={i} className={`flex items-center gap-2 ${isFuture ? "opacity-30" : ""}`}>
+                      <span className="text-[10px] w-8 shrink-0 text-muted-foreground capitalize">{monthName}</span>
+                      <div className="flex-1 flex flex-col gap-0.5">
+                        <div className="h-3 bg-muted rounded overflow-hidden">
+                          <div className="h-full rounded bg-primary transition-all" style={{ width: `${Math.max((cur / max) * 100, cur > 0 ? 4 : 0)}%` }} />
+                        </div>
+                        <div className="h-3 bg-muted rounded overflow-hidden">
+                          <div className="h-full rounded bg-primary/25 transition-all" style={{ width: `${Math.max((prev / max) * 100, prev > 0 ? 4 : 0)}%` }} />
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end w-8">
+                        <span className="text-[10px] font-semibold leading-tight">{cur}</span>
+                        <span className="text-[10px] text-muted-foreground leading-tight">{prev}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </DashboardCard>
+      </div>
+
       <div className="mt-4">
         <DashboardCard icon={Search} title={t("internal.cadastros.searchFranchisee")}>
           <div className="mt-2 space-y-3">
