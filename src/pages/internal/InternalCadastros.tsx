@@ -339,7 +339,7 @@ export default function InternalCadastros() {
                 <SelectTrigger className="h-9 text-xs w-full sm:w-[180px]">
                   <div className="flex items-center gap-1.5">
                     <ArrowUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                    <SelectValue placeholder={t("internal.cadastros.sortPlaceholder")} />
+                    <SelectValue placeholder={t("internal.cadastros.classify")} />
                   </div>
                 </SelectTrigger>
                 <SelectContent>
