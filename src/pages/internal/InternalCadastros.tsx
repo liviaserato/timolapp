@@ -282,7 +282,7 @@ export default function InternalCadastros() {
       });
     }
     return list;
-  }, [search, showActive, showInactive, registrationStatus, qualification, planType, sortBy]);
+  }, [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType, sortBy]);
 
   /* Indicator metrics (only date filter, independent of search) */
   const indicatorFiltered = useMemo(() => {
