@@ -175,6 +175,14 @@ function getRegistrationStatus(f: Franchisee, fr?: FranchiseEntry): Registration
   return "pendente";
 }
 
+/** Franchise is only considered "active" if registration is completed AND franchiseStatus is active */
+function isEffectivelyActive(f: Franchisee, fr?: FranchiseEntry): boolean {
+  const entry = fr || pf(f);
+  const regStatus = getRegistrationStatus(f, entry);
+  if (regStatus !== "concluido") return false;
+  return entry.franchiseStatus === "active";
+}
+
 
 /* ── Component ── */
 /* qualification priority for sorting */
@@ -209,8 +217,8 @@ export default function InternalCadastros() {
   const getFilteredExcluding = (exclude: string) => {
      let list = mockFranchisees as Franchisee[];
     if (exclude !== "franchiseStatus" && franchiseStatusFilter !== "all") {
-      if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
-      else list = list.filter(f => pf(f).franchiseStatus !== "active");
+      if (franchiseStatusFilter === "active") list = list.filter(f => isEffectivelyActive(f));
+      else list = list.filter(f => !isEffectivelyActive(f));
     }
     if (exclude !== "registrationStatus" && registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
     if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
@@ -229,8 +237,8 @@ export default function InternalCadastros() {
   const filtered = useMemo(() => {
     if (!hasActiveFilters) return [];
     let list = mockFranchisees as Franchisee[];
-    if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
-    else if (franchiseStatusFilter === "inactive") list = list.filter(f => pf(f).franchiseStatus !== "active");
+    if (franchiseStatusFilter === "active") list = list.filter(f => isEffectivelyActive(f));
+    else if (franchiseStatusFilter === "inactive") list = list.filter(f => !isEffectivelyActive(f));
     if (registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
     if (qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (planType !== "all") list = list.filter(f => pf(f).planCode === planType);
@@ -243,8 +251,8 @@ export default function InternalCadastros() {
       list = [...list].sort((a, b) => (qualPriority[pf(b).qualification] || 0) - (qualPriority[pf(a).qualification] || 0));
     } else if (sortBy === "active_first") {
       list = [...list].sort((a, b) => {
-        const aActive = pf(a).franchiseStatus === "active" ? 0 : 1;
-        const bActive = pf(b).franchiseStatus === "active" ? 0 : 1;
+        const aActive = isEffectivelyActive(a) ? 0 : 1;
+        const bActive = isEffectivelyActive(b) ? 0 : 1;
         return aActive - bActive;
       });
     }
