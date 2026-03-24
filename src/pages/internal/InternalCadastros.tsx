@@ -190,9 +190,6 @@ export default function InternalCadastros() {
   const [registrationStatus, setRegistrationStatus] = useState<string>("all");
   const [qualification, setQualification] = useState<string>("all");
   const [planType, setPlanType] = useState<string>("all");
-  const [citySearch, setCitySearch] = useState("");
-  const [cityFilter, setCityFilter] = useState<string>("");
-  const [showCitySuggestions, setShowCitySuggestions] = useState(false);
 
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
