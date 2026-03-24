@@ -203,13 +203,14 @@ export default function InternalCadastros() {
   const isCurrentMonth = monthRef.getFullYear() === today.getFullYear() && monthRef.getMonth() === today.getMonth();
 
   const franchiseStatusFilter = (!showActive && !showInactive) ? "none" : (!showActive ? "inactive" : (!showInactive ? "active" : "all"));
-  const hasFilters = franchiseStatusFilter !== "all" || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || cityFilter !== "" || search.trim() !== "" || dateFilterMode !== "off";
+  const hasSearchFilters = franchiseStatusFilter !== "all" || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || cityFilter !== "" || search.trim() !== "";
+  const hasFilters = hasSearchFilters;
 
   const scrollToSearch = () => {
     searchCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  /* Helper: filter list excluding one specific filter to know what's available */
+  /* Helper: filter list excluding one specific filter to know what's available (search filters only, no date) */
   const getFilteredExcluding = (exclude: string) => {
      let list = mockFranchisees as Franchisee[];
     if (exclude !== "franchiseStatus" && franchiseStatusFilter !== "all") {
@@ -221,13 +222,6 @@ export default function InternalCadastros() {
     if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (exclude !== "planType" && planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     if (exclude !== "city" && cityFilter) list = list.filter(f => f.city === cityFilter);
-    if (dateFilterMode === "month") {
-      const range = getMonthRange(monthRef);
-      list = list.filter(f => pf(f).createdAt >= range.from && pf(f).createdAt <= range.to);
-    } else if (dateFilterMode === "custom") {
-      if (dateFrom) list = list.filter(f => pf(f).createdAt >= dateFrom);
-      if (dateTo) list = list.filter(f => pf(f).createdAt <= dateTo);
-    }
     if (search.trim()) {
       const q = search.toLowerCase().replace(/[.\-\/]/g, "");
       list = list.filter(f => {
@@ -241,9 +235,9 @@ export default function InternalCadastros() {
     return list;
   };
 
-  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, dateFilterMode, monthRef, dateFrom, dateTo]);
-  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, dateFilterMode, monthRef, dateFrom, dateTo]);
-  const availableCities = useMemo(() => new Set(getFilteredExcluding("city").map(f => f.city)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter]);
+  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter]);
+  const availableCities = useMemo(() => new Set(getFilteredExcluding("city").map(f => f.city)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter]);
 
   const citySuggestions = useMemo(() => {
     if (!citySearch.trim()) return Array.from(availableCities).sort();
@@ -251,6 +245,7 @@ export default function InternalCadastros() {
     return Array.from(availableCities).filter(c => c.toLowerCase().includes(q)).sort();
   }, [citySearch, availableCities]);
 
+  /* Search results (no date filter) */
   const filtered = useMemo(() => {
     let list = mockFranchisees as Franchisee[];
     if (franchiseStatusFilter === "none") return [];
@@ -260,13 +255,6 @@ export default function InternalCadastros() {
     if (qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     if (cityFilter) list = list.filter(f => f.city === cityFilter);
-    if (dateFilterMode === "month") {
-      const range = getMonthRange(monthRef);
-      list = list.filter(f => pf(f).createdAt >= range.from && pf(f).createdAt <= range.to);
-    } else if (dateFilterMode === "custom") {
-      if (dateFrom) list = list.filter(f => pf(f).createdAt >= dateFrom);
-      if (dateTo) list = list.filter(f => pf(f).createdAt <= dateTo);
-    }
     if (search.trim()) {
       const q = search.toLowerCase().replace(/[.\-\/]/g, "");
       list = list.filter(f => {
@@ -290,7 +278,20 @@ export default function InternalCadastros() {
       });
     }
     return list;
-  }, [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, dateFilterMode, monthRef, dateFrom, dateTo, sortBy]);
+  }, [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, sortBy]);
+
+  /* Indicator metrics (only date filter, independent of search) */
+  const indicatorFiltered = useMemo(() => {
+    let list = mockFranchisees as Franchisee[];
+    if (dateFilterMode === "month") {
+      const range = getMonthRange(monthRef);
+      list = list.filter(f => pf(f).createdAt >= range.from && pf(f).createdAt <= range.to);
+    } else if (dateFilterMode === "custom") {
+      if (dateFrom) list = list.filter(f => pf(f).createdAt >= dateFrom);
+      if (dateTo) list = list.filter(f => pf(f).createdAt <= dateTo);
+    }
+    return list;
+  }, [dateFilterMode, monthRef, dateFrom, dateTo]);
 
   const clearFilters = () => {
     setSearch("");
@@ -302,31 +303,27 @@ export default function InternalCadastros() {
     setPlanType("all");
     setCitySearch("");
     setCityFilter("");
-    setDateFilterMode("off");
-    setDateFrom("");
-    setDateTo("");
   };
 
-  /* ── Dashboard metrics ── */
-  const completedCount = useMemo(() => filtered.filter(f => pf(f).paidAt).length, [filtered]);
-  const pendingCount = useMemo(() => filtered.filter(f => !pf(f).paidAt).length, [filtered]);
+  /* ── Dashboard metrics (based on date filter only) ── */
+  const completedCount = useMemo(() => indicatorFiltered.filter(f => pf(f).paidAt).length, [indicatorFiltered]);
+  const pendingCount = useMemo(() => indicatorFiltered.filter(f => !pf(f).paidAt).length, [indicatorFiltered]);
   const conversionRate = (completedCount + pendingCount) > 0 ? Math.round((completedCount / (completedCount + pendingCount)) * 100) : 0;
 
-
   // Franchise status
-  const activeCount = useMemo(() => filtered.filter(f => pf(f).franchiseStatus === "active").length, [filtered]);
-  const inactiveCount = useMemo(() => filtered.filter(f => pf(f).franchiseStatus !== "active").length, [filtered]);
+  const activeCount = useMemo(() => indicatorFiltered.filter(f => pf(f).franchiseStatus === "active").length, [indicatorFiltered]);
+  const inactiveCount = useMemo(() => indicatorFiltered.filter(f => pf(f).franchiseStatus !== "active").length, [indicatorFiltered]);
 
-  // Avg franchises per franchisee (mock: unique sponsors who are active)
+  // Avg franchises per franchisee
   const activeFranchisees = useMemo(() => {
-    const uniqueOwners = new Set(filtered.filter(f => pf(f).franchiseStatus === "active").map(f => f.fullName));
+    const uniqueOwners = new Set(indicatorFiltered.filter(f => pf(f).franchiseStatus === "active").map(f => f.fullName));
     return uniqueOwners.size;
-  }, [filtered]);
+  }, [indicatorFiltered]);
   const avgFranchises = activeFranchisees > 0 ? (activeCount / activeFranchisees).toFixed(1) : "0";
 
-  // Avg activation time (days between createdAt and paidAt)
+  // Avg activation time
   const avgActivationDays = useMemo(() => {
-    const completed = filtered.filter(f => pf(f).paidAt);
+    const completed = indicatorFiltered.filter(f => pf(f).paidAt);
     if (completed.length === 0) return 0;
     const totalDays = completed.reduce((sum, f) => {
       const d1 = new Date(pf(f).createdAt);
@@ -334,45 +331,45 @@ export default function InternalCadastros() {
       return sum + Math.max(0, Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
     }, 0);
     return Math.round(totalDays / completed.length);
-  }, [filtered]);
+  }, [indicatorFiltered]);
 
   // Plan breakdown
   const planBreakdown = useMemo(() => {
     const counts: Record<string, number> = { bronze: 0, silver: 0, gold: 0, platinum: 0 };
-    filtered.forEach(f => { if (counts[pf(f).planCode] !== undefined) counts[pf(f).planCode]++; });
+    indicatorFiltered.forEach(f => { if (counts[pf(f).planCode] !== undefined) counts[pf(f).planCode]++; });
     return counts;
-  }, [filtered]);
+  }, [indicatorFiltered]);
 
   // Qualification breakdown (active only)
   const qualBreakdown = useMemo(() => {
     const counts: Record<string, number> = { consultor: 0, distribuidor: 0, lider: 0, rubi: 0, esmeralda: 0, diamante: 0 };
-    filtered.filter(f => pf(f).franchiseStatus === "active").forEach(f => {
+    indicatorFiltered.filter(f => pf(f).franchiseStatus === "active").forEach(f => {
       if (counts[pf(f).qualification] !== undefined) counts[pf(f).qualification]++;
     });
     return counts;
-  }, [filtered]);
+  }, [indicatorFiltered]);
 
   // Top sponsors
   const topSponsors = useMemo(() => {
     const map = new Map<string, { name: string; id: string; count: number }>();
-    filtered.forEach(f => {
+    indicatorFiltered.forEach(f => {
       const existing = map.get(pf(f).sponsorId);
       if (existing) existing.count++;
       else map.set(pf(f).sponsorId, { name: pf(f).sponsorName, id: pf(f).sponsorId, count: 1 });
     });
     return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 5);
-  }, [filtered]);
+  }, [indicatorFiltered]);
 
   // Top cities
   const topCities = useMemo(() => {
     const map = new Map<string, { city: string; flag: string; count: number }>();
-    filtered.forEach(f => {
+    indicatorFiltered.forEach(f => {
       const existing = map.get(f.city);
       if (existing) existing.count++;
       else map.set(f.city, { city: f.city, flag: f.countryFlag, count: 1 });
     });
     return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 5);
-  }, [filtered]);
+  }, [indicatorFiltered]);
 
   const barColors: Record<string, string> = { bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400" };
   const qualBarColors: Record<string, string> = { consultor: "bg-muted-foreground/40", distribuidor: "bg-blue-400", lider: "bg-blue-600", rubi: "bg-red-400", esmeralda: "bg-emerald-400", diamante: "bg-violet-400" };
