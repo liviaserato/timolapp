@@ -171,35 +171,6 @@ function getRegistrationStatus(f: Franchisee, fr?: FranchiseEntry): Registration
   return "pendente";
 }
 
-/* ── Mock annual data ── */
-const annualDataCurrentYear: Record<number, number> = { 0: 12, 1: 18, 2: 8, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0 };
-const annualDataPreviousYear: Record<number, number> = { 0: 8, 1: 14, 2: 11, 3: 9, 4: 15, 5: 20, 6: 17, 7: 22, 8: 13, 9: 19, 10: 16, 11: 10 };
-const currentYearValue = new Date().getFullYear();
-const currentMonthIdx = new Date().getMonth();
-
-
-function HBarChart({ items, barColorClass = "bg-primary/60", labelWidth = "w-14" }: { items: { label: string; count: number; extra?: string; tooltip?: string }[]; barColorClass?: string; labelWidth?: string }) {
-  const max = Math.max(...items.map(i => i.count), 1);
-  return (
-    <div className="space-y-1.5">
-      {items.map(({ label, count, extra, tooltip }) => {
-        const pct = Math.round((count / max) * 100);
-        return (
-          <div key={label} className="flex items-center gap-2" title={tooltip} aria-label={tooltip}>
-            <span className={`text-xs ${labelWidth} shrink-0 text-muted-foreground truncate`}>
-              {extra && <span className="mr-1">{extra}</span>}{label}
-            </span>
-            <div className="flex-1 h-4 bg-muted rounded overflow-hidden">
-              <div className={`h-full rounded ${barColorClass} transition-all`} style={{ width: `${Math.max(pct, count > 0 ? 6 : 0)}%` }} />
-            </div>
-            <span className="text-xs font-semibold w-6 text-right">{count}</span>
-          </div>
-        );
-      })}
-      {items.length === 0 && <p className="text-xs text-muted-foreground italic">—</p>}
-    </div>
-  );
-}
 
 /* ── Component ── */
 /* qualification priority for sorting */
@@ -219,15 +190,6 @@ export default function InternalCadastros() {
   const [planType, setPlanType] = useState<string>("all");
   const [searchFields, setSearchFields] = useState<string[]>([]);
 
-  const today = new Date();
-  const todayStr = today.toISOString().slice(0, 10);
-  const [dateFilterMode, setDateFilterMode] = useState<"off" | "month" | "custom">("month");
-  const [monthRef, setMonthRef] = useState(new Date());
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
-  const isCurrentMonth = monthRef.getFullYear() === today.getFullYear() && monthRef.getMonth() === today.getMonth();
-
-  // franchise status: both unchecked = no filter; one checked = filter to that; both checked = no filter
   const franchiseStatusFilter: string = (showActive && !showInactive) ? "active" : (!showActive && showInactive) ? "inactive" : "all";
   const hasSearchFilters = (showActive || showInactive) || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || search.trim() !== "";
   const hasFilters = hasSearchFilters;
@@ -240,18 +202,15 @@ export default function InternalCadastros() {
     searchCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  /* Helper: filter list excluding one specific filter to know what's available (search filters only, no date) */
   const getFilteredExcluding = (exclude: string) => {
      let list = mockFranchisees as Franchisee[];
     if (exclude !== "franchiseStatus" && franchiseStatusFilter !== "all") {
       if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
-      else if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
       else list = list.filter(f => pf(f).franchiseStatus !== "active");
     }
     if (exclude !== "registrationStatus" && registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
     if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (exclude !== "planType" && planType !== "all") list = list.filter(f => pf(f).planCode === planType);
-    
     if (search.trim()) {
       list = list.filter(f => matchesSearch(f, search, searchFields));
     }
@@ -261,7 +220,6 @@ export default function InternalCadastros() {
   const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType]);
   const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType]);
 
-  /* Search results (no date filter) */
   const filtered = useMemo(() => {
     let list = mockFranchisees as Franchisee[];
     if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
@@ -269,11 +227,9 @@ export default function InternalCadastros() {
     if (registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
     if (qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (planType !== "all") list = list.filter(f => pf(f).planCode === planType);
-    
     if (search.trim()) {
       list = list.filter(f => matchesSearch(f, search, searchFields));
     }
-    // Sort
     if (sortBy === "recent" || sortBy === "") {
       list = [...list].sort((a, b) => pf(b).createdAt.localeCompare(pf(a).createdAt));
     } else if (sortBy === "qualification") {
@@ -288,19 +244,6 @@ export default function InternalCadastros() {
     return list;
   }, [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType, sortBy]);
 
-  /* Indicator metrics (only date filter, independent of search) */
-  const indicatorFiltered = useMemo(() => {
-    let list = mockFranchisees as Franchisee[];
-    if (dateFilterMode === "month") {
-      const range = getMonthRange(monthRef);
-      list = list.filter(f => pf(f).createdAt >= range.from && pf(f).createdAt <= range.to);
-    } else if (dateFilterMode === "custom") {
-      if (dateFrom) list = list.filter(f => pf(f).createdAt >= dateFrom);
-      if (dateTo) list = list.filter(f => pf(f).createdAt <= dateTo);
-    }
-    return list;
-  }, [dateFilterMode, monthRef, dateFrom, dateTo]);
-
   const clearFilters = () => {
     setSearch("");
     setSortBy("");
@@ -311,75 +254,6 @@ export default function InternalCadastros() {
     setPlanType("all");
     setSearchFields([]);
   };
-
-  /* ── Dashboard metrics (based on date filter only) ── */
-  const completedCount = useMemo(() => indicatorFiltered.filter(f => pf(f).paidAt).length, [indicatorFiltered]);
-  const pendingCount = useMemo(() => indicatorFiltered.filter(f => !pf(f).paidAt).length, [indicatorFiltered]);
-  const conversionRate = (completedCount + pendingCount) > 0 ? Math.round((completedCount / (completedCount + pendingCount)) * 100) : 0;
-
-  // Franchise status
-  const activeCount = useMemo(() => indicatorFiltered.filter(f => pf(f).franchiseStatus === "active").length, [indicatorFiltered]);
-  const inactiveCount = useMemo(() => indicatorFiltered.filter(f => pf(f).franchiseStatus !== "active").length, [indicatorFiltered]);
-
-  // Avg franchises per franchisee
-  const activeFranchisees = useMemo(() => {
-    const uniqueOwners = new Set(indicatorFiltered.filter(f => pf(f).franchiseStatus === "active").map(f => f.fullName));
-    return uniqueOwners.size;
-  }, [indicatorFiltered]);
-  const avgFranchises = activeFranchisees > 0 ? (activeCount / activeFranchisees).toFixed(1) : "0";
-
-  // Avg activation time
-  const avgActivationDays = useMemo(() => {
-    const completed = indicatorFiltered.filter(f => pf(f).paidAt);
-    if (completed.length === 0) return 0;
-    const totalDays = completed.reduce((sum, f) => {
-      const d1 = new Date(pf(f).createdAt);
-      const d2 = new Date(pf(f).paidAt!);
-      return sum + Math.max(0, Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
-    }, 0);
-    return Math.round(totalDays / completed.length);
-  }, [indicatorFiltered]);
-
-  // Plan breakdown
-  const planBreakdown = useMemo(() => {
-    const counts: Record<string, number> = { bronze: 0, silver: 0, gold: 0, platinum: 0 };
-    indicatorFiltered.forEach(f => { if (counts[pf(f).planCode] !== undefined) counts[pf(f).planCode]++; });
-    return counts;
-  }, [indicatorFiltered]);
-
-  // Qualification breakdown (active only)
-  const qualBreakdown = useMemo(() => {
-    const counts: Record<string, number> = { consultor: 0, distribuidor: 0, lider: 0, rubi: 0, esmeralda: 0, diamante: 0 };
-    indicatorFiltered.filter(f => pf(f).franchiseStatus === "active").forEach(f => {
-      if (counts[pf(f).qualification] !== undefined) counts[pf(f).qualification]++;
-    });
-    return counts;
-  }, [indicatorFiltered]);
-
-  // Top sponsors
-  const topSponsors = useMemo(() => {
-    const map = new Map<string, { name: string; id: string; count: number }>();
-    indicatorFiltered.forEach(f => {
-      const existing = map.get(pf(f).sponsorId);
-      if (existing) existing.count++;
-      else map.set(pf(f).sponsorId, { name: pf(f).sponsorName, id: pf(f).sponsorId, count: 1 });
-    });
-    return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 5);
-  }, [indicatorFiltered]);
-
-  // Top cities
-  const topCities = useMemo(() => {
-    const map = new Map<string, { city: string; flag: string; count: number }>();
-    indicatorFiltered.forEach(f => {
-      const existing = map.get(f.city);
-      if (existing) existing.count++;
-      else map.set(f.city, { city: f.city, flag: f.countryFlag, count: 1 });
-    });
-    return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 5);
-  }, [indicatorFiltered]);
-
-  const barColors: Record<string, string> = { bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400" };
-  const qualBarColors: Record<string, string> = { consultor: "bg-muted-foreground/40", distribuidor: "bg-blue-400", lider: "bg-blue-600", rubi: "bg-red-400", esmeralda: "bg-emerald-400", diamante: "bg-violet-400" };
 
   if (showPending) {
     return (
@@ -412,7 +286,157 @@ export default function InternalCadastros() {
         </Button>
       </header>
 
+      <div ref={searchCardRef}>
+        <DashboardCard icon={Search} title={t("internal.cadastros.searchFranchisee")}>
+          <div className="mt-2 space-y-3">
+            {/* Row 1: Search + Sort */}
+            <div className="flex flex-wrap items-start gap-2">
+              <div className="flex-1 min-w-[200px] space-y-1.5">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder={t("internal.cadastros.searchPlaceholder")}
+                    value={search}
+                    onChange={e => { setSearch(e.target.value); setSearchFields([]); activateCheckboxes(); scrollToSearch(); }}
+                    onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); (e.target as HTMLInputElement).select(); } }}
+                    className="pl-9 pr-9 h-9 text-xs"
+                  />
+                  {search && (
+                    <button onClick={() => { setSearch(""); setSearchFields([]); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+                {search.trim() && (
+                  <ToggleGroup
+                    type="multiple"
+                    value={searchFields}
+                    onValueChange={setSearchFields}
+                    className="justify-start gap-1 flex-wrap"
+                  >
+                    {isNumericSearch(search) ? (
+                      <>
+                        <ToggleGroupItem value="id" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleId")}</ToggleGroupItem>
+                        <ToggleGroupItem value="document" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleDocument")}</ToggleGroupItem>
+                        <ToggleGroupItem value="phone" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.togglePhone")}</ToggleGroupItem>
+                      </>
+                    ) : (
+                      <>
+                        <ToggleGroupItem value="name" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleName")}</ToggleGroupItem>
+                        <ToggleGroupItem value="city" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleCity")}</ToggleGroupItem>
+                        <ToggleGroupItem value="email" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleEmail")}</ToggleGroupItem>
+                      </>
+                    )}
+                  </ToggleGroup>
+                )}
+              </div>
+              {/* Sort */}
+              <Select value={sortBy} onValueChange={v => { setSortBy(v); activateCheckboxes(); }}>
+                <SelectTrigger className="h-9 text-xs w-full sm:w-[180px]">
+                  <div className="flex items-center gap-1.5">
+                    <ArrowUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                    <SelectValue placeholder={t("internal.cadastros.sortPlaceholder")} />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="recent">{t("internal.cadastros.sortRecent")}</SelectItem>
+                  <SelectItem value="active_first">{t("internal.cadastros.sortActiveFirst")}</SelectItem>
+                  <SelectItem value="qualification">{t("internal.cadastros.sortQualification")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
+            {/* Row 2: Filters */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {/* Franchise status checkboxes */}
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterFranchiseStatus")}</span>
+                <div className="flex items-center gap-3 h-9 px-2 rounded-md border border-input bg-background">
+                  <label className="flex items-center gap-1.5 cursor-pointer flex-1 min-w-0">
+                    <Checkbox checked={showActive} onCheckedChange={(v: boolean) => setShowActive(v)} className="h-3.5 w-3.5" />
+                    <span className="text-xs truncate">{t("internal.cadastros.statusActive")}</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 cursor-pointer flex-1 min-w-0">
+                    <Checkbox checked={showInactive} onCheckedChange={(v: boolean) => setShowInactive(v)} className="h-3.5 w-3.5" />
+                    <span className="text-xs truncate">{t("internal.cadastros.statusInactive")}</span>
+                  </label>
+                </div>
+              </div>
+              {/* Registration status */}
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterRegistrationStatus")}</span>
+                <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); activateCheckboxes(); }}>
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("internal.cadastros.all")}</SelectItem>
+                    <SelectItem value="pendente">{t("internal.cadastros.regPending")}</SelectItem>
+                    <SelectItem value="concluido">{t("internal.cadastros.regCompleted")}</SelectItem>
+                    <SelectItem value="cancelado">{t("internal.cadastros.regCancelled")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {/* Qualification */}
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterQualification")}</span>
+                <Select value={qualification} onValueChange={v => { setQualification(v); activateCheckboxes(); }}>
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("internal.cadastros.all")}</SelectItem>
+                    {(["consultor", "distribuidor", "lider", "rubi", "esmeralda", "diamante"] as const).map(q => (
+                      <SelectItem key={q} value={q} disabled={!availableQualifications.has(q)}>
+                        {t(qualificationLabelKeys[q])}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {/* Plan type */}
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterPlanType")}</span>
+                <Select value={planType} onValueChange={v => { setPlanType(v); activateCheckboxes(); }}>
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("internal.cadastros.all")}</SelectItem>
+                    {(["bronze", "silver", "gold", "platinum"] as const).map(p => (
+                      <SelectItem key={p} value={p} disabled={!availablePlans.has(p)}>
+                        {t(`franchise.${p}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Active filters + clear */}
+            {hasFilters && (
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">{filtered.length} {t("internal.cadastros.resultsFound")}</span>
+                <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
+                  <X className="h-3 w-3" />
+                  {t("internal.cadastros.clearFilters")}
+                </Button>
+              </div>
+            )}
+          </div>
+        </DashboardCard>
+      </div>
+
+      {/* ── Results ── */}
+      <div className="mt-4 space-y-3">
+        {filtered.map(f => (
+          <FranchiseeCard key={f.id} franchisee={f} />
+        ))}
+        <RegistrationStatusLegend />
+      </div>
+    </div>
+  );
+}
 
 const registrationStatusBorder: Record<RegistrationStatus, string> = {
   concluido: "border-l-[#003885]",
