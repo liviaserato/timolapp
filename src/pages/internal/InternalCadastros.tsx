@@ -465,7 +465,7 @@ export default function InternalCadastros() {
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.byFranchiseType")}</h4>
                 {(["bronze", "silver", "gold", "platinum"] as const).map(plan => {
                   const count = planBreakdown[plan] || 0;
-                  const planLabelKeys: Record<string, string> = { bronze: "internal.cadastros.qualBronze", silver: "internal.cadastros.qualSilver", gold: "internal.cadastros.qualGold", platinum: "internal.cadastros.qualPlatinum" };
+                  const planLabelKeys: Record<string, string> = { bronze: "franchise.bronze", silver: "franchise.silver", gold: "franchise.gold", platinum: "franchise.platinum" };
                   return (
                     <div key={plan} className="flex items-center gap-2">
                       <span className="text-xs w-14 shrink-0 text-muted-foreground">{t(planLabelKeys[plan])}</span>
