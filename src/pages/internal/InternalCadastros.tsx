@@ -529,7 +529,7 @@ export default function InternalCadastros() {
         {hasFilters && filtered.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Users className="h-10 w-10 text-muted-foreground/40 mb-3" />
-            <p className="text-sm text-muted-foreground">Nenhum franqueado encontrado com os filtros selecionados</p>
+            <p className="text-sm text-muted-foreground">{t("internal.cadastros.noResults")}</p>
           </div>
         )}
 
