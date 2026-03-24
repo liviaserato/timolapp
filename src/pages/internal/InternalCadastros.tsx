@@ -338,7 +338,7 @@ export default function InternalCadastros() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {/* Franchise types */}
               <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Por Tipo de Franquia</h4>
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.byFranchiseType")}</h4>
                 <div className="space-y-1.5">
                   {(["bronze", "silver", "gold", "platinum"] as const).map(plan => {
                     const count = planBreakdown[plan] || 0;
