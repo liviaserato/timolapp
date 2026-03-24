@@ -1,22 +1,21 @@
 
 
-# Colocar URL do Manus direto no client.ts
+## Plano: Botão Dev Bypass na tela de Login
 
-## Mudança
+### O que será feito
+Adicionar um botão discreto "Entrar como Admin (Dev)" na tela de login que simula um login com role `admin`, gravando um token fake e a role no storage, e redirecionando para `/internal`.
 
-Atualizar o fallback em `getBaseUrl()` no `src/lib/api/client.ts` para apontar diretamente para o backend do Manus, permitindo testes imediatos sem configurar Build Secrets.
+### Detalhes técnicos
 
-### Arquivo: `src/lib/api/client.ts`
+**Arquivo: `src/pages/Login.tsx`**
+- Adicionar uma função `handleDevBypass` que:
+  - Chama `setAccessToken("dev-bypass-token", true)` e `setUserRole("admin", true)` do `client.ts`
+  - Navega para `/internal`
+- Renderizar um botão pequeno e discreto (texto cinza, sem destaque) abaixo do formulário de login, visível apenas em desenvolvimento (`import.meta.env.DEV`)
 
-Linha ~11, trocar o fallback:
+**Arquivo: `src/components/auth/AuthGate.tsx`**
+- Nenhuma alteração necessária — o `isAuthenticated()` já verifica a existência do token no storage, então o token fake será aceito
 
-```typescript
-// De:
-return import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "https://www.timolweb.com.br";
-
-// Para:
-return import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "https://3001-islx8717rpj8ilx2h03mq-b2e90ed3.us2.manus.computer";
-```
-
-Nenhum outro arquivo precisa ser alterado.
+### Segurança
+- O botão só aparece em ambiente de desenvolvimento (`import.meta.env.DEV`), nunca em produção
 
