@@ -365,7 +365,7 @@ export default function InternalCadastros() {
             {/* ─── Column 1: Cadastros ─── */}
             <div className="flex flex-col gap-3">
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
-                <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex items-center justify-center gap-1.5 mb-2">
                   <Users className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardRegistrations")}</span>
                   <Tooltip delayDuration={0}>
