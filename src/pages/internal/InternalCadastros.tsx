@@ -735,49 +735,123 @@ export default function InternalCadastros() {
   );
 }
 
+/* ── Registration status helpers ── */
+type RegistrationStatus = "concluido" | "cancelado" | "pendente";
+
+function getRegistrationStatus(f: Franchisee): RegistrationStatus {
+  if (f.franchiseStatus === "cancelled") return "cancelado";
+  if (f.paidAt) return "concluido";
+  return "pendente";
+}
+
+const registrationStatusBorder: Record<RegistrationStatus, string> = {
+  concluido: "border-l-[#003885]",
+  cancelado: "border-l-[#8B0000]",
+  pendente: "border-l-gray-400",
+};
+
 /* ── Franchisee Result Card ── */
 function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
   const { t } = useLanguage();
+  const regStatus = getRegistrationStatus(f);
+  const isCancelled = regStatus === "cancelado";
+  const isActive = f.franchiseStatus === "active";
+  const qualConfig = qualificationConfig[f.qualification];
+
+  const planLabels: Record<string, string> = {
+    bronze: "Bronze",
+    silver: "Prata",
+    gold: "Ouro",
+    platinum: "Platina",
+  };
+
+  // Document label
+  const isBrazilian = f.country === "Brasil";
+  const docLabel = isBrazilian ? `CPF: ${f.document}` : `${f.document} · ${f.countryFlag} ${f.country}`;
+
   return (
-    <div className="rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
-      <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold text-foreground truncate">{f.fullName}</h3>
-            <span className="text-xs text-muted-foreground shrink-0">#{f.franchiseId}</span>
+    <div
+      className={`rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] transition-shadow hover:shadow-md ${registrationStatusBorder[regStatus]} ${isCancelled ? "opacity-50" : ""}`}
+    >
+      <div className="p-4">
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* ── Column 1: Identity ── */}
+          <div className="flex-1 min-w-0 space-y-1">
+            <div className="flex items-center gap-2">
+              <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${isActive ? "bg-emerald-500" : "bg-red-500"}`} />
+              <span className="text-sm font-bold text-foreground">ID {f.franchiseId}</span>
+              <span className="text-xs text-muted-foreground">|</span>
+              <span className="text-sm text-foreground truncate">{f.fullName}</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("internal.cadastros.sponsor")} (ID{f.sponsorId})
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {t("internal.cadastros.registrationDate")}: {f.createdAt}
+            </p>
+            <p className="text-xs text-foreground">
+              {planLabels[f.planCode] || f.planCode}
+            </p>
+            {qualConfig && (
+              <p className="text-xs flex items-center gap-1.5">
+                <span style={{ color: qualConfig.color }}>{qualConfig.icon}</span>
+                <span className="text-foreground">{t(qualificationLabelKeys[f.qualification])}</span>
+              </p>
+            )}
           </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {t("internal.cadastros.sponsor")}: {f.sponsorName} (#{f.sponsorId})
-          </p>
-        </div>
-        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0 mt-0.5 transition-colors" />
-      </div>
 
-      <div className="flex flex-wrap gap-1.5 mb-3">
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${planColors[f.planCode] || ""}`}>{t(qualificationLabelKeys[f.planCode] || f.planCode)}</Badge>
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[f.franchiseStatus]}`}>{t(statusLabelKeys[f.franchiseStatus])}</Badge>
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[f.activationStatus]}`}>{t(statusLabelKeys[f.activationStatus])}</Badge>
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${qualificationColors[f.qualification]}`}>{t(qualificationLabelKeys[f.qualification])}</Badge>
-      </div>
+          {/* ── Column 2: Personal data ── */}
+          <div className="flex-1 min-w-0 space-y-1 text-xs text-muted-foreground">
+            <p className="truncate">{docLabel}</p>
+            <p>{f.birthDate} · {f.gender}</p>
+            <p className="flex items-center gap-1.5"><KeyRound className="h-3 w-3 shrink-0" /><span className="truncate">{f.username}</span></p>
+            <p className="flex items-center gap-1.5"><Mail className="h-3 w-3 shrink-0" /><span className="truncate">{f.email}</span></p>
+            <p className="flex items-center gap-1.5"><Phone className="h-3 w-3 shrink-0" /><span className="truncate">{f.phone}</span></p>
+            <p className="flex items-center gap-1.5"><MapPin className="h-3 w-3 shrink-0" /><span className="truncate">{f.city}, {f.state} {f.countryFlag}</span></p>
+          </div>
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
-        <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
-          <Mail className="h-3 w-3 shrink-0" />
-          <span className="truncate">{f.email}</span>
-        </div>
-        <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
-          <Phone className="h-3 w-3 shrink-0" />
-          <span className="truncate">{f.phone}</span>
-        </div>
-        <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
-          <KeyRound className="h-3 w-3 shrink-0" />
-          <span className="truncate">{f.username}</span>
-        </div>
-        <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
-          <MapPin className="h-3 w-3 shrink-0" />
-          <span className="truncate">{f.city}, {f.state}</span>
+          {/* ── Column 3: Actions ── */}
+          <div className="flex lg:flex-col flex-row flex-wrap gap-2 lg:w-[160px] shrink-0">
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none">
+              <MapPinHouse className="h-3 w-3" />
+              {t("internal.cadastros.btnAddresses")}
+            </Button>
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none">
+              <Landmark className="h-3 w-3" />
+              {t("internal.cadastros.btnFinancial")}
+            </Button>
+            <div className="hidden lg:block flex-1" />
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none">
+              <Pencil className="h-3 w-3" />
+              {t("internal.cadastros.btnEdit")}
+            </Button>
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none">
+              <Lock className="h-3 w-3" />
+              {t("internal.cadastros.btnCredentials")}
+            </Button>
+          </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ── Registration Status Legend ── */
+function RegistrationStatusLegend() {
+  const { t } = useLanguage();
+  const items = [
+    { label: t("internal.cadastros.regCompleted"), color: "bg-[#003885]" },
+    { label: t("internal.cadastros.regCancelled"), color: "bg-[#8B0000]" },
+    { label: t("internal.cadastros.regPending"), color: "bg-gray-400" },
+  ];
+  return (
+    <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pt-3 border-t border-border mt-4">
+      {items.map(item => (
+        <span key={item.label} className="flex items-center gap-1.5">
+          <span className={`h-3 w-1 rounded-sm ${item.color}`} />
+          {item.label}
+        </span>
+      ))}
     </div>
   );
 }
