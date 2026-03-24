@@ -175,6 +175,14 @@ function getRegistrationStatus(f: Franchisee, fr?: FranchiseEntry): Registration
   return "pendente";
 }
 
+/** Franchise is only considered "active" if registration is completed AND franchiseStatus is active */
+function isEffectivelyActive(f: Franchisee, fr?: FranchiseEntry): boolean {
+  const entry = fr || pf(f);
+  const regStatus = getRegistrationStatus(f, entry);
+  if (regStatus !== "concluido") return false;
+  return entry.franchiseStatus === "active";
+}
+
 
 /* ── Component ── */
 /* qualification priority for sorting */
