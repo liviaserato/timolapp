@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Users, Filter, X, Phone, Mail, KeyRound, MapPin, ChevronRight, ChevronLeft } from "lucide-react";
+import { Search, Users, Filter, X, Phone, Mail, KeyRound, MapPin, ChevronRight, ChevronLeft, BarChart3, TrendingUp, UserCheck, UserX, MapPinned } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 /* ── Types ── */
@@ -196,6 +196,48 @@ export default function InternalCadastros() {
     setDateTo("");
   };
 
+  /* ── Dashboard metrics computed from filtered data ── */
+  const totalCadastros = filtered.length;
+  const allData = mockFranchisees;
+
+  // Franchise type breakdown
+  const planBreakdown = useMemo(() => {
+    const counts: Record<string, number> = { bronze: 0, silver: 0, gold: 0, platinum: 0 };
+    filtered.forEach(f => { if (counts[f.planCode] !== undefined) counts[f.planCode]++; });
+    return counts;
+  }, [filtered]);
+
+  // Activation status breakdown
+  const activationBreakdown = useMemo(() => {
+    const counts = { activated: 0, pending: 0, inactive: 0 };
+    filtered.forEach(f => { if (counts[f.activationStatus as keyof typeof counts] !== undefined) counts[f.activationStatus as keyof typeof counts]++; });
+    return counts;
+  }, [filtered]);
+
+  // Franchise status breakdown
+  const franchiseStatusBreakdown = useMemo(() => {
+    const counts = { active: 0, suspended: 0, cancelled: 0 };
+    filtered.forEach(f => { if (counts[f.franchiseStatus as keyof typeof counts] !== undefined) counts[f.franchiseStatus as keyof typeof counts]++; });
+    return counts;
+  }, [filtered]);
+
+  // Top cities
+  const topCities = useMemo(() => {
+    const map = new Map<string, number>();
+    filtered.forEach(f => map.set(f.city, (map.get(f.city) || 0) + 1));
+    return Array.from(map.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  }, [filtered]);
+
+  // Conversion rate (activated / total)
+  const conversionRate = totalCadastros > 0 ? Math.round((activationBreakdown.activated / totalCadastros) * 100) : 0;
+
+  // Qualification breakdown
+  const qualBreakdown = useMemo(() => {
+    const counts: Record<string, number> = { starter: 0, bronze: 0, silver: 0, gold: 0, platinum: 0, diamond: 0 };
+    filtered.forEach(f => { if (counts[f.qualification] !== undefined) counts[f.qualification]++; });
+    return counts;
+  }, [filtered]);
+
   return (
     <div>
       <header className="mb-4">
@@ -205,7 +247,7 @@ export default function InternalCadastros() {
 
       <DashboardCard icon={Search} title="Buscar Franqueado">
         <div className="mt-2 space-y-3">
-          {/* Search input + Date filter on same row */}
+          {/* Search input only */}
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -219,55 +261,6 @@ export default function InternalCadastros() {
                 <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   <X className="h-4 w-4" />
                 </button>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-xs text-muted-foreground shrink-0">Data cadastro:</span>
-              <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setDateFilterMode(dateFilterMode === "month" ? "off" : "month")}
-                  className={`px-3 h-9 text-xs font-medium transition-colors min-w-[52px] text-center ${
-                    dateFilterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-                  }`}
-                >
-                  Mês
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (dateFilterMode === "custom") { setDateFilterMode("off"); }
-                    else { setDateFilterMode("custom"); setDateTo(todayStr); }
-                  }}
-                  className={`px-3 h-9 text-xs font-medium transition-colors min-w-[52px] text-center ${
-                    dateFilterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-                  }`}
-                >
-                  Período
-                </button>
-              </div>
-
-              {dateFilterMode === "month" && (
-                <div className="flex items-center gap-0 shrink-0">
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setMonthRef(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}>
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <span className="text-xs font-medium min-w-[120px] text-center">
-                    {getMonthLabel(monthRef)}
-                  </span>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { if (!isCurrentMonth) setMonthRef(d => new Date(d.getFullYear(), d.getMonth() + 1, 1)); }} disabled={isCurrentMonth}>
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
-
-              {dateFilterMode === "custom" && (
-                <div className="flex gap-2 items-center shrink-0">
-                  <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
-                  <span className="text-xs text-muted-foreground">até</span>
-                  <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateTo} onChange={e => setDateTo(e.target.value)} />
-                </div>
               )}
             </div>
           </div>
@@ -342,6 +335,187 @@ export default function InternalCadastros() {
           )}
         </div>
       </DashboardCard>
+
+      {/* ── Indicadores Card ── */}
+      <div className="mt-4">
+        <DashboardCard icon={BarChart3} title="Indicadores">
+          <div className="mt-2 space-y-4">
+            {/* Date filter row */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-muted-foreground shrink-0">Período:</span>
+              <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setDateFilterMode(dateFilterMode === "month" ? "off" : "month")}
+                  className={`px-3 h-9 text-xs font-medium transition-colors min-w-[52px] text-center ${
+                    dateFilterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  Mês
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (dateFilterMode === "custom") { setDateFilterMode("off"); }
+                    else { setDateFilterMode("custom"); setDateTo(todayStr); }
+                  }}
+                  className={`px-3 h-9 text-xs font-medium transition-colors min-w-[52px] text-center ${
+                    dateFilterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  Período
+                </button>
+              </div>
+
+              {dateFilterMode === "month" && (
+                <div className="flex items-center gap-0 shrink-0">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setMonthRef(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-xs font-medium min-w-[120px] text-center">
+                    {getMonthLabel(monthRef)}
+                  </span>
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { if (!isCurrentMonth) setMonthRef(d => new Date(d.getFullYear(), d.getMonth() + 1, 1)); }} disabled={isCurrentMonth}>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+
+              {dateFilterMode === "custom" && (
+                <div className="flex gap-2 items-center shrink-0">
+                  <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
+                  <span className="text-xs text-muted-foreground">até</span>
+                  <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateTo} onChange={e => setDateTo(e.target.value)} />
+                </div>
+              )}
+
+              {dateFilterMode !== "off" && (
+                <span className="text-xs font-semibold text-primary ml-auto">{totalCadastros} cadastro{totalCadastros !== 1 ? "s" : ""}</span>
+              )}
+            </div>
+
+            {/* KPI row */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
+                <div className="flex items-center justify-center gap-1.5 mb-1">
+                  <Users className="h-4 w-4 text-primary" />
+                  <span className="text-xs text-muted-foreground">Total Cadastros</span>
+                </div>
+                <span className="text-2xl font-bold text-foreground">{totalCadastros}</span>
+              </div>
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
+                <div className="flex items-center justify-center gap-1.5 mb-1">
+                  <TrendingUp className="h-4 w-4 text-emerald-500" />
+                  <span className="text-xs text-muted-foreground">Taxa de Ativação</span>
+                </div>
+                <span className="text-2xl font-bold text-foreground">{conversionRate}%</span>
+              </div>
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
+                <div className="flex items-center justify-center gap-1.5 mb-1">
+                  <UserCheck className="h-4 w-4 text-emerald-500" />
+                  <span className="text-xs text-muted-foreground">Franquias Ativas</span>
+                </div>
+                <span className="text-2xl font-bold text-foreground">{franchiseStatusBreakdown.active}</span>
+              </div>
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
+                <div className="flex items-center justify-center gap-1.5 mb-1">
+                  <UserX className="h-4 w-4 text-red-500" />
+                  <span className="text-xs text-muted-foreground">Suspensas / Canceladas</span>
+                </div>
+                <span className="text-2xl font-bold text-foreground">{franchiseStatusBreakdown.suspended + franchiseStatusBreakdown.cancelled}</span>
+              </div>
+            </div>
+
+            {/* Breakdown row */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Franchise types */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Por Tipo de Franquia</h4>
+                <div className="space-y-1.5">
+                  {(["bronze", "silver", "gold", "platinum"] as const).map(plan => {
+                    const count = planBreakdown[plan] || 0;
+                    const pct = totalCadastros > 0 ? Math.round((count / totalCadastros) * 100) : 0;
+                    const labels: Record<string, string> = { bronze: "Bronze", silver: "Prata", gold: "Ouro", platinum: "Platina" };
+                    const barColors: Record<string, string> = { bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400" };
+                    return (
+                      <div key={plan} className="flex items-center gap-2">
+                        <span className="text-xs w-14 shrink-0 text-muted-foreground">{labels[plan]}</span>
+                        <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full ${barColors[plan]} transition-all`} style={{ width: `${Math.max(pct, 2)}%` }} />
+                        </div>
+                        <span className="text-xs font-semibold w-8 text-right">{count}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Qualification */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Por Qualificação</h4>
+                <div className="space-y-1.5">
+                  {(["starter", "bronze", "silver", "gold", "platinum", "diamond"] as const).map(q => {
+                    const count = qualBreakdown[q] || 0;
+                    const pct = totalCadastros > 0 ? Math.round((count / totalCadastros) * 100) : 0;
+                    const barColors: Record<string, string> = { starter: "bg-muted-foreground/40", bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400", diamond: "bg-violet-400" };
+                    return (
+                      <div key={q} className="flex items-center gap-2">
+                        <span className="text-xs w-14 shrink-0 text-muted-foreground">{qualificationLabels[q]}</span>
+                        <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full ${barColors[q]} transition-all`} style={{ width: `${Math.max(pct, count > 0 ? 2 : 0)}%` }} />
+                        </div>
+                        <span className="text-xs font-semibold w-8 text-right">{count}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Top cities */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
+                  <MapPinned className="h-3.5 w-3.5" />
+                  Top Cidades
+                </h4>
+                <div className="space-y-1.5">
+                  {topCities.length === 0 && (
+                    <p className="text-xs text-muted-foreground italic">Sem dados</p>
+                  )}
+                  {topCities.map(([cityName, count], i) => {
+                    const pct = totalCadastros > 0 ? Math.round((count / totalCadastros) * 100) : 0;
+                    return (
+                      <div key={cityName} className="flex items-center gap-2">
+                        <span className="text-xs w-[100px] shrink-0 text-muted-foreground truncate">{cityName}</span>
+                        <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full rounded-full bg-primary/60 transition-all" style={{ width: `${Math.max(pct, 2)}%` }} />
+                        </div>
+                        <span className="text-xs font-semibold w-8 text-right">{count}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Activation status mini-badges */}
+            <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-app-card-border">
+              <span className="text-xs text-muted-foreground">Ativação:</span>
+              <div className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                <span className="text-xs">Ativados <b>{activationBreakdown.activated}</b></span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
+                <span className="text-xs">Pendentes <b>{activationBreakdown.pending}</b></span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/40" />
+                <span className="text-xs">Inativos <b>{activationBreakdown.inactive}</b></span>
+              </div>
+            </div>
+          </div>
+        </DashboardCard>
+      </div>
 
       {/* Results */}
       <div className="mt-4 space-y-3">
