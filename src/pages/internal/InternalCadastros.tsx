@@ -241,13 +241,13 @@ export default function InternalCadastros() {
 
   return (
     <div>
-      <header className="mb-4">
-        <h1 className="text-2xl font-bold text-primary">Cadastros</h1>
-        <p className="text-sm text-muted-foreground mt-1">Busque e gerencie os cadastros de franqueados</p>
+       <header className="mb-4">
+        <h1 className="text-2xl font-bold text-primary">{t("internal.cadastros.title")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("internal.cadastros.subtitle")}</p>
       </header>
 
       {/* ── Indicadores Card ── */}
-      <DashboardCard icon={BarChart3} title="Indicadores">
+      <DashboardCard icon={BarChart3} title={t("internal.cadastros.indicators")}>
           <div className="mt-2 space-y-4">
             {/* Date filter row */}
             <div className="flex flex-wrap items-center gap-2">
