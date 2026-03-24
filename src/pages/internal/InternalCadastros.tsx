@@ -765,41 +765,6 @@ export default function InternalCadastros() {
                 </SelectContent>
               </Select>
 
-              {/* City - Autocomplete */}
-              <div className="relative">
-                <div className="relative">
-                  <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                  <Input
-                    placeholder={t("internal.cadastros.city")}
-                    value={cityFilter || citySearch}
-                    onChange={e => {
-                      setCitySearch(e.target.value);
-                      setCityFilter("");
-                      setShowCitySuggestions(true);
-                    }}
-                    onFocus={() => setShowCitySuggestions(true)}
-                    onBlur={() => setTimeout(() => setShowCitySuggestions(false), 150)}
-                    className="pl-8 pr-8 h-9 text-xs"
-                  />
-                  {(cityFilter || citySearch) && (
-                    <button onClick={() => { setCitySearch(""); setCityFilter(""); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  )}
-                </div>
-                {showCitySuggestions && citySuggestions.length > 0 && !cityFilter && (
-                  <div className="absolute z-50 top-full mt-1 w-full rounded-md border bg-popover shadow-md max-h-[160px] overflow-y-auto">
-                    {citySuggestions.map(c => (
-                      <button
-                        key={c}
-                        type="button"
-                        className="w-full text-left px-3 py-1.5 text-xs hover:bg-accent transition-colors"
-                        onMouseDown={() => { setCityFilter(c); setCitySearch(""); setShowCitySuggestions(false); scrollToSearch(); }}
-                      >
-                        {c}
-                      </button>
-                    ))}
-                  </div>
                 )}
               </div>
             </div>
