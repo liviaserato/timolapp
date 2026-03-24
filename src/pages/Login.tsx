@@ -231,7 +231,7 @@ const Login = () => {
               </Button>
 
 
-              {import.meta.env.DEV && (
+              {(import.meta.env.DEV || window.location.hostname.includes("lovable")) && (
                 <Button
                   variant="ghost"
                   className="w-full text-xs text-muted-foreground/50 hover:text-muted-foreground"
