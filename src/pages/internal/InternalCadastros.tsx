@@ -425,7 +425,7 @@ export default function InternalCadastros() {
       </DashboardCard>
 
       <div className="mt-4">
-        <DashboardCard icon={Search} title="Buscar Franqueado">
+        <DashboardCard icon={Search} title={t("internal.cadastros.searchFranchisee")}>
           <div className="mt-2 space-y-3">
             {/* Search input only */}
             <div className="flex flex-wrap items-center gap-2">
