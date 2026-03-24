@@ -307,7 +307,7 @@ export default function InternalCadastros() {
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
                 <div className="flex items-center justify-center gap-1.5 mb-1">
                   <Users className="h-4 w-4 text-primary" />
-                  <span className="text-xs text-muted-foreground">Total Cadastros</span>
+                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.totalRegistrations")}</span>
                 </div>
                 <span className="text-2xl font-bold text-foreground">{totalCadastros}</span>
               </div>
