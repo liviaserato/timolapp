@@ -375,23 +375,20 @@ export default function InternalCadastros() {
                     <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipRegistrations")}</TooltipContent>
                   </Tooltip>
                 </div>
-                <div className="flex items-baseline gap-3">
-                  <span className="text-3xl font-bold text-foreground">{completedCount}</span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm font-semibold text-primary">{conversionRate}%</span>
-                    <span className="text-[10px] text-muted-foreground">{t("internal.cadastros.completionRate")}</span>
-                  </div>
+                <div className="flex items-baseline justify-center gap-3">
                   {showTrend && trendDiff !== 0 && (
                     <div className={`flex items-center gap-0.5 ${trendUp ? "text-emerald-600" : "text-red-500"}`}>
                       {trendUp ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
                       <span className="text-[10px] font-medium">{trendUp ? "+" : ""}{trendDiff}</span>
                     </div>
                   )}
+                  <span className="text-3xl font-bold text-foreground">{completedCount}</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-semibold text-primary">{conversionRate}%</span>
+                    <span className="text-[10px] text-muted-foreground">{t("internal.cadastros.completionRate")}</span>
+                  </div>
                 </div>
-                <p className="text-[11px] text-muted-foreground mt-1">{pendingCount} {t("internal.cadastros.pendingRegistrations")}</p>
-                {showTrend && (
-                  <p className="text-[10px] text-muted-foreground/70 mt-0.5">{t("internal.cadastros.comparedPrevMonth")}</p>
-                )}
+                <p className="text-[11px] text-muted-foreground mt-1 text-center">{pendingCount} {t("internal.cadastros.pendingRegistrations")}</p>
               </div>
               {/* Chart: by franchise type */}
               <div className="space-y-1.5">
