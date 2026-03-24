@@ -801,7 +801,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             </div>
 
             {/* ── Grid 2 + Grid 3 side by side ── */}
-            <div className="flex flex-col sm:flex-row gap-x-8 gap-y-2">
+            <div className="flex flex-col sm:flex-row gap-x-14 gap-y-2">
               {/* Grid 2: Registration details */}
               <div className="space-y-1.5 min-w-0">
                 <p className="text-sm text-foreground flex items-center gap-1.5">
