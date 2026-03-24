@@ -740,7 +740,7 @@ export default function InternalCadastros() {
               {/* Registration Status - Select */}
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] text-muted-foreground/70 px-1">{t("internal.cadastros.registrationStatusLegend")}</span>
-                <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); scrollToSearch(); }}>
+                <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); activateCheckboxes(); scrollToSearch(); }}>
                   <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.allStatuses")} /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
