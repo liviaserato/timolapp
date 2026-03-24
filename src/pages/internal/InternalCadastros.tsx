@@ -135,7 +135,15 @@ function getMonthRange(date: Date): { from: string; to: string } {
   return { from: first.toISOString().slice(0, 10), to: last.toISOString().slice(0, 10) };
 }
 
-const uniqueCities = Array.from(new Set(mockFranchisees.map(f => f.city))).sort();
+/* ── Registration status helpers (before component for filter use) ── */
+type RegistrationStatus = "concluido" | "cancelado" | "pendente";
+
+function getRegistrationStatus(f: Franchisee, fr?: FranchiseEntry): RegistrationStatus {
+  const entry = fr || pf(f);
+  if (entry.franchiseStatus === "cancelled") return "cancelado";
+  if (entry.paidAt) return "concluido";
+  return "pendente";
+}
 
 /* ── Mock annual data ── */
 const annualDataCurrentYear: Record<number, number> = { 0: 12, 1: 18, 2: 8, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0 };
