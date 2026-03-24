@@ -375,7 +375,7 @@ export default function InternalCadastros() {
                     <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipRegistrations")}</TooltipContent>
                   </Tooltip>
                 </div>
-                <div className="flex items-baseline justify-center gap-3">
+                <div className="flex items-center justify-center gap-4">
                   {showTrend && trendDiff !== 0 && (
                     <div className={`flex items-center gap-0.5 ${trendUp ? "text-emerald-600" : "text-red-500"}`}>
                       {trendUp ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
@@ -383,9 +383,9 @@ export default function InternalCadastros() {
                     </div>
                   )}
                   <span className="text-3xl font-bold text-foreground">{completedCount}</span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm font-semibold text-primary">{conversionRate}%</span>
-                    <span className="text-[10px] text-muted-foreground">{t("internal.cadastros.completionRate")}</span>
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm font-semibold text-primary leading-tight">{conversionRate}%</span>
+                    <span className="text-[10px] text-primary/70 leading-tight">{t("internal.cadastros.completionRate")}</span>
                   </div>
                 </div>
                 <p className="text-[11px] text-muted-foreground mt-1 text-center">{pendingCount} {t("internal.cadastros.pendingRegistrations")}</p>
