@@ -357,7 +357,7 @@ export default function InternalCadastros() {
             {/* ─── Column 1: Cadastros ─── */}
             <div className="flex flex-col gap-3">
                <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-2 min-h-[2lh]">
+                <div className="flex items-center justify-center gap-1.5 mb-2 min-h-[32px]">
                   <Users className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardRegistrations")}</span>
                   <Tooltip delayDuration={0}>
@@ -398,7 +398,7 @@ export default function InternalCadastros() {
             {/* ─── Column 2: Status das Franquias ─── */}
             <div className="flex flex-col gap-3">
                <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-2 min-h-[2lh]">
+                <div className="flex items-center justify-center gap-1.5 mb-2 min-h-[32px]">
                   <Layers className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardFranchiseStatus")}</span>
                   <Tooltip delayDuration={0}>
@@ -443,7 +443,7 @@ export default function InternalCadastros() {
                <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
                 <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
-                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1 min-h-[2lh]">
+                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1 min-h-[32px]">
                       <Trophy className="h-4 w-4 text-primary shrink-0" />
                       <span>{t("internal.cadastros.cardAvgFranchisesLine1")}</span>
                       <Info className="h-3 w-3 text-muted-foreground shrink-0" />
@@ -472,7 +472,7 @@ export default function InternalCadastros() {
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
                 <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
-                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1 min-h-[2lh]">
+                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1 min-h-[32px]">
                       <Clock className="h-4 w-4 text-primary shrink-0" />
                       <span>{t("internal.cadastros.cardAvgActivationLine1")}</span>
                       <Info className="h-3 w-3 text-muted-foreground shrink-0" />
