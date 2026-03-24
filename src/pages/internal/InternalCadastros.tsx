@@ -784,10 +784,15 @@ const registrationStatusBorder: Record<RegistrationStatus, string> = {
 /* ── Franchisee Result Card ── */
 function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
   const { t } = useLanguage();
-  const regStatus = getRegistrationStatus(f);
+  // Sort franchises by createdAt ascending
+  const sortedFranchises = useMemo(() => [...f.franchises].sort((a, b) => a.createdAt.localeCompare(b.createdAt)), [f.franchises]);
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const sel = sortedFranchises[selectedIdx] || sortedFranchises[0];
+
+  const regStatus = getRegistrationStatus(f, sel);
   const isCancelled = regStatus === "cancelado";
-  const isActive = pf(f).franchiseStatus === "active";
-  const qualConfig = qualificationConfig[f.qualification];
+  const isActive = sel.franchiseStatus === "active";
+  const qualConfig = qualificationConfig[sel.qualification];
 
   const planLabels: Record<string, string> = {
     bronze: "Bronze",
@@ -798,8 +803,6 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
 
   const isBrazilian = f.country === "Brasil";
   const docLabel = isBrazilian ? `CPF: ${f.document}` : `${f.document} · ${f.countryFlag} ${f.country}`;
-
-  const allIds = [f.franchiseId, ...(f.extraFranchiseIds || [])];
 
   return (
     <div
@@ -814,14 +817,24 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`h-2 w-2 rounded-full shrink-0 ${isActive ? "bg-emerald-500" : "bg-red-500"}`} />
                 <span className="text-base font-bold text-foreground">{f.fullName}</span>
-                {allIds.map(id => (
-                  <Badge key={id} variant="secondary" className="text-xs px-1.5 py-0 h-5 font-medium rounded-sm">
-                    ID {id}
-                  </Badge>
+                {sortedFranchises.map((fr, idx) => (
+                  <button
+                    key={fr.franchiseId}
+                    type="button"
+                    onClick={() => setSelectedIdx(idx)}
+                    className={cn(
+                      "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border inline-flex items-center transition-colors cursor-pointer",
+                      idx === selectedIdx
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
+                    )}
+                  >
+                    ID {fr.franchiseId}
+                  </button>
                 ))}
               </div>
               <p className="text-xs text-muted-foreground mt-0.5 ml-4">
-                {t("internal.cadastros.sponsor")}: {f.sponsorName} (ID {f.sponsorId})
+                {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
               </p>
             </div>
 
@@ -831,16 +844,16 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
               <div className="space-y-1.5 min-w-0">
                 <p className="text-sm text-foreground flex items-center gap-1.5">
                   <Calendar className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
-                  {t("internal.cadastros.registrationDate")}: {f.createdAt.split("-").reverse().join("/")}
+                  {t("internal.cadastros.registrationDate")}: {sel.createdAt.split("-").reverse().join("/")}
                 </p>
                 <p className="text-sm text-foreground flex items-center gap-1.5">
                   <Gem className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
-                  Franquia {planLabels[f.planCode] || f.planCode}
+                  Franquia {planLabels[sel.planCode] || sel.planCode}
                 </p>
                 {qualConfig && (
                   <p className="text-sm flex items-center gap-1.5">
                     <span className="text-foreground/70">{qualConfig.icon}</span>
-                    <span className="text-foreground">{t(qualificationLabelKeys[f.qualification])}</span>
+                    <span className="text-foreground">{t(qualificationLabelKeys[sel.qualification])}</span>
                   </p>
                 )}
                 <p className="flex items-center gap-1.5 text-sm text-foreground">
