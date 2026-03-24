@@ -411,7 +411,7 @@ export default function InternalCadastros() {
 
             {/* ─── Column 2: Status das Franquias ─── */}
             <div className="flex flex-col gap-3">
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
+               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
                 <div className="flex items-center justify-center gap-1.5 mb-2">
                   <Layers className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardFranchiseStatus")}</span>
