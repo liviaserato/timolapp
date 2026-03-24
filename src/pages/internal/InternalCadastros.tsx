@@ -420,7 +420,7 @@ export default function InternalCadastros() {
                 </div>
               </div>
               {/* Chart: qualification (active only) */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 px-2">
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.activeQualOnly")}</h4>
                 {(["starter", "bronze", "silver", "gold", "platinum", "diamond"] as const).map(q => {
                   const count = qualBreakdown[q] || 0;
