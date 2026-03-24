@@ -268,7 +268,7 @@ export default function InternalCadastros() {
 
   // Qualification breakdown (active only)
   const qualBreakdown = useMemo(() => {
-    const counts: Record<string, number> = { starter: 0, bronze: 0, silver: 0, gold: 0, platinum: 0, diamond: 0 };
+    const counts: Record<string, number> = { consultor: 0, distribuidor: 0, lider: 0, rubi: 0, esmeralda: 0, diamante: 0 };
     filtered.filter(f => f.franchiseStatus === "active").forEach(f => {
       if (counts[f.qualification] !== undefined) counts[f.qualification]++;
     });
