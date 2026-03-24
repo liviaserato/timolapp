@@ -305,6 +305,7 @@ export default function InternalCadastros() {
     setRegistrationStatus("all");
     setQualification("all");
     setPlanType("all");
+    setSearchFields([]);
   };
 
   /* ── Dashboard metrics (based on date filter only) ── */
