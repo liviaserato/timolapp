@@ -354,7 +354,7 @@ export default function InternalCadastros() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {/* Franchise status checkboxes */}
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterFranchiseStatus")}</span>
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.franchiseStatus")}</span>
                 <div className="flex items-center gap-3 h-9 px-2 rounded-md border border-input bg-background">
                   <label className="flex items-center gap-1.5 cursor-pointer flex-1 min-w-0">
                     <Checkbox checked={showActive} onCheckedChange={(v: boolean) => setShowActive(v)} className="h-3.5 w-3.5" />
