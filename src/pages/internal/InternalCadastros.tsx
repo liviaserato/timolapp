@@ -448,12 +448,12 @@ export default function InternalCadastros() {
             {/* Dropdowns row */}
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               <Select value={franchiseStatus} onValueChange={setFranchiseStatus}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Status Franquia" /></SelectTrigger>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.franchiseStatus")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Status Franquia</SelectItem>
-                  <SelectItem value="active" disabled={!availableFranchiseStatuses.has("active")} className={!availableFranchiseStatuses.has("active") ? "opacity-40" : ""}>Ativa</SelectItem>
-                  <SelectItem value="suspended" disabled={!availableFranchiseStatuses.has("suspended")} className={!availableFranchiseStatuses.has("suspended") ? "opacity-40" : ""}>Suspensa</SelectItem>
-                  <SelectItem value="cancelled" disabled={!availableFranchiseStatuses.has("cancelled")} className={!availableFranchiseStatuses.has("cancelled") ? "opacity-40" : ""}>Cancelada</SelectItem>
+                  <SelectItem value="all">{t("internal.cadastros.franchiseStatus")}</SelectItem>
+                  <SelectItem value="active" disabled={!availableFranchiseStatuses.has("active")} className={!availableFranchiseStatuses.has("active") ? "opacity-40" : ""}>{t("internal.cadastros.statusActive")}</SelectItem>
+                  <SelectItem value="suspended" disabled={!availableFranchiseStatuses.has("suspended")} className={!availableFranchiseStatuses.has("suspended") ? "opacity-40" : ""}>{t("internal.cadastros.statusSuspended")}</SelectItem>
+                  <SelectItem value="cancelled" disabled={!availableFranchiseStatuses.has("cancelled")} className={!availableFranchiseStatuses.has("cancelled") ? "opacity-40" : ""}>{t("internal.cadastros.statusCancelled")}</SelectItem>
                 </SelectContent>
               </Select>
 
