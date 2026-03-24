@@ -110,14 +110,14 @@ function getMonthRange(date: Date): { from: string; to: string } {
 const uniqueCities = Array.from(new Set(mockFranchisees.map(f => f.city))).sort();
 
 /* ── Horizontal bar chart helper ── */
-function HBarChart({ items, barColorClass = "bg-primary/60", labelWidth = "w-14" }: { items: { label: string; count: number; extra?: string }[]; barColorClass?: string; labelWidth?: string }) {
+function HBarChart({ items, barColorClass = "bg-primary/60", labelWidth = "w-14" }: { items: { label: string; count: number; extra?: string; tooltip?: string }[]; barColorClass?: string; labelWidth?: string }) {
   const max = Math.max(...items.map(i => i.count), 1);
   return (
     <div className="space-y-1.5">
-      {items.map(({ label, count, extra }) => {
+      {items.map(({ label, count, extra, tooltip }) => {
         const pct = Math.round((count / max) * 100);
         return (
-          <div key={label} className="flex items-center gap-2">
+          <div key={label} className="flex items-center gap-2" title={tooltip} aria-label={tooltip}>
             <span className={`text-xs ${labelWidth} shrink-0 text-muted-foreground truncate`}>
               {extra && <span className="mr-1">{extra}</span>}{label}
             </span>
