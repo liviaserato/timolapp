@@ -387,7 +387,7 @@ export default function InternalCadastros() {
                 </h4>
                 <div className="space-y-1.5">
                   {topCities.length === 0 && (
-                    <p className="text-xs text-muted-foreground italic">Sem dados</p>
+                    <p className="text-xs text-muted-foreground italic">{t("internal.cadastros.noData")}</p>
                   )}
                   {topCities.map(([cityName, count], i) => {
                     const pct = totalCadastros > 0 ? Math.round((count / totalCadastros) * 100) : 0;
