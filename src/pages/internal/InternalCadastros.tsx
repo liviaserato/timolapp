@@ -8,9 +8,10 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip
 import {
   Search, Users, Filter, X, Phone, Mail, KeyRound, MapPin, ChevronRight, ChevronLeft,
   BarChart3, UserCheck, UserX, MapPinned, Info, Clock, Trophy, Layers, TrendingUp, TrendingDown,
-  Calendar, Award, ArrowDownRight, ArrowUpRight
+  Calendar, Award, ArrowDownRight, ArrowUpRight, MapPinHouse, Landmark, Pencil, Lock
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { qualificationConfig } from "@/components/app/rede/mock-data";
 
 /* ── Types ── */
 interface Franchisee {
