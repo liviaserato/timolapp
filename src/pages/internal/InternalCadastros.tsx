@@ -859,15 +859,6 @@ export default function InternalCadastros() {
   );
 }
 
-/* ── Registration status helpers ── */
-type RegistrationStatus = "concluido" | "cancelado" | "pendente";
-
-function getRegistrationStatus(f: Franchisee, fr?: FranchiseEntry): RegistrationStatus {
-  const entry = fr || pf(f);
-  if (entry.franchiseStatus === "cancelled") return "cancelado";
-  if (entry.paidAt) return "concluido";
-  return "pendente";
-}
 
 const registrationStatusBorder: Record<RegistrationStatus, string> = {
   concluido: "border-l-[#003885]",
