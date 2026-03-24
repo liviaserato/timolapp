@@ -389,7 +389,7 @@ export default function InternalCadastros() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t("internal.cadastros.all")}</SelectItem>
+                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
                     {(["consultor", "distribuidor", "lider", "rubi", "esmeralda", "diamante"] as const).map(q => (
                       <SelectItem key={q} value={q} disabled={!availableQualifications.has(q)}>
                         {t(qualificationLabelKeys[q])}
