@@ -465,7 +465,7 @@ export default function InternalCadastros() {
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.byFranchiseType")}</h4>
                 {(["bronze", "silver", "gold", "platinum"] as const).map(plan => {
                   const count = planBreakdown[plan] || 0;
-                  const planLabelKeys: Record<string, string> = { bronze: "internal.cadastros.qualBronze", silver: "internal.cadastros.qualSilver", gold: "internal.cadastros.qualGold", platinum: "internal.cadastros.qualPlatinum" };
+                  const planLabelKeys: Record<string, string> = { bronze: "franchise.bronze", silver: "franchise.silver", gold: "franchise.gold", platinum: "franchise.platinum" };
                   return (
                     <div key={plan} className="flex items-center gap-2">
                       <span className="text-xs w-14 shrink-0 text-muted-foreground">{t(planLabelKeys[plan])}</span>
@@ -773,10 +773,10 @@ export default function InternalCadastros() {
                 <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.franchiseType")} /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t("internal.cadastros.franchiseType")}</SelectItem>
-                  <SelectItem value="bronze" disabled={!availablePlans.has("bronze")} className={!availablePlans.has("bronze") ? "opacity-40" : ""}>{t("internal.cadastros.qualBronze")}</SelectItem>
-                  <SelectItem value="silver" disabled={!availablePlans.has("silver")} className={!availablePlans.has("silver") ? "opacity-40" : ""}>{t("internal.cadastros.qualSilver")}</SelectItem>
-                  <SelectItem value="gold" disabled={!availablePlans.has("gold")} className={!availablePlans.has("gold") ? "opacity-40" : ""}>{t("internal.cadastros.qualGold")}</SelectItem>
-                  <SelectItem value="platinum" disabled={!availablePlans.has("platinum")} className={!availablePlans.has("platinum") ? "opacity-40" : ""}>{t("internal.cadastros.qualPlatinum")}</SelectItem>
+                  <SelectItem value="bronze" disabled={!availablePlans.has("bronze")} className={!availablePlans.has("bronze") ? "opacity-40" : ""}>{t("franchise.bronze")}</SelectItem>
+                  <SelectItem value="silver" disabled={!availablePlans.has("silver")} className={!availablePlans.has("silver") ? "opacity-40" : ""}>{t("franchise.silver")}</SelectItem>
+                  <SelectItem value="gold" disabled={!availablePlans.has("gold")} className={!availablePlans.has("gold") ? "opacity-40" : ""}>{t("franchise.gold")}</SelectItem>
+                  <SelectItem value="platinum" disabled={!availablePlans.has("platinum")} className={!availablePlans.has("platinum") ? "opacity-40" : ""}>{t("franchise.platinum")}</SelectItem>
                 </SelectContent>
               </Select>
 
