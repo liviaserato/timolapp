@@ -204,6 +204,10 @@ export default function InternalCadastros() {
   const hasSearchFilters = (showActive || showInactive) || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || search.trim() !== "";
   const hasFilters = hasSearchFilters;
 
+  const activateCheckboxes = () => {
+    if (!showActive && !showInactive) { setShowActive(true); setShowInactive(true); }
+  };
+
   const scrollToSearch = () => {
     searchCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
