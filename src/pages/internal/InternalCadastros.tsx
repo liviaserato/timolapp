@@ -583,6 +583,103 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
   );
 }
 
+/* ── Touchpoint Alert Logic ── */
+type AlertLevel = "green" | "yellow" | "red";
+
+function getDaysSince(dateStr: string) {
+  return (Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24);
+}
+
+function getEmailAlert(fr: FranchiseEntry): { level: AlertLevel; tip: string } | null {
+  if (fr.recoveryEmailSentAt) return null;
+  const days = getDaysSince(fr.createdAt);
+  if (days >= 2) return { level: "red", tip: "E-mail de recuperação deveria ter sido enviado" };
+  if (days >= 1) return { level: "yellow", tip: "E-mail de recuperação ainda não enviado" };
+  return null;
+}
+
+function getWhatsappAlert(fr: FranchiseEntry): { level: AlertLevel; tip: string } | null {
+  if (fr.whatsappSentAt) return null;
+  const days = getDaysSince(fr.createdAt);
+  if (days >= 4) return { level: "red", tip: "WhatsApp deveria ter sido enviado há dias" };
+  if (days >= 3) return { level: "yellow", tip: "WhatsApp já deveria ter sido enviado" };
+  if (days >= 2) return { level: "green", tip: "Hoje é dia de enviar WhatsApp" };
+  return null;
+}
+
+function getSponsorAlert(fr: FranchiseEntry): { level: AlertLevel; tip: string } | null {
+  if (!fr.whatsappSentAt || fr.sponsorNotifiedAt) return null;
+  const days = getDaysSince(fr.createdAt);
+  if (days >= 10) return { level: "red", tip: "Notificação ao patrocinador gravemente atrasada" };
+  if (days >= 8) return { level: "yellow", tip: "Notificação ao patrocinador atrasada" };
+  if (days >= 7) return { level: "green", tip: "Hoje é um bom dia para notificar o patrocinador" };
+  return null;
+}
+
+const alertIconColor: Record<AlertLevel, string> = {
+  green: "text-emerald-500",
+  yellow: "text-amber-500",
+  red: "text-red-500",
+};
+
+function formatTouchpointDate(dateStr: string | null | undefined): string {
+  if (!dateStr) return "—";
+  return new Date(dateStr).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit" });
+}
+
+function TouchpointIcons({ franchise: fr }: { franchise: FranchiseEntry }) {
+  const emailAlert = getEmailAlert(fr);
+  const waAlert = getWhatsappAlert(fr);
+  const spAlert = getSponsorAlert(fr);
+
+  const emailDone = !!fr.recoveryEmailSentAt;
+  const waDone = !!fr.whatsappSentAt;
+  const spDone = !!fr.sponsorNotifiedAt;
+
+  return (
+    <div className="flex items-center gap-2 shrink-0">
+      {/* Email */}
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <span className="inline-flex items-center gap-0.5 cursor-help">
+            <Mail className={cn("h-3.5 w-3.5", emailDone ? "text-emerald-500" : emailAlert ? alertIconColor[emailAlert.level] : "text-muted-foreground/40")} />
+            {emailAlert && <AlertTriangle className={cn("h-2.5 w-2.5", alertIconColor[emailAlert.level])} />}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs max-w-[200px]">
+          {emailDone ? `Email enviado em ${formatTouchpointDate(fr.recoveryEmailSentAt)}` : emailAlert?.tip || "Email não enviado"}
+        </TooltipContent>
+      </Tooltip>
+
+      {/* WhatsApp */}
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <span className="inline-flex items-center gap-0.5 cursor-help">
+            <MessageCircle className={cn("h-3.5 w-3.5", waDone ? "text-emerald-500" : waAlert ? alertIconColor[waAlert.level] : "text-muted-foreground/40")} />
+            {waAlert && <AlertTriangle className={cn("h-2.5 w-2.5", alertIconColor[waAlert.level])} />}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs max-w-[200px]">
+          {waDone ? `WhatsApp enviado em ${formatTouchpointDate(fr.whatsappSentAt)}` : waAlert?.tip || "WhatsApp não enviado"}
+        </TooltipContent>
+      </Tooltip>
+
+      {/* Sponsor notification */}
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <span className="inline-flex items-center gap-0.5 cursor-help">
+            <Bell className={cn("h-3.5 w-3.5", spDone ? "text-emerald-500" : spAlert ? alertIconColor[spAlert.level] : "text-muted-foreground/40")} />
+            {spAlert && <AlertTriangle className={cn("h-2.5 w-2.5", alertIconColor[spAlert.level])} />}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs max-w-[200px]">
+          {spDone ? `Patrocinador notificado em ${formatTouchpointDate(fr.sponsorNotifiedAt)}` : spAlert?.tip || "Patrocinador não notificado"}
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  );
+}
+
 /* ── Registration Status Legend ── */
 function RegistrationStatusLegend() {
   const { t } = useLanguage();
