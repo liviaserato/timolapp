@@ -31,7 +31,7 @@ interface Franchisee {
   planLabel: string;
   franchiseStatus: "active" | "suspended" | "cancelled";
   activationStatus: "activated" | "pending" | "inactive";
-  qualification: "starter" | "bronze" | "silver" | "gold" | "platinum" | "diamond";
+  qualification: "consultor" | "distribuidor" | "lider" | "rubi" | "esmeralda" | "diamante";
   sponsorName: string;
   sponsorId: string;
   createdAt: string;
