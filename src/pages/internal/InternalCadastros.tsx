@@ -184,7 +184,7 @@ export default function InternalCadastros() {
   const dateLocale = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
   const searchCardRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState<string>("recent");
+  const [sortBy, setSortBy] = useState<string>("");
   const [showActive, setShowActive] = useState(false);
   const [showInactive, setShowInactive] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState<string>("all");
