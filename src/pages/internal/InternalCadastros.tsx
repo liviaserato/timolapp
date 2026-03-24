@@ -505,19 +505,19 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                       </button>
                     ))}
                   </div>
-                  <div className="flex items-center gap-1.5 mt-0.5" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
-                    <p className="text-xs text-muted-foreground flex-1 min-w-0 truncate">
+                  <div className="flex items-center gap-1.5 mt-0.5 justify-between" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
+                    <p className="text-xs text-muted-foreground min-w-0 truncate">
                       {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
                     </p>
+                    {isCompleted && (
+                      <p className="text-xs text-muted-foreground shrink-0">
+                        Atendente: <span className="font-medium text-foreground">{sel.attendantName ?? "—"}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
-                {isCompleted ? (
-                  <div className="shrink-0 text-right">
-                    <p className="text-xs text-muted-foreground">
-                      Atendente: <span className="font-medium text-foreground">{sel.attendantName ?? "—"}</span>
-                    </p>
-                  </div>
-                ) : (
+                {/* Touchpoint icons: show for pendente and cancelado, hide for concluido */}
+                {!isCompleted && (
                   <TouchpointIcons franchise={sel} />
                 )}
               </div>
