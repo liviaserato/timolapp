@@ -360,7 +360,7 @@ export default function InternalCadastros() {
 
               {/* Qualification */}
               <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Por Qualificação</h4>
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.byQualification")}</h4>
                 <div className="space-y-1.5">
                   {(["starter", "bronze", "silver", "gold", "platinum", "diamond"] as const).map(q => {
                     const count = qualBreakdown[q] || 0;
