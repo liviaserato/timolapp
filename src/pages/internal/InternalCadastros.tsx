@@ -190,9 +190,6 @@ export default function InternalCadastros() {
   const [registrationStatus, setRegistrationStatus] = useState<string>("all");
   const [qualification, setQualification] = useState<string>("all");
   const [planType, setPlanType] = useState<string>("all");
-  const [citySearch, setCitySearch] = useState("");
-  const [cityFilter, setCityFilter] = useState<string>("");
-  const [showCitySuggestions, setShowCitySuggestions] = useState(false);
 
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
@@ -203,7 +200,7 @@ export default function InternalCadastros() {
   const isCurrentMonth = monthRef.getFullYear() === today.getFullYear() && monthRef.getMonth() === today.getMonth();
 
   const franchiseStatusFilter = (!showActive && !showInactive) ? "none" : (!showActive ? "inactive" : (!showInactive ? "active" : "all"));
-  const hasSearchFilters = franchiseStatusFilter !== "all" || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || cityFilter !== "" || search.trim() !== "";
+  const hasSearchFilters = franchiseStatusFilter !== "all" || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || search.trim() !== "";
   const hasFilters = hasSearchFilters;
 
   const scrollToSearch = () => {
@@ -221,7 +218,7 @@ export default function InternalCadastros() {
     if (exclude !== "registrationStatus" && registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
     if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (exclude !== "planType" && planType !== "all") list = list.filter(f => pf(f).planCode === planType);
-    if (exclude !== "city" && cityFilter) list = list.filter(f => f.city === cityFilter);
+    
     if (search.trim()) {
       const q = search.toLowerCase().replace(/[.\-\/]/g, "");
       list = list.filter(f => {
@@ -235,15 +232,8 @@ export default function InternalCadastros() {
     return list;
   };
 
-  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter]);
-  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter]);
-  const availableCities = useMemo(() => new Set(getFilteredExcluding("city").map(f => f.city)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter]);
-
-  const citySuggestions = useMemo(() => {
-    if (!citySearch.trim()) return Array.from(availableCities).sort();
-    const q = citySearch.toLowerCase();
-    return Array.from(availableCities).filter(c => c.toLowerCase().includes(q)).sort();
-  }, [citySearch, availableCities]);
+  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, showActive, showInactive, registrationStatus, qualification, planType]);
+  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, showActive, showInactive, registrationStatus, qualification, planType]);
 
   /* Search results (no date filter) */
   const filtered = useMemo(() => {
@@ -254,7 +244,7 @@ export default function InternalCadastros() {
     if (registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
     if (qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (planType !== "all") list = list.filter(f => pf(f).planCode === planType);
-    if (cityFilter) list = list.filter(f => f.city === cityFilter);
+    
     if (search.trim()) {
       const q = search.toLowerCase().replace(/[.\-\/]/g, "");
       list = list.filter(f => {
@@ -278,7 +268,7 @@ export default function InternalCadastros() {
       });
     }
     return list;
-  }, [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, sortBy]);
+  }, [search, showActive, showInactive, registrationStatus, qualification, planType, sortBy]);
 
   /* Indicator metrics (only date filter, independent of search) */
   const indicatorFiltered = useMemo(() => {
@@ -301,8 +291,6 @@ export default function InternalCadastros() {
     setRegistrationStatus("all");
     setQualification("all");
     setPlanType("all");
-    setCitySearch("");
-    setCityFilter("");
   };
 
   /* ── Dashboard metrics (based on date filter only) ── */
@@ -727,7 +715,7 @@ export default function InternalCadastros() {
             </div>
 
             {/* Row 2: Filters */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 items-center">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 items-center">
               {/* Franchise Status - Checkboxes */}
               <div className="flex items-center gap-3 h-9 px-2 rounded-md border border-input bg-background">
                 <label className="flex items-center gap-1.5 cursor-pointer">
@@ -776,44 +764,6 @@ export default function InternalCadastros() {
                   <SelectItem value="platinum" disabled={!availablePlans.has("platinum")} className={!availablePlans.has("platinum") ? "opacity-40" : ""}>{t("franchise.platinum")}</SelectItem>
                 </SelectContent>
               </Select>
-
-              {/* City - Autocomplete */}
-              <div className="relative">
-                <div className="relative">
-                  <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                  <Input
-                    placeholder={t("internal.cadastros.city")}
-                    value={cityFilter || citySearch}
-                    onChange={e => {
-                      setCitySearch(e.target.value);
-                      setCityFilter("");
-                      setShowCitySuggestions(true);
-                    }}
-                    onFocus={() => setShowCitySuggestions(true)}
-                    onBlur={() => setTimeout(() => setShowCitySuggestions(false), 150)}
-                    className="pl-8 pr-8 h-9 text-xs"
-                  />
-                  {(cityFilter || citySearch) && (
-                    <button onClick={() => { setCitySearch(""); setCityFilter(""); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  )}
-                </div>
-                {showCitySuggestions && citySuggestions.length > 0 && !cityFilter && (
-                  <div className="absolute z-50 top-full mt-1 w-full rounded-md border bg-popover shadow-md max-h-[160px] overflow-y-auto">
-                    {citySuggestions.map(c => (
-                      <button
-                        key={c}
-                        type="button"
-                        className="w-full text-left px-3 py-1.5 text-xs hover:bg-accent transition-colors"
-                        onMouseDown={() => { setCityFilter(c); setCitySearch(""); setShowCitySuggestions(false); scrollToSearch(); }}
-                      >
-                        {c}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
             </div>
 
             {hasFilters && (
