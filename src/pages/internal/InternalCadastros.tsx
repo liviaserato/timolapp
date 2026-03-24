@@ -815,8 +815,8 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
           <div className="flex-1 min-w-0">
             {/* ── Grid 1: Name + IDs + Sponsor ── */}
             <div className="mb-3">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className={`h-2 w-2 rounded-full shrink-0 ${isActive ? "bg-emerald-500" : "bg-red-500"}`} />
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="h-3.5 w-3.5 shrink-0 flex items-center justify-center"><span className={`h-2 w-2 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`} /></span>
                 <span className="text-base font-bold text-foreground">{f.fullName}</span>
                 {sortedFranchises.map((fr, idx) => (
                   <button
