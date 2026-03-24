@@ -86,8 +86,8 @@ const planColors: Record<string, string> = {
   platinum: "bg-cyan-100 text-cyan-700 border-cyan-200",
 };
 
-function getMonthLabel(date: Date): string {
-  const m = date.toLocaleDateString("pt-BR", { month: "long" });
+function getMonthLabel(date: Date, locale: string): string {
+  const m = date.toLocaleDateString(locale, { month: "long" });
   return `${m.charAt(0).toUpperCase()}${m.slice(1)} ${date.getFullYear()}`;
 }
 
