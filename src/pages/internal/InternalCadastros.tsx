@@ -771,63 +771,79 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
     platinum: "Platina",
   };
 
-  // Document label
   const isBrazilian = f.country === "Brasil";
   const docLabel = isBrazilian ? `CPF: ${f.document}` : `${f.document} · ${f.countryFlag} ${f.country}`;
+
+  const allIds = [f.franchiseId, ...(f.extraFranchiseIds || [])];
 
   return (
     <div
       className={`rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] transition-shadow hover:shadow-md ${registrationStatusBorder[regStatus]} ${isCancelled ? "opacity-50" : ""}`}
     >
       <div className="p-4">
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* ── Column 1: Identity ── */}
-          <div className="flex-1 min-w-0 space-y-1">
-            <div className="flex items-center gap-2">
-              <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${isActive ? "bg-emerald-500" : "bg-red-500"}`} />
-              <span className="text-sm font-bold text-foreground">ID {f.franchiseId}</span>
-              <span className="text-xs text-muted-foreground">|</span>
-              <span className="text-sm text-foreground truncate">{f.fullName}</span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {t("internal.cadastros.sponsor")}: {f.sponsorName} (ID {f.sponsorId})
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {t("internal.cadastros.registrationDate")}: {f.createdAt.split("-").reverse().join("/")}
-            </p>
-            <div className="h-2" />
-            <p className="text-xs text-foreground flex items-center gap-1.5">
-              <Gem className="h-3 w-3 shrink-0" />
-              Franquia {planLabels[f.planCode] || f.planCode}
-            </p>
-            {qualConfig && (
-              <p className="text-xs flex items-center gap-1.5">
-                <span style={{ color: qualConfig.color }}>{qualConfig.icon}</span>
-                <span className="text-foreground">{t(qualificationLabelKeys[f.qualification])}</span>
+        <div className="flex flex-col lg:flex-row gap-x-6">
+          {/* ── Left side (Grids 1-3) ── */}
+          <div className="flex-1 min-w-0">
+            {/* ── Grid 1: Name + IDs + Sponsor ── */}
+            <div className="mb-3">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className={`h-2 w-2 rounded-full shrink-0 ${isActive ? "bg-emerald-500" : "bg-red-500"}`} />
+                <span className="text-sm font-bold text-foreground">{f.fullName}</span>
+                {allIds.map(id => (
+                  <Badge key={id} variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-medium">
+                    ID {id}
+                  </Badge>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5 ml-4">
+                {t("internal.cadastros.sponsor")}: {f.sponsorName} (ID {f.sponsorId})
               </p>
-            )}
-            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <MapPin className="h-3 w-3 shrink-0" />
-              <span className="truncate">{f.city}, {f.state} {f.countryFlag}</span>
-            </p>
-          </div>
+            </div>
 
-          {/* ── Column 2: Personal data ── */}
-          <div className="flex-1 min-w-0 text-xs text-muted-foreground">
-            {/* Spacer to align with 3rd line (Data de Cadastro) of col 1 */}
-            <div className="h-[calc(1lh+0.25rem)] hidden lg:block" />
-            <div className="h-[calc(1lh+0.25rem)] hidden lg:block" />
-            <div className="space-y-1">
-              <p className="flex items-center gap-1.5 truncate"><FileText className="h-3 w-3 shrink-0" />{docLabel}</p>
-              <p className="flex items-center gap-1.5"><Cake className="h-3 w-3 shrink-0" />{f.birthDate} · {f.gender}</p>
-              <p className="flex items-center gap-1.5"><KeyRound className="h-3 w-3 shrink-0" /><span className="truncate">{f.username}</span></p>
-              <p className="flex items-center gap-1.5"><Mail className="h-3 w-3 shrink-0" /><span className="truncate">{f.email}</span></p>
-              <p className="flex items-center gap-1.5"><Phone className="h-3 w-3 shrink-0" /><span className="truncate">{f.phone}</span></p>
+            {/* ── Grid 2 + Grid 3 side by side ── */}
+            <div className="flex flex-col sm:flex-row gap-x-8 gap-y-2">
+              {/* Grid 2: Registration details */}
+              <div className="space-y-1 min-w-0">
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <Calendar className="h-3 w-3 shrink-0 text-muted-foreground" />
+                  {t("internal.cadastros.registrationDate")}: {f.createdAt.split("-").reverse().join("/")}
+                </p>
+                <p className="text-xs text-foreground flex items-center gap-1.5">
+                  <Gem className="h-3 w-3 shrink-0 text-muted-foreground" />
+                  Franquia {planLabels[f.planCode] || f.planCode}
+                </p>
+                {qualConfig && (
+                  <p className="text-xs flex items-center gap-1.5">
+                    <span className="text-muted-foreground">{qualConfig.icon}</span>
+                    <span className="text-foreground">{t(qualificationLabelKeys[f.qualification])}</span>
+                  </p>
+                )}
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <MapPin className="h-3 w-3 shrink-0" />
+                  <span className="truncate">{f.city}, {f.state} {f.countryFlag}</span>
+                </p>
+              </div>
+
+              {/* Grid 3: Personal data */}
+              <div className="space-y-1 min-w-0">
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground truncate">
+                  <FileText className="h-3 w-3 shrink-0" />{docLabel}
+                </p>
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Cake className="h-3 w-3 shrink-0" />{f.birthDate} · {f.gender}
+                </p>
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Mail className="h-3 w-3 shrink-0" /><span className="truncate">{f.email}</span>
+                </p>
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Phone className="h-3 w-3 shrink-0" /><span className="truncate">{f.phone}</span>
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* ── Column 3: Actions ── */}
-          <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[170px] shrink-0">
+          {/* ── Grid 4: Actions (right side, full height) ── */}
+          <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[170px] shrink-0 mt-3 lg:mt-0">
             <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
               <MapPinHouse className="h-3 w-3" />
               {t("internal.cadastros.btnAddresses")}
