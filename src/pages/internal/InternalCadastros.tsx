@@ -245,100 +245,8 @@ export default function InternalCadastros() {
         <p className="text-sm text-muted-foreground mt-1">Busque e gerencie os cadastros de franqueados</p>
       </header>
 
-      <DashboardCard icon={Search} title="Buscar Franqueado">
-        <div className="mt-2 space-y-3">
-          {/* Search input only */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Nome, ID, documento, e-mail, telefone, usuário, cidade..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="pl-9 pr-9 h-9 text-xs"
-              />
-              {search && (
-                <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Dropdowns row */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-            <Select value={franchiseStatus} onValueChange={setFranchiseStatus}>
-              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Status Franquia" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Status Franquia</SelectItem>
-                <SelectItem value="active" disabled={!availableFranchiseStatuses.has("active")} className={!availableFranchiseStatuses.has("active") ? "opacity-40" : ""}>Ativa</SelectItem>
-                <SelectItem value="suspended" disabled={!availableFranchiseStatuses.has("suspended")} className={!availableFranchiseStatuses.has("suspended") ? "opacity-40" : ""}>Suspensa</SelectItem>
-                <SelectItem value="cancelled" disabled={!availableFranchiseStatuses.has("cancelled")} className={!availableFranchiseStatuses.has("cancelled") ? "opacity-40" : ""}>Cancelada</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={activationStatus} onValueChange={setActivationStatus}>
-              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Ativação" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Ativação</SelectItem>
-                <SelectItem value="activated" disabled={!availableActivationStatuses.has("activated")} className={!availableActivationStatuses.has("activated") ? "opacity-40" : ""}>Ativada</SelectItem>
-                <SelectItem value="pending" disabled={!availableActivationStatuses.has("pending")} className={!availableActivationStatuses.has("pending") ? "opacity-40" : ""}>Pendente</SelectItem>
-                <SelectItem value="inactive" disabled={!availableActivationStatuses.has("inactive")} className={!availableActivationStatuses.has("inactive") ? "opacity-40" : ""}>Inativa</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={qualification} onValueChange={setQualification}>
-              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Qualificação" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Qualificação</SelectItem>
-                <SelectItem value="starter" disabled={!availableQualifications.has("starter")} className={!availableQualifications.has("starter") ? "opacity-40" : ""}>Starter</SelectItem>
-                <SelectItem value="bronze" disabled={!availableQualifications.has("bronze")} className={!availableQualifications.has("bronze") ? "opacity-40" : ""}>Bronze</SelectItem>
-                <SelectItem value="silver" disabled={!availableQualifications.has("silver")} className={!availableQualifications.has("silver") ? "opacity-40" : ""}>Prata</SelectItem>
-                <SelectItem value="gold" disabled={!availableQualifications.has("gold")} className={!availableQualifications.has("gold") ? "opacity-40" : ""}>Ouro</SelectItem>
-                <SelectItem value="platinum" disabled={!availableQualifications.has("platinum")} className={!availableQualifications.has("platinum") ? "opacity-40" : ""}>Platina</SelectItem>
-                <SelectItem value="diamond" disabled={!availableQualifications.has("diamond")} className={!availableQualifications.has("diamond") ? "opacity-40" : ""}>Diamante</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={planType} onValueChange={setPlanType}>
-              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Tipo Franquia" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tipo Franquia</SelectItem>
-                <SelectItem value="bronze" disabled={!availablePlans.has("bronze")} className={!availablePlans.has("bronze") ? "opacity-40" : ""}>Bronze</SelectItem>
-                <SelectItem value="silver" disabled={!availablePlans.has("silver")} className={!availablePlans.has("silver") ? "opacity-40" : ""}>Prata</SelectItem>
-                <SelectItem value="gold" disabled={!availablePlans.has("gold")} className={!availablePlans.has("gold") ? "opacity-40" : ""}>Ouro</SelectItem>
-                <SelectItem value="platinum" disabled={!availablePlans.has("platinum")} className={!availablePlans.has("platinum") ? "opacity-40" : ""}>Platina</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={city} onValueChange={setCity}>
-              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Cidade" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Cidade</SelectItem>
-                {uniqueCities.map(c => (
-                  <SelectItem key={c} value={c} disabled={!availableCities.has(c)} className={!availableCities.has(c) ? "opacity-40" : ""}>{c}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {hasFilters && (
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">
-                {filtered.length} resultado{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
-              </span>
-              <Button variant="ghost" size="sm" onClick={clearFilters} className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground">
-                <X className="h-3 w-3" />
-                Limpar filtros
-              </Button>
-            </div>
-          )}
-        </div>
-      </DashboardCard>
-
       {/* ── Indicadores Card ── */}
-      <div className="mt-4">
-        <DashboardCard icon={BarChart3} title="Indicadores">
+      <DashboardCard icon={BarChart3} title="Indicadores">
           <div className="mt-2 space-y-4">
             {/* Date filter row */}
             <div className="flex flex-wrap items-center gap-2">
@@ -512,6 +420,98 @@ export default function InternalCadastros() {
                 <span className="text-xs">Inativos <b>{activationBreakdown.inactive}</b></span>
               </div>
             </div>
+          </div>
+      </DashboardCard>
+
+      <div className="mt-4">
+        <DashboardCard icon={Search} title="Buscar Franqueado">
+          <div className="mt-2 space-y-3">
+            {/* Search input only */}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Nome, ID, documento, e-mail, telefone, usuário, cidade..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="pl-9 pr-9 h-9 text-xs"
+                />
+                {search && (
+                  <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Dropdowns row */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              <Select value={franchiseStatus} onValueChange={setFranchiseStatus}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Status Franquia" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Status Franquia</SelectItem>
+                  <SelectItem value="active" disabled={!availableFranchiseStatuses.has("active")} className={!availableFranchiseStatuses.has("active") ? "opacity-40" : ""}>Ativa</SelectItem>
+                  <SelectItem value="suspended" disabled={!availableFranchiseStatuses.has("suspended")} className={!availableFranchiseStatuses.has("suspended") ? "opacity-40" : ""}>Suspensa</SelectItem>
+                  <SelectItem value="cancelled" disabled={!availableFranchiseStatuses.has("cancelled")} className={!availableFranchiseStatuses.has("cancelled") ? "opacity-40" : ""}>Cancelada</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={activationStatus} onValueChange={setActivationStatus}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Ativação" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Ativação</SelectItem>
+                  <SelectItem value="activated" disabled={!availableActivationStatuses.has("activated")} className={!availableActivationStatuses.has("activated") ? "opacity-40" : ""}>Ativada</SelectItem>
+                  <SelectItem value="pending" disabled={!availableActivationStatuses.has("pending")} className={!availableActivationStatuses.has("pending") ? "opacity-40" : ""}>Pendente</SelectItem>
+                  <SelectItem value="inactive" disabled={!availableActivationStatuses.has("inactive")} className={!availableActivationStatuses.has("inactive") ? "opacity-40" : ""}>Inativa</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={qualification} onValueChange={setQualification}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Qualificação" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Qualificação</SelectItem>
+                  <SelectItem value="starter" disabled={!availableQualifications.has("starter")} className={!availableQualifications.has("starter") ? "opacity-40" : ""}>Starter</SelectItem>
+                  <SelectItem value="bronze" disabled={!availableQualifications.has("bronze")} className={!availableQualifications.has("bronze") ? "opacity-40" : ""}>Bronze</SelectItem>
+                  <SelectItem value="silver" disabled={!availableQualifications.has("silver")} className={!availableQualifications.has("silver") ? "opacity-40" : ""}>Prata</SelectItem>
+                  <SelectItem value="gold" disabled={!availableQualifications.has("gold")} className={!availableQualifications.has("gold") ? "opacity-40" : ""}>Ouro</SelectItem>
+                  <SelectItem value="platinum" disabled={!availableQualifications.has("platinum")} className={!availableQualifications.has("platinum") ? "opacity-40" : ""}>Platina</SelectItem>
+                  <SelectItem value="diamond" disabled={!availableQualifications.has("diamond")} className={!availableQualifications.has("diamond") ? "opacity-40" : ""}>Diamante</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={planType} onValueChange={setPlanType}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Tipo Franquia" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tipo Franquia</SelectItem>
+                  <SelectItem value="bronze" disabled={!availablePlans.has("bronze")} className={!availablePlans.has("bronze") ? "opacity-40" : ""}>Bronze</SelectItem>
+                  <SelectItem value="silver" disabled={!availablePlans.has("silver")} className={!availablePlans.has("silver") ? "opacity-40" : ""}>Prata</SelectItem>
+                  <SelectItem value="gold" disabled={!availablePlans.has("gold")} className={!availablePlans.has("gold") ? "opacity-40" : ""}>Ouro</SelectItem>
+                  <SelectItem value="platinum" disabled={!availablePlans.has("platinum")} className={!availablePlans.has("platinum") ? "opacity-40" : ""}>Platina</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={city} onValueChange={setCity}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Cidade" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Cidade</SelectItem>
+                  {uniqueCities.map(c => (
+                    <SelectItem key={c} value={c} disabled={!availableCities.has(c)} className={!availableCities.has(c) ? "opacity-40" : ""}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {hasFilters && (
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">
+                  {filtered.length} resultado{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
+                </span>
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground">
+                  <X className="h-3 w-3" />
+                  Limpar filtros
+                </Button>
+              </div>
+            )}
           </div>
         </DashboardCard>
       </div>
