@@ -214,33 +214,34 @@ export default function InternalCadastros() {
     return list;
   };
 
-  const availableFranchiseStatuses = useMemo(() => new Set(getFilteredExcluding("franchiseStatus").map(f => f.franchiseStatus)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
-  const availableActivationStatuses = useMemo(() => new Set(getFilteredExcluding("activationStatus").map(f => f.activationStatus)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
-  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => f.qualification)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
-  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => f.planCode)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availableFranchiseStatuses = useMemo(() => new Set(getFilteredExcluding("franchiseStatus").map(f => pf(f).franchiseStatus)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availableActivationStatuses = useMemo(() => new Set(getFilteredExcluding("activationStatus").map(f => pf(f).activationStatus)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
   const availableCities = useMemo(() => new Set(getFilteredExcluding("city").map(f => f.city)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
 
   const filtered = useMemo(() => {
     let list = mockFranchisees as Franchisee[];
-    if (franchiseStatus !== "all") list = list.filter(f => f.franchiseStatus === franchiseStatus);
-    if (activationStatus !== "all") list = list.filter(f => f.activationStatus === activationStatus);
-    if (qualification !== "all") list = list.filter(f => f.qualification === qualification);
-    if (planType !== "all") list = list.filter(f => f.planCode === planType);
+    if (franchiseStatus !== "all") list = list.filter(f => pf(f).franchiseStatus === franchiseStatus);
+    if (activationStatus !== "all") list = list.filter(f => pf(f).activationStatus === activationStatus);
+    if (qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
+    if (planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     if (city !== "all") list = list.filter(f => f.city === city);
     if (dateFilterMode === "month") {
       const range = getMonthRange(monthRef);
-      list = list.filter(f => f.createdAt >= range.from && f.createdAt <= range.to);
+      list = list.filter(f => pf(f).createdAt >= range.from && pf(f).createdAt <= range.to);
     } else if (dateFilterMode === "custom") {
-      if (dateFrom) list = list.filter(f => f.createdAt >= dateFrom);
-      if (dateTo) list = list.filter(f => f.createdAt <= dateTo);
+      if (dateFrom) list = list.filter(f => pf(f).createdAt >= dateFrom);
+      if (dateTo) list = list.filter(f => pf(f).createdAt <= dateTo);
     }
     if (search.trim()) {
       const q = search.toLowerCase().replace(/[.\-\/]/g, "");
       list = list.filter(f => {
         const norm = (s: string) => s.toLowerCase().replace(/[.\-\/]/g, "");
-        return norm(f.fullName).includes(q) || norm(f.franchiseId).includes(q) || norm(f.document).includes(q) ||
+        const anyFranchiseMatch = f.franchises.some(fr => norm(fr.franchiseId).includes(q) || norm(fr.sponsorName).includes(q));
+        return norm(f.fullName).includes(q) || anyFranchiseMatch || norm(f.document).includes(q) ||
           norm(f.email).includes(q) || norm(f.phone).includes(q) || norm(f.username).includes(q) ||
-          norm(f.city).includes(q) || norm(f.sponsorName).includes(q);
+          norm(f.city).includes(q);
       });
     }
     return list;
