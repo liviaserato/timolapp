@@ -188,26 +188,27 @@ export default function InternalCadastros() {
 
   /* Helper: filter list excluding one specific filter to know what's available */
   const getFilteredExcluding = (exclude: string) => {
-    let list = mockFranchisees as Franchisee[];
-    if (exclude !== "franchiseStatus" && franchiseStatus !== "all") list = list.filter(f => f.franchiseStatus === franchiseStatus);
-    if (exclude !== "activationStatus" && activationStatus !== "all") list = list.filter(f => f.activationStatus === activationStatus);
-    if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => f.qualification === qualification);
-    if (exclude !== "planType" && planType !== "all") list = list.filter(f => f.planCode === planType);
+     let list = mockFranchisees as Franchisee[];
+    if (exclude !== "franchiseStatus" && franchiseStatus !== "all") list = list.filter(f => pf(f).franchiseStatus === franchiseStatus);
+    if (exclude !== "activationStatus" && activationStatus !== "all") list = list.filter(f => pf(f).activationStatus === activationStatus);
+    if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
+    if (exclude !== "planType" && planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     if (exclude !== "city" && city !== "all") list = list.filter(f => f.city === city);
     if (dateFilterMode === "month") {
       const range = getMonthRange(monthRef);
-      list = list.filter(f => f.createdAt >= range.from && f.createdAt <= range.to);
+      list = list.filter(f => pf(f).createdAt >= range.from && pf(f).createdAt <= range.to);
     } else if (dateFilterMode === "custom") {
-      if (dateFrom) list = list.filter(f => f.createdAt >= dateFrom);
-      if (dateTo) list = list.filter(f => f.createdAt <= dateTo);
+      if (dateFrom) list = list.filter(f => pf(f).createdAt >= dateFrom);
+      if (dateTo) list = list.filter(f => pf(f).createdAt <= dateTo);
     }
     if (search.trim()) {
       const q = search.toLowerCase().replace(/[.\-\/]/g, "");
       list = list.filter(f => {
         const norm = (s: string) => s.toLowerCase().replace(/[.\-\/]/g, "");
-        return norm(f.fullName).includes(q) || norm(f.franchiseId).includes(q) || norm(f.document).includes(q) ||
+        const anyFranchiseMatch = f.franchises.some(fr => norm(fr.franchiseId).includes(q) || norm(fr.sponsorName).includes(q));
+        return norm(f.fullName).includes(q) || anyFranchiseMatch || norm(f.document).includes(q) ||
           norm(f.email).includes(q) || norm(f.phone).includes(q) || norm(f.username).includes(q) ||
-          norm(f.city).includes(q) || norm(f.sponsorName).includes(q);
+          norm(f.city).includes(q);
       });
     }
     return list;
