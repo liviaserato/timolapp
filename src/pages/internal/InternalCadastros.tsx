@@ -103,7 +103,8 @@ const uniqueCities = Array.from(new Set(mockFranchisees.map(f => f.city))).sort(
 
 /* ── Component ── */
 export default function InternalCadastros() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const dateLocale = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
   const [search, setSearch] = useState("");
   const [franchiseStatus, setFranchiseStatus] = useState<string>("all");
   const [activationStatus, setActivationStatus] = useState<string>("all");
