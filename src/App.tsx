@@ -35,6 +35,16 @@ import NotFound from "./pages/NotFound";
 const InternalLayout = lazy(() => import("./pages/InternalLayout"));
 const InternalDashboard = lazy(() => import("./pages/internal/InternalDashboard"));
 const InternalCadastros = lazy(() => import("./pages/internal/InternalCadastros"));
+const InternalFinanceiro = lazy(() => import("./pages/internal/InternalFinanceiro"));
+const InternalRede = lazy(() => import("./pages/internal/InternalRede"));
+const InternalClientes = lazy(() => import("./pages/internal/InternalClientes"));
+const InternalProdutos = lazy(() => import("./pages/internal/InternalProdutos"));
+const InternalPedidos = lazy(() => import("./pages/internal/InternalPedidos"));
+const InternalTreinamentos = lazy(() => import("./pages/internal/InternalTreinamentos"));
+const InternalComercial = lazy(() => import("./pages/internal/InternalComercial"));
+const InternalRelatorios = lazy(() => import("./pages/internal/InternalRelatorios"));
+const InternalSuporte = lazy(() => import("./pages/internal/InternalSuporte"));
+const InternalConfiguracoes = lazy(() => import("./pages/internal/InternalConfiguracoes"));
 
 const LazyFallback = () => (
   <FullScreenTimolLoader mode="page" title="Carregando..." className="bg-background" />
