@@ -412,7 +412,7 @@ export default function InternalCadastros() {
             {/* ─── Column 2: Status das Franquias ─── */}
             <div className="flex flex-col gap-3">
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
-                <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex items-center justify-center gap-1.5 mb-2">
                   <Layers className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardFranchiseStatus")}</span>
                   <Tooltip delayDuration={0}>
@@ -422,7 +422,7 @@ export default function InternalCadastros() {
                     <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipFranchiseStatus")}</TooltipContent>
                   </Tooltip>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center gap-4">
                   <div className="text-center">
                     <span className="text-3xl font-bold text-emerald-600">{activeCount}</span>
                     <p className="text-[11px] text-muted-foreground">{t("internal.cadastros.activeCount")}</p>
