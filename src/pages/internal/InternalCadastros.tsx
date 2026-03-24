@@ -110,14 +110,14 @@ function getMonthRange(date: Date): { from: string; to: string } {
 const uniqueCities = Array.from(new Set(mockFranchisees.map(f => f.city))).sort();
 
 /* ── Horizontal bar chart helper ── */
-function HBarChart({ items, barColorClass = "bg-primary/60", labelWidth = "w-14" }: { items: { label: string; count: number; extra?: string }[]; barColorClass?: string; labelWidth?: string }) {
+function HBarChart({ items, barColorClass = "bg-primary/60", labelWidth = "w-14" }: { items: { label: string; count: number; extra?: string; tooltip?: string }[]; barColorClass?: string; labelWidth?: string }) {
   const max = Math.max(...items.map(i => i.count), 1);
   return (
     <div className="space-y-1.5">
-      {items.map(({ label, count, extra }) => {
+      {items.map(({ label, count, extra, tooltip }) => {
         const pct = Math.round((count / max) * 100);
         return (
-          <div key={label} className="flex items-center gap-2">
+          <div key={label} className="flex items-center gap-2" title={tooltip} aria-label={tooltip}>
             <span className={`text-xs ${labelWidth} shrink-0 text-muted-foreground truncate`}>
               {extra && <span className="mr-1">{extra}</span>}{label}
             </span>
@@ -460,7 +460,7 @@ export default function InternalCadastros() {
               <div className="space-y-1.5 px-2">
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.topSponsors")}</h4>
                 <HBarChart
-                  items={topSponsors.map(s => ({ label: s.name, count: s.count, extra: `#${s.id}` }))}
+                  items={topSponsors.map(s => ({ label: `#${s.id}`, count: s.count, tooltip: s.name }))}
                   barColorClass="bg-primary/50"
                   labelWidth="w-[120px]"
                 />
