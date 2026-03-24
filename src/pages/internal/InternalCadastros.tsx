@@ -705,7 +705,7 @@ export default function InternalCadastros() {
                   </button>
                 )}
               </div>
-              <Select value={sortBy || undefined} onValueChange={v => { setSortBy(v); scrollToSearch(); }}>
+              <Select value={sortBy || undefined} onValueChange={v => { setSortBy(v); activateCheckboxes(); scrollToSearch(); }}>
                 <SelectTrigger className="h-9 text-xs w-full sm:w-[180px]">
                   <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
                   <SelectValue placeholder={t("internal.cadastros.classify")} />
