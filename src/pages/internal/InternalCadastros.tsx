@@ -688,16 +688,17 @@ export default function InternalCadastros() {
         </DashboardCard>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4" ref={searchCardRef}>
         <DashboardCard icon={Search} title={t("internal.cadastros.searchFranchisee")}>
           <div className="mt-2 space-y-3">
+            {/* Row 1: Search + Sort */}
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder={t("internal.cadastros.searchPlaceholder")}
                   value={search}
-                  onChange={e => setSearch(e.target.value)}
+                  onChange={e => { setSearch(e.target.value); scrollToSearch(); }}
                   className="pl-9 pr-9 h-9 text-xs"
                 />
                 {search && (
@@ -706,30 +707,46 @@ export default function InternalCadastros() {
                   </button>
                 )}
               </div>
+              <Select value={sortBy} onValueChange={v => { setSortBy(v); scrollToSearch(); }}>
+                <SelectTrigger className="h-9 text-xs w-[180px]">
+                  <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="recent">{t("internal.cadastros.sortRecent")}</SelectItem>
+                  <SelectItem value="active_first">{t("internal.cadastros.sortActiveFirst")}</SelectItem>
+                  <SelectItem value="qualification">{t("internal.cadastros.sortQualification")}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-              <Select value={franchiseStatus} onValueChange={setFranchiseStatus}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.franchiseStatus")} /></SelectTrigger>
+            {/* Row 2: Filters */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 items-center">
+              {/* Franchise Status - Checkboxes */}
+              <div className="flex items-center gap-3 h-9 px-2 rounded-md border border-input bg-background">
+                <label className="flex items-center gap-1.5 cursor-pointer">
+                  <Checkbox checked={showActive} onCheckedChange={(v) => { setShowActive(!!v); scrollToSearch(); }} className="h-3.5 w-3.5" />
+                  <span className="text-xs text-foreground">{t("internal.cadastros.statusActive")}</span>
+                </label>
+                <label className="flex items-center gap-1.5 cursor-pointer">
+                  <Checkbox checked={showInactive} onCheckedChange={(v) => { setShowInactive(!!v); scrollToSearch(); }} className="h-3.5 w-3.5" />
+                  <span className="text-xs text-foreground">{t("internal.cadastros.statusInactive")}</span>
+                </label>
+              </div>
+
+              {/* Registration Status - Select */}
+              <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); scrollToSearch(); }}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.registrationStatusFilter")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t("internal.cadastros.franchiseStatus")}</SelectItem>
-                  <SelectItem value="active" disabled={!availableFranchiseStatuses.has("active")} className={!availableFranchiseStatuses.has("active") ? "opacity-40" : ""}>{t("internal.cadastros.statusActive")}</SelectItem>
-                  <SelectItem value="suspended" disabled={!availableFranchiseStatuses.has("suspended")} className={!availableFranchiseStatuses.has("suspended") ? "opacity-40" : ""}>{t("internal.cadastros.statusSuspended")}</SelectItem>
-                  <SelectItem value="cancelled" disabled={!availableFranchiseStatuses.has("cancelled")} className={!availableFranchiseStatuses.has("cancelled") ? "opacity-40" : ""}>{t("internal.cadastros.statusCancelled")}</SelectItem>
+                  <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
+                  <SelectItem value="concluido">{t("internal.cadastros.regCompleted")}</SelectItem>
+                  <SelectItem value="cancelado">{t("internal.cadastros.regCancelled")}</SelectItem>
+                  <SelectItem value="pendente">{t("internal.cadastros.regPending")}</SelectItem>
                 </SelectContent>
               </Select>
 
-              <Select value={activationStatus} onValueChange={setActivationStatus}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.activationFilter")} /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("internal.cadastros.activationFilter")}</SelectItem>
-                  <SelectItem value="activated" disabled={!availableActivationStatuses.has("activated")} className={!availableActivationStatuses.has("activated") ? "opacity-40" : ""}>{t("internal.cadastros.statusActivated")}</SelectItem>
-                  <SelectItem value="pending" disabled={!availableActivationStatuses.has("pending")} className={!availableActivationStatuses.has("pending") ? "opacity-40" : ""}>{t("internal.cadastros.statusPending")}</SelectItem>
-                  <SelectItem value="inactive" disabled={!availableActivationStatuses.has("inactive")} className={!availableActivationStatuses.has("inactive") ? "opacity-40" : ""}>{t("internal.cadastros.statusInactive")}</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={qualification} onValueChange={setQualification}>
+              {/* Qualification */}
+              <Select value={qualification} onValueChange={v => { setQualification(v); scrollToSearch(); }}>
                 <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.qualificationFilter")} /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t("internal.cadastros.qualificationFilter")}</SelectItem>
@@ -742,7 +759,8 @@ export default function InternalCadastros() {
                 </SelectContent>
               </Select>
 
-              <Select value={planType} onValueChange={setPlanType}>
+              {/* Plan Type */}
+              <Select value={planType} onValueChange={v => { setPlanType(v); scrollToSearch(); }}>
                 <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.franchiseType")} /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t("internal.cadastros.franchiseType")}</SelectItem>
@@ -753,15 +771,43 @@ export default function InternalCadastros() {
                 </SelectContent>
               </Select>
 
-              <Select value={city} onValueChange={setCity}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.city")} /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("internal.cadastros.city")}</SelectItem>
-                  {uniqueCities.map(c => (
-                    <SelectItem key={c} value={c} disabled={!availableCities.has(c)} className={!availableCities.has(c) ? "opacity-40" : ""}>{c}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {/* City - Autocomplete */}
+              <div className="relative">
+                <div className="relative">
+                  <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input
+                    placeholder={t("internal.cadastros.city")}
+                    value={cityFilter || citySearch}
+                    onChange={e => {
+                      setCitySearch(e.target.value);
+                      setCityFilter("");
+                      setShowCitySuggestions(true);
+                    }}
+                    onFocus={() => setShowCitySuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowCitySuggestions(false), 150)}
+                    className="pl-8 pr-8 h-9 text-xs"
+                  />
+                  {(cityFilter || citySearch) && (
+                    <button onClick={() => { setCitySearch(""); setCityFilter(""); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+                {showCitySuggestions && citySuggestions.length > 0 && !cityFilter && (
+                  <div className="absolute z-50 top-full mt-1 w-full rounded-md border bg-popover shadow-md max-h-[160px] overflow-y-auto">
+                    {citySuggestions.map(c => (
+                      <button
+                        key={c}
+                        type="button"
+                        className="w-full text-left px-3 py-1.5 text-xs hover:bg-accent transition-colors"
+                        onMouseDown={() => { setCityFilter(c); setCitySearch(""); setShowCitySuggestions(false); scrollToSearch(); }}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {hasFilters && (
