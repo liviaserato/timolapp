@@ -207,7 +207,7 @@ const statusConfig: Record<OrderStatus, { label: string; icon: React.ElementType
   enviado:             { label: "Enviado",                icon: Truck,         textColor: "text-emerald-600",    borderColor: "border-l-emerald-500" },
   disponivel_retirada: { label: "Disp. p/ Retirada",     icon: PackageCheck,  textColor: "text-emerald-600",    borderColor: "border-l-emerald-500" },
   entregue:            { label: "Entregue",               icon: CheckCircle2,  textColor: "text-[#003885]",      borderColor: "border-l-[#003885]" },
-  cancelado:           { label: "Cancelado",              icon: XCircle,       textColor: "text-red-600",        borderColor: "border-l-red-500" },
+  cancelado:           { label: "Cancelado",              icon: XCircle,       textColor: "text-[#8B0000]",      borderColor: "border-l-[#8B0000]" },
 };
 
 function StatusBadge({ status }: { status: OrderStatus }) {
