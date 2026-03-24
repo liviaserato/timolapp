@@ -11,7 +11,8 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Search, X, Phone, Mail, MapPin,
   MapPinHouse, Landmark, Pencil, Lock,
-  FileText, Cake, Gem, ArrowUpDown, ClipboardList, ArrowLeft, Calendar
+  FileText, Cake, Gem, ArrowUpDown, ClipboardList, ArrowLeft, Calendar,
+  MessageCircle, Bell, AlertTriangle,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { qualificationConfig } from "@/components/app/rede/mock-data";
@@ -31,6 +32,10 @@ interface FranchiseEntry {
   franchiseStatus: "active" | "suspended" | "cancelled";
   activationStatus: "activated" | "pending" | "inactive";
   paidAt: string | null;
+  /* Touchpoint tracking for pending registrations */
+  recoveryEmailSentAt?: string | null;
+  whatsappSentAt?: string | null;
+  sponsorNotifiedAt?: string | null;
 }
 
 interface Franchisee {
@@ -52,13 +57,13 @@ interface Franchisee {
 /* ── Mock Data ── */
 const mockFranchisees: Franchisee[] = [
   { id: "1", fullName: "Lívia Serato", document: "123.456.789-00", birthDate: "15/03/1990", gender: "female", email: "livia.serato@email.com", phone: "+55 11 99999-0000", username: "livia.serato", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
-    { franchiseId: "100231", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-02", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-05" },
+    { franchiseId: "100231", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-02", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-05", recoveryEmailSentAt: null, whatsappSentAt: null, sponsorNotifiedAt: null },
   ]},
   { id: "2", fullName: "Carlos Eduardo Mendes", document: "987.654.321-00", birthDate: "22/08/1985", gender: "male", email: "carlos.mendes@email.com", phone: "+55 21 98888-1111", username: "carlos.mendes", city: "Rio de Janeiro", state: "RJ", country: "Brasil", countryFlag: "🇧🇷", franchises: [
     { franchiseId: "100232", sponsorName: "Lívia Serato", sponsorId: "100231", createdAt: "2026-03-10", planCode: "platinum", planLabel: "Platina", qualification: "rubi", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-12" },
   ]},
   { id: "3", fullName: "Ana Paula Costa", document: "456.789.123-00", birthDate: "10/12/1992", gender: "female", email: "ana.costa@email.com", phone: "+55 31 97777-2222", username: "ana.costa", city: "Belo Horizonte", state: "MG", country: "Brasil", countryFlag: "🇧🇷", franchises: [
-    { franchiseId: "100233", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-15", planCode: "bronze", planLabel: "Bronze", qualification: "consultor", franchiseStatus: "active", activationStatus: "pending", paidAt: null },
+    { franchiseId: "100233", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-15", planCode: "bronze", planLabel: "Bronze", qualification: "consultor", franchiseStatus: "active", activationStatus: "pending", paidAt: null, recoveryEmailSentAt: "2026-03-16T09:00:00Z", whatsappSentAt: "2026-03-17T11:00:00Z", sponsorNotifiedAt: null },
   ]},
   { id: "4", fullName: "Roberto Almeida Filho", document: "321.654.987-00", birthDate: "05/06/1978", gender: "male", email: "roberto.almeida@email.com", phone: "+55 41 96666-3333", username: "roberto.almeida", city: "Curitiba", state: "PR", country: "Brasil", countryFlag: "🇧🇷", franchises: [
     { franchiseId: "100234", sponsorName: "Ana Costa", sponsorId: "100233", createdAt: "2026-03-08", planCode: "silver", planLabel: "Prata", qualification: "distribuidor", franchiseStatus: "suspended", activationStatus: "inactive", paidAt: "2026-03-20" },
@@ -74,7 +79,17 @@ const mockFranchisees: Franchisee[] = [
     { franchiseId: "100299", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-10", planCode: "gold", planLabel: "Ouro", qualification: "rubi", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-11" },
   ]},
   { id: "8", fullName: "Juan García López", document: "A12345678", birthDate: "03/11/1991", gender: "male", email: "juan.garcia@email.com", phone: "+34 612 345 678", username: "juan.garcia", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", franchises: [
-    { franchiseId: "100238", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-19" },
+    { franchiseId: "100238", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-19", recoveryEmailSentAt: null, whatsappSentAt: null, sponsorNotifiedAt: null },
+  ]},
+  /* Pending registrations with touchpoint data */
+  { id: "9", fullName: "Juliana Ferreira Costa", document: "321.654.987-00", birthDate: "14/06/1993", gender: "female", email: "juliana.ferreira@email.com", phone: "+55 11 98765-4321", username: "juliana.ferreira", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+    { franchiseId: "200501", sponsorName: "Lívia Serato", sponsorId: "100231", createdAt: "2026-03-20", planCode: "gold", planLabel: "Ouro", qualification: "consultor", franchiseStatus: "active", activationStatus: "pending", paidAt: null, recoveryEmailSentAt: "2026-03-21T10:00:00Z", whatsappSentAt: null, sponsorNotifiedAt: null },
+  ]},
+  { id: "10", fullName: "Ricardo Alves Santos", document: "654.321.987-00", birthDate: "08/02/1987", gender: "male", email: "ricardo.alves@email.com", phone: "+55 21 97654-3210", username: "ricardo.alves", city: "Rio de Janeiro", state: "RJ", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+    { franchiseId: "200502", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-18", planCode: "platinum", planLabel: "Platina", qualification: "consultor", franchiseStatus: "active", activationStatus: "pending", paidAt: null, recoveryEmailSentAt: "2026-03-19T08:00:00Z", whatsappSentAt: "2026-03-20T16:00:00Z", sponsorNotifiedAt: null },
+  ]},
+  { id: "11", fullName: "Pedro Augusto Lima", document: "B98765432", birthDate: "25/04/1991", gender: "male", email: "pedro.augusto@email.com", phone: "+34 612 987 654", username: "pedro.augusto", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", franchises: [
+    { franchiseId: "200504", sponsorName: "Juan García López", sponsorId: "100238", createdAt: "2026-03-22", planCode: "silver", planLabel: "Prata", qualification: "consultor", franchiseStatus: "active", activationStatus: "pending", paidAt: null, recoveryEmailSentAt: null, whatsappSentAt: null, sponsorNotifiedAt: null },
   ]},
 ];
 
@@ -485,9 +500,14 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
-                {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
-              </p>
+              <div className="flex items-center gap-1.5 mt-0.5" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
+                <p className="text-xs text-muted-foreground flex-1 min-w-0 truncate">
+                  {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
+                </p>
+                {regStatus === "pendente" && (
+                  <TouchpointIcons franchise={sel} />
+                )}
+              </div>
             </div>
 
             {/* ── Grid 2 + Grid 3 side by side ── */}
@@ -559,6 +579,103 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ── Touchpoint Alert Logic ── */
+type AlertLevel = "green" | "yellow" | "red";
+
+function getDaysSince(dateStr: string) {
+  return (Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24);
+}
+
+function getEmailAlert(fr: FranchiseEntry): { level: AlertLevel; tip: string } | null {
+  if (fr.recoveryEmailSentAt) return null;
+  const days = getDaysSince(fr.createdAt);
+  if (days >= 2) return { level: "red", tip: "E-mail de recuperação deveria ter sido enviado" };
+  if (days >= 1) return { level: "yellow", tip: "E-mail de recuperação ainda não enviado" };
+  return null;
+}
+
+function getWhatsappAlert(fr: FranchiseEntry): { level: AlertLevel; tip: string } | null {
+  if (fr.whatsappSentAt) return null;
+  const days = getDaysSince(fr.createdAt);
+  if (days >= 4) return { level: "red", tip: "WhatsApp deveria ter sido enviado há dias" };
+  if (days >= 3) return { level: "yellow", tip: "WhatsApp já deveria ter sido enviado" };
+  if (days >= 2) return { level: "green", tip: "Hoje é dia de enviar WhatsApp" };
+  return null;
+}
+
+function getSponsorAlert(fr: FranchiseEntry): { level: AlertLevel; tip: string } | null {
+  if (!fr.whatsappSentAt || fr.sponsorNotifiedAt) return null;
+  const days = getDaysSince(fr.createdAt);
+  if (days >= 10) return { level: "red", tip: "Notificação ao patrocinador gravemente atrasada" };
+  if (days >= 8) return { level: "yellow", tip: "Notificação ao patrocinador atrasada" };
+  if (days >= 7) return { level: "green", tip: "Hoje é um bom dia para notificar o patrocinador" };
+  return null;
+}
+
+const alertIconColor: Record<AlertLevel, string> = {
+  green: "text-emerald-500",
+  yellow: "text-amber-500",
+  red: "text-red-500",
+};
+
+function formatTouchpointDate(dateStr: string | null | undefined): string {
+  if (!dateStr) return "—";
+  return new Date(dateStr).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit" });
+}
+
+function TouchpointIcons({ franchise: fr }: { franchise: FranchiseEntry }) {
+  const emailAlert = getEmailAlert(fr);
+  const waAlert = getWhatsappAlert(fr);
+  const spAlert = getSponsorAlert(fr);
+
+  const emailDone = !!fr.recoveryEmailSentAt;
+  const waDone = !!fr.whatsappSentAt;
+  const spDone = !!fr.sponsorNotifiedAt;
+
+  return (
+    <div className="flex items-center gap-2 shrink-0">
+      {/* Email */}
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <span className="inline-flex items-center gap-0.5 cursor-help">
+            <Mail className={cn("h-3.5 w-3.5", emailDone ? "text-emerald-500" : emailAlert ? alertIconColor[emailAlert.level] : "text-muted-foreground/40")} />
+            {emailAlert && <AlertTriangle className={cn("h-2.5 w-2.5", alertIconColor[emailAlert.level])} />}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs max-w-[200px]">
+          {emailDone ? `Email enviado em ${formatTouchpointDate(fr.recoveryEmailSentAt)}` : emailAlert?.tip || "Email não enviado"}
+        </TooltipContent>
+      </Tooltip>
+
+      {/* WhatsApp */}
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <span className="inline-flex items-center gap-0.5 cursor-help">
+            <MessageCircle className={cn("h-3.5 w-3.5", waDone ? "text-emerald-500" : waAlert ? alertIconColor[waAlert.level] : "text-muted-foreground/40")} />
+            {waAlert && <AlertTriangle className={cn("h-2.5 w-2.5", alertIconColor[waAlert.level])} />}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs max-w-[200px]">
+          {waDone ? `WhatsApp enviado em ${formatTouchpointDate(fr.whatsappSentAt)}` : waAlert?.tip || "WhatsApp não enviado"}
+        </TooltipContent>
+      </Tooltip>
+
+      {/* Sponsor notification */}
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <span className="inline-flex items-center gap-0.5 cursor-help">
+            <Bell className={cn("h-3.5 w-3.5", spDone ? "text-emerald-500" : spAlert ? alertIconColor[spAlert.level] : "text-muted-foreground/40")} />
+            {spAlert && <AlertTriangle className={cn("h-2.5 w-2.5", alertIconColor[spAlert.level])} />}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs max-w-[200px]">
+          {spDone ? `Patrocinador notificado em ${formatTouchpointDate(fr.sponsorNotifiedAt)}` : spAlert?.tip || "Patrocinador não notificado"}
+        </TooltipContent>
+      </Tooltip>
     </div>
   );
 }
