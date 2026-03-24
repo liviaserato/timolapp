@@ -817,7 +817,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             <div className="mb-3 pb-3 border-b border-border/50">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="h-3.5 w-3.5 shrink-0 flex items-center justify-center"><span className={`h-2 w-2 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`} /></span>
-                <span className="text-base font-bold text-foreground">{f.fullName}</span>
+                <span className="text-base font-bold text-foreground mr-1">{f.fullName}</span>
                 {sortedFranchises.map((fr, idx) => (
                   <button
                     key={fr.franchiseId}
