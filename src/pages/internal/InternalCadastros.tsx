@@ -869,7 +869,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                   <FileText className="h-3.5 w-3.5 shrink-0 text-foreground/70" />{docLabel}
                 </p>
                 <p className="flex items-center gap-1.5 text-sm text-foreground">
-                  <Cake className="h-3.5 w-3.5 shrink-0 text-foreground/70" />{f.birthDate} · {f.gender}
+                  <Cake className="h-3.5 w-3.5 shrink-0 text-foreground/70" />{f.birthDate} · {t(`step1.gender.${f.gender === "Masculino" ? "male" : f.gender === "Feminino" ? "female" : "other"}`)}
                 </p>
                 <p className="flex items-center gap-1.5 text-sm text-foreground">
                   <Mail className="h-3.5 w-3.5 shrink-0 text-foreground/70" /><span className="truncate">{f.email}</span>
