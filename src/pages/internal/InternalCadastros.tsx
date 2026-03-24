@@ -400,7 +400,7 @@ export default function InternalCadastros() {
               </div>
               {/* Plan type */}
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterPlanType")}</span>
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.franchiseType")}</span>
                 <Select value={planType} onValueChange={v => { setPlanType(v); activateCheckboxes(); }}>
                   <SelectTrigger className="h-9 text-xs">
                     <SelectValue />
