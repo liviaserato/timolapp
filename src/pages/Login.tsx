@@ -233,12 +233,13 @@ const Login = () => {
 
               {(import.meta.env.DEV || window.location.hostname.includes("lovable")) && (
                 <Button
+                  type="button"
                   variant="ghost"
                   className="w-full text-xs text-muted-foreground/50 hover:text-muted-foreground"
                   onClick={() => {
                     setAccessToken("dev-bypass-token", true);
                     setUserRole("admin", true);
-                    navigate("/internal", { replace: true });
+                    window.location.href = "/internal";
                   }}
                 >
                   🔧 Entrar como Admin (Dev)
