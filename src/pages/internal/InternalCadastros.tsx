@@ -271,7 +271,7 @@ export default function InternalCadastros() {
                     dateFilterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
                   }`}
                 >
-                  Período
+                  {t("internal.cadastros.period")}
                 </button>
               </div>
 
