@@ -937,6 +937,13 @@ export const translations: Record<Language, Record<string, string>> = {
     "qual.rubi": "Rubi",
     "qual.esmeralda": "Esmeralda",
     "qual.diamante": "Diamante",
+    "qual.diamante1": "Diamante 1★",
+    "qual.diamante2": "Diamante 2★",
+    "qual.diamante3": "Diamante 3★",
+    "qual.diamante4": "Diamante 4★",
+    "qual.diamante5": "Diamante 5★",
+    "qual.diamanteBlue": "Diamante Blue",
+    "qual.diamanteBlack": "Diamante Black",
 
     // OrderSummaryCard
     "orders.title": "Movimentação de Pedidos",
