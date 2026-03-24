@@ -773,10 +773,10 @@ export default function InternalCadastros() {
                 <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.franchiseType")} /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t("internal.cadastros.franchiseType")}</SelectItem>
-                  <SelectItem value="bronze" disabled={!availablePlans.has("bronze")} className={!availablePlans.has("bronze") ? "opacity-40" : ""}>{t("internal.cadastros.qualBronze")}</SelectItem>
-                  <SelectItem value="silver" disabled={!availablePlans.has("silver")} className={!availablePlans.has("silver") ? "opacity-40" : ""}>{t("internal.cadastros.qualSilver")}</SelectItem>
-                  <SelectItem value="gold" disabled={!availablePlans.has("gold")} className={!availablePlans.has("gold") ? "opacity-40" : ""}>{t("internal.cadastros.qualGold")}</SelectItem>
-                  <SelectItem value="platinum" disabled={!availablePlans.has("platinum")} className={!availablePlans.has("platinum") ? "opacity-40" : ""}>{t("internal.cadastros.qualPlatinum")}</SelectItem>
+                  <SelectItem value="bronze" disabled={!availablePlans.has("bronze")} className={!availablePlans.has("bronze") ? "opacity-40" : ""}>{t("franchise.bronze")}</SelectItem>
+                  <SelectItem value="silver" disabled={!availablePlans.has("silver")} className={!availablePlans.has("silver") ? "opacity-40" : ""}>{t("franchise.silver")}</SelectItem>
+                  <SelectItem value="gold" disabled={!availablePlans.has("gold")} className={!availablePlans.has("gold") ? "opacity-40" : ""}>{t("franchise.gold")}</SelectItem>
+                  <SelectItem value="platinum" disabled={!availablePlans.has("platinum")} className={!availablePlans.has("platinum") ? "opacity-40" : ""}>{t("franchise.platinum")}</SelectItem>
                 </SelectContent>
               </Select>
 
