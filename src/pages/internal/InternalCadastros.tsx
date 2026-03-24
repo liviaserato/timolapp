@@ -303,9 +303,6 @@ export default function InternalCadastros() {
     setPlanType("all");
     setCitySearch("");
     setCityFilter("");
-    setDateFilterMode("off");
-    setDateFrom("");
-    setDateTo("");
   };
 
   /* ── Dashboard metrics ── */
