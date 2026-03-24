@@ -77,6 +77,28 @@ const mockFranchisees: Franchisee[] = [
 ];
 
 
+/* ── Search helper ── */
+const norm = (s: string) => s.toLowerCase().replace(/[.\-\/\s\+\(\)]/g, "");
+const isNumericSearch = (q: string) => /\d/.test(q) && !/[a-zA-ZÀ-ÿ]/.test(q);
+
+function matchesSearch(f: Franchisee, q: string, fields: string[]): boolean {
+  const nq = norm(q);
+  const numeric = isNumericSearch(q);
+  const activeFields = fields.length > 0 ? fields : (numeric ? ["id", "document", "phone"] : ["name", "city", "email"]);
+
+  return activeFields.some(field => {
+    switch (field) {
+      case "id": return f.franchises.some(fr => norm(fr.franchiseId).includes(nq));
+      case "document": return norm(f.document).includes(nq);
+      case "phone": return norm(f.phone).includes(nq);
+      case "name": return norm(f.fullName).includes(nq);
+      case "city": return norm(f.city).includes(nq);
+      case "email": return norm(f.email).includes(nq);
+      default: return false;
+    }
+  });
+}
+
 /* ── Helpers ── */
 const statusColors: Record<string, string> = {
   active: "bg-emerald-100 text-emerald-700 border-emerald-200",
