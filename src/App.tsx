@@ -35,6 +35,16 @@ import NotFound from "./pages/NotFound";
 const InternalLayout = lazy(() => import("./pages/InternalLayout"));
 const InternalDashboard = lazy(() => import("./pages/internal/InternalDashboard"));
 const InternalCadastros = lazy(() => import("./pages/internal/InternalCadastros"));
+const InternalFinanceiro = lazy(() => import("./pages/internal/InternalFinanceiro"));
+const InternalRede = lazy(() => import("./pages/internal/InternalRede"));
+const InternalClientes = lazy(() => import("./pages/internal/InternalClientes"));
+const InternalProdutos = lazy(() => import("./pages/internal/InternalProdutos"));
+const InternalPedidos = lazy(() => import("./pages/internal/InternalPedidos"));
+const InternalTreinamentos = lazy(() => import("./pages/internal/InternalTreinamentos"));
+const InternalComercial = lazy(() => import("./pages/internal/InternalComercial"));
+const InternalRelatorios = lazy(() => import("./pages/internal/InternalRelatorios"));
+const InternalSuporte = lazy(() => import("./pages/internal/InternalSuporte"));
+const InternalConfiguracoes = lazy(() => import("./pages/internal/InternalConfiguracoes"));
 
 const LazyFallback = () => (
   <FullScreenTimolLoader mode="page" title="Carregando..." className="bg-background" />
@@ -86,6 +96,16 @@ const App = () => (
             }>
               <Route index element={<Suspense fallback={<LazyFallback />}><InternalDashboard /></Suspense>} />
               <Route path="cadastros" element={<Suspense fallback={<LazyFallback />}><InternalCadastros /></Suspense>} />
+              <Route path="financeiro" element={<Suspense fallback={<LazyFallback />}><InternalFinanceiro /></Suspense>} />
+              <Route path="rede" element={<Suspense fallback={<LazyFallback />}><InternalRede /></Suspense>} />
+              <Route path="clientes" element={<Suspense fallback={<LazyFallback />}><InternalClientes /></Suspense>} />
+              <Route path="produtos" element={<Suspense fallback={<LazyFallback />}><InternalProdutos /></Suspense>} />
+              <Route path="pedidos" element={<Suspense fallback={<LazyFallback />}><InternalPedidos /></Suspense>} />
+              <Route path="treinamentos" element={<Suspense fallback={<LazyFallback />}><InternalTreinamentos /></Suspense>} />
+              <Route path="comercial" element={<Suspense fallback={<LazyFallback />}><InternalComercial /></Suspense>} />
+              <Route path="relatorios" element={<Suspense fallback={<LazyFallback />}><InternalRelatorios /></Suspense>} />
+              <Route path="suporte" element={<Suspense fallback={<LazyFallback />}><InternalSuporte /></Suspense>} />
+              <Route path="configuracoes" element={<Suspense fallback={<LazyFallback />}><InternalConfiguracoes /></Suspense>} />
             </Route>
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
