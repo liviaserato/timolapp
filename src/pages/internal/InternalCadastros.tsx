@@ -210,7 +210,7 @@ export default function InternalCadastros() {
     searchCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  /* Helper: filter list excluding one specific filter to know what's available */
+  /* Helper: filter list excluding one specific filter to know what's available (search filters only, no date) */
   const getFilteredExcluding = (exclude: string) => {
      let list = mockFranchisees as Franchisee[];
     if (exclude !== "franchiseStatus" && franchiseStatusFilter !== "all") {
@@ -222,13 +222,6 @@ export default function InternalCadastros() {
     if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (exclude !== "planType" && planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     if (exclude !== "city" && cityFilter) list = list.filter(f => f.city === cityFilter);
-    if (dateFilterMode === "month") {
-      const range = getMonthRange(monthRef);
-      list = list.filter(f => pf(f).createdAt >= range.from && pf(f).createdAt <= range.to);
-    } else if (dateFilterMode === "custom") {
-      if (dateFrom) list = list.filter(f => pf(f).createdAt >= dateFrom);
-      if (dateTo) list = list.filter(f => pf(f).createdAt <= dateTo);
-    }
     if (search.trim()) {
       const q = search.toLowerCase().replace(/[.\-\/]/g, "");
       list = list.filter(f => {
@@ -242,9 +235,9 @@ export default function InternalCadastros() {
     return list;
   };
 
-  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, dateFilterMode, monthRef, dateFrom, dateTo]);
-  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, dateFilterMode, monthRef, dateFrom, dateTo]);
-  const availableCities = useMemo(() => new Set(getFilteredExcluding("city").map(f => f.city)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter]);
+  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter]);
+  const availableCities = useMemo(() => new Set(getFilteredExcluding("city").map(f => f.city)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter]);
 
   const citySuggestions = useMemo(() => {
     if (!citySearch.trim()) return Array.from(availableCities).sort();
@@ -252,6 +245,7 @@ export default function InternalCadastros() {
     return Array.from(availableCities).filter(c => c.toLowerCase().includes(q)).sort();
   }, [citySearch, availableCities]);
 
+  /* Search results (no date filter) */
   const filtered = useMemo(() => {
     let list = mockFranchisees as Franchisee[];
     if (franchiseStatusFilter === "none") return [];
@@ -261,13 +255,6 @@ export default function InternalCadastros() {
     if (qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     if (cityFilter) list = list.filter(f => f.city === cityFilter);
-    if (dateFilterMode === "month") {
-      const range = getMonthRange(monthRef);
-      list = list.filter(f => pf(f).createdAt >= range.from && pf(f).createdAt <= range.to);
-    } else if (dateFilterMode === "custom") {
-      if (dateFrom) list = list.filter(f => pf(f).createdAt >= dateFrom);
-      if (dateTo) list = list.filter(f => pf(f).createdAt <= dateTo);
-    }
     if (search.trim()) {
       const q = search.toLowerCase().replace(/[.\-\/]/g, "");
       list = list.filter(f => {
@@ -291,7 +278,20 @@ export default function InternalCadastros() {
       });
     }
     return list;
-  }, [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, dateFilterMode, monthRef, dateFrom, dateTo, sortBy]);
+  }, [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, sortBy]);
+
+  /* Indicator metrics (only date filter, independent of search) */
+  const indicatorFiltered = useMemo(() => {
+    let list = mockFranchisees as Franchisee[];
+    if (dateFilterMode === "month") {
+      const range = getMonthRange(monthRef);
+      list = list.filter(f => pf(f).createdAt >= range.from && pf(f).createdAt <= range.to);
+    } else if (dateFilterMode === "custom") {
+      if (dateFrom) list = list.filter(f => pf(f).createdAt >= dateFrom);
+      if (dateTo) list = list.filter(f => pf(f).createdAt <= dateTo);
+    }
+    return list;
+  }, [dateFilterMode, monthRef, dateFrom, dateTo]);
 
   const clearFilters = () => {
     setSearch("");
