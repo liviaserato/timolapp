@@ -256,7 +256,7 @@ export default function InternalCadastros() {
       });
     }
     // Sort
-    if (sortBy === "recent") {
+    if (sortBy === "recent" || sortBy === "") {
       list = [...list].sort((a, b) => pf(b).createdAt.localeCompare(pf(a).createdAt));
     } else if (sortBy === "qualification") {
       list = [...list].sort((a, b) => (qualPriority[pf(b).qualification] || 0) - (qualPriority[pf(a).qualification] || 0));
