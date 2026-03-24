@@ -259,7 +259,7 @@ export default function InternalCadastros() {
                     dateFilterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
                   }`}
                 >
-                   Mês
+                   {t("internal.cadastros.month")}
                 </button>
                 <button
                   type="button"
