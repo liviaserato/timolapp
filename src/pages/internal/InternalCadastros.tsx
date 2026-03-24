@@ -9,10 +9,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
-  Search, Users, Filter, X, Phone, Mail, MapPin, ChevronRight, ChevronLeft,
-  BarChart3, UserCheck, UserX, MapPinned, Info, Clock, Trophy, Layers, TrendingUp, TrendingDown,
-  Calendar, Award, ArrowDownRight, ArrowUpRight, MapPinHouse, Landmark, Pencil, Lock,
-  FileText, Cake, Gem, ArrowUpDown, ClipboardList, ArrowLeft
+  Search, X, Phone, Mail, MapPin,
+  MapPinHouse, Landmark, Pencil, Lock,
+  FileText, Cake, Gem, ArrowUpDown, ClipboardList, ArrowLeft, Calendar
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { qualificationConfig } from "@/components/app/rede/mock-data";
@@ -148,18 +147,8 @@ const planColors: Record<string, string> = {
 /** Primary franchise accessor — uses first franchise sorted by createdAt */
 const pf = (f: Franchisee): FranchiseEntry => f.franchises[0];
 
-function getMonthLabel(date: Date, locale: string): string {
-  const m = date.toLocaleDateString(locale, { month: "long" });
-  return `${m.charAt(0).toUpperCase()}${m.slice(1)} ${date.getFullYear()}`;
-}
 
-function getMonthRange(date: Date): { from: string; to: string } {
-  const y = date.getFullYear();
-  const m = date.getMonth();
-  const first = new Date(y, m, 1);
-  const last = new Date(y, m + 1, 0);
-  return { from: first.toISOString().slice(0, 10), to: last.toISOString().slice(0, 10) };
-}
+
 
 /* ── Registration status helpers (before component for filter use) ── */
 type RegistrationStatus = "concluido" | "cancelado" | "pendente";
@@ -171,35 +160,6 @@ function getRegistrationStatus(f: Franchisee, fr?: FranchiseEntry): Registration
   return "pendente";
 }
 
-/* ── Mock annual data ── */
-const annualDataCurrentYear: Record<number, number> = { 0: 12, 1: 18, 2: 8, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0 };
-const annualDataPreviousYear: Record<number, number> = { 0: 8, 1: 14, 2: 11, 3: 9, 4: 15, 5: 20, 6: 17, 7: 22, 8: 13, 9: 19, 10: 16, 11: 10 };
-const currentYearValue = new Date().getFullYear();
-const currentMonthIdx = new Date().getMonth();
-
-
-function HBarChart({ items, barColorClass = "bg-primary/60", labelWidth = "w-14" }: { items: { label: string; count: number; extra?: string; tooltip?: string }[]; barColorClass?: string; labelWidth?: string }) {
-  const max = Math.max(...items.map(i => i.count), 1);
-  return (
-    <div className="space-y-1.5">
-      {items.map(({ label, count, extra, tooltip }) => {
-        const pct = Math.round((count / max) * 100);
-        return (
-          <div key={label} className="flex items-center gap-2" title={tooltip} aria-label={tooltip}>
-            <span className={`text-xs ${labelWidth} shrink-0 text-muted-foreground truncate`}>
-              {extra && <span className="mr-1">{extra}</span>}{label}
-            </span>
-            <div className="flex-1 h-4 bg-muted rounded overflow-hidden">
-              <div className={`h-full rounded ${barColorClass} transition-all`} style={{ width: `${Math.max(pct, count > 0 ? 6 : 0)}%` }} />
-            </div>
-            <span className="text-xs font-semibold w-6 text-right">{count}</span>
-          </div>
-        );
-      })}
-      {items.length === 0 && <p className="text-xs text-muted-foreground italic">—</p>}
-    </div>
-  );
-}
 
 /* ── Component ── */
 /* qualification priority for sorting */
@@ -219,15 +179,6 @@ export default function InternalCadastros() {
   const [planType, setPlanType] = useState<string>("all");
   const [searchFields, setSearchFields] = useState<string[]>([]);
 
-  const today = new Date();
-  const todayStr = today.toISOString().slice(0, 10);
-  const [dateFilterMode, setDateFilterMode] = useState<"off" | "month" | "custom">("month");
-  const [monthRef, setMonthRef] = useState(new Date());
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
-  const isCurrentMonth = monthRef.getFullYear() === today.getFullYear() && monthRef.getMonth() === today.getMonth();
-
-  // franchise status: both unchecked = no filter; one checked = filter to that; both checked = no filter
   const franchiseStatusFilter: string = (showActive && !showInactive) ? "active" : (!showActive && showInactive) ? "inactive" : "all";
   const hasSearchFilters = (showActive || showInactive) || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || search.trim() !== "";
   const hasFilters = hasSearchFilters;
@@ -240,18 +191,15 @@ export default function InternalCadastros() {
     searchCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  /* Helper: filter list excluding one specific filter to know what's available (search filters only, no date) */
   const getFilteredExcluding = (exclude: string) => {
      let list = mockFranchisees as Franchisee[];
     if (exclude !== "franchiseStatus" && franchiseStatusFilter !== "all") {
       if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
-      else if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
       else list = list.filter(f => pf(f).franchiseStatus !== "active");
     }
     if (exclude !== "registrationStatus" && registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
     if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (exclude !== "planType" && planType !== "all") list = list.filter(f => pf(f).planCode === planType);
-    
     if (search.trim()) {
       list = list.filter(f => matchesSearch(f, search, searchFields));
     }
@@ -261,7 +209,6 @@ export default function InternalCadastros() {
   const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType]);
   const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType]);
 
-  /* Search results (no date filter) */
   const filtered = useMemo(() => {
     let list = mockFranchisees as Franchisee[];
     if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
@@ -269,11 +216,9 @@ export default function InternalCadastros() {
     if (registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
     if (qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (planType !== "all") list = list.filter(f => pf(f).planCode === planType);
-    
     if (search.trim()) {
       list = list.filter(f => matchesSearch(f, search, searchFields));
     }
-    // Sort
     if (sortBy === "recent" || sortBy === "") {
       list = [...list].sort((a, b) => pf(b).createdAt.localeCompare(pf(a).createdAt));
     } else if (sortBy === "qualification") {
@@ -288,19 +233,6 @@ export default function InternalCadastros() {
     return list;
   }, [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType, sortBy]);
 
-  /* Indicator metrics (only date filter, independent of search) */
-  const indicatorFiltered = useMemo(() => {
-    let list = mockFranchisees as Franchisee[];
-    if (dateFilterMode === "month") {
-      const range = getMonthRange(monthRef);
-      list = list.filter(f => pf(f).createdAt >= range.from && pf(f).createdAt <= range.to);
-    } else if (dateFilterMode === "custom") {
-      if (dateFrom) list = list.filter(f => pf(f).createdAt >= dateFrom);
-      if (dateTo) list = list.filter(f => pf(f).createdAt <= dateTo);
-    }
-    return list;
-  }, [dateFilterMode, monthRef, dateFrom, dateTo]);
-
   const clearFilters = () => {
     setSearch("");
     setSortBy("");
@@ -311,75 +243,6 @@ export default function InternalCadastros() {
     setPlanType("all");
     setSearchFields([]);
   };
-
-  /* ── Dashboard metrics (based on date filter only) ── */
-  const completedCount = useMemo(() => indicatorFiltered.filter(f => pf(f).paidAt).length, [indicatorFiltered]);
-  const pendingCount = useMemo(() => indicatorFiltered.filter(f => !pf(f).paidAt).length, [indicatorFiltered]);
-  const conversionRate = (completedCount + pendingCount) > 0 ? Math.round((completedCount / (completedCount + pendingCount)) * 100) : 0;
-
-  // Franchise status
-  const activeCount = useMemo(() => indicatorFiltered.filter(f => pf(f).franchiseStatus === "active").length, [indicatorFiltered]);
-  const inactiveCount = useMemo(() => indicatorFiltered.filter(f => pf(f).franchiseStatus !== "active").length, [indicatorFiltered]);
-
-  // Avg franchises per franchisee
-  const activeFranchisees = useMemo(() => {
-    const uniqueOwners = new Set(indicatorFiltered.filter(f => pf(f).franchiseStatus === "active").map(f => f.fullName));
-    return uniqueOwners.size;
-  }, [indicatorFiltered]);
-  const avgFranchises = activeFranchisees > 0 ? (activeCount / activeFranchisees).toFixed(1) : "0";
-
-  // Avg activation time
-  const avgActivationDays = useMemo(() => {
-    const completed = indicatorFiltered.filter(f => pf(f).paidAt);
-    if (completed.length === 0) return 0;
-    const totalDays = completed.reduce((sum, f) => {
-      const d1 = new Date(pf(f).createdAt);
-      const d2 = new Date(pf(f).paidAt!);
-      return sum + Math.max(0, Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
-    }, 0);
-    return Math.round(totalDays / completed.length);
-  }, [indicatorFiltered]);
-
-  // Plan breakdown
-  const planBreakdown = useMemo(() => {
-    const counts: Record<string, number> = { bronze: 0, silver: 0, gold: 0, platinum: 0 };
-    indicatorFiltered.forEach(f => { if (counts[pf(f).planCode] !== undefined) counts[pf(f).planCode]++; });
-    return counts;
-  }, [indicatorFiltered]);
-
-  // Qualification breakdown (active only)
-  const qualBreakdown = useMemo(() => {
-    const counts: Record<string, number> = { consultor: 0, distribuidor: 0, lider: 0, rubi: 0, esmeralda: 0, diamante: 0 };
-    indicatorFiltered.filter(f => pf(f).franchiseStatus === "active").forEach(f => {
-      if (counts[pf(f).qualification] !== undefined) counts[pf(f).qualification]++;
-    });
-    return counts;
-  }, [indicatorFiltered]);
-
-  // Top sponsors
-  const topSponsors = useMemo(() => {
-    const map = new Map<string, { name: string; id: string; count: number }>();
-    indicatorFiltered.forEach(f => {
-      const existing = map.get(pf(f).sponsorId);
-      if (existing) existing.count++;
-      else map.set(pf(f).sponsorId, { name: pf(f).sponsorName, id: pf(f).sponsorId, count: 1 });
-    });
-    return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 5);
-  }, [indicatorFiltered]);
-
-  // Top cities
-  const topCities = useMemo(() => {
-    const map = new Map<string, { city: string; flag: string; count: number }>();
-    indicatorFiltered.forEach(f => {
-      const existing = map.get(f.city);
-      if (existing) existing.count++;
-      else map.set(f.city, { city: f.city, flag: f.countryFlag, count: 1 });
-    });
-    return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 5);
-  }, [indicatorFiltered]);
-
-  const barColors: Record<string, string> = { bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400" };
-  const qualBarColors: Record<string, string> = { consultor: "bg-muted-foreground/40", distribuidor: "bg-blue-400", lider: "bg-blue-600", rubi: "bg-red-400", esmeralda: "bg-emerald-400", diamante: "bg-violet-400" };
 
   if (showPending) {
     return (
@@ -412,319 +275,7 @@ export default function InternalCadastros() {
         </Button>
       </header>
 
-      {/* ── Indicadores Card ── */}
-      <DashboardCard icon={BarChart3} title={t("internal.cadastros.indicators")}>
-        <div className="mt-2 space-y-4">
-          {/* Date filter row */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
-              <button
-                type="button"
-                onClick={() => setDateFilterMode(dateFilterMode === "month" ? "off" : "month")}
-                className={`px-3 h-9 text-xs font-medium transition-colors min-w-[52px] text-center ${
-                  dateFilterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-                }`}
-              >
-                {t("internal.cadastros.month")}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (dateFilterMode === "custom") { setDateFilterMode("off"); }
-                  else { setDateFilterMode("custom"); setDateTo(todayStr); }
-                }}
-                className={`px-3 h-9 text-xs font-medium transition-colors min-w-[52px] text-center ${
-                  dateFilterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-                }`}
-              >
-                {t("internal.cadastros.period")}
-              </button>
-            </div>
-
-            {dateFilterMode === "month" && (
-              <div className="flex items-center gap-0 shrink-0">
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setMonthRef(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-xs font-medium min-w-[120px] text-center">
-                  {getMonthLabel(monthRef, dateLocale)}
-                </span>
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { if (!isCurrentMonth) setMonthRef(d => new Date(d.getFullYear(), d.getMonth() + 1, 1)); }} disabled={isCurrentMonth}>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-
-            {dateFilterMode === "custom" && (
-              <div className="flex gap-2 items-center shrink-0">
-                <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
-                <span className="text-xs text-muted-foreground">{t("internal.cadastros.until")}</span>
-                <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateTo} onChange={e => setDateTo(e.target.value)} />
-              </div>
-            )}
-          </div>
-
-          {/* 4-column KPI + Chart layout */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* ─── Column 1: Cadastros ─── */}
-            <div className="flex flex-col gap-3">
-               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-2">
-                  <Users className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardRegistrations")}</span>
-                  <Tooltip delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipRegistrations")}</TooltipContent>
-                  </Tooltip>
-                </div>
-                <div className="flex items-center justify-center gap-4">
-                  <span className="text-3xl font-bold text-foreground">{completedCount}</span>
-                  <div className="flex flex-col items-center">
-                    <span className="text-[10px] text-primary/70 leading-tight">{t("internal.cadastros.completionRate")}</span>
-                    <span className="text-sm font-semibold text-primary leading-tight">{conversionRate}%</span>
-                  </div>
-                </div>
-                <p className="text-[11px] text-muted-foreground mt-1 text-center">{pendingCount} {t("internal.cadastros.pendingRegistrations")}</p>
-              </div>
-              {/* Chart: by franchise type */}
-              <div className="space-y-1.5 px-2">
-                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.byFranchiseType")}</h4>
-                {(["bronze", "silver", "gold", "platinum"] as const).map(plan => {
-                  const count = planBreakdown[plan] || 0;
-                  const planLabelKeys: Record<string, string> = { bronze: "franchise.bronze", silver: "franchise.silver", gold: "franchise.gold", platinum: "franchise.platinum" };
-                  return (
-                    <div key={plan} className="flex items-center gap-2">
-                      <span className="text-xs w-14 shrink-0 text-muted-foreground">{t(planLabelKeys[plan])}</span>
-                      <div className="flex-1 h-4 bg-muted rounded overflow-hidden">
-                        <div className={`h-full rounded ${barColors[plan]} transition-all`} style={{ width: `${count > 0 ? Math.max(Math.round((count / Math.max(...Object.values(planBreakdown), 1)) * 100), 6) : 0}%` }} />
-                      </div>
-                      <span className="text-xs font-semibold w-6 text-right">{count}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* ─── Column 2: Status das Franquias ─── */}
-            <div className="flex flex-col gap-3">
-               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-2">
-                  <Layers className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardFranchiseStatus")}</span>
-                  <Tooltip delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipFranchiseStatus")}</TooltipContent>
-                  </Tooltip>
-                </div>
-                <div className="flex items-center justify-center gap-4">
-                  <div className="text-center">
-                    <span className="text-3xl font-bold text-emerald-600">{activeCount}</span>
-                    <p className="text-[11px] text-muted-foreground">{t("internal.cadastros.activeCount")}</p>
-                  </div>
-                  <div className="text-center">
-                    <span className="text-3xl font-bold text-red-500">{inactiveCount}</span>
-                    <p className="text-[11px] text-muted-foreground">{t("internal.cadastros.inactiveCount")}</p>
-                  </div>
-                </div>
-              </div>
-              {/* Chart: qualification (active only) */}
-              <div className="space-y-1.5 px-2">
-                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.activeQualOnly")}</h4>
-                {(["consultor", "distribuidor", "lider", "rubi", "esmeralda", "diamante"] as const).map(q => {
-                  const count = qualBreakdown[q] || 0;
-                  const maxQ = Math.max(...Object.values(qualBreakdown), 1);
-                  return (
-                    <div key={q} className="flex items-center gap-2">
-                      <span className="text-xs w-14 shrink-0 text-muted-foreground">{t(qualificationLabelKeys[q])}</span>
-                      <div className="flex-1 h-4 bg-muted rounded overflow-hidden">
-                        <div className={`h-full rounded ${qualBarColors[q]} transition-all`} style={{ width: `${count > 0 ? Math.max(Math.round((count / maxQ) * 100), 6) : 0}%` }} />
-                      </div>
-                      <span className="text-xs font-semibold w-6 text-right">{count}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* ─── Column 3: Média Franquias por Franqueado ─── */}
-            <div className="flex flex-col gap-3">
-               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1">
-                      <Trophy className="h-4 w-4 text-primary shrink-0" />
-                      <span>{t("internal.cadastros.cardAvgFranchisesLine1")}</span>
-                      <Info className="h-3 w-3 text-muted-foreground shrink-0" />
-                    </h3>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipAvgFranchises")}</TooltipContent>
-                </Tooltip>
-                <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-3xl font-bold text-foreground">{Math.round(Number(avgFranchises))}</span>
-                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.franchisesPerPersonLabel")}</span>
-                </div>
-              </div>
-              {/* Chart: top sponsors */}
-              <div className="space-y-1.5 px-2">
-                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.topSponsors")}</h4>
-                <HBarChart
-                  items={topSponsors.map(s => ({ label: s.id, count: s.count, tooltip: s.name }))}
-                  barColorClass="bg-primary/50"
-                  labelWidth="w-[80px]"
-                />
-              </div>
-            </div>
-
-            {/* ─── Column 4: Tempo Médio de Ativação ─── */}
-            <div className="flex flex-col gap-3">
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1">
-                      <Clock className="h-4 w-4 text-primary shrink-0" />
-                      <span>{t("internal.cadastros.cardAvgActivationLine1")}</span>
-                      <Info className="h-3 w-3 text-muted-foreground shrink-0" />
-                    </h3>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipAvgActivation")}</TooltipContent>
-                </Tooltip>
-                <div className="flex items-start justify-center gap-1">
-                  <span className="text-xs text-muted-foreground mt-1">{t("internal.cadastros.avgLabel")}</span>
-                  <span className="text-3xl font-bold text-foreground leading-none">{avgActivationDays}</span>
-                  <span className="text-xs text-muted-foreground self-end mb-0.5">{t("internal.cadastros.days")}</span>
-                </div>
-              </div>
-              {/* Chart: top cities */}
-              <div className="space-y-1.5 px-2">
-                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
-                  <MapPinned className="h-3.5 w-3.5" />
-                  {t("internal.cadastros.topCities")}
-                </h4>
-                <HBarChart
-                  items={topCities.map(c => ({ label: c.city, count: c.count, extra: c.flag }))}
-                  barColorClass="bg-primary/60"
-                  labelWidth="w-[120px]"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Footer: abandoned registrations */}
-          <p className="text-[11px] text-muted-foreground/70 pt-2 border-t border-app-card-border">
-            {t("internal.cadastros.abandonedFooter").replace("{count}", String(2))}
-          </p>
-        </div>
-      </DashboardCard>
-
-      {/* ── Visão Anual de Cadastros ── */}
-      <div className="mt-4">
-        <DashboardCard icon={Calendar} title={t("internal.cadastros.annualVision")}>
-          <div className="mt-2 space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {/* ─── Card 1: Total do Ano + Variação ─── */}
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-4 min-h-[120px] flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-2">
-                  <Users className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.annualTotal")}</span>
-                  <Tooltip delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-[260px] text-xs">{t("internal.cadastros.annualTooltip")}</TooltipContent>
-                  </Tooltip>
-                </div>
-                {(() => {
-                  const totalCurrent = Object.entries(annualDataCurrentYear).filter(([m]) => Number(m) <= currentMonthIdx).reduce((s, [, v]) => s + v, 0);
-                  const totalPrev = Object.entries(annualDataPreviousYear).filter(([m]) => Number(m) <= currentMonthIdx).reduce((s, [, v]) => s + v, 0);
-                  const variation = totalPrev > 0 ? Math.round(((totalCurrent - totalPrev) / totalPrev) * 100) : 0;
-                  const isUp = variation >= 0;
-                  return (
-                    <div className="flex items-center justify-center gap-3">
-                      <span className="text-3xl font-bold text-foreground">{totalCurrent}</span>
-                      <div className="flex items-center gap-1">
-                        {isUp ? <ArrowUpRight className="h-4 w-4 text-emerald-600" /> : <ArrowDownRight className="h-4 w-4 text-red-500" />}
-                        <span className={`text-sm font-semibold ${isUp ? "text-emerald-600" : "text-red-500"}`}>{isUp ? "+" : ""}{variation}%</span>
-                      </div>
-                    </div>
-                  );
-                })()}
-                <p className="text-[10px] text-muted-foreground mt-1 text-center">{t("internal.cadastros.vsLastYear")}</p>
-              </div>
-
-              {/* ─── Card 2: Melhor e Pior mês ─── */}
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-4 min-h-[120px] flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-3">
-                  <Award className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.insightsTitle")}</span>
-                  <Tooltip delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.bestWorstTooltip")}</TooltipContent>
-                  </Tooltip>
-                </div>
-                {(() => {
-                  const monthsWithData = Object.entries(annualDataCurrentYear)
-                    .filter(([m]) => Number(m) <= currentMonthIdx)
-                    .map(([m, v]) => ({ month: Number(m), count: v }));
-                  const best = monthsWithData.reduce((a, b) => b.count > a.count ? b : a, monthsWithData[0]);
-                  const worst = monthsWithData.reduce((a, b) => b.count < a.count ? b : a, monthsWithData[0]);
-                  const getMonthName = (m: number) => new Date(2026, m).toLocaleDateString(dateLocale, { month: "short" }).replace(".", "");
-                  return (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
-                          <span className="text-xs text-muted-foreground">{t("internal.cadastros.bestMonth")}</span>
-                        </div>
-                        <span className="text-sm font-semibold text-foreground capitalize">{getMonthName(best.month)} — {best.count}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <TrendingDown className="h-3.5 w-3.5 text-red-500" />
-                          <span className="text-xs text-muted-foreground">{t("internal.cadastros.worstMonth")}</span>
-                        </div>
-                        <span className="text-sm font-semibold text-foreground capitalize">{getMonthName(worst.month)} — {worst.count}</span>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-
-              {/* ─── Card 3: Média Mensal ─── */}
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-4 min-h-[120px] flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-2">
-                  <BarChart3 className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.monthlyAvg")}</span>
-                  <Tooltip delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.monthlyAvgTooltip")}</TooltipContent>
-                  </Tooltip>
-                </div>
-                {(() => {
-                  const total = Object.entries(annualDataCurrentYear).filter(([m]) => Number(m) <= currentMonthIdx).reduce((s, [, v]) => s + v, 0);
-                  const elapsedMonths = currentMonthIdx + 1;
-                  const avg = Math.round(total / elapsedMonths);
-                  return (
-                    <div className="flex items-baseline justify-center gap-1">
-                      <span className="text-3xl font-bold text-foreground">{avg}</span>
-                      <span className="text-xs text-muted-foreground">{t("internal.cadastros.registrationsPerMonth")}</span>
-                    </div>
-                  );
-                })()}
-              </div>
-            </div>
-          </div>
-        </DashboardCard>
-      </div>
-
-      <div className="mt-4" ref={searchCardRef}>
+      <div ref={searchCardRef}>
         <DashboardCard icon={Search} title={t("internal.cadastros.searchFranchisee")}>
           <div className="mt-2 space-y-3">
             {/* Row 1: Search + Sort */}
@@ -768,12 +319,15 @@ export default function InternalCadastros() {
                   </ToggleGroup>
                 )}
               </div>
-              <Select value={sortBy || undefined} onValueChange={v => { setSortBy(v); activateCheckboxes(); scrollToSearch(); }}>
+              {/* Sort */}
+              <Select value={sortBy} onValueChange={v => { setSortBy(v); activateCheckboxes(); }}>
                 <SelectTrigger className="h-9 text-xs w-full sm:w-[180px]">
-                  <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
-                  <SelectValue placeholder={t("internal.cadastros.classify")} />
+                  <div className="flex items-center gap-1.5">
+                    <ArrowUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                    <SelectValue placeholder={t("internal.cadastros.sortPlaceholder")} />
+                  </div>
                 </SelectTrigger>
-                <SelectContent className="min-w-[var(--radix-select-trigger-width)] sm:min-w-[280px]">
+                <SelectContent>
                   <SelectItem value="recent">{t("internal.cadastros.sortRecent")}</SelectItem>
                   <SelectItem value="active_first">{t("internal.cadastros.sortActiveFirst")}</SelectItem>
                   <SelectItem value="qualification">{t("internal.cadastros.sortQualification")}</SelectItem>
@@ -782,77 +336,77 @@ export default function InternalCadastros() {
             </div>
 
             {/* Row 2: Filters */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 items-end">
-              {/* Franchise Status - Checkboxes */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {/* Franchise status checkboxes */}
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground/70 px-1">{t("internal.cadastros.franchiseStatusLegend")}</span>
-                <div className="flex items-center h-9 px-2 rounded-md border border-input bg-background">
-                  <div className="flex items-center gap-3 w-full justify-evenly">
-                    <label className="flex items-center gap-1.5 cursor-pointer">
-                      <Checkbox checked={showActive} onCheckedChange={(v) => { setShowActive(!!v); scrollToSearch(); }} className="h-3.5 w-3.5" />
-                      <span className="text-xs text-foreground">{t("internal.cadastros.statusActive")}</span>
-                    </label>
-                    <label className="flex items-center gap-1.5 cursor-pointer">
-                      <Checkbox checked={showInactive} onCheckedChange={(v) => { setShowInactive(!!v); scrollToSearch(); }} className="h-3.5 w-3.5" />
-                      <span className="text-xs text-foreground">{t("internal.cadastros.statusInactive")}</span>
-                    </label>
-                  </div>
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterFranchiseStatus")}</span>
+                <div className="flex items-center gap-3 h-9 px-2 rounded-md border border-input bg-background">
+                  <label className="flex items-center gap-1.5 cursor-pointer flex-1 min-w-0">
+                    <Checkbox checked={showActive} onCheckedChange={(v: boolean) => setShowActive(v)} className="h-3.5 w-3.5" />
+                    <span className="text-xs truncate">{t("internal.cadastros.statusActive")}</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 cursor-pointer flex-1 min-w-0">
+                    <Checkbox checked={showInactive} onCheckedChange={(v: boolean) => setShowInactive(v)} className="h-3.5 w-3.5" />
+                    <span className="text-xs truncate">{t("internal.cadastros.statusInactive")}</span>
+                  </label>
                 </div>
               </div>
-
-              {/* Registration Status - Select */}
+              {/* Registration status */}
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground/70 px-1">{t("internal.cadastros.registrationStatusLegend")}</span>
-                <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); activateCheckboxes(); scrollToSearch(); }}>
-                  <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.allStatuses")} /></SelectTrigger>
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterRegistrationStatus")}</span>
+                <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); activateCheckboxes(); }}>
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
+                    <SelectItem value="all">{t("internal.cadastros.all")}</SelectItem>
                     <SelectItem value="pendente">{t("internal.cadastros.regPending")}</SelectItem>
                     <SelectItem value="concluido">{t("internal.cadastros.regCompleted")}</SelectItem>
                     <SelectItem value="cancelado">{t("internal.cadastros.regCancelled")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-
               {/* Qualification */}
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground/70 px-1">{t("internal.cadastros.qualificationLegend")}</span>
-                <Select value={qualification} onValueChange={v => { setQualification(v); activateCheckboxes(); scrollToSearch(); }}>
-                  <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.allStatuses")} /></SelectTrigger>
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterQualification")}</span>
+                <Select value={qualification} onValueChange={v => { setQualification(v); activateCheckboxes(); }}>
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
-                    <SelectItem value="consultor" disabled={!availableQualifications.has("consultor")} className={!availableQualifications.has("consultor") ? "opacity-40" : ""}>{t("internal.cadastros.qualConsultor")}</SelectItem>
-                    <SelectItem value="distribuidor" disabled={!availableQualifications.has("distribuidor")} className={!availableQualifications.has("distribuidor") ? "opacity-40" : ""}>{t("internal.cadastros.qualDistribuidor")}</SelectItem>
-                    <SelectItem value="lider" disabled={!availableQualifications.has("lider")} className={!availableQualifications.has("lider") ? "opacity-40" : ""}>{t("internal.cadastros.qualLider")}</SelectItem>
-                    <SelectItem value="rubi" disabled={!availableQualifications.has("rubi")} className={!availableQualifications.has("rubi") ? "opacity-40" : ""}>{t("internal.cadastros.qualRubi")}</SelectItem>
-                    <SelectItem value="esmeralda" disabled={!availableQualifications.has("esmeralda")} className={!availableQualifications.has("esmeralda") ? "opacity-40" : ""}>{t("internal.cadastros.qualEsmeralda")}</SelectItem>
-                    <SelectItem value="diamante" disabled={!availableQualifications.has("diamante")} className={!availableQualifications.has("diamante") ? "opacity-40" : ""}>{t("internal.cadastros.qualDiamante")}</SelectItem>
+                    <SelectItem value="all">{t("internal.cadastros.all")}</SelectItem>
+                    {(["consultor", "distribuidor", "lider", "rubi", "esmeralda", "diamante"] as const).map(q => (
+                      <SelectItem key={q} value={q} disabled={!availableQualifications.has(q)}>
+                        {t(qualificationLabelKeys[q])}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
-
-              {/* Plan Type */}
+              {/* Plan type */}
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground/70 px-1">{t("internal.cadastros.franchiseLegend")}</span>
-                <Select value={planType} onValueChange={v => { setPlanType(v); activateCheckboxes(); scrollToSearch(); }}>
-                  <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.allStatuses")} /></SelectTrigger>
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterPlanType")}</span>
+                <Select value={planType} onValueChange={v => { setPlanType(v); activateCheckboxes(); }}>
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
-                    <SelectItem value="bronze" disabled={!availablePlans.has("bronze")} className={!availablePlans.has("bronze") ? "opacity-40" : ""}>{t("franchise.bronze")}</SelectItem>
-                    <SelectItem value="silver" disabled={!availablePlans.has("silver")} className={!availablePlans.has("silver") ? "opacity-40" : ""}>{t("franchise.silver")}</SelectItem>
-                    <SelectItem value="gold" disabled={!availablePlans.has("gold")} className={!availablePlans.has("gold") ? "opacity-40" : ""}>{t("franchise.gold")}</SelectItem>
-                    <SelectItem value="platinum" disabled={!availablePlans.has("platinum")} className={!availablePlans.has("platinum") ? "opacity-40" : ""}>{t("franchise.platinum")}</SelectItem>
+                    <SelectItem value="all">{t("internal.cadastros.all")}</SelectItem>
+                    {(["bronze", "silver", "gold", "platinum"] as const).map(p => (
+                      <SelectItem key={p} value={p} disabled={!availablePlans.has(p)}>
+                        {t(`franchise.${p}`)}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
+            {/* Active filters + clear */}
             {hasFilters && (
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">
-                  {filtered.length} {filtered.length !== 1 ? t("internal.cadastros.resultsFoundPlural") : t("internal.cadastros.resultsFound")}
-                </span>
-                <Button variant="ghost" size="sm" onClick={clearFilters} className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground">
+                <span className="text-xs text-muted-foreground">{filtered.length} {t("internal.cadastros.resultsFound")}</span>
+                <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
                   <X className="h-3 w-3" />
                   {t("internal.cadastros.clearFilters")}
                 </Button>
@@ -862,32 +416,16 @@ export default function InternalCadastros() {
         </DashboardCard>
       </div>
 
-      {/* Results */}
+      {/* ── Results ── */}
       <div className="mt-4 space-y-3">
-        {!hasFilters && (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Filter className="h-10 w-10 text-muted-foreground/40 mb-3" />
-            <p className="text-sm text-muted-foreground">{t("internal.cadastros.useSearchHint")}</p>
-          </div>
-        )}
-
-        {hasFilters && filtered.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Users className="h-10 w-10 text-muted-foreground/40 mb-3" />
-            <p className="text-sm text-muted-foreground">{t("internal.cadastros.noResults")}</p>
-          </div>
-        )}
-
-        {hasFilters && filtered.map(f => (
+        {filtered.map(f => (
           <FranchiseeCard key={f.id} franchisee={f} />
         ))}
-
-        {hasFilters && filtered.length > 0 && <RegistrationStatusLegend />}
+        <RegistrationStatusLegend />
       </div>
     </div>
   );
 }
-
 
 const registrationStatusBorder: Record<RegistrationStatus, string> = {
   concluido: "border-l-[#003885]",
