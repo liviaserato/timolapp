@@ -374,7 +374,7 @@ export default function InternalCadastros() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t("internal.cadastros.all")}</SelectItem>
+                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
                     <SelectItem value="pendente">{t("internal.cadastros.regPending")}</SelectItem>
                     <SelectItem value="concluido">{t("internal.cadastros.regCompleted")}</SelectItem>
                     <SelectItem value="cancelado">{t("internal.cadastros.regCancelled")}</SelectItem>
