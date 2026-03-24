@@ -616,47 +616,6 @@ export default function InternalCadastros() {
               </div>
             </div>
 
-            {/* ─── Monthly evolution chart ─── */}
-            <div className="space-y-2">
-              <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.monthlyEvolution")}</h4>
-              <div className="flex items-center gap-4 mb-1">
-                <div className="flex items-center gap-1.5">
-                  <div className="h-2.5 w-2.5 rounded-sm bg-primary" />
-                  <span className="text-[10px] text-muted-foreground">{currentYearValue} ({t("internal.cadastros.currentYear")})</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="h-2.5 w-2.5 rounded-sm bg-primary/25" />
-                  <span className="text-[10px] text-muted-foreground">{currentYearValue - 1} ({t("internal.cadastros.previousYear")})</span>
-                </div>
-              </div>
-              <div className="space-y-1">
-                {Array.from({ length: 12 }, (_, i) => {
-                  const cur = annualDataCurrentYear[i] || 0;
-                  const prev = annualDataPreviousYear[i] || 0;
-                  const max = Math.max(...Object.values(annualDataCurrentYear), ...Object.values(annualDataPreviousYear), 1);
-                  const monthName = new Date(2026, i).toLocaleDateString(dateLocale, { month: "short" }).replace(".", "");
-                  const isFuture = i > currentMonthIdx;
-                  return (
-                    <div key={i} className={`flex items-center gap-2 ${isFuture ? "opacity-30" : ""}`}>
-                      <span className="text-[10px] w-8 shrink-0 text-muted-foreground capitalize">{monthName}</span>
-                      <div className="flex-1 flex flex-col gap-0.5">
-                        <div className="h-3 bg-muted rounded overflow-hidden">
-                          <div className="h-full rounded bg-primary transition-all" style={{ width: `${Math.max((cur / max) * 100, cur > 0 ? 4 : 0)}%` }} />
-                        </div>
-                        <div className="h-3 bg-muted rounded overflow-hidden">
-                          <div className="h-full rounded bg-primary/25 transition-all" style={{ width: `${Math.max((prev / max) * 100, prev > 0 ? 4 : 0)}%` }} />
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-end w-8">
-                        <span className="text-[10px] font-semibold leading-tight">{cur}</span>
-                        <span className="text-[10px] text-muted-foreground leading-tight">{prev}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
         </DashboardCard>
       </div>
 
