@@ -458,12 +458,12 @@ export default function InternalCadastros() {
               </Select>
 
               <Select value={activationStatus} onValueChange={setActivationStatus}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Ativação" /></SelectTrigger>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.activationFilter")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Ativação</SelectItem>
-                  <SelectItem value="activated" disabled={!availableActivationStatuses.has("activated")} className={!availableActivationStatuses.has("activated") ? "opacity-40" : ""}>Ativada</SelectItem>
-                  <SelectItem value="pending" disabled={!availableActivationStatuses.has("pending")} className={!availableActivationStatuses.has("pending") ? "opacity-40" : ""}>Pendente</SelectItem>
-                  <SelectItem value="inactive" disabled={!availableActivationStatuses.has("inactive")} className={!availableActivationStatuses.has("inactive") ? "opacity-40" : ""}>Inativa</SelectItem>
+                  <SelectItem value="all">{t("internal.cadastros.activationFilter")}</SelectItem>
+                  <SelectItem value="activated" disabled={!availableActivationStatuses.has("activated")} className={!availableActivationStatuses.has("activated") ? "opacity-40" : ""}>{t("internal.cadastros.statusActivated")}</SelectItem>
+                  <SelectItem value="pending" disabled={!availableActivationStatuses.has("pending")} className={!availableActivationStatuses.has("pending") ? "opacity-40" : ""}>{t("internal.cadastros.statusPending")}</SelectItem>
+                  <SelectItem value="inactive" disabled={!availableActivationStatuses.has("inactive")} className={!availableActivationStatuses.has("inactive") ? "opacity-40" : ""}>{t("internal.cadastros.statusInactive")}</SelectItem>
                 </SelectContent>
               </Select>
 
