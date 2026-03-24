@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
+import { cn } from "@/lib/utils";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -15,10 +16,21 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { qualificationConfig } from "@/components/app/rede/mock-data";
 
 /* ── Types ── */
+interface FranchiseEntry {
+  franchiseId: string;
+  sponsorName: string;
+  sponsorId: string;
+  createdAt: string;
+  planCode: string;
+  planLabel: string;
+  qualification: "consultor" | "distribuidor" | "lider" | "rubi" | "esmeralda" | "diamante";
+  franchiseStatus: "active" | "suspended" | "cancelled";
+  activationStatus: "activated" | "pending" | "inactive";
+  paidAt: string | null;
+}
+
 interface Franchisee {
   id: string;
-  franchiseId: string;
-  extraFranchiseIds?: string[];
   fullName: string;
   document: string;
   birthDate: string;
@@ -30,27 +42,36 @@ interface Franchisee {
   state: string;
   country: string;
   countryFlag: string;
-  planCode: string;
-  planLabel: string;
-  franchiseStatus: "active" | "suspended" | "cancelled";
-  activationStatus: "activated" | "pending" | "inactive";
-  qualification: "consultor" | "distribuidor" | "lider" | "rubi" | "esmeralda" | "diamante";
-  sponsorName: string;
-  sponsorId: string;
-  createdAt: string;
-  paidAt: string | null;
+  franchises: FranchiseEntry[];
 }
 
 /* ── Mock Data ── */
 const mockFranchisees: Franchisee[] = [
-  { id: "1", franchiseId: "100231", fullName: "Lívia Serato", document: "123.456.789-00", birthDate: "15/03/1990", gender: "Feminino", email: "livia.serato@email.com", phone: "+55 11 99999-0000", username: "livia.serato", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "esmeralda", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-02", paidAt: "2026-03-05" },
-  { id: "2", franchiseId: "100232", fullName: "Carlos Eduardo Mendes", document: "987.654.321-00", birthDate: "22/08/1985", gender: "Masculino", email: "carlos.mendes@email.com", phone: "+55 21 98888-1111", username: "carlos.mendes", city: "Rio de Janeiro", state: "RJ", country: "Brasil", countryFlag: "🇧🇷", planCode: "platinum", planLabel: "Platina", franchiseStatus: "active", activationStatus: "activated", qualification: "rubi", sponsorName: "Lívia Serato", sponsorId: "100231", createdAt: "2026-03-10", paidAt: "2026-03-12" },
-  { id: "3", franchiseId: "100233", fullName: "Ana Paula Costa", document: "456.789.123-00", birthDate: "10/12/1992", gender: "Feminino", email: "ana.costa@email.com", phone: "+55 31 97777-2222", username: "ana.costa", city: "Belo Horizonte", state: "MG", country: "Brasil", countryFlag: "🇧🇷", planCode: "bronze", planLabel: "Bronze", franchiseStatus: "active", activationStatus: "pending", qualification: "consultor", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-15", paidAt: null },
-  { id: "4", franchiseId: "100234", fullName: "Roberto Almeida Filho", document: "321.654.987-00", birthDate: "05/06/1978", gender: "Masculino", email: "roberto.almeida@email.com", phone: "+55 41 96666-3333", username: "roberto.almeida", city: "Curitiba", state: "PR", country: "Brasil", countryFlag: "🇧🇷", planCode: "silver", planLabel: "Prata", franchiseStatus: "suspended", activationStatus: "inactive", qualification: "distribuidor", sponsorName: "Ana Costa", sponsorId: "100233", createdAt: "2026-03-08", paidAt: "2026-03-20" },
-  { id: "5", franchiseId: "100235", fullName: "Fernanda Oliveira Santos", document: "654.321.987-00", birthDate: "18/09/1988", gender: "Feminino", email: "fernanda.santos@email.com", phone: "+55 51 95555-4444", username: "fernanda.santos", city: "Porto Alegre", state: "RS", country: "Brasil", countryFlag: "🇧🇷", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "lider", sponsorName: "Roberto Almeida", sponsorId: "100234", createdAt: "2026-03-01", paidAt: "2026-03-03" },
-  { id: "6", franchiseId: "100236", fullName: "Pedro Henrique Lima", document: "789.123.456-00", birthDate: "30/01/1995", gender: "Masculino", email: "pedro.lima@email.com", phone: "+55 61 94444-5555", username: "pedro.lima", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "bronze", planLabel: "Bronze", franchiseStatus: "cancelled", activationStatus: "inactive", qualification: "consultor", sponsorName: "Fernanda Santos", sponsorId: "100235", createdAt: "2026-02-15", paidAt: null },
-  { id: "7", franchiseId: "100237", fullName: "Maria Silva", extraFranchiseIds: ["100299"], document: "111.222.333-00", birthDate: "12/07/1980", gender: "Feminino", email: "maria.silva@email.com", phone: "+55 11 93333-6666", username: "maria.silva", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "platinum", planLabel: "Platina", franchiseStatus: "active", activationStatus: "activated", qualification: "diamante", sponsorName: "Timol", sponsorId: "00001", createdAt: "2026-02-01", paidAt: "2026-02-02" },
-  { id: "8", franchiseId: "100238", fullName: "Juan García López", document: "A12345678", birthDate: "03/11/1991", gender: "Masculino", email: "juan.garcia@email.com", phone: "+34 612 345 678", username: "juan.garcia", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "esmeralda", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", paidAt: "2026-03-19" },
+  { id: "1", fullName: "Lívia Serato", document: "123.456.789-00", birthDate: "15/03/1990", gender: "Feminino", email: "livia.serato@email.com", phone: "+55 11 99999-0000", username: "livia.serato", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+    { franchiseId: "100231", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-02", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-05" },
+  ]},
+  { id: "2", fullName: "Carlos Eduardo Mendes", document: "987.654.321-00", birthDate: "22/08/1985", gender: "Masculino", email: "carlos.mendes@email.com", phone: "+55 21 98888-1111", username: "carlos.mendes", city: "Rio de Janeiro", state: "RJ", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+    { franchiseId: "100232", sponsorName: "Lívia Serato", sponsorId: "100231", createdAt: "2026-03-10", planCode: "platinum", planLabel: "Platina", qualification: "rubi", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-12" },
+  ]},
+  { id: "3", fullName: "Ana Paula Costa", document: "456.789.123-00", birthDate: "10/12/1992", gender: "Feminino", email: "ana.costa@email.com", phone: "+55 31 97777-2222", username: "ana.costa", city: "Belo Horizonte", state: "MG", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+    { franchiseId: "100233", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-15", planCode: "bronze", planLabel: "Bronze", qualification: "consultor", franchiseStatus: "active", activationStatus: "pending", paidAt: null },
+  ]},
+  { id: "4", fullName: "Roberto Almeida Filho", document: "321.654.987-00", birthDate: "05/06/1978", gender: "Masculino", email: "roberto.almeida@email.com", phone: "+55 41 96666-3333", username: "roberto.almeida", city: "Curitiba", state: "PR", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+    { franchiseId: "100234", sponsorName: "Ana Costa", sponsorId: "100233", createdAt: "2026-03-08", planCode: "silver", planLabel: "Prata", qualification: "distribuidor", franchiseStatus: "suspended", activationStatus: "inactive", paidAt: "2026-03-20" },
+  ]},
+  { id: "5", fullName: "Fernanda Oliveira Santos", document: "654.321.987-00", birthDate: "18/09/1988", gender: "Feminino", email: "fernanda.santos@email.com", phone: "+55 51 95555-4444", username: "fernanda.santos", city: "Porto Alegre", state: "RS", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+    { franchiseId: "100235", sponsorName: "Roberto Almeida", sponsorId: "100234", createdAt: "2026-03-01", planCode: "gold", planLabel: "Ouro", qualification: "lider", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-03" },
+  ]},
+  { id: "6", fullName: "Pedro Henrique Lima", document: "789.123.456-00", birthDate: "30/01/1995", gender: "Masculino", email: "pedro.lima@email.com", phone: "+55 61 94444-5555", username: "pedro.lima", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+    { franchiseId: "100236", sponsorName: "Fernanda Santos", sponsorId: "100235", createdAt: "2026-02-15", planCode: "bronze", planLabel: "Bronze", qualification: "consultor", franchiseStatus: "cancelled", activationStatus: "inactive", paidAt: null },
+  ]},
+  { id: "7", fullName: "Maria Silva", document: "111.222.333-00", birthDate: "12/07/1980", gender: "Feminino", email: "maria.silva@email.com", phone: "+55 11 93333-6666", username: "maria.silva", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+    { franchiseId: "100237", sponsorName: "Timol", sponsorId: "00001", createdAt: "2026-02-01", planCode: "platinum", planLabel: "Platina", qualification: "diamante", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-02-02" },
+    { franchiseId: "100299", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-10", planCode: "gold", planLabel: "Ouro", qualification: "rubi", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-11" },
+  ]},
+  { id: "8", fullName: "Juan García López", document: "A12345678", birthDate: "03/11/1991", gender: "Masculino", email: "juan.garcia@email.com", phone: "+34 612 345 678", username: "juan.garcia", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", franchises: [
+    { franchiseId: "100238", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-19" },
+  ]},
 ];
 
 
@@ -97,6 +118,8 @@ const planColors: Record<string, string> = {
   gold: "bg-yellow-100 text-yellow-700 border-yellow-200",
   platinum: "bg-cyan-100 text-cyan-700 border-cyan-200",
 };
+/** Primary franchise accessor — uses first franchise sorted by createdAt */
+const pf = (f: Franchisee): FranchiseEntry => f.franchises[0];
 
 function getMonthLabel(date: Date, locale: string): string {
   const m = date.toLocaleDateString(locale, { month: "long" });
@@ -166,58 +189,60 @@ export default function InternalCadastros() {
 
   /* Helper: filter list excluding one specific filter to know what's available */
   const getFilteredExcluding = (exclude: string) => {
-    let list = mockFranchisees as Franchisee[];
-    if (exclude !== "franchiseStatus" && franchiseStatus !== "all") list = list.filter(f => f.franchiseStatus === franchiseStatus);
-    if (exclude !== "activationStatus" && activationStatus !== "all") list = list.filter(f => f.activationStatus === activationStatus);
-    if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => f.qualification === qualification);
-    if (exclude !== "planType" && planType !== "all") list = list.filter(f => f.planCode === planType);
+     let list = mockFranchisees as Franchisee[];
+    if (exclude !== "franchiseStatus" && franchiseStatus !== "all") list = list.filter(f => pf(f).franchiseStatus === franchiseStatus);
+    if (exclude !== "activationStatus" && activationStatus !== "all") list = list.filter(f => pf(f).activationStatus === activationStatus);
+    if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
+    if (exclude !== "planType" && planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     if (exclude !== "city" && city !== "all") list = list.filter(f => f.city === city);
     if (dateFilterMode === "month") {
       const range = getMonthRange(monthRef);
-      list = list.filter(f => f.createdAt >= range.from && f.createdAt <= range.to);
+      list = list.filter(f => pf(f).createdAt >= range.from && pf(f).createdAt <= range.to);
     } else if (dateFilterMode === "custom") {
-      if (dateFrom) list = list.filter(f => f.createdAt >= dateFrom);
-      if (dateTo) list = list.filter(f => f.createdAt <= dateTo);
+      if (dateFrom) list = list.filter(f => pf(f).createdAt >= dateFrom);
+      if (dateTo) list = list.filter(f => pf(f).createdAt <= dateTo);
     }
     if (search.trim()) {
       const q = search.toLowerCase().replace(/[.\-\/]/g, "");
       list = list.filter(f => {
         const norm = (s: string) => s.toLowerCase().replace(/[.\-\/]/g, "");
-        return norm(f.fullName).includes(q) || norm(f.franchiseId).includes(q) || norm(f.document).includes(q) ||
+        const anyFranchiseMatch = f.franchises.some(fr => norm(fr.franchiseId).includes(q) || norm(fr.sponsorName).includes(q));
+        return norm(f.fullName).includes(q) || anyFranchiseMatch || norm(f.document).includes(q) ||
           norm(f.email).includes(q) || norm(f.phone).includes(q) || norm(f.username).includes(q) ||
-          norm(f.city).includes(q) || norm(f.sponsorName).includes(q);
+          norm(f.city).includes(q);
       });
     }
     return list;
   };
 
-  const availableFranchiseStatuses = useMemo(() => new Set(getFilteredExcluding("franchiseStatus").map(f => f.franchiseStatus)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
-  const availableActivationStatuses = useMemo(() => new Set(getFilteredExcluding("activationStatus").map(f => f.activationStatus)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
-  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => f.qualification)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
-  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => f.planCode)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availableFranchiseStatuses = useMemo(() => new Set(getFilteredExcluding("franchiseStatus").map(f => pf(f).franchiseStatus)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availableActivationStatuses = useMemo(() => new Set(getFilteredExcluding("activationStatus").map(f => pf(f).activationStatus)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
   const availableCities = useMemo(() => new Set(getFilteredExcluding("city").map(f => f.city)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
 
   const filtered = useMemo(() => {
     let list = mockFranchisees as Franchisee[];
-    if (franchiseStatus !== "all") list = list.filter(f => f.franchiseStatus === franchiseStatus);
-    if (activationStatus !== "all") list = list.filter(f => f.activationStatus === activationStatus);
-    if (qualification !== "all") list = list.filter(f => f.qualification === qualification);
-    if (planType !== "all") list = list.filter(f => f.planCode === planType);
+    if (franchiseStatus !== "all") list = list.filter(f => pf(f).franchiseStatus === franchiseStatus);
+    if (activationStatus !== "all") list = list.filter(f => pf(f).activationStatus === activationStatus);
+    if (qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
+    if (planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     if (city !== "all") list = list.filter(f => f.city === city);
     if (dateFilterMode === "month") {
       const range = getMonthRange(monthRef);
-      list = list.filter(f => f.createdAt >= range.from && f.createdAt <= range.to);
+      list = list.filter(f => pf(f).createdAt >= range.from && pf(f).createdAt <= range.to);
     } else if (dateFilterMode === "custom") {
-      if (dateFrom) list = list.filter(f => f.createdAt >= dateFrom);
-      if (dateTo) list = list.filter(f => f.createdAt <= dateTo);
+      if (dateFrom) list = list.filter(f => pf(f).createdAt >= dateFrom);
+      if (dateTo) list = list.filter(f => pf(f).createdAt <= dateTo);
     }
     if (search.trim()) {
       const q = search.toLowerCase().replace(/[.\-\/]/g, "");
       list = list.filter(f => {
         const norm = (s: string) => s.toLowerCase().replace(/[.\-\/]/g, "");
-        return norm(f.fullName).includes(q) || norm(f.franchiseId).includes(q) || norm(f.document).includes(q) ||
+        const anyFranchiseMatch = f.franchises.some(fr => norm(fr.franchiseId).includes(q) || norm(fr.sponsorName).includes(q));
+        return norm(f.fullName).includes(q) || anyFranchiseMatch || norm(f.document).includes(q) ||
           norm(f.email).includes(q) || norm(f.phone).includes(q) || norm(f.username).includes(q) ||
-          norm(f.city).includes(q) || norm(f.sponsorName).includes(q);
+          norm(f.city).includes(q);
       });
     }
     return list;
@@ -236,29 +261,29 @@ export default function InternalCadastros() {
   };
 
   /* ── Dashboard metrics ── */
-  const completedCount = useMemo(() => filtered.filter(f => f.paidAt).length, [filtered]);
-  const pendingCount = useMemo(() => filtered.filter(f => !f.paidAt).length, [filtered]);
+  const completedCount = useMemo(() => filtered.filter(f => pf(f).paidAt).length, [filtered]);
+  const pendingCount = useMemo(() => filtered.filter(f => !pf(f).paidAt).length, [filtered]);
   const conversionRate = (completedCount + pendingCount) > 0 ? Math.round((completedCount / (completedCount + pendingCount)) * 100) : 0;
 
 
   // Franchise status
-  const activeCount = useMemo(() => filtered.filter(f => f.franchiseStatus === "active").length, [filtered]);
-  const inactiveCount = useMemo(() => filtered.filter(f => f.franchiseStatus !== "active").length, [filtered]);
+  const activeCount = useMemo(() => filtered.filter(f => pf(f).franchiseStatus === "active").length, [filtered]);
+  const inactiveCount = useMemo(() => filtered.filter(f => pf(f).franchiseStatus !== "active").length, [filtered]);
 
   // Avg franchises per franchisee (mock: unique sponsors who are active)
   const activeFranchisees = useMemo(() => {
-    const uniqueOwners = new Set(filtered.filter(f => f.franchiseStatus === "active").map(f => f.fullName));
+    const uniqueOwners = new Set(filtered.filter(f => pf(f).franchiseStatus === "active").map(f => f.fullName));
     return uniqueOwners.size;
   }, [filtered]);
   const avgFranchises = activeFranchisees > 0 ? (activeCount / activeFranchisees).toFixed(1) : "0";
 
   // Avg activation time (days between createdAt and paidAt)
   const avgActivationDays = useMemo(() => {
-    const completed = filtered.filter(f => f.paidAt);
+    const completed = filtered.filter(f => pf(f).paidAt);
     if (completed.length === 0) return 0;
     const totalDays = completed.reduce((sum, f) => {
-      const d1 = new Date(f.createdAt);
-      const d2 = new Date(f.paidAt!);
+      const d1 = new Date(pf(f).createdAt);
+      const d2 = new Date(pf(f).paidAt!);
       return sum + Math.max(0, Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
     }, 0);
     return Math.round(totalDays / completed.length);
@@ -267,15 +292,15 @@ export default function InternalCadastros() {
   // Plan breakdown
   const planBreakdown = useMemo(() => {
     const counts: Record<string, number> = { bronze: 0, silver: 0, gold: 0, platinum: 0 };
-    filtered.forEach(f => { if (counts[f.planCode] !== undefined) counts[f.planCode]++; });
+    filtered.forEach(f => { if (counts[pf(f).planCode] !== undefined) counts[pf(f).planCode]++; });
     return counts;
   }, [filtered]);
 
   // Qualification breakdown (active only)
   const qualBreakdown = useMemo(() => {
     const counts: Record<string, number> = { consultor: 0, distribuidor: 0, lider: 0, rubi: 0, esmeralda: 0, diamante: 0 };
-    filtered.filter(f => f.franchiseStatus === "active").forEach(f => {
-      if (counts[f.qualification] !== undefined) counts[f.qualification]++;
+    filtered.filter(f => pf(f).franchiseStatus === "active").forEach(f => {
+      if (counts[pf(f).qualification] !== undefined) counts[pf(f).qualification]++;
     });
     return counts;
   }, [filtered]);
@@ -284,9 +309,9 @@ export default function InternalCadastros() {
   const topSponsors = useMemo(() => {
     const map = new Map<string, { name: string; id: string; count: number }>();
     filtered.forEach(f => {
-      const existing = map.get(f.sponsorId);
+      const existing = map.get(pf(f).sponsorId);
       if (existing) existing.count++;
-      else map.set(f.sponsorId, { name: f.sponsorName, id: f.sponsorId, count: 1 });
+      else map.set(pf(f).sponsorId, { name: pf(f).sponsorName, id: pf(f).sponsorId, count: 1 });
     });
     return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 5);
   }, [filtered]);
@@ -744,9 +769,10 @@ export default function InternalCadastros() {
 /* ── Registration status helpers ── */
 type RegistrationStatus = "concluido" | "cancelado" | "pendente";
 
-function getRegistrationStatus(f: Franchisee): RegistrationStatus {
-  if (f.franchiseStatus === "cancelled") return "cancelado";
-  if (f.paidAt) return "concluido";
+function getRegistrationStatus(f: Franchisee, fr?: FranchiseEntry): RegistrationStatus {
+  const entry = fr || pf(f);
+  if (entry.franchiseStatus === "cancelled") return "cancelado";
+  if (entry.paidAt) return "concluido";
   return "pendente";
 }
 
@@ -759,10 +785,15 @@ const registrationStatusBorder: Record<RegistrationStatus, string> = {
 /* ── Franchisee Result Card ── */
 function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
   const { t } = useLanguage();
-  const regStatus = getRegistrationStatus(f);
+  // Sort franchises by createdAt ascending
+  const sortedFranchises = useMemo(() => [...f.franchises].sort((a, b) => a.createdAt.localeCompare(b.createdAt)), [f.franchises]);
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const sel = sortedFranchises[selectedIdx] || sortedFranchises[0];
+
+  const regStatus = getRegistrationStatus(f, sel);
   const isCancelled = regStatus === "cancelado";
-  const isActive = f.franchiseStatus === "active";
-  const qualConfig = qualificationConfig[f.qualification];
+  const isActive = sel.franchiseStatus === "active";
+  const qualConfig = qualificationConfig[sel.qualification];
 
   const planLabels: Record<string, string> = {
     bronze: "Bronze",
@@ -774,8 +805,6 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
   const isBrazilian = f.country === "Brasil";
   const docLabel = isBrazilian ? `CPF: ${f.document}` : `${f.document} · ${f.countryFlag} ${f.country}`;
 
-  const allIds = [f.franchiseId, ...(f.extraFranchiseIds || [])];
-
   return (
     <div
       className={`rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] transition-shadow hover:shadow-md ${registrationStatusBorder[regStatus]} ${isCancelled ? "opacity-50" : ""}`}
@@ -786,17 +815,27 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
           <div className="flex-1 min-w-0">
             {/* ── Grid 1: Name + IDs + Sponsor ── */}
             <div className="mb-3">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className={`h-2 w-2 rounded-full shrink-0 ${isActive ? "bg-emerald-500" : "bg-red-500"}`} />
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="h-3.5 w-3.5 shrink-0 flex items-center justify-center"><span className={`h-2 w-2 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`} /></span>
                 <span className="text-base font-bold text-foreground">{f.fullName}</span>
-                {allIds.map(id => (
-                  <Badge key={id} variant="secondary" className="text-xs px-1.5 py-0 h-5 font-medium rounded-sm">
-                    ID {id}
-                  </Badge>
+                {sortedFranchises.map((fr, idx) => (
+                  <button
+                    key={fr.franchiseId}
+                    type="button"
+                    onClick={() => setSelectedIdx(idx)}
+                    className={cn(
+                      "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border inline-flex items-center transition-colors cursor-pointer",
+                      idx === selectedIdx
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
+                    )}
+                  >
+                    ID {fr.franchiseId}
+                  </button>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5 ml-4">
-                {t("internal.cadastros.sponsor")}: {f.sponsorName} (ID {f.sponsorId})
+              <p className="text-xs text-muted-foreground mt-0.5" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
+                {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
               </p>
             </div>
 
@@ -806,16 +845,16 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
               <div className="space-y-1.5 min-w-0">
                 <p className="text-sm text-foreground flex items-center gap-1.5">
                   <Calendar className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
-                  {t("internal.cadastros.registrationDate")}: {f.createdAt.split("-").reverse().join("/")}
+                  {t("internal.cadastros.registrationDate")}: {sel.createdAt.split("-").reverse().join("/")}
                 </p>
                 <p className="text-sm text-foreground flex items-center gap-1.5">
                   <Gem className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
-                  Franquia {planLabels[f.planCode] || f.planCode}
+                  Franquia {planLabels[sel.planCode] || sel.planCode}
                 </p>
                 {qualConfig && (
                   <p className="text-sm flex items-center gap-1.5">
                     <span className="text-foreground/70">{qualConfig.icon}</span>
-                    <span className="text-foreground">{t(qualificationLabelKeys[f.qualification])}</span>
+                    <span className="text-foreground">{t(qualificationLabelKeys[sel.qualification])}</span>
                   </p>
                 )}
                 <p className="flex items-center gap-1.5 text-sm text-foreground">
