@@ -231,11 +231,6 @@ export default function InternalCadastros() {
   const pendingCount = useMemo(() => filtered.filter(f => !f.paidAt).length, [filtered]);
   const conversionRate = (completedCount + pendingCount) > 0 ? Math.round((completedCount / (completedCount + pendingCount)) * 100) : 0;
 
-  // Trend: only when month filter is active
-  const showTrend = dateFilterMode === "month";
-  const trendDiff = showTrend ? completedCount - prevMonthCompleted : 0;
-  const trendUp = trendDiff > 0;
-  const trendDown = trendDiff < 0;
 
   // Franchise status
   const activeCount = useMemo(() => filtered.filter(f => f.franchiseStatus === "active").length, [filtered]);
