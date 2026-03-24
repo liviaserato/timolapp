@@ -643,13 +643,13 @@ function TouchpointIcons({ franchise: fr }: { franchise: FranchiseEntry }) {
   const spDone = !!fr.sponsorNotifiedAt;
 
   return (
-    <div className="flex items-center gap-2 shrink-0">
+    <div className="flex items-center gap-3 shrink-0">
       {/* Email */}
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>
           <span className="inline-flex items-center gap-0.5 cursor-help">
-            <Mail className={cn("h-3.5 w-3.5", emailDone ? "text-emerald-500" : emailAlert ? alertIconColor[emailAlert.level] : "text-muted-foreground/40")} />
-            {emailAlert && <AlertTriangle className={cn("h-2.5 w-2.5", alertIconColor[emailAlert.level])} />}
+            <Mail className={cn("h-5 w-5", emailDone ? "text-emerald-500" : emailAlert ? alertIconColor[emailAlert.level] : "text-muted-foreground/40")} />
+            {emailAlert && <AlertTriangle className={cn("h-3 w-3", alertIconColor[emailAlert.level])} />}
           </span>
         </TooltipTrigger>
         <TooltipContent side="top" className="text-xs max-w-[200px]">
@@ -661,8 +661,8 @@ function TouchpointIcons({ franchise: fr }: { franchise: FranchiseEntry }) {
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>
           <span className="inline-flex items-center gap-0.5 cursor-help">
-            <MessageCircle className={cn("h-3.5 w-3.5", waDone ? "text-emerald-500" : waAlert ? alertIconColor[waAlert.level] : "text-muted-foreground/40")} />
-            {waAlert && <AlertTriangle className={cn("h-2.5 w-2.5", alertIconColor[waAlert.level])} />}
+            <MessageCircle className={cn("h-5 w-5", waDone ? "text-emerald-500" : waAlert ? alertIconColor[waAlert.level] : "text-muted-foreground/40")} />
+            {waAlert && <AlertTriangle className={cn("h-3 w-3", alertIconColor[waAlert.level])} />}
           </span>
         </TooltipTrigger>
         <TooltipContent side="top" className="text-xs max-w-[200px]">
@@ -674,8 +674,8 @@ function TouchpointIcons({ franchise: fr }: { franchise: FranchiseEntry }) {
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>
           <span className="inline-flex items-center gap-0.5 cursor-help">
-            <Bell className={cn("h-3.5 w-3.5", spDone ? "text-emerald-500" : spAlert ? alertIconColor[spAlert.level] : "text-muted-foreground/40")} />
-            {spAlert && <AlertTriangle className={cn("h-2.5 w-2.5", alertIconColor[spAlert.level])} />}
+            <Bell className={cn("h-5 w-5", spDone ? "text-emerald-500" : spAlert ? alertIconColor[spAlert.level] : "text-muted-foreground/40")} />
+            {spAlert && <AlertTriangle className={cn("h-3 w-3", alertIconColor[spAlert.level])} />}
           </span>
         </TooltipTrigger>
         <TooltipContent side="top" className="text-xs max-w-[200px]">
