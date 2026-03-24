@@ -78,7 +78,17 @@ const mockFranchisees: Franchisee[] = [
     { franchiseId: "100299", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-10", planCode: "gold", planLabel: "Ouro", qualification: "rubi", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-11" },
   ]},
   { id: "8", fullName: "Juan García López", document: "A12345678", birthDate: "03/11/1991", gender: "male", email: "juan.garcia@email.com", phone: "+34 612 345 678", username: "juan.garcia", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", franchises: [
-    { franchiseId: "100238", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-19" },
+    { franchiseId: "100238", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-19", recoveryEmailSentAt: null, whatsappSentAt: null, sponsorNotifiedAt: null },
+  ]},
+  /* Pending registrations with touchpoint data */
+  { id: "9", fullName: "Juliana Ferreira Costa", document: "321.654.987-00", birthDate: "14/06/1993", gender: "female", email: "juliana.ferreira@email.com", phone: "+55 11 98765-4321", username: "juliana.ferreira", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+    { franchiseId: "200501", sponsorName: "Lívia Serato", sponsorId: "100231", createdAt: "2026-03-20", planCode: "gold", planLabel: "Ouro", qualification: "consultor", franchiseStatus: "active", activationStatus: "pending", paidAt: null, recoveryEmailSentAt: "2026-03-21T10:00:00Z", whatsappSentAt: null, sponsorNotifiedAt: null },
+  ]},
+  { id: "10", fullName: "Ricardo Alves Santos", document: "654.321.987-00", birthDate: "08/02/1987", gender: "male", email: "ricardo.alves@email.com", phone: "+55 21 97654-3210", username: "ricardo.alves", city: "Rio de Janeiro", state: "RJ", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+    { franchiseId: "200502", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-18", planCode: "platinum", planLabel: "Platina", qualification: "consultor", franchiseStatus: "active", activationStatus: "pending", paidAt: null, recoveryEmailSentAt: "2026-03-19T08:00:00Z", whatsappSentAt: "2026-03-20T16:00:00Z", sponsorNotifiedAt: null },
+  ]},
+  { id: "11", fullName: "Pedro Augusto Lima", document: "B98765432", birthDate: "25/04/1991", gender: "male", email: "pedro.augusto@email.com", phone: "+34 612 987 654", username: "pedro.augusto", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", franchises: [
+    { franchiseId: "200504", sponsorName: "Juan García López", sponsorId: "100238", createdAt: "2026-03-22", planCode: "silver", planLabel: "Prata", qualification: "consultor", franchiseStatus: "active", activationStatus: "pending", paidAt: null, recoveryEmailSentAt: null, whatsappSentAt: null, sponsorNotifiedAt: null },
   ]},
 ];
 
