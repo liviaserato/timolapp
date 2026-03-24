@@ -11,7 +11,8 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Search, X, Phone, Mail, MapPin,
   MapPinHouse, Landmark, Pencil, Lock,
-  FileText, Cake, Gem, ArrowUpDown, ClipboardList, ArrowLeft, Calendar
+  FileText, Cake, Gem, ArrowUpDown, ClipboardList, ArrowLeft, Calendar,
+  MessageCircle, Bell, AlertTriangle,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { qualificationConfig } from "@/components/app/rede/mock-data";
