@@ -33,7 +33,7 @@ export function AppHeader() {
   const location = useLocation();
   const { toggle } = useSidebarState();
   const { profiles, selected, setSelectedId, hasMultiple } = useFranchise();
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
 
   const role = getUserRole();
   const isAdmin = role === "admin" || role === "superadmin";
