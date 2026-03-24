@@ -232,15 +232,8 @@ export default function InternalCadastros() {
     return list;
   };
 
-  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter]);
-  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter]);
-  const availableCities = useMemo(() => new Set(getFilteredExcluding("city").map(f => f.city)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter]);
-
-  const citySuggestions = useMemo(() => {
-    if (!citySearch.trim()) return Array.from(availableCities).sort();
-    const q = citySearch.toLowerCase();
-    return Array.from(availableCities).filter(c => c.toLowerCase().includes(q)).sort();
-  }, [citySearch, availableCities]);
+  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, showActive, showInactive, registrationStatus, qualification, planType]);
+  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, showActive, showInactive, registrationStatus, qualification, planType]);
 
   /* Search results (no date filter) */
   const filtered = useMemo(() => {
