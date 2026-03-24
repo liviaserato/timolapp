@@ -251,8 +251,8 @@ export default function InternalCadastros() {
       list = [...list].sort((a, b) => (qualPriority[pf(b).qualification] || 0) - (qualPriority[pf(a).qualification] || 0));
     } else if (sortBy === "active_first") {
       list = [...list].sort((a, b) => {
-        const aActive = pf(a).franchiseStatus === "active" ? 0 : 1;
-        const bActive = pf(b).franchiseStatus === "active" ? 0 : 1;
+        const aActive = isEffectivelyActive(a) ? 0 : 1;
+        const bActive = isEffectivelyActive(b) ? 0 : 1;
         return aActive - bActive;
       });
     }
