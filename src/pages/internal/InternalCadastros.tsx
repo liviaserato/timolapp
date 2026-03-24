@@ -790,7 +790,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                 <span className={`h-2 w-2 rounded-full shrink-0 ${isActive ? "bg-emerald-500" : "bg-red-500"}`} />
                 <span className="text-sm font-bold text-foreground">{f.fullName}</span>
                 {allIds.map(id => (
-                  <Badge key={id} variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-medium">
+                  <Badge key={id} variant="secondary" className="text-xs px-1.5 py-0 h-5 font-medium rounded-sm">
                     ID {id}
                   </Badge>
                 ))}
