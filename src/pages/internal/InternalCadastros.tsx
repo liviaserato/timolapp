@@ -339,7 +339,7 @@ export default function InternalCadastros() {
                 <SelectTrigger className="h-9 text-xs w-full sm:w-[180px]">
                   <div className="flex items-center gap-1.5">
                     <ArrowUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                    <SelectValue placeholder={t("internal.cadastros.sortPlaceholder")} />
+                    <SelectValue placeholder={t("internal.cadastros.classify")} />
                   </div>
                 </SelectTrigger>
                 <SelectContent>
@@ -354,7 +354,7 @@ export default function InternalCadastros() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {/* Franchise status checkboxes */}
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.franchiseStatus")}</span>
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.franchiseStatusLegend")}</span>
                 <div className="flex items-center gap-3 h-9 px-2 rounded-md border border-input bg-background">
                   <label className="flex items-center gap-1.5 cursor-pointer flex-1 min-w-0">
                     <Checkbox checked={showActive} onCheckedChange={(v: boolean) => setShowActive(v)} className="h-3.5 w-3.5" />
@@ -374,7 +374,7 @@ export default function InternalCadastros() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t("internal.cadastros.all")}</SelectItem>
+                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
                     <SelectItem value="pendente">{t("internal.cadastros.regPending")}</SelectItem>
                     <SelectItem value="concluido">{t("internal.cadastros.regCompleted")}</SelectItem>
                     <SelectItem value="cancelado">{t("internal.cadastros.regCancelled")}</SelectItem>
@@ -389,7 +389,7 @@ export default function InternalCadastros() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t("internal.cadastros.all")}</SelectItem>
+                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
                     {(["consultor", "distribuidor", "lider", "rubi", "esmeralda", "diamante"] as const).map(q => (
                       <SelectItem key={q} value={q} disabled={!availableQualifications.has(q)}>
                         {t(qualificationLabelKeys[q])}
@@ -406,7 +406,7 @@ export default function InternalCadastros() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t("internal.cadastros.all")}</SelectItem>
+                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
                     {(["bronze", "silver", "gold", "platinum"] as const).map(p => (
                       <SelectItem key={p} value={p} disabled={!availablePlans.has(p)}>
                         {t(`franchise.${p}`)}
