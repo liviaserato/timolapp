@@ -796,10 +796,10 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
   const qualConfig = qualificationConfig[sel.qualification];
 
   const planLabels: Record<string, string> = {
-    bronze: "Bronze",
-    silver: "Prata",
-    gold: "Ouro",
-    platinum: "Platina",
+    bronze: t("franchise.bronze"),
+    silver: t("franchise.silver"),
+    gold: t("franchise.gold"),
+    platinum: t("franchise.platinum"),
   };
 
   const isBrazilian = f.country === "Brasil";
