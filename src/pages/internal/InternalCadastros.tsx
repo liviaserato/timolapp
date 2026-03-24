@@ -285,7 +285,7 @@ export default function InternalCadastros() {
 
   const clearFilters = () => {
     setSearch("");
-    setSortBy("recent");
+    setSortBy("");
     setShowActive(false);
     setShowInactive(false);
     setRegistrationStatus("all");
