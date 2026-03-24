@@ -51,22 +51,23 @@ const statusColors: Record<string, string> = {
   inactive: "bg-muted text-muted-foreground border-border",
 };
 
-const statusLabels: Record<string, string> = {
-  active: "Ativa",
-  suspended: "Suspensa",
-  cancelled: "Cancelada",
-  activated: "Ativada",
-  pending: "Pendente",
-  inactive: "Inativa",
+/* Status/qualification label keys mapped to translation keys */
+const statusLabelKeys: Record<string, string> = {
+  active: "internal.cadastros.statusActive",
+  suspended: "internal.cadastros.statusSuspended",
+  cancelled: "internal.cadastros.statusCancelled",
+  activated: "internal.cadastros.statusActivated",
+  pending: "internal.cadastros.statusPending",
+  inactive: "internal.cadastros.statusInactive",
 };
 
-const qualificationLabels: Record<string, string> = {
-  starter: "Starter",
-  bronze: "Bronze",
-  silver: "Prata",
-  gold: "Ouro",
-  platinum: "Platina",
-  diamond: "Diamante",
+const qualificationLabelKeys: Record<string, string> = {
+  starter: "internal.cadastros.qualStarter",
+  bronze: "internal.cadastros.qualBronze",
+  silver: "internal.cadastros.qualSilver",
+  gold: "internal.cadastros.qualGold",
+  platinum: "internal.cadastros.qualPlatinum",
+  diamond: "internal.cadastros.qualDiamond",
 };
 
 const qualificationColors: Record<string, string> = {
@@ -85,8 +86,8 @@ const planColors: Record<string, string> = {
   platinum: "bg-cyan-100 text-cyan-700 border-cyan-200",
 };
 
-function getMonthLabel(date: Date): string {
-  const m = date.toLocaleDateString("pt-BR", { month: "long" });
+function getMonthLabel(date: Date, locale: string): string {
+  const m = date.toLocaleDateString(locale, { month: "long" });
   return `${m.charAt(0).toUpperCase()}${m.slice(1)} ${date.getFullYear()}`;
 }
 
@@ -102,7 +103,8 @@ const uniqueCities = Array.from(new Set(mockFranchisees.map(f => f.city))).sort(
 
 /* ── Component ── */
 export default function InternalCadastros() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const dateLocale = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
   const [search, setSearch] = useState("");
   const [franchiseStatus, setFranchiseStatus] = useState<string>("all");
   const [activationStatus, setActivationStatus] = useState<string>("all");
@@ -240,13 +242,13 @@ export default function InternalCadastros() {
 
   return (
     <div>
-      <header className="mb-4">
-        <h1 className="text-2xl font-bold text-primary">Cadastros</h1>
-        <p className="text-sm text-muted-foreground mt-1">Busque e gerencie os cadastros de franqueados</p>
+       <header className="mb-4">
+        <h1 className="text-2xl font-bold text-primary">{t("internal.cadastros.title")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("internal.cadastros.subtitle")}</p>
       </header>
 
       {/* ── Indicadores Card ── */}
-      <DashboardCard icon={BarChart3} title="Indicadores">
+      <DashboardCard icon={BarChart3} title={t("internal.cadastros.indicators")}>
           <div className="mt-2 space-y-4">
             {/* Date filter row */}
             <div className="flex flex-wrap items-center gap-2">
@@ -258,7 +260,7 @@ export default function InternalCadastros() {
                     dateFilterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
                   }`}
                 >
-                  Mês
+                   {t("internal.cadastros.month")}
                 </button>
                 <button
                   type="button"
@@ -270,7 +272,7 @@ export default function InternalCadastros() {
                     dateFilterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
                   }`}
                 >
-                  Período
+                  {t("internal.cadastros.period")}
                 </button>
               </div>
 
@@ -280,7 +282,7 @@ export default function InternalCadastros() {
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   <span className="text-xs font-medium min-w-[120px] text-center">
-                    {getMonthLabel(monthRef)}
+                    {getMonthLabel(monthRef, dateLocale)}
                   </span>
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { if (!isCurrentMonth) setMonthRef(d => new Date(d.getFullYear(), d.getMonth() + 1, 1)); }} disabled={isCurrentMonth}>
                     <ChevronRight className="h-4 w-4" />
@@ -291,13 +293,13 @@ export default function InternalCadastros() {
               {dateFilterMode === "custom" && (
                 <div className="flex gap-2 items-center shrink-0">
                   <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
-                  <span className="text-xs text-muted-foreground">até</span>
+                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.until")}</span>
                   <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateTo} onChange={e => setDateTo(e.target.value)} />
                 </div>
               )}
 
               {dateFilterMode !== "off" && (
-                <span className="text-xs font-semibold text-primary ml-auto">{totalCadastros} cadastro{totalCadastros !== 1 ? "s" : ""}</span>
+                <span className="text-xs font-semibold text-primary ml-auto">{totalCadastros} {totalCadastros !== 1 ? t("internal.cadastros.registrations") : t("internal.cadastros.registration")}</span>
               )}
             </div>
 
@@ -306,28 +308,28 @@ export default function InternalCadastros() {
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
                 <div className="flex items-center justify-center gap-1.5 mb-1">
                   <Users className="h-4 w-4 text-primary" />
-                  <span className="text-xs text-muted-foreground">Total Cadastros</span>
+                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.totalRegistrations")}</span>
                 </div>
                 <span className="text-2xl font-bold text-foreground">{totalCadastros}</span>
               </div>
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
                 <div className="flex items-center justify-center gap-1.5 mb-1">
                   <TrendingUp className="h-4 w-4 text-emerald-500" />
-                  <span className="text-xs text-muted-foreground">Taxa de Ativação</span>
+                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.activationRate")}</span>
                 </div>
                 <span className="text-2xl font-bold text-foreground">{conversionRate}%</span>
               </div>
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
                 <div className="flex items-center justify-center gap-1.5 mb-1">
                   <UserCheck className="h-4 w-4 text-emerald-500" />
-                  <span className="text-xs text-muted-foreground">Franquias Ativas</span>
+                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.activeFranchises")}</span>
                 </div>
                 <span className="text-2xl font-bold text-foreground">{franchiseStatusBreakdown.active}</span>
               </div>
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
                 <div className="flex items-center justify-center gap-1.5 mb-1">
                   <UserX className="h-4 w-4 text-red-500" />
-                  <span className="text-xs text-muted-foreground">Suspensas / Canceladas</span>
+                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.suspendedCancelled")}</span>
                 </div>
                 <span className="text-2xl font-bold text-foreground">{franchiseStatusBreakdown.suspended + franchiseStatusBreakdown.cancelled}</span>
               </div>
@@ -337,16 +339,16 @@ export default function InternalCadastros() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {/* Franchise types */}
               <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Por Tipo de Franquia</h4>
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.byFranchiseType")}</h4>
                 <div className="space-y-1.5">
                   {(["bronze", "silver", "gold", "platinum"] as const).map(plan => {
                     const count = planBreakdown[plan] || 0;
                     const pct = totalCadastros > 0 ? Math.round((count / totalCadastros) * 100) : 0;
-                    const labels: Record<string, string> = { bronze: "Bronze", silver: "Prata", gold: "Ouro", platinum: "Platina" };
+                    const planLabelKeys: Record<string, string> = { bronze: "internal.cadastros.qualBronze", silver: "internal.cadastros.qualSilver", gold: "internal.cadastros.qualGold", platinum: "internal.cadastros.qualPlatinum" };
                     const barColors: Record<string, string> = { bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400" };
                     return (
                       <div key={plan} className="flex items-center gap-2">
-                        <span className="text-xs w-14 shrink-0 text-muted-foreground">{labels[plan]}</span>
+                        <span className="text-xs w-14 shrink-0 text-muted-foreground">{t(planLabelKeys[plan])}</span>
                         <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
                           <div className={`h-full rounded-full ${barColors[plan]} transition-all`} style={{ width: `${Math.max(pct, 2)}%` }} />
                         </div>
@@ -359,7 +361,7 @@ export default function InternalCadastros() {
 
               {/* Qualification */}
               <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Por Qualificação</h4>
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.byQualification")}</h4>
                 <div className="space-y-1.5">
                   {(["starter", "bronze", "silver", "gold", "platinum", "diamond"] as const).map(q => {
                     const count = qualBreakdown[q] || 0;
@@ -367,7 +369,7 @@ export default function InternalCadastros() {
                     const barColors: Record<string, string> = { starter: "bg-muted-foreground/40", bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400", diamond: "bg-violet-400" };
                     return (
                       <div key={q} className="flex items-center gap-2">
-                        <span className="text-xs w-14 shrink-0 text-muted-foreground">{qualificationLabels[q]}</span>
+                        <span className="text-xs w-14 shrink-0 text-muted-foreground">{t(qualificationLabelKeys[q])}</span>
                         <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
                           <div className={`h-full rounded-full ${barColors[q]} transition-all`} style={{ width: `${Math.max(pct, count > 0 ? 2 : 0)}%` }} />
                         </div>
@@ -382,11 +384,11 @@ export default function InternalCadastros() {
               <div className="space-y-2">
                 <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
                   <MapPinned className="h-3.5 w-3.5" />
-                  Top Cidades
+                  {t("internal.cadastros.topCities")}
                 </h4>
                 <div className="space-y-1.5">
                   {topCities.length === 0 && (
-                    <p className="text-xs text-muted-foreground italic">Sem dados</p>
+                    <p className="text-xs text-muted-foreground italic">{t("internal.cadastros.noData")}</p>
                   )}
                   {topCities.map(([cityName, count], i) => {
                     const pct = totalCadastros > 0 ? Math.round((count / totalCadastros) * 100) : 0;
@@ -406,32 +408,32 @@ export default function InternalCadastros() {
 
             {/* Activation status mini-badges */}
             <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-app-card-border">
-              <span className="text-xs text-muted-foreground">Ativação:</span>
+              <span className="text-xs text-muted-foreground">{t("internal.cadastros.activation")}:</span>
               <div className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                <span className="text-xs">Ativados <b>{activationBreakdown.activated}</b></span>
+                <span className="text-xs">{t("internal.cadastros.activated")} <b>{activationBreakdown.activated}</b></span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
-                <span className="text-xs">Pendentes <b>{activationBreakdown.pending}</b></span>
+                <span className="text-xs">{t("internal.cadastros.pendingPlural")} <b>{activationBreakdown.pending}</b></span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/40" />
-                <span className="text-xs">Inativos <b>{activationBreakdown.inactive}</b></span>
+                <span className="text-xs">{t("internal.cadastros.inactivePlural")} <b>{activationBreakdown.inactive}</b></span>
               </div>
             </div>
           </div>
       </DashboardCard>
 
       <div className="mt-4">
-        <DashboardCard icon={Search} title="Buscar Franqueado">
+        <DashboardCard icon={Search} title={t("internal.cadastros.searchFranchisee")}>
           <div className="mt-2 space-y-3">
             {/* Search input only */}
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Nome, ID, documento, e-mail, telefone, usuário, cidade..."
+                  placeholder={t("internal.cadastros.searchPlaceholder")}
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   className="pl-9 pr-9 h-9 text-xs"
@@ -447,53 +449,53 @@ export default function InternalCadastros() {
             {/* Dropdowns row */}
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               <Select value={franchiseStatus} onValueChange={setFranchiseStatus}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Status Franquia" /></SelectTrigger>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.franchiseStatus")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Status Franquia</SelectItem>
-                  <SelectItem value="active" disabled={!availableFranchiseStatuses.has("active")} className={!availableFranchiseStatuses.has("active") ? "opacity-40" : ""}>Ativa</SelectItem>
-                  <SelectItem value="suspended" disabled={!availableFranchiseStatuses.has("suspended")} className={!availableFranchiseStatuses.has("suspended") ? "opacity-40" : ""}>Suspensa</SelectItem>
-                  <SelectItem value="cancelled" disabled={!availableFranchiseStatuses.has("cancelled")} className={!availableFranchiseStatuses.has("cancelled") ? "opacity-40" : ""}>Cancelada</SelectItem>
+                  <SelectItem value="all">{t("internal.cadastros.franchiseStatus")}</SelectItem>
+                  <SelectItem value="active" disabled={!availableFranchiseStatuses.has("active")} className={!availableFranchiseStatuses.has("active") ? "opacity-40" : ""}>{t("internal.cadastros.statusActive")}</SelectItem>
+                  <SelectItem value="suspended" disabled={!availableFranchiseStatuses.has("suspended")} className={!availableFranchiseStatuses.has("suspended") ? "opacity-40" : ""}>{t("internal.cadastros.statusSuspended")}</SelectItem>
+                  <SelectItem value="cancelled" disabled={!availableFranchiseStatuses.has("cancelled")} className={!availableFranchiseStatuses.has("cancelled") ? "opacity-40" : ""}>{t("internal.cadastros.statusCancelled")}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={activationStatus} onValueChange={setActivationStatus}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Ativação" /></SelectTrigger>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.activationFilter")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Ativação</SelectItem>
-                  <SelectItem value="activated" disabled={!availableActivationStatuses.has("activated")} className={!availableActivationStatuses.has("activated") ? "opacity-40" : ""}>Ativada</SelectItem>
-                  <SelectItem value="pending" disabled={!availableActivationStatuses.has("pending")} className={!availableActivationStatuses.has("pending") ? "opacity-40" : ""}>Pendente</SelectItem>
-                  <SelectItem value="inactive" disabled={!availableActivationStatuses.has("inactive")} className={!availableActivationStatuses.has("inactive") ? "opacity-40" : ""}>Inativa</SelectItem>
+                  <SelectItem value="all">{t("internal.cadastros.activationFilter")}</SelectItem>
+                  <SelectItem value="activated" disabled={!availableActivationStatuses.has("activated")} className={!availableActivationStatuses.has("activated") ? "opacity-40" : ""}>{t("internal.cadastros.statusActivated")}</SelectItem>
+                  <SelectItem value="pending" disabled={!availableActivationStatuses.has("pending")} className={!availableActivationStatuses.has("pending") ? "opacity-40" : ""}>{t("internal.cadastros.statusPending")}</SelectItem>
+                  <SelectItem value="inactive" disabled={!availableActivationStatuses.has("inactive")} className={!availableActivationStatuses.has("inactive") ? "opacity-40" : ""}>{t("internal.cadastros.statusInactive")}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={qualification} onValueChange={setQualification}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Qualificação" /></SelectTrigger>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.qualificationFilter")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Qualificação</SelectItem>
-                  <SelectItem value="starter" disabled={!availableQualifications.has("starter")} className={!availableQualifications.has("starter") ? "opacity-40" : ""}>Starter</SelectItem>
-                  <SelectItem value="bronze" disabled={!availableQualifications.has("bronze")} className={!availableQualifications.has("bronze") ? "opacity-40" : ""}>Bronze</SelectItem>
-                  <SelectItem value="silver" disabled={!availableQualifications.has("silver")} className={!availableQualifications.has("silver") ? "opacity-40" : ""}>Prata</SelectItem>
-                  <SelectItem value="gold" disabled={!availableQualifications.has("gold")} className={!availableQualifications.has("gold") ? "opacity-40" : ""}>Ouro</SelectItem>
-                  <SelectItem value="platinum" disabled={!availableQualifications.has("platinum")} className={!availableQualifications.has("platinum") ? "opacity-40" : ""}>Platina</SelectItem>
-                  <SelectItem value="diamond" disabled={!availableQualifications.has("diamond")} className={!availableQualifications.has("diamond") ? "opacity-40" : ""}>Diamante</SelectItem>
+                  <SelectItem value="all">{t("internal.cadastros.qualificationFilter")}</SelectItem>
+                  <SelectItem value="starter" disabled={!availableQualifications.has("starter")} className={!availableQualifications.has("starter") ? "opacity-40" : ""}>{t("internal.cadastros.qualStarter")}</SelectItem>
+                  <SelectItem value="bronze" disabled={!availableQualifications.has("bronze")} className={!availableQualifications.has("bronze") ? "opacity-40" : ""}>{t("internal.cadastros.qualBronze")}</SelectItem>
+                  <SelectItem value="silver" disabled={!availableQualifications.has("silver")} className={!availableQualifications.has("silver") ? "opacity-40" : ""}>{t("internal.cadastros.qualSilver")}</SelectItem>
+                  <SelectItem value="gold" disabled={!availableQualifications.has("gold")} className={!availableQualifications.has("gold") ? "opacity-40" : ""}>{t("internal.cadastros.qualGold")}</SelectItem>
+                  <SelectItem value="platinum" disabled={!availableQualifications.has("platinum")} className={!availableQualifications.has("platinum") ? "opacity-40" : ""}>{t("internal.cadastros.qualPlatinum")}</SelectItem>
+                  <SelectItem value="diamond" disabled={!availableQualifications.has("diamond")} className={!availableQualifications.has("diamond") ? "opacity-40" : ""}>{t("internal.cadastros.qualDiamond")}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={planType} onValueChange={setPlanType}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Tipo Franquia" /></SelectTrigger>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.franchiseType")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tipo Franquia</SelectItem>
-                  <SelectItem value="bronze" disabled={!availablePlans.has("bronze")} className={!availablePlans.has("bronze") ? "opacity-40" : ""}>Bronze</SelectItem>
-                  <SelectItem value="silver" disabled={!availablePlans.has("silver")} className={!availablePlans.has("silver") ? "opacity-40" : ""}>Prata</SelectItem>
-                  <SelectItem value="gold" disabled={!availablePlans.has("gold")} className={!availablePlans.has("gold") ? "opacity-40" : ""}>Ouro</SelectItem>
-                  <SelectItem value="platinum" disabled={!availablePlans.has("platinum")} className={!availablePlans.has("platinum") ? "opacity-40" : ""}>Platina</SelectItem>
+                  <SelectItem value="all">{t("internal.cadastros.franchiseType")}</SelectItem>
+                  <SelectItem value="bronze" disabled={!availablePlans.has("bronze")} className={!availablePlans.has("bronze") ? "opacity-40" : ""}>{t("internal.cadastros.qualBronze")}</SelectItem>
+                  <SelectItem value="silver" disabled={!availablePlans.has("silver")} className={!availablePlans.has("silver") ? "opacity-40" : ""}>{t("internal.cadastros.qualSilver")}</SelectItem>
+                  <SelectItem value="gold" disabled={!availablePlans.has("gold")} className={!availablePlans.has("gold") ? "opacity-40" : ""}>{t("internal.cadastros.qualGold")}</SelectItem>
+                  <SelectItem value="platinum" disabled={!availablePlans.has("platinum")} className={!availablePlans.has("platinum") ? "opacity-40" : ""}>{t("internal.cadastros.qualPlatinum")}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={city} onValueChange={setCity}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Cidade" /></SelectTrigger>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.city")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Cidade</SelectItem>
+                  <SelectItem value="all">{t("internal.cadastros.city")}</SelectItem>
                   {uniqueCities.map(c => (
                     <SelectItem key={c} value={c} disabled={!availableCities.has(c)} className={!availableCities.has(c) ? "opacity-40" : ""}>{c}</SelectItem>
                   ))}
@@ -504,11 +506,11 @@ export default function InternalCadastros() {
             {hasFilters && (
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">
-                  {filtered.length} resultado{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
+                  {filtered.length} {filtered.length !== 1 ? t("internal.cadastros.resultsFoundPlural") : t("internal.cadastros.resultsFound")}
                 </span>
                 <Button variant="ghost" size="sm" onClick={clearFilters} className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground">
                   <X className="h-3 w-3" />
-                  Limpar filtros
+                  {t("internal.cadastros.clearFilters")}
                 </Button>
               </div>
             )}
@@ -521,14 +523,14 @@ export default function InternalCadastros() {
         {!hasFilters && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Filter className="h-10 w-10 text-muted-foreground/40 mb-3" />
-            <p className="text-sm text-muted-foreground">Use a busca ou os filtros acima para encontrar franqueados</p>
+            <p className="text-sm text-muted-foreground">{t("internal.cadastros.useSearchHint")}</p>
           </div>
         )}
 
         {hasFilters && filtered.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Users className="h-10 w-10 text-muted-foreground/40 mb-3" />
-            <p className="text-sm text-muted-foreground">Nenhum franqueado encontrado com os filtros selecionados</p>
+            <p className="text-sm text-muted-foreground">{t("internal.cadastros.noResults")}</p>
           </div>
         )}
 
@@ -542,6 +544,7 @@ export default function InternalCadastros() {
 
 /* ── Franchisee Result Card ── */
 function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
+  const { t } = useLanguage();
   return (
     <div className="rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
       <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
@@ -551,17 +554,17 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             <span className="text-xs text-muted-foreground shrink-0">#{f.franchiseId}</span>
           </div>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Patrocinador: {f.sponsorName} (#{f.sponsorId})
+            {t("internal.cadastros.sponsor")}: {f.sponsorName} (#{f.sponsorId})
           </p>
         </div>
         <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0 mt-0.5 transition-colors" />
       </div>
 
       <div className="flex flex-wrap gap-1.5 mb-3">
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${planColors[f.planCode] || ""}`}>{f.planLabel}</Badge>
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[f.franchiseStatus]}`}>{statusLabels[f.franchiseStatus]}</Badge>
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[f.activationStatus]}`}>{statusLabels[f.activationStatus]}</Badge>
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${qualificationColors[f.qualification]}`}>{qualificationLabels[f.qualification]}</Badge>
+        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${planColors[f.planCode] || ""}`}>{t(qualificationLabelKeys[f.planCode] || f.planCode)}</Badge>
+        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[f.franchiseStatus]}`}>{t(statusLabelKeys[f.franchiseStatus])}</Badge>
+        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[f.activationStatus]}`}>{t(statusLabelKeys[f.activationStatus])}</Badge>
+        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${qualificationColors[f.qualification]}`}>{t(qualificationLabelKeys[f.qualification])}</Badge>
       </div>
 
       <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
