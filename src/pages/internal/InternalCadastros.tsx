@@ -364,7 +364,7 @@ export default function InternalCadastros() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* ─── Column 1: Cadastros ─── */}
             <div className="flex flex-col gap-3">
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
+               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
                 <div className="flex items-center justify-center gap-1.5 mb-2">
                   <Users className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardRegistrations")}</span>
@@ -411,7 +411,7 @@ export default function InternalCadastros() {
 
             {/* ─── Column 2: Status das Franquias ─── */}
             <div className="flex flex-col gap-3">
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
+               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
                 <div className="flex items-center justify-center gap-1.5 mb-2">
                   <Layers className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardFranchiseStatus")}</span>
@@ -454,7 +454,7 @@ export default function InternalCadastros() {
 
             {/* ─── Column 3: Média Franquias por Franqueado ─── */}
             <div className="flex flex-col gap-3">
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
+               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
                 <div className="flex items-center justify-center gap-1.5 mb-2">
                   <Trophy className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardAvgFranchises")}</span>
@@ -480,7 +480,7 @@ export default function InternalCadastros() {
 
             {/* ─── Column 4: Tempo Médio de Ativação ─── */}
             <div className="flex flex-col gap-3">
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
                 <div className="flex items-center justify-center gap-1.5 mb-2">
                   <Clock className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardAvgActivation")}</span>
