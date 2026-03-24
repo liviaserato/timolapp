@@ -368,7 +368,7 @@ export default function InternalCadastros() {
                     const barColors: Record<string, string> = { starter: "bg-muted-foreground/40", bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400", diamond: "bg-violet-400" };
                     return (
                       <div key={q} className="flex items-center gap-2">
-                        <span className="text-xs w-14 shrink-0 text-muted-foreground">{qualificationLabels[q]}</span>
+                        <span className="text-xs w-14 shrink-0 text-muted-foreground">{t(qualificationLabelKeys[q])}</span>
                         <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
                           <div className={`h-full rounded-full ${barColors[q]} transition-all`} style={{ width: `${Math.max(pct, count > 0 ? 2 : 0)}%` }} />
                         </div>
