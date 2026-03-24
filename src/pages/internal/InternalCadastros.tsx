@@ -492,19 +492,23 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
               <div className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <Tooltip delayDuration={0}>
-                      <TooltipTrigger asChild>
-                        <span
-                          className="h-3.5 w-3.5 shrink-0 flex items-center justify-center cursor-help"
-                          aria-label={statusDotLabel}
-                        >
-                          <span className={`h-2 w-2 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`} />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="text-xs max-w-[220px]">
-                        {statusDotLabel}
-                      </TooltipContent>
-                    </Tooltip>
+                    {regStatus === "concluido" ? (
+                      <Tooltip delayDuration={0}>
+                        <TooltipTrigger asChild>
+                          <span
+                            className="h-3.5 w-3.5 shrink-0 flex items-center justify-center cursor-help"
+                            aria-label={statusDotLabel}
+                          >
+                            <span className={`h-2 w-2 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`} />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="text-xs max-w-[220px]">
+                          {statusDotLabel}
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      <span className="h-3.5 w-3.5 shrink-0" />
+                    )}
                     <span className="text-base font-bold text-foreground mr-1">{f.fullName}</span>
                     {sortedFranchises.map((fr, idx) => (
                       <button
