@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   Search, Users, Filter, X, Phone, Mail, KeyRound, MapPin, ChevronRight, ChevronLeft,
-  BarChart3, TrendingUp, TrendingDown, UserCheck, UserX, MapPinned, Info, Clock, Trophy, Layers
+  BarChart3, UserCheck, UserX, MapPinned, Info, Clock, Trophy, Layers
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -49,9 +49,6 @@ const mockFranchisees: Franchisee[] = [
   { id: "8", franchiseId: "100238", fullName: "Juan García López", document: "A12345678", birthDate: "03/11/1991", gender: "Masculino", email: "juan.garcia@email.com", phone: "+34 612 345 678", username: "juan.garcia", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "gold", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", paidAt: "2026-03-19" },
 ];
 
-/* Previous month mock for trend comparison */
-const prevMonthCompleted = 3;
-const prevMonthAbandoned = 2;
 
 /* ── Helpers ── */
 const statusColors: Record<string, string> = {
@@ -231,11 +228,6 @@ export default function InternalCadastros() {
   const pendingCount = useMemo(() => filtered.filter(f => !f.paidAt).length, [filtered]);
   const conversionRate = (completedCount + pendingCount) > 0 ? Math.round((completedCount / (completedCount + pendingCount)) * 100) : 0;
 
-  // Trend: only when month filter is active
-  const showTrend = dateFilterMode === "month";
-  const trendDiff = showTrend ? completedCount - prevMonthCompleted : 0;
-  const trendUp = trendDiff > 0;
-  const trendDown = trendDiff < 0;
 
   // Franchise status
   const activeCount = useMemo(() => filtered.filter(f => f.franchiseStatus === "active").length, [filtered]);
@@ -365,7 +357,7 @@ export default function InternalCadastros() {
             {/* ─── Column 1: Cadastros ─── */}
             <div className="flex flex-col gap-3">
                <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-2">
+                <div className="flex items-center justify-center gap-1.5 mb-2 min-h-[32px]">
                   <Users className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardRegistrations")}</span>
                   <Tooltip delayDuration={0}>
@@ -376,16 +368,10 @@ export default function InternalCadastros() {
                   </Tooltip>
                 </div>
                 <div className="flex items-center justify-center gap-4">
-                  {showTrend && trendDiff !== 0 && (
-                    <div className={`flex items-center gap-0.5 ${trendUp ? "text-emerald-600" : "text-red-500"}`}>
-                      {trendUp ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
-                      <span className="text-[10px] font-medium">{trendUp ? "+" : ""}{trendDiff}</span>
-                    </div>
-                  )}
                   <span className="text-3xl font-bold text-foreground">{completedCount}</span>
                   <div className="flex flex-col items-center">
-                    <span className="text-sm font-semibold text-primary leading-tight">{conversionRate}%</span>
                     <span className="text-[10px] text-primary/70 leading-tight">{t("internal.cadastros.completionRate")}</span>
+                    <span className="text-sm font-semibold text-primary leading-tight">{conversionRate}%</span>
                   </div>
                 </div>
                 <p className="text-[11px] text-muted-foreground mt-1 text-center">{pendingCount} {t("internal.cadastros.pendingRegistrations")}</p>
@@ -412,7 +398,7 @@ export default function InternalCadastros() {
             {/* ─── Column 2: Status das Franquias ─── */}
             <div className="flex flex-col gap-3">
                <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-2">
+                <div className="flex items-center justify-center gap-1.5 mb-2 min-h-[32px]">
                   <Layers className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardFranchiseStatus")}</span>
                   <Tooltip delayDuration={0}>
@@ -457,7 +443,7 @@ export default function InternalCadastros() {
                <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
                 <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
-                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1">
+                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1 min-h-[32px]">
                       <Trophy className="h-4 w-4 text-primary shrink-0" />
                       <span>{t("internal.cadastros.cardAvgFranchisesLine1")}</span>
                       <Info className="h-3 w-3 text-muted-foreground shrink-0" />
@@ -467,7 +453,7 @@ export default function InternalCadastros() {
                 </Tooltip>
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-3xl font-bold text-foreground">{Math.round(Number(avgFranchises))}</span>
-                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.franchisesLabel")}</span>
+                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.franchisesPerPersonLabel")}</span>
                 </div>
               </div>
               {/* Chart: top sponsors */}
@@ -486,7 +472,7 @@ export default function InternalCadastros() {
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
                 <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
-                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1">
+                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1 min-h-[32px]">
                       <Clock className="h-4 w-4 text-primary shrink-0" />
                       <span>{t("internal.cadastros.cardAvgActivationLine1")}</span>
                       <Info className="h-3 w-3 text-muted-foreground shrink-0" />
@@ -495,6 +481,7 @@ export default function InternalCadastros() {
                   <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipAvgActivation")}</TooltipContent>
                 </Tooltip>
                 <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.avgLabel")}</span>
                   <span className="text-3xl font-bold text-foreground">{avgActivationDays}</span>
                   <span className="text-xs text-muted-foreground">{t("internal.cadastros.days")}</span>
                 </div>
@@ -516,7 +503,7 @@ export default function InternalCadastros() {
 
           {/* Footer: abandoned registrations */}
           <p className="text-[11px] text-muted-foreground/70 pt-2 border-t border-app-card-border">
-            {t("internal.cadastros.abandonedFooter").replace("{count}", String(prevMonthAbandoned))}
+            {t("internal.cadastros.abandonedFooter").replace("{count}", String(2))}
           </p>
         </div>
       </DashboardCard>
