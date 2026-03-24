@@ -8,7 +8,8 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip
 import {
   Search, Users, Filter, X, Phone, Mail, KeyRound, MapPin, ChevronRight, ChevronLeft,
   BarChart3, UserCheck, UserX, MapPinned, Info, Clock, Trophy, Layers, TrendingUp, TrendingDown,
-  Calendar, Award, ArrowDownRight, ArrowUpRight, MapPinHouse, Landmark, Pencil, Lock
+  Calendar, Award, ArrowDownRight, ArrowUpRight, MapPinHouse, Landmark, Pencil, Lock,
+  FileText, Cake
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { qualificationConfig } from "@/components/app/rede/mock-data";
@@ -786,13 +787,13 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
               <span className="text-sm text-foreground truncate">{f.fullName}</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              {t("internal.cadastros.sponsor")} (ID{f.sponsorId})
+              {t("internal.cadastros.sponsor")}: {f.sponsorName} (ID {f.sponsorId})
             </p>
             <p className="text-xs text-muted-foreground">
-              {t("internal.cadastros.registrationDate")}: {f.createdAt}
+              {t("internal.cadastros.registrationDate")}: {f.createdAt.split("-").reverse().join("-")}
             </p>
             <p className="text-xs text-foreground">
-              {planLabels[f.planCode] || f.planCode}
+              Franquia {planLabels[f.planCode] || f.planCode}
             </p>
             {qualConfig && (
               <p className="text-xs flex items-center gap-1.5">
@@ -800,16 +801,19 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                 <span className="text-foreground">{t(qualificationLabelKeys[f.qualification])}</span>
               </p>
             )}
+            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <MapPin className="h-3 w-3 shrink-0" />
+              <span className="truncate">{f.city}, {f.state} {f.countryFlag}</span>
+            </p>
           </div>
 
           {/* ── Column 2: Personal data ── */}
           <div className="flex-1 min-w-0 space-y-1 text-xs text-muted-foreground">
-            <p className="truncate">{docLabel}</p>
-            <p>{f.birthDate} · {f.gender}</p>
+            <p className="flex items-center gap-1.5 truncate"><FileText className="h-3 w-3 shrink-0" />{docLabel}</p>
+            <p className="flex items-center gap-1.5"><Cake className="h-3 w-3 shrink-0" />{f.birthDate} · {f.gender}</p>
             <p className="flex items-center gap-1.5"><KeyRound className="h-3 w-3 shrink-0" /><span className="truncate">{f.username}</span></p>
             <p className="flex items-center gap-1.5"><Mail className="h-3 w-3 shrink-0" /><span className="truncate">{f.email}</span></p>
             <p className="flex items-center gap-1.5"><Phone className="h-3 w-3 shrink-0" /><span className="truncate">{f.phone}</span></p>
-            <p className="flex items-center gap-1.5"><MapPin className="h-3 w-3 shrink-0" /><span className="truncate">{f.city}, {f.state} {f.countryFlag}</span></p>
           </div>
 
           {/* ── Column 3: Actions ── */}
@@ -822,7 +826,6 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
               <Landmark className="h-3 w-3" />
               {t("internal.cadastros.btnFinancial")}
             </Button>
-            <div className="hidden lg:block flex-1" />
             <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none">
               <Pencil className="h-3 w-3" />
               {t("internal.cadastros.btnEdit")}
