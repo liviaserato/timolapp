@@ -80,7 +80,7 @@ const mockFranchisees: Franchisee[] = [
     { franchiseId: "100299", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-10", planCode: "gold", planLabel: "Ouro", qualification: "rubi", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-11", attendantName: "Camila Souza" },
   ]},
   { id: "8", fullName: "Juan García López", document: "A12345678", birthDate: "03/11/1991", gender: "male", email: "juan.garcia@email.com", phone: "+34 612 345 678", username: "juan.garcia", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", franchises: [
-    { franchiseId: "100238", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-19", recoveryEmailSentAt: null, whatsappSentAt: null, sponsorNotifiedAt: null },
+    { franchiseId: "100238", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-19", recoveryEmailSentAt: null, whatsappSentAt: null, sponsorNotifiedAt: null, attendantName: "Camila Souza" },
   ]},
   /* Pending registrations with touchpoint data */
   { id: "9", fullName: "Juliana Ferreira Costa", document: "321.654.987-00", birthDate: "14/06/1993", gender: "female", email: "juliana.ferreira@email.com", phone: "+55 11 98765-4321", username: "juliana.ferreira", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
