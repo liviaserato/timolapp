@@ -179,12 +179,13 @@ export default function InternalCadastros() {
       if (dateTo) list = list.filter(f => f.createdAt <= dateTo);
     }
     if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(f =>
-        f.fullName.toLowerCase().includes(q) || f.franchiseId.includes(q) || f.document.includes(q) ||
-        f.email.toLowerCase().includes(q) || f.phone.includes(q) || f.username.toLowerCase().includes(q) ||
-        f.city.toLowerCase().includes(q) || f.sponsorName.toLowerCase().includes(q)
-      );
+      const q = search.toLowerCase().replace(/[.\-\/]/g, "");
+      list = list.filter(f => {
+        const norm = (s: string) => s.toLowerCase().replace(/[.\-\/]/g, "");
+        return norm(f.fullName).includes(q) || norm(f.franchiseId).includes(q) || norm(f.document).includes(q) ||
+          norm(f.email).includes(q) || norm(f.phone).includes(q) || norm(f.username).includes(q) ||
+          norm(f.city).includes(q) || norm(f.sponsorName).includes(q);
+      });
     }
     return list;
   };
@@ -210,12 +211,13 @@ export default function InternalCadastros() {
       if (dateTo) list = list.filter(f => f.createdAt <= dateTo);
     }
     if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(f =>
-        f.fullName.toLowerCase().includes(q) || f.franchiseId.includes(q) || f.document.includes(q) ||
-        f.email.toLowerCase().includes(q) || f.phone.includes(q) || f.username.toLowerCase().includes(q) ||
-        f.city.toLowerCase().includes(q) || f.sponsorName.toLowerCase().includes(q)
-      );
+      const q = search.toLowerCase().replace(/[.\-\/]/g, "");
+      list = list.filter(f => {
+        const norm = (s: string) => s.toLowerCase().replace(/[.\-\/]/g, "");
+        return norm(f.fullName).includes(q) || norm(f.franchiseId).includes(q) || norm(f.document).includes(q) ||
+          norm(f.email).includes(q) || norm(f.phone).includes(q) || norm(f.username).includes(q) ||
+          norm(f.city).includes(q) || norm(f.sponsorName).includes(q);
+      });
     }
     return list;
   }, [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
@@ -824,20 +826,20 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
           </div>
 
           {/* ── Column 3: Actions ── */}
-          <div className="flex lg:flex-col flex-row flex-wrap gap-2 lg:w-[160px] shrink-0">
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none justify-start">
+          <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[170px] shrink-0">
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
               <MapPinHouse className="h-3 w-3" />
               {t("internal.cadastros.btnAddresses")}
             </Button>
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none justify-start">
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
               <Landmark className="h-3 w-3" />
               {t("internal.cadastros.btnFinancial")}
             </Button>
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none justify-start">
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
               <Pencil className="h-3 w-3" />
               {t("internal.cadastros.btnEdit")}
             </Button>
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none justify-start">
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
               <Lock className="h-3 w-3" />
               {t("internal.cadastros.btnCredentials")}
             </Button>
