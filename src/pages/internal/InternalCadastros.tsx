@@ -368,7 +368,7 @@ export default function InternalCadastros() {
               </div>
               {/* Registration status */}
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterRegistrationStatus")}</span>
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.registrationStatusFilter")}</span>
                 <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); activateCheckboxes(); }}>
                   <SelectTrigger className="h-9 text-xs">
                     <SelectValue />
