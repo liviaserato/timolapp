@@ -523,6 +523,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "internal.cadastros.btnFinancial": "Dados Financeiros",
     "internal.cadastros.btnEdit": "Editar Dados",
     "internal.cadastros.btnCredentials": "Usuário / Senha",
+    "internal.cadastros.franchiseCancelledMsg": "Esta franquia está cancelada.",
     "internal.cadastros.regCompleted": "Concluído",
     "internal.cadastros.regCancelled": "Cancelado",
     "internal.cadastros.regPending": "Pendente",
