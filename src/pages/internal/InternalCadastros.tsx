@@ -406,7 +406,7 @@ export default function InternalCadastros() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t("internal.cadastros.all")}</SelectItem>
+                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
                     {(["bronze", "silver", "gold", "platinum"] as const).map(p => (
                       <SelectItem key={p} value={p} disabled={!availablePlans.has(p)}>
                         {t(`franchise.${p}`)}
