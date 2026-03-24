@@ -715,7 +715,7 @@ export default function InternalCadastros() {
             </div>
 
             {/* Row 2: Filters */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 items-center">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 items-center">
               {/* Franchise Status - Checkboxes */}
               <div className="flex items-center gap-3 h-9 px-2 rounded-md border border-input bg-background">
                 <label className="flex items-center gap-1.5 cursor-pointer">
