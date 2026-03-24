@@ -451,7 +451,7 @@ export default function InternalCadastros() {
                <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
                 <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
-                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1">
+                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1 min-h-[2lh]">
                       <Trophy className="h-4 w-4 text-primary shrink-0" />
                       <span>{t("internal.cadastros.cardAvgFranchisesLine1")}</span>
                       <Info className="h-3 w-3 text-muted-foreground shrink-0" />
@@ -461,7 +461,7 @@ export default function InternalCadastros() {
                 </Tooltip>
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-3xl font-bold text-foreground">{Math.round(Number(avgFranchises))}</span>
-                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.franchisesLabel")}</span>
+                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.franchisesPerPersonLabel")}</span>
                 </div>
               </div>
               {/* Chart: top sponsors */}
