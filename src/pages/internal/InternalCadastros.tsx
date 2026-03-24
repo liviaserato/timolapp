@@ -849,7 +849,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                 </p>
                 <p className="text-sm text-foreground flex items-center gap-1.5">
                   <Gem className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
-                  Franquia {planLabels[sel.planCode] || sel.planCode}
+                  {t("internal.cadastros.franchiseType")}: {planLabels[sel.planCode] || sel.planCode}
                 </p>
                 {qualConfig && (
                   <p className="text-sm flex items-center gap-1.5">
