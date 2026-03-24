@@ -342,7 +342,6 @@ export default function InternalCadastros() {
           <div className="mt-2 space-y-4">
             {/* Date filter row */}
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs text-muted-foreground shrink-0">Período:</span>
               <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
                 <button
                   type="button"
