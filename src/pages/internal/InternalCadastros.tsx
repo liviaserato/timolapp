@@ -480,10 +480,10 @@ export default function InternalCadastros() {
                   </TooltipTrigger>
                   <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipAvgActivation")}</TooltipContent>
                 </Tooltip>
-                <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.avgLabel")}</span>
-                  <span className="text-3xl font-bold text-foreground">{avgActivationDays}</span>
-                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.days")}</span>
+                <div className="flex items-start justify-center gap-1">
+                  <span className="text-xs text-muted-foreground mt-1">{t("internal.cadastros.avgLabel")}</span>
+                  <span className="text-3xl font-bold text-foreground leading-none">{avgActivationDays}</span>
+                  <span className="text-xs text-muted-foreground mt-1">{t("internal.cadastros.days")}</span>
                 </div>
               </div>
               {/* Chart: top cities */}
