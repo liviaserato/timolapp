@@ -224,7 +224,10 @@ export default function InternalCadastros() {
   const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType]);
   const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType]);
 
+  const hasActiveFilters = search.trim() !== "" || showActive || showInactive || registrationStatus !== "all" || qualification !== "all" || planType !== "all";
+
   const filtered = useMemo(() => {
+    if (!hasActiveFilters) return [];
     let list = mockFranchisees as Franchisee[];
     if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
     else if (franchiseStatusFilter === "inactive") list = list.filter(f => pf(f).franchiseStatus !== "active");
@@ -246,7 +249,15 @@ export default function InternalCadastros() {
       });
     }
     return list;
-  }, [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType, sortBy]);
+  }, [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType, sortBy, hasActiveFilters]);
+
+  const PAGE_SIZE = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginatedResults = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  // Reset page when filters change
+  useMemo(() => { setCurrentPage(1); }, [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType, sortBy]);
 
   const clearFilters = () => {
     setSearch("");
