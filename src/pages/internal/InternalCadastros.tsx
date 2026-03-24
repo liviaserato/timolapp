@@ -481,29 +481,35 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
           <div className="flex-1 min-w-0">
             {/* ── Grid 1: Name + IDs + Sponsor ── */}
             <div className="mb-3 pb-3 border-b border-border/50">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="h-3.5 w-3.5 shrink-0 flex items-center justify-center"><span className={`h-2 w-2 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`} /></span>
-                <span className="text-base font-bold text-foreground mr-1">{f.fullName}</span>
-                {sortedFranchises.map((fr, idx) => (
-                  <button
-                    key={fr.franchiseId}
-                    type="button"
-                    onClick={() => setSelectedIdx(idx)}
-                    className={cn(
-                      "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border inline-flex items-center transition-colors cursor-pointer",
-                      idx === selectedIdx
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
-                    )}
-                  >
-                    ID {fr.franchiseId}
-                  </button>
-                ))}
-              </div>
-              <div className="flex items-center gap-1.5 mt-0.5" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
-                <p className="text-xs text-muted-foreground flex-1 min-w-0 truncate">
-                  {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
-                </p>
+              <div className="flex items-center gap-3">
+                {/* Left: name + sponsor lines */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="h-3.5 w-3.5 shrink-0 flex items-center justify-center"><span className={`h-2 w-2 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`} /></span>
+                    <span className="text-base font-bold text-foreground mr-1">{f.fullName}</span>
+                    {sortedFranchises.map((fr, idx) => (
+                      <button
+                        key={fr.franchiseId}
+                        type="button"
+                        onClick={() => setSelectedIdx(idx)}
+                        className={cn(
+                          "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border inline-flex items-center transition-colors cursor-pointer",
+                          idx === selectedIdx
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
+                        )}
+                      >
+                        ID {fr.franchiseId}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-0.5" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
+                    <p className="text-xs text-muted-foreground flex-1 min-w-0 truncate">
+                      {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
+                    </p>
+                  </div>
+                </div>
+                {/* Right: touchpoint icons centered vertically */}
                 {regStatus === "pendente" && (
                   <TouchpointIcons franchise={sel} />
                 )}
