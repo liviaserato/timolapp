@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, lazy, Suspense } from "react";
 import { cn } from "@/lib/utils";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Input } from "@/components/ui/input";
@@ -12,10 +12,13 @@ import {
   Search, Users, Filter, X, Phone, Mail, MapPin, ChevronRight, ChevronLeft,
   BarChart3, UserCheck, UserX, MapPinned, Info, Clock, Trophy, Layers, TrendingUp, TrendingDown,
   Calendar, Award, ArrowDownRight, ArrowUpRight, MapPinHouse, Landmark, Pencil, Lock,
-  FileText, Cake, Gem, ArrowUpDown
+  FileText, Cake, Gem, ArrowUpDown, ClipboardList, ArrowLeft
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { qualificationConfig } from "@/components/app/rede/mock-data";
+import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
+
+const PendingRegistrationsPanel = lazy(() => import("@/components/internal/PendingRegistrationsPanel"));
 
 /* ── Types ── */
 interface FranchiseEntry {
@@ -78,7 +81,7 @@ const mockFranchisees: Franchisee[] = [
 
 
 /* ── Search helper ── */
-const norm = (s: string) => s.toLowerCase().replace(/[.\-\/\s\+\(\)]/g, "");
+const norm = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[.\-\/\s\+\(\)]/g, "");
 const isNumericSearch = (q: string) => /\d/.test(q) && !/[a-zA-ZÀ-ÿ]/.test(q);
 
 function matchesSearch(f: Franchisee, q: string, fields: string[]): boolean {
@@ -207,6 +210,7 @@ export default function InternalCadastros() {
   const dateLocale = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
   const searchCardRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState("");
+  const [showPending, setShowPending] = useState(false);
   const [sortBy, setSortBy] = useState<string>("");
   const [showActive, setShowActive] = useState(false);
   const [showInactive, setShowInactive] = useState(false);
@@ -377,11 +381,35 @@ export default function InternalCadastros() {
   const barColors: Record<string, string> = { bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400" };
   const qualBarColors: Record<string, string> = { consultor: "bg-muted-foreground/40", distribuidor: "bg-blue-400", lider: "bg-blue-600", rubi: "bg-red-400", esmeralda: "bg-emerald-400", diamante: "bg-violet-400" };
 
+  if (showPending) {
+    return (
+      <div>
+        <header className="mb-4">
+          <Button variant="ghost" size="sm" className="gap-1.5 mb-2 -ml-2 text-muted-foreground" onClick={() => setShowPending(false)}>
+            <ArrowLeft className="h-4 w-4" />
+            {t("internal.cadastros.title")}
+          </Button>
+          <h1 className="text-2xl font-bold text-primary">{t("internal.cadastros.pendingTitle")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("internal.cadastros.pendingSubtitle")}</p>
+        </header>
+        <Suspense fallback={<FullScreenTimolLoader mode="page" title="Carregando..." className="min-h-[200px] bg-background" />}>
+          <PendingRegistrationsPanel />
+        </Suspense>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <header className="mb-4">
-        <h1 className="text-2xl font-bold text-primary">{t("internal.cadastros.title")}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{t("internal.cadastros.subtitle")}</p>
+      <header className="mb-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+        <div>
+          <h1 className="text-2xl font-bold text-primary">{t("internal.cadastros.title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("internal.cadastros.subtitle")}</p>
+        </div>
+        <Button variant="outline" size="sm" className="gap-1.5 shrink-0 self-start" onClick={() => setShowPending(true)}>
+          <ClipboardList className="h-4 w-4" />
+          {t("internal.cadastros.pendingBtn")}
+        </Button>
       </header>
 
       {/* ── Indicadores Card ── */}
