@@ -695,7 +695,7 @@ export default function InternalCadastros() {
                 <Input
                   placeholder={t("internal.cadastros.searchPlaceholder")}
                   value={search}
-                  onChange={e => { setSearch(e.target.value); scrollToSearch(); }}
+                  onChange={e => { setSearch(e.target.value); activateCheckboxes(); scrollToSearch(); }}
                   onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); (e.target as HTMLInputElement).select(); } }}
                   className="pl-9 pr-9 h-9 text-xs"
                 />
