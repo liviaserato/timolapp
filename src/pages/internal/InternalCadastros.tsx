@@ -457,7 +457,7 @@ export default function InternalCadastros() {
                 </div>
               </div>
               {/* Chart: top sponsors */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 px-2">
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.topSponsors")}</h4>
                 <HBarChart
                   items={topSponsors.map(s => ({ label: s.name, count: s.count, extra: `#${s.id}` }))}
