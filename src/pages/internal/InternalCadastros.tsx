@@ -117,6 +117,8 @@ const planColors: Record<string, string> = {
   gold: "bg-yellow-100 text-yellow-700 border-yellow-200",
   platinum: "bg-cyan-100 text-cyan-700 border-cyan-200",
 };
+/** Primary franchise accessor — uses first franchise sorted by createdAt */
+const pf = (f: Franchisee): FranchiseEntry => f.franchises[0];
 
 function getMonthLabel(date: Date, locale: string): string {
   const m = date.toLocaleDateString(locale, { month: "long" });
