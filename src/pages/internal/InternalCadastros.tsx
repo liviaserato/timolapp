@@ -492,9 +492,9 @@ export default function InternalCadastros() {
               </Select>
 
               <Select value={city} onValueChange={setCity}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Cidade" /></SelectTrigger>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.city")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Cidade</SelectItem>
+                  <SelectItem value="all">{t("internal.cadastros.city")}</SelectItem>
                   {uniqueCities.map(c => (
                     <SelectItem key={c} value={c} disabled={!availableCities.has(c)} className={!availableCities.has(c) ? "opacity-40" : ""}>{c}</SelectItem>
                   ))}
