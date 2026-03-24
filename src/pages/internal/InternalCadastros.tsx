@@ -483,7 +483,7 @@ export default function InternalCadastros() {
                 <div className="flex items-start justify-center gap-1">
                   <span className="text-xs text-muted-foreground mt-1">{t("internal.cadastros.avgLabel")}</span>
                   <span className="text-3xl font-bold text-foreground leading-none">{avgActivationDays}</span>
-                  <span className="text-xs text-muted-foreground mt-1">{t("internal.cadastros.days")}</span>
+                  <span className="text-xs text-muted-foreground self-end mb-0.5">{t("internal.cadastros.days")}</span>
                 </div>
               </div>
               {/* Chart: top cities */}
