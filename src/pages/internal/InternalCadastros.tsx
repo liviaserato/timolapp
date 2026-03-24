@@ -817,9 +817,6 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             <div className="space-y-1">
               <p className="flex items-center gap-1.5 truncate"><FileText className="h-3 w-3 shrink-0" />{docLabel}</p>
               <p className="flex items-center gap-1.5"><Cake className="h-3 w-3 shrink-0" />{f.birthDate} · {f.gender}</p>
-            </div>
-            <div className="h-4" />
-            <div className="space-y-1">
               <p className="flex items-center gap-1.5"><KeyRound className="h-3 w-3 shrink-0" /><span className="truncate">{f.username}</span></p>
               <p className="flex items-center gap-1.5"><Mail className="h-3 w-3 shrink-0" /><span className="truncate">{f.email}</span></p>
               <p className="flex items-center gap-1.5"><Phone className="h-3 w-3 shrink-0" /><span className="truncate">{f.phone}</span></p>
