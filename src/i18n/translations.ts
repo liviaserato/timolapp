@@ -2166,7 +2166,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "internal.cadastros.activationRate": "Activation Rate",
     "internal.cadastros.activeFranchises": "Active Franchises",
     "internal.cadastros.suspendedCancelled": "Suspended / Cancelled",
-    "internal.cadastros.byFranchiseType": "By Franchise Type",
+    "internal.cadastros.byFranchiseType": "Franchise Type",
     "internal.cadastros.byQualification": "By Qualification",
     "internal.cadastros.topCities": "Top Cities",
     "internal.cadastros.noData": "No data",
