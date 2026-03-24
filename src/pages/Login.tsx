@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, LogIn, UserPlus, RotateCcw } from "lucide-react";
-import { getUserRole } from "@/lib/api/client";
+import { getUserRole, setAccessToken, setUserRole } from "@/lib/api/client";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { ResumeRegistrationPopup } from "@/components/screens/ResumeRegistrationPopup";
 import { ForgotPasswordPopup } from "@/components/login/ForgotPasswordPopup";
@@ -230,6 +230,20 @@ const Login = () => {
                 {t("login.resumeRegistration")}
               </Button>
 
+
+              {import.meta.env.DEV && (
+                <Button
+                  variant="ghost"
+                  className="w-full text-xs text-muted-foreground/50 hover:text-muted-foreground"
+                  onClick={() => {
+                    setAccessToken("dev-bypass-token", true);
+                    setUserRole("admin", true);
+                    navigate("/internal", { replace: true });
+                  }}
+                >
+                  🔧 Entrar como Admin (Dev)
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
