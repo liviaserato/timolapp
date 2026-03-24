@@ -543,6 +543,7 @@ export default function InternalCadastros() {
 
 /* ── Franchisee Result Card ── */
 function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
+  const { t } = useLanguage();
   return (
     <div className="rounded-[10px] border border-app-card-border bg-card p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
       <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
@@ -552,17 +553,17 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             <span className="text-xs text-muted-foreground shrink-0">#{f.franchiseId}</span>
           </div>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Patrocinador: {f.sponsorName} (#{f.sponsorId})
+            {t("internal.cadastros.sponsor")}: {f.sponsorName} (#{f.sponsorId})
           </p>
         </div>
         <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0 mt-0.5 transition-colors" />
       </div>
 
       <div className="flex flex-wrap gap-1.5 mb-3">
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${planColors[f.planCode] || ""}`}>{f.planLabel}</Badge>
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[f.franchiseStatus]}`}>{statusLabels[f.franchiseStatus]}</Badge>
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[f.activationStatus]}`}>{statusLabels[f.activationStatus]}</Badge>
-        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${qualificationColors[f.qualification]}`}>{qualificationLabels[f.qualification]}</Badge>
+        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${planColors[f.planCode] || ""}`}>{t(qualificationLabelKeys[f.planCode] || f.planCode)}</Badge>
+        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[f.franchiseStatus]}`}>{t(statusLabelKeys[f.franchiseStatus])}</Badge>
+        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${statusColors[f.activationStatus]}`}>{t(statusLabelKeys[f.activationStatus])}</Badge>
+        <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${qualificationColors[f.qualification]}`}>{t(qualificationLabelKeys[f.qualification])}</Badge>
       </div>
 
       <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
