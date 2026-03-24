@@ -2244,6 +2244,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "internal.cadastros.btnFinancial": "Financial Data",
     "internal.cadastros.btnEdit": "Edit Data",
     "internal.cadastros.btnCredentials": "Username / Password",
+    "internal.cadastros.franchiseCancelledMsg": "This franchise is cancelled.",
     "internal.cadastros.regCompleted": "Completed",
     "internal.cadastros.regCancelled": "Cancelled",
     "internal.cadastros.regPending": "Pending",
