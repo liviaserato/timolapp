@@ -511,8 +511,13 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                     </p>
                   </div>
                 </div>
-                {/* Touchpoint icons: show for pendente and cancelado, hide for concluido */}
-                {!isCompleted && (
+                {isCompleted ? (
+                  <div className="shrink-0 text-right">
+                    <p className="text-xs text-muted-foreground">
+                      Atendente: <span className="font-medium text-foreground">{sel.attendantName ?? "—"}</span>
+                    </p>
+                  </div>
+                ) : (
                   <TouchpointIcons franchise={sel} />
                 )}
               </div>
