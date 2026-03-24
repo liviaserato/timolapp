@@ -505,11 +505,11 @@ export default function InternalCadastros() {
             {hasFilters && (
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">
-                  {filtered.length} resultado{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
+                  {filtered.length} {filtered.length !== 1 ? t("internal.cadastros.resultsFoundPlural") : t("internal.cadastros.resultsFound")}
                 </span>
                 <Button variant="ghost" size="sm" onClick={clearFilters} className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground">
                   <X className="h-3 w-3" />
-                  Limpar filtros
+                  {t("internal.cadastros.clearFilters")}
                 </Button>
               </div>
             )}
