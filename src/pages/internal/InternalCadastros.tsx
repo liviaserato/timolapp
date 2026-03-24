@@ -1,16 +1,17 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Input } from "@/components/ui/input";
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   Search, Users, Filter, X, Phone, Mail, MapPin, ChevronRight, ChevronLeft,
   BarChart3, UserCheck, UserX, MapPinned, Info, Clock, Trophy, Layers, TrendingUp, TrendingDown,
   Calendar, Award, ArrowDownRight, ArrowUpRight, MapPinHouse, Landmark, Pencil, Lock,
-  FileText, Cake, Gem
+  FileText, Cake, Gem, ArrowUpDown
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { qualificationConfig } from "@/components/app/rede/mock-data";
@@ -134,7 +135,15 @@ function getMonthRange(date: Date): { from: string; to: string } {
   return { from: first.toISOString().slice(0, 10), to: last.toISOString().slice(0, 10) };
 }
 
-const uniqueCities = Array.from(new Set(mockFranchisees.map(f => f.city))).sort();
+/* ── Registration status helpers (before component for filter use) ── */
+type RegistrationStatus = "concluido" | "cancelado" | "pendente";
+
+function getRegistrationStatus(f: Franchisee, fr?: FranchiseEntry): RegistrationStatus {
+  const entry = fr || pf(f);
+  if (entry.franchiseStatus === "cancelled") return "cancelado";
+  if (entry.paidAt) return "concluido";
+  return "pendente";
+}
 
 /* ── Mock annual data ── */
 const annualDataCurrentYear: Record<number, number> = { 0: 12, 1: 18, 2: 8, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0 };
@@ -167,15 +176,23 @@ function HBarChart({ items, barColorClass = "bg-primary/60", labelWidth = "w-14"
 }
 
 /* ── Component ── */
+/* qualification priority for sorting */
+const qualPriority: Record<string, number> = { consultor: 0, distribuidor: 1, lider: 2, rubi: 3, esmeralda: 4, diamante: 5 };
+
 export default function InternalCadastros() {
   const { t, language } = useLanguage();
   const dateLocale = language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US";
+  const searchCardRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState("");
-  const [franchiseStatus, setFranchiseStatus] = useState<string>("all");
-  const [activationStatus, setActivationStatus] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("recent");
+  const [showActive, setShowActive] = useState(true);
+  const [showInactive, setShowInactive] = useState(true);
+  const [registrationStatus, setRegistrationStatus] = useState<string>("all");
   const [qualification, setQualification] = useState<string>("all");
   const [planType, setPlanType] = useState<string>("all");
-  const [city, setCity] = useState<string>("all");
+  const [citySearch, setCitySearch] = useState("");
+  const [cityFilter, setCityFilter] = useState<string>("");
+  const [showCitySuggestions, setShowCitySuggestions] = useState(false);
 
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
@@ -185,16 +202,25 @@ export default function InternalCadastros() {
   const [dateTo, setDateTo] = useState("");
   const isCurrentMonth = monthRef.getFullYear() === today.getFullYear() && monthRef.getMonth() === today.getMonth();
 
-  const hasFilters = franchiseStatus !== "all" || activationStatus !== "all" || qualification !== "all" || planType !== "all" || city !== "all" || search.trim() !== "" || dateFilterMode !== "off";
+  const franchiseStatusFilter = (!showActive && !showInactive) ? "none" : (!showActive ? "inactive" : (!showInactive ? "active" : "all"));
+  const hasFilters = franchiseStatusFilter !== "all" || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || cityFilter !== "" || search.trim() !== "" || dateFilterMode !== "off";
+
+  const scrollToSearch = () => {
+    searchCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   /* Helper: filter list excluding one specific filter to know what's available */
   const getFilteredExcluding = (exclude: string) => {
      let list = mockFranchisees as Franchisee[];
-    if (exclude !== "franchiseStatus" && franchiseStatus !== "all") list = list.filter(f => pf(f).franchiseStatus === franchiseStatus);
-    if (exclude !== "activationStatus" && activationStatus !== "all") list = list.filter(f => pf(f).activationStatus === activationStatus);
+    if (exclude !== "franchiseStatus" && franchiseStatusFilter !== "all") {
+      if (franchiseStatusFilter === "none") list = [];
+      else if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
+      else list = list.filter(f => pf(f).franchiseStatus !== "active");
+    }
+    if (exclude !== "registrationStatus" && registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
     if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (exclude !== "planType" && planType !== "all") list = list.filter(f => pf(f).planCode === planType);
-    if (exclude !== "city" && city !== "all") list = list.filter(f => f.city === city);
+    if (exclude !== "city" && cityFilter) list = list.filter(f => f.city === cityFilter);
     if (dateFilterMode === "month") {
       const range = getMonthRange(monthRef);
       list = list.filter(f => pf(f).createdAt >= range.from && pf(f).createdAt <= range.to);
@@ -215,19 +241,25 @@ export default function InternalCadastros() {
     return list;
   };
 
-  const availableFranchiseStatuses = useMemo(() => new Set(getFilteredExcluding("franchiseStatus").map(f => pf(f).franchiseStatus)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
-  const availableActivationStatuses = useMemo(() => new Set(getFilteredExcluding("activationStatus").map(f => pf(f).activationStatus)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
-  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
-  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
-  const availableCities = useMemo(() => new Set(getFilteredExcluding("city").map(f => f.city)), [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, dateFilterMode, monthRef, dateFrom, dateTo]);
+  const availableCities = useMemo(() => new Set(getFilteredExcluding("city").map(f => f.city)), [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, dateFilterMode, monthRef, dateFrom, dateTo]);
+
+  const citySuggestions = useMemo(() => {
+    if (!citySearch.trim()) return Array.from(availableCities).sort();
+    const q = citySearch.toLowerCase();
+    return Array.from(availableCities).filter(c => c.toLowerCase().includes(q)).sort();
+  }, [citySearch, availableCities]);
 
   const filtered = useMemo(() => {
     let list = mockFranchisees as Franchisee[];
-    if (franchiseStatus !== "all") list = list.filter(f => pf(f).franchiseStatus === franchiseStatus);
-    if (activationStatus !== "all") list = list.filter(f => pf(f).activationStatus === activationStatus);
+    if (franchiseStatusFilter === "none") return [];
+    if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
+    else if (franchiseStatusFilter === "inactive") list = list.filter(f => pf(f).franchiseStatus !== "active");
+    if (registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
     if (qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (planType !== "all") list = list.filter(f => pf(f).planCode === planType);
-    if (city !== "all") list = list.filter(f => f.city === city);
+    if (cityFilter) list = list.filter(f => f.city === cityFilter);
     if (dateFilterMode === "month") {
       const range = getMonthRange(monthRef);
       list = list.filter(f => pf(f).createdAt >= range.from && pf(f).createdAt <= range.to);
@@ -245,16 +277,31 @@ export default function InternalCadastros() {
           norm(f.city).includes(q);
       });
     }
+    // Sort
+    if (sortBy === "recent") {
+      list = [...list].sort((a, b) => pf(b).createdAt.localeCompare(pf(a).createdAt));
+    } else if (sortBy === "qualification") {
+      list = [...list].sort((a, b) => (qualPriority[pf(b).qualification] || 0) - (qualPriority[pf(a).qualification] || 0));
+    } else if (sortBy === "active_first") {
+      list = [...list].sort((a, b) => {
+        const aActive = pf(a).franchiseStatus === "active" ? 0 : 1;
+        const bActive = pf(b).franchiseStatus === "active" ? 0 : 1;
+        return aActive - bActive;
+      });
+    }
     return list;
-  }, [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
+  }, [search, showActive, showInactive, registrationStatus, qualification, planType, cityFilter, dateFilterMode, monthRef, dateFrom, dateTo, sortBy]);
 
   const clearFilters = () => {
     setSearch("");
-    setFranchiseStatus("all");
-    setActivationStatus("all");
+    setSortBy("recent");
+    setShowActive(true);
+    setShowInactive(true);
+    setRegistrationStatus("all");
     setQualification("all");
     setPlanType("all");
-    setCity("all");
+    setCitySearch("");
+    setCityFilter("");
     setDateFilterMode("off");
     setDateFrom("");
     setDateTo("");
@@ -649,16 +696,17 @@ export default function InternalCadastros() {
         </DashboardCard>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4" ref={searchCardRef}>
         <DashboardCard icon={Search} title={t("internal.cadastros.searchFranchisee")}>
           <div className="mt-2 space-y-3">
+            {/* Row 1: Search + Sort */}
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder={t("internal.cadastros.searchPlaceholder")}
                   value={search}
-                  onChange={e => setSearch(e.target.value)}
+                  onChange={e => { setSearch(e.target.value); scrollToSearch(); }}
                   className="pl-9 pr-9 h-9 text-xs"
                 />
                 {search && (
@@ -667,30 +715,46 @@ export default function InternalCadastros() {
                   </button>
                 )}
               </div>
+              <Select value={sortBy} onValueChange={v => { setSortBy(v); scrollToSearch(); }}>
+                <SelectTrigger className="h-9 text-xs w-[180px]">
+                  <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="recent">{t("internal.cadastros.sortRecent")}</SelectItem>
+                  <SelectItem value="active_first">{t("internal.cadastros.sortActiveFirst")}</SelectItem>
+                  <SelectItem value="qualification">{t("internal.cadastros.sortQualification")}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-              <Select value={franchiseStatus} onValueChange={setFranchiseStatus}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.franchiseStatus")} /></SelectTrigger>
+            {/* Row 2: Filters */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 items-center">
+              {/* Franchise Status - Checkboxes */}
+              <div className="flex items-center gap-3 h-9 px-2 rounded-md border border-input bg-background">
+                <label className="flex items-center gap-1.5 cursor-pointer">
+                  <Checkbox checked={showActive} onCheckedChange={(v) => { setShowActive(!!v); scrollToSearch(); }} className="h-3.5 w-3.5" />
+                  <span className="text-xs text-foreground">{t("internal.cadastros.statusActive")}</span>
+                </label>
+                <label className="flex items-center gap-1.5 cursor-pointer">
+                  <Checkbox checked={showInactive} onCheckedChange={(v) => { setShowInactive(!!v); scrollToSearch(); }} className="h-3.5 w-3.5" />
+                  <span className="text-xs text-foreground">{t("internal.cadastros.statusInactive")}</span>
+                </label>
+              </div>
+
+              {/* Registration Status - Select */}
+              <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); scrollToSearch(); }}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.registrationStatusFilter")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t("internal.cadastros.franchiseStatus")}</SelectItem>
-                  <SelectItem value="active" disabled={!availableFranchiseStatuses.has("active")} className={!availableFranchiseStatuses.has("active") ? "opacity-40" : ""}>{t("internal.cadastros.statusActive")}</SelectItem>
-                  <SelectItem value="suspended" disabled={!availableFranchiseStatuses.has("suspended")} className={!availableFranchiseStatuses.has("suspended") ? "opacity-40" : ""}>{t("internal.cadastros.statusSuspended")}</SelectItem>
-                  <SelectItem value="cancelled" disabled={!availableFranchiseStatuses.has("cancelled")} className={!availableFranchiseStatuses.has("cancelled") ? "opacity-40" : ""}>{t("internal.cadastros.statusCancelled")}</SelectItem>
+                  <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
+                  <SelectItem value="concluido">{t("internal.cadastros.regCompleted")}</SelectItem>
+                  <SelectItem value="cancelado">{t("internal.cadastros.regCancelled")}</SelectItem>
+                  <SelectItem value="pendente">{t("internal.cadastros.regPending")}</SelectItem>
                 </SelectContent>
               </Select>
 
-              <Select value={activationStatus} onValueChange={setActivationStatus}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.activationFilter")} /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("internal.cadastros.activationFilter")}</SelectItem>
-                  <SelectItem value="activated" disabled={!availableActivationStatuses.has("activated")} className={!availableActivationStatuses.has("activated") ? "opacity-40" : ""}>{t("internal.cadastros.statusActivated")}</SelectItem>
-                  <SelectItem value="pending" disabled={!availableActivationStatuses.has("pending")} className={!availableActivationStatuses.has("pending") ? "opacity-40" : ""}>{t("internal.cadastros.statusPending")}</SelectItem>
-                  <SelectItem value="inactive" disabled={!availableActivationStatuses.has("inactive")} className={!availableActivationStatuses.has("inactive") ? "opacity-40" : ""}>{t("internal.cadastros.statusInactive")}</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={qualification} onValueChange={setQualification}>
+              {/* Qualification */}
+              <Select value={qualification} onValueChange={v => { setQualification(v); scrollToSearch(); }}>
                 <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.qualificationFilter")} /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t("internal.cadastros.qualificationFilter")}</SelectItem>
@@ -703,7 +767,8 @@ export default function InternalCadastros() {
                 </SelectContent>
               </Select>
 
-              <Select value={planType} onValueChange={setPlanType}>
+              {/* Plan Type */}
+              <Select value={planType} onValueChange={v => { setPlanType(v); scrollToSearch(); }}>
                 <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.franchiseType")} /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t("internal.cadastros.franchiseType")}</SelectItem>
@@ -714,15 +779,43 @@ export default function InternalCadastros() {
                 </SelectContent>
               </Select>
 
-              <Select value={city} onValueChange={setCity}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.city")} /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("internal.cadastros.city")}</SelectItem>
-                  {uniqueCities.map(c => (
-                    <SelectItem key={c} value={c} disabled={!availableCities.has(c)} className={!availableCities.has(c) ? "opacity-40" : ""}>{c}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {/* City - Autocomplete */}
+              <div className="relative">
+                <div className="relative">
+                  <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input
+                    placeholder={t("internal.cadastros.city")}
+                    value={cityFilter || citySearch}
+                    onChange={e => {
+                      setCitySearch(e.target.value);
+                      setCityFilter("");
+                      setShowCitySuggestions(true);
+                    }}
+                    onFocus={() => setShowCitySuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowCitySuggestions(false), 150)}
+                    className="pl-8 pr-8 h-9 text-xs"
+                  />
+                  {(cityFilter || citySearch) && (
+                    <button onClick={() => { setCitySearch(""); setCityFilter(""); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+                {showCitySuggestions && citySuggestions.length > 0 && !cityFilter && (
+                  <div className="absolute z-50 top-full mt-1 w-full rounded-md border bg-popover shadow-md max-h-[160px] overflow-y-auto">
+                    {citySuggestions.map(c => (
+                      <button
+                        key={c}
+                        type="button"
+                        className="w-full text-left px-3 py-1.5 text-xs hover:bg-accent transition-colors"
+                        onMouseDown={() => { setCityFilter(c); setCitySearch(""); setShowCitySuggestions(false); scrollToSearch(); }}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {hasFilters && (
@@ -766,15 +859,6 @@ export default function InternalCadastros() {
   );
 }
 
-/* ── Registration status helpers ── */
-type RegistrationStatus = "concluido" | "cancelado" | "pendente";
-
-function getRegistrationStatus(f: Franchisee, fr?: FranchiseEntry): RegistrationStatus {
-  const entry = fr || pf(f);
-  if (entry.franchiseStatus === "cancelled") return "cancelado";
-  if (entry.paidAt) return "concluido";
-  return "pendente";
-}
 
 const registrationStatusBorder: Record<RegistrationStatus, string> = {
   concluido: "border-l-[#003885]",
