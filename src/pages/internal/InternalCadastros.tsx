@@ -71,21 +71,21 @@ const statusLabelKeys: Record<string, string> = {
 };
 
 const qualificationLabelKeys: Record<string, string> = {
-  starter: "internal.cadastros.qualStarter",
-  bronze: "internal.cadastros.qualBronze",
-  silver: "internal.cadastros.qualSilver",
-  gold: "internal.cadastros.qualGold",
-  platinum: "internal.cadastros.qualPlatinum",
-  diamond: "internal.cadastros.qualDiamond",
+  consultor: "internal.cadastros.qualConsultor",
+  distribuidor: "internal.cadastros.qualDistribuidor",
+  lider: "internal.cadastros.qualLider",
+  rubi: "internal.cadastros.qualRubi",
+  esmeralda: "internal.cadastros.qualEsmeralda",
+  diamante: "internal.cadastros.qualDiamante",
 };
 
 const qualificationColors: Record<string, string> = {
-  starter: "bg-muted text-muted-foreground border-border",
-  bronze: "bg-orange-100 text-orange-700 border-orange-200",
-  silver: "bg-slate-100 text-slate-600 border-slate-200",
-  gold: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  platinum: "bg-cyan-100 text-cyan-700 border-cyan-200",
-  diamond: "bg-violet-100 text-violet-700 border-violet-200",
+  consultor: "bg-muted text-muted-foreground border-border",
+  distribuidor: "bg-blue-100 text-blue-700 border-blue-200",
+  lider: "bg-blue-200 text-blue-800 border-blue-300",
+  rubi: "bg-red-100 text-red-700 border-red-200",
+  esmeralda: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  diamante: "bg-violet-100 text-violet-700 border-violet-200",
 };
 
 const planColors: Record<string, string> = {
