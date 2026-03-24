@@ -730,6 +730,8 @@ export default function InternalCadastros() {
         {hasFilters && filtered.map(f => (
           <FranchiseeCard key={f.id} franchisee={f} />
         ))}
+
+        {hasFilters && filtered.length > 0 && <RegistrationStatusLegend />}
       </div>
     </div>
   );
