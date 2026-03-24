@@ -2220,7 +2220,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "internal.cadastros.days": "days",
     "internal.cadastros.tooltipAvgActivation": "Average days between registration creation date and payment date.",
     "internal.cadastros.abandonedFooter": "Last month, {count} registrations were abandoned (no completion after 15 days from creation).",
-    "internal.cadastros.activeQualOnly": "Qualification (active only)",
+    "internal.cadastros.activeQualOnly": "Qualification",
     "header.digitalOffice": "Digital Office",
     "header.user": "User",
     "header.myData": "My Profile",
