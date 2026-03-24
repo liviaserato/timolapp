@@ -292,7 +292,7 @@ export default function InternalCadastros() {
               {dateFilterMode === "custom" && (
                 <div className="flex gap-2 items-center shrink-0">
                   <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
-                  <span className="text-xs text-muted-foreground">até</span>
+                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.until")}</span>
                   <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateTo} onChange={e => setDateTo(e.target.value)} />
                 </div>
               )}
