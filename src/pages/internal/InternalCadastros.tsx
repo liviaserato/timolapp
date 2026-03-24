@@ -31,6 +31,10 @@ interface FranchiseEntry {
   franchiseStatus: "active" | "suspended" | "cancelled";
   activationStatus: "activated" | "pending" | "inactive";
   paidAt: string | null;
+  /* Touchpoint tracking for pending registrations */
+  recoveryEmailSentAt?: string | null;
+  whatsappSentAt?: string | null;
+  sponsorNotifiedAt?: string | null;
 }
 
 interface Franchisee {
