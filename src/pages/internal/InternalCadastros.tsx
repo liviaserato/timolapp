@@ -476,7 +476,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
     ? new Date(new Date(sel.paidAt).getTime() + 365 * 24 * 60 * 60 * 1000).toLocaleDateString("pt-BR")
     : null;
   const statusDotLabel = isActive
-    ? `${t("internal.cadastros.franchiseActive")}${expirationDate ? ` · Expira em ${expirationDate}` : ""}`
+    ? `Sua franquia está ativa até ${expirationDate ?? "—"}`
     : t("internal.cadastros.franchiseInactive");
 
   return (
