@@ -87,14 +87,14 @@ export function AppHeader() {
       </div>
 
       {/* Center: title + dev lang switcher (desktop only) */}
-      <div className="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center gap-3">
+      <div className="absolute left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-1">
         <p className="pointer-events-none whitespace-nowrap text-lg font-semibold text-primary-foreground">
           {t("header.digitalOffice")}
         </p>
 
         {/* DEV language switcher */}
         {import.meta.env.DEV && (
-          <div className="flex items-center gap-1 ml-3 rounded-md bg-primary-foreground/10 px-2 py-1">
+          <div className="flex items-center gap-1 rounded-md bg-primary-foreground/10 px-2 py-0.5">
             {(["pt", "en", "es"] as const).map(lang => (
               <button
                 key={lang}
