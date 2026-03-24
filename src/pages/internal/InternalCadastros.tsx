@@ -211,12 +211,13 @@ export default function InternalCadastros() {
       if (dateTo) list = list.filter(f => f.createdAt <= dateTo);
     }
     if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(f =>
-        f.fullName.toLowerCase().includes(q) || f.franchiseId.includes(q) || f.document.includes(q) ||
-        f.email.toLowerCase().includes(q) || f.phone.includes(q) || f.username.toLowerCase().includes(q) ||
-        f.city.toLowerCase().includes(q) || f.sponsorName.toLowerCase().includes(q)
-      );
+      const q = search.toLowerCase().replace(/[.\-\/]/g, "");
+      list = list.filter(f => {
+        const norm = (s: string) => s.toLowerCase().replace(/[.\-\/]/g, "");
+        return norm(f.fullName).includes(q) || norm(f.franchiseId).includes(q) || norm(f.document).includes(q) ||
+          norm(f.email).includes(q) || norm(f.phone).includes(q) || norm(f.username).includes(q) ||
+          norm(f.city).includes(q) || norm(f.sponsorName).includes(q);
+      });
     }
     return list;
   }, [search, franchiseStatus, activationStatus, qualification, planType, city, dateFilterMode, monthRef, dateFrom, dateTo]);
