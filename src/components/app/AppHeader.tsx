@@ -33,7 +33,7 @@ export function AppHeader() {
   const location = useLocation();
   const { toggle } = useSidebarState();
   const { profiles, selected, setSelectedId, hasMultiple } = useFranchise();
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
 
   const role = getUserRole();
   const isAdmin = role === "admin" || role === "superadmin";
@@ -86,11 +86,30 @@ export function AppHeader() {
         )}
       </div>
 
-      {/* Center: title (desktop only) */}
+      {/* Center: title + dev lang switcher (desktop only) */}
       <div className="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center gap-3">
         <p className="pointer-events-none whitespace-nowrap text-lg font-semibold text-primary-foreground">
           {t("header.digitalOffice")}
         </p>
+
+        {/* DEV language switcher */}
+        {import.meta.env.DEV && (
+          <div className="flex items-center gap-1 ml-3 rounded-md bg-primary-foreground/10 px-2 py-1">
+            {(["pt", "en", "es"] as const).map(lang => (
+              <button
+                key={lang}
+                onClick={() => setLanguage(lang)}
+                className={`px-2 py-0.5 rounded text-[11px] font-semibold uppercase transition-colors ${
+                  language === lang
+                    ? "bg-primary-foreground text-app-sidebar"
+                    : "text-primary-foreground/70 hover:text-primary-foreground"
+                }`}
+              >
+                {lang}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Right: user info + avatar */}
