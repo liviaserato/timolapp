@@ -298,7 +298,7 @@ export default function InternalCadastros() {
               )}
 
               {dateFilterMode !== "off" && (
-                <span className="text-xs font-semibold text-primary ml-auto">{totalCadastros} cadastro{totalCadastros !== 1 ? "s" : ""}</span>
+                <span className="text-xs font-semibold text-primary ml-auto">{totalCadastros} {totalCadastros !== 1 ? t("internal.cadastros.registrations") : t("internal.cadastros.registration")}</span>
               )}
             </div>
 
