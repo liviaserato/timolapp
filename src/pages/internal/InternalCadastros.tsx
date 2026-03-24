@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Search, Users, Filter, X, Phone, Mail, MapPin, ChevronRight, ChevronLeft,
   BarChart3, UserCheck, UserX, MapPinned, Info, Clock, Trophy, Layers, TrendingUp, TrendingDown,
@@ -75,6 +76,28 @@ const mockFranchisees: Franchisee[] = [
   ]},
 ];
 
+
+/* ── Search helper ── */
+const norm = (s: string) => s.toLowerCase().replace(/[.\-\/\s\+\(\)]/g, "");
+const isNumericSearch = (q: string) => /\d/.test(q) && !/[a-zA-ZÀ-ÿ]/.test(q);
+
+function matchesSearch(f: Franchisee, q: string, fields: string[]): boolean {
+  const nq = norm(q);
+  const numeric = isNumericSearch(q);
+  const activeFields = fields.length > 0 ? fields : (numeric ? ["id", "document", "phone"] : ["name", "city", "email"]);
+
+  return activeFields.some(field => {
+    switch (field) {
+      case "id": return f.franchises.some(fr => norm(fr.franchiseId).includes(nq));
+      case "document": return norm(f.document).includes(nq);
+      case "phone": return norm(f.phone).includes(nq);
+      case "name": return norm(f.fullName).includes(nq);
+      case "city": return norm(f.city).includes(nq);
+      case "email": return norm(f.email).includes(nq);
+      default: return false;
+    }
+  });
+}
 
 /* ── Helpers ── */
 const statusColors: Record<string, string> = {
@@ -190,6 +213,7 @@ export default function InternalCadastros() {
   const [registrationStatus, setRegistrationStatus] = useState<string>("all");
   const [qualification, setQualification] = useState<string>("all");
   const [planType, setPlanType] = useState<string>("all");
+  const [searchFields, setSearchFields] = useState<string[]>([]);
 
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
@@ -225,20 +249,13 @@ export default function InternalCadastros() {
     if (exclude !== "planType" && planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     
     if (search.trim()) {
-      const q = search.toLowerCase().replace(/[.\-\/]/g, "");
-      list = list.filter(f => {
-        const norm = (s: string) => s.toLowerCase().replace(/[.\-\/]/g, "");
-        const anyFranchiseMatch = f.franchises.some(fr => norm(fr.franchiseId).includes(q) || norm(fr.sponsorName).includes(q));
-        return norm(f.fullName).includes(q) || anyFranchiseMatch || norm(f.document).includes(q) ||
-          norm(f.email).includes(q) || norm(f.phone).includes(q) || norm(f.username).includes(q) ||
-          norm(f.city).includes(q);
-      });
+      list = list.filter(f => matchesSearch(f, search, searchFields));
     }
     return list;
   };
 
-  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, showActive, showInactive, registrationStatus, qualification, planType]);
-  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, showActive, showInactive, registrationStatus, qualification, planType]);
+  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType]);
+  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType]);
 
   /* Search results (no date filter) */
   const filtered = useMemo(() => {
@@ -250,14 +267,7 @@ export default function InternalCadastros() {
     if (planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     
     if (search.trim()) {
-      const q = search.toLowerCase().replace(/[.\-\/]/g, "");
-      list = list.filter(f => {
-        const norm = (s: string) => s.toLowerCase().replace(/[.\-\/]/g, "");
-        const anyFranchiseMatch = f.franchises.some(fr => norm(fr.franchiseId).includes(q) || norm(fr.sponsorName).includes(q));
-        return norm(f.fullName).includes(q) || anyFranchiseMatch || norm(f.document).includes(q) ||
-          norm(f.email).includes(q) || norm(f.phone).includes(q) || norm(f.username).includes(q) ||
-          norm(f.city).includes(q);
-      });
+      list = list.filter(f => matchesSearch(f, search, searchFields));
     }
     // Sort
     if (sortBy === "recent" || sortBy === "") {
@@ -272,7 +282,7 @@ export default function InternalCadastros() {
       });
     }
     return list;
-  }, [search, showActive, showInactive, registrationStatus, qualification, planType, sortBy]);
+  }, [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType, sortBy]);
 
   /* Indicator metrics (only date filter, independent of search) */
   const indicatorFiltered = useMemo(() => {
@@ -295,6 +305,7 @@ export default function InternalCadastros() {
     setRegistrationStatus("all");
     setQualification("all");
     setPlanType("all");
+    setSearchFields([]);
   };
 
   /* ── Dashboard metrics (based on date filter only) ── */
@@ -689,20 +700,44 @@ export default function InternalCadastros() {
         <DashboardCard icon={Search} title={t("internal.cadastros.searchFranchisee")}>
           <div className="mt-2 space-y-3">
             {/* Row 1: Search + Sort */}
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={t("internal.cadastros.searchPlaceholder")}
-                  value={search}
-                  onChange={e => { setSearch(e.target.value); activateCheckboxes(); scrollToSearch(); }}
-                  onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); (e.target as HTMLInputElement).select(); } }}
-                  className="pl-9 pr-9 h-9 text-xs"
-                />
-                {search && (
-                  <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                    <X className="h-4 w-4" />
-                  </button>
+            <div className="flex flex-wrap items-start gap-2">
+              <div className="flex-1 min-w-[200px] space-y-1.5">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder={t("internal.cadastros.searchPlaceholder")}
+                    value={search}
+                    onChange={e => { setSearch(e.target.value); setSearchFields([]); activateCheckboxes(); scrollToSearch(); }}
+                    onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); (e.target as HTMLInputElement).select(); } }}
+                    className="pl-9 pr-9 h-9 text-xs"
+                  />
+                  {search && (
+                    <button onClick={() => { setSearch(""); setSearchFields([]); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+                {search.trim() && (
+                  <ToggleGroup
+                    type="multiple"
+                    value={searchFields}
+                    onValueChange={setSearchFields}
+                    className="justify-start gap-1 flex-wrap"
+                  >
+                    {isNumericSearch(search) ? (
+                      <>
+                        <ToggleGroupItem value="id" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleId")}</ToggleGroupItem>
+                        <ToggleGroupItem value="document" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleDocument")}</ToggleGroupItem>
+                        <ToggleGroupItem value="phone" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.togglePhone")}</ToggleGroupItem>
+                      </>
+                    ) : (
+                      <>
+                        <ToggleGroupItem value="name" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleName")}</ToggleGroupItem>
+                        <ToggleGroupItem value="city" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleCity")}</ToggleGroupItem>
+                        <ToggleGroupItem value="email" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleEmail")}</ToggleGroupItem>
+                      </>
+                    )}
+                  </ToggleGroup>
                 )}
               </div>
               <Select value={sortBy || undefined} onValueChange={v => { setSortBy(v); activateCheckboxes(); scrollToSearch(); }}>
