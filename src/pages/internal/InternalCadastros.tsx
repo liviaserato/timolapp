@@ -377,7 +377,7 @@ export default function InternalCadastros() {
                 <p className="text-[11px] text-muted-foreground mt-1 text-center">{pendingCount} {t("internal.cadastros.pendingRegistrations")}</p>
               </div>
               {/* Chart: by franchise type */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 px-2">
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.byFranchiseType")}</h4>
                 {(["bronze", "silver", "gold", "platinum"] as const).map(plan => {
                   const count = planBreakdown[plan] || 0;
