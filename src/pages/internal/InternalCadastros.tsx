@@ -31,7 +31,7 @@ interface Franchisee {
   planLabel: string;
   franchiseStatus: "active" | "suspended" | "cancelled";
   activationStatus: "activated" | "pending" | "inactive";
-  qualification: "starter" | "bronze" | "silver" | "gold" | "platinum" | "diamond";
+  qualification: "consultor" | "distribuidor" | "lider" | "rubi" | "esmeralda" | "diamante";
   sponsorName: string;
   sponsorId: string;
   createdAt: string;
@@ -40,14 +40,14 @@ interface Franchisee {
 
 /* ── Mock Data ── */
 const mockFranchisees: Franchisee[] = [
-  { id: "1", franchiseId: "100231", fullName: "Lívia Serato", document: "123.456.789-00", birthDate: "15/03/1990", gender: "Feminino", email: "livia.serato@email.com", phone: "+55 11 99999-0000", username: "livia.serato", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "gold", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-02", paidAt: "2026-03-05" },
-  { id: "2", franchiseId: "100232", fullName: "Carlos Eduardo Mendes", document: "987.654.321-00", birthDate: "22/08/1985", gender: "Masculino", email: "carlos.mendes@email.com", phone: "+55 21 98888-1111", username: "carlos.mendes", city: "Rio de Janeiro", state: "RJ", country: "Brasil", countryFlag: "🇧🇷", planCode: "platinum", planLabel: "Platina", franchiseStatus: "active", activationStatus: "activated", qualification: "platinum", sponsorName: "Lívia Serato", sponsorId: "100231", createdAt: "2026-03-10", paidAt: "2026-03-12" },
-  { id: "3", franchiseId: "100233", fullName: "Ana Paula Costa", document: "456.789.123-00", birthDate: "10/12/1992", gender: "Feminino", email: "ana.costa@email.com", phone: "+55 31 97777-2222", username: "ana.costa", city: "Belo Horizonte", state: "MG", country: "Brasil", countryFlag: "🇧🇷", planCode: "bronze", planLabel: "Bronze", franchiseStatus: "active", activationStatus: "pending", qualification: "starter", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-15", paidAt: null },
-  { id: "4", franchiseId: "100234", fullName: "Roberto Almeida Filho", document: "321.654.987-00", birthDate: "05/06/1978", gender: "Masculino", email: "roberto.almeida@email.com", phone: "+55 41 96666-3333", username: "roberto.almeida", city: "Curitiba", state: "PR", country: "Brasil", countryFlag: "🇧🇷", planCode: "silver", planLabel: "Prata", franchiseStatus: "suspended", activationStatus: "inactive", qualification: "bronze", sponsorName: "Ana Costa", sponsorId: "100233", createdAt: "2026-03-08", paidAt: "2026-03-20" },
-  { id: "5", franchiseId: "100235", fullName: "Fernanda Oliveira Santos", document: "654.321.987-00", birthDate: "18/09/1988", gender: "Feminino", email: "fernanda.santos@email.com", phone: "+55 51 95555-4444", username: "fernanda.santos", city: "Porto Alegre", state: "RS", country: "Brasil", countryFlag: "🇧🇷", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "silver", sponsorName: "Roberto Almeida", sponsorId: "100234", createdAt: "2026-03-01", paidAt: "2026-03-03" },
-  { id: "6", franchiseId: "100236", fullName: "Pedro Henrique Lima", document: "789.123.456-00", birthDate: "30/01/1995", gender: "Masculino", email: "pedro.lima@email.com", phone: "+55 61 94444-5555", username: "pedro.lima", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "bronze", planLabel: "Bronze", franchiseStatus: "cancelled", activationStatus: "inactive", qualification: "starter", sponsorName: "Fernanda Santos", sponsorId: "100235", createdAt: "2026-02-15", paidAt: null },
-  { id: "7", franchiseId: "100237", fullName: "Maria Silva", document: "111.222.333-00", birthDate: "12/07/1980", gender: "Feminino", email: "maria.silva@email.com", phone: "+55 11 93333-6666", username: "maria.silva", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "platinum", planLabel: "Platina", franchiseStatus: "active", activationStatus: "activated", qualification: "diamond", sponsorName: "Timol", sponsorId: "00001", createdAt: "2026-02-01", paidAt: "2026-02-02" },
-  { id: "8", franchiseId: "100238", fullName: "Juan García López", document: "A12345678", birthDate: "03/11/1991", gender: "Masculino", email: "juan.garcia@email.com", phone: "+34 612 345 678", username: "juan.garcia", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "gold", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", paidAt: "2026-03-19" },
+  { id: "1", franchiseId: "100231", fullName: "Lívia Serato", document: "123.456.789-00", birthDate: "15/03/1990", gender: "Feminino", email: "livia.serato@email.com", phone: "+55 11 99999-0000", username: "livia.serato", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "esmeralda", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-02", paidAt: "2026-03-05" },
+  { id: "2", franchiseId: "100232", fullName: "Carlos Eduardo Mendes", document: "987.654.321-00", birthDate: "22/08/1985", gender: "Masculino", email: "carlos.mendes@email.com", phone: "+55 21 98888-1111", username: "carlos.mendes", city: "Rio de Janeiro", state: "RJ", country: "Brasil", countryFlag: "🇧🇷", planCode: "platinum", planLabel: "Platina", franchiseStatus: "active", activationStatus: "activated", qualification: "rubi", sponsorName: "Lívia Serato", sponsorId: "100231", createdAt: "2026-03-10", paidAt: "2026-03-12" },
+  { id: "3", franchiseId: "100233", fullName: "Ana Paula Costa", document: "456.789.123-00", birthDate: "10/12/1992", gender: "Feminino", email: "ana.costa@email.com", phone: "+55 31 97777-2222", username: "ana.costa", city: "Belo Horizonte", state: "MG", country: "Brasil", countryFlag: "🇧🇷", planCode: "bronze", planLabel: "Bronze", franchiseStatus: "active", activationStatus: "pending", qualification: "consultor", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-15", paidAt: null },
+  { id: "4", franchiseId: "100234", fullName: "Roberto Almeida Filho", document: "321.654.987-00", birthDate: "05/06/1978", gender: "Masculino", email: "roberto.almeida@email.com", phone: "+55 41 96666-3333", username: "roberto.almeida", city: "Curitiba", state: "PR", country: "Brasil", countryFlag: "🇧🇷", planCode: "silver", planLabel: "Prata", franchiseStatus: "suspended", activationStatus: "inactive", qualification: "distribuidor", sponsorName: "Ana Costa", sponsorId: "100233", createdAt: "2026-03-08", paidAt: "2026-03-20" },
+  { id: "5", franchiseId: "100235", fullName: "Fernanda Oliveira Santos", document: "654.321.987-00", birthDate: "18/09/1988", gender: "Feminino", email: "fernanda.santos@email.com", phone: "+55 51 95555-4444", username: "fernanda.santos", city: "Porto Alegre", state: "RS", country: "Brasil", countryFlag: "🇧🇷", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "lider", sponsorName: "Roberto Almeida", sponsorId: "100234", createdAt: "2026-03-01", paidAt: "2026-03-03" },
+  { id: "6", franchiseId: "100236", fullName: "Pedro Henrique Lima", document: "789.123.456-00", birthDate: "30/01/1995", gender: "Masculino", email: "pedro.lima@email.com", phone: "+55 61 94444-5555", username: "pedro.lima", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "bronze", planLabel: "Bronze", franchiseStatus: "cancelled", activationStatus: "inactive", qualification: "consultor", sponsorName: "Fernanda Santos", sponsorId: "100235", createdAt: "2026-02-15", paidAt: null },
+  { id: "7", franchiseId: "100237", fullName: "Maria Silva", document: "111.222.333-00", birthDate: "12/07/1980", gender: "Feminino", email: "maria.silva@email.com", phone: "+55 11 93333-6666", username: "maria.silva", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "platinum", planLabel: "Platina", franchiseStatus: "active", activationStatus: "activated", qualification: "diamante", sponsorName: "Timol", sponsorId: "00001", createdAt: "2026-02-01", paidAt: "2026-02-02" },
+  { id: "8", franchiseId: "100238", fullName: "Juan García López", document: "A12345678", birthDate: "03/11/1991", gender: "Masculino", email: "juan.garcia@email.com", phone: "+34 612 345 678", username: "juan.garcia", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "esmeralda", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", paidAt: "2026-03-19" },
 ];
 
 
@@ -71,21 +71,21 @@ const statusLabelKeys: Record<string, string> = {
 };
 
 const qualificationLabelKeys: Record<string, string> = {
-  starter: "internal.cadastros.qualStarter",
-  bronze: "internal.cadastros.qualBronze",
-  silver: "internal.cadastros.qualSilver",
-  gold: "internal.cadastros.qualGold",
-  platinum: "internal.cadastros.qualPlatinum",
-  diamond: "internal.cadastros.qualDiamond",
+  consultor: "internal.cadastros.qualConsultor",
+  distribuidor: "internal.cadastros.qualDistribuidor",
+  lider: "internal.cadastros.qualLider",
+  rubi: "internal.cadastros.qualRubi",
+  esmeralda: "internal.cadastros.qualEsmeralda",
+  diamante: "internal.cadastros.qualDiamante",
 };
 
 const qualificationColors: Record<string, string> = {
-  starter: "bg-muted text-muted-foreground border-border",
-  bronze: "bg-orange-100 text-orange-700 border-orange-200",
-  silver: "bg-slate-100 text-slate-600 border-slate-200",
-  gold: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  platinum: "bg-cyan-100 text-cyan-700 border-cyan-200",
-  diamond: "bg-violet-100 text-violet-700 border-violet-200",
+  consultor: "bg-muted text-muted-foreground border-border",
+  distribuidor: "bg-blue-100 text-blue-700 border-blue-200",
+  lider: "bg-blue-200 text-blue-800 border-blue-300",
+  rubi: "bg-red-100 text-red-700 border-red-200",
+  esmeralda: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  diamante: "bg-violet-100 text-violet-700 border-violet-200",
 };
 
 const planColors: Record<string, string> = {
@@ -268,7 +268,7 @@ export default function InternalCadastros() {
 
   // Qualification breakdown (active only)
   const qualBreakdown = useMemo(() => {
-    const counts: Record<string, number> = { starter: 0, bronze: 0, silver: 0, gold: 0, platinum: 0, diamond: 0 };
+    const counts: Record<string, number> = { consultor: 0, distribuidor: 0, lider: 0, rubi: 0, esmeralda: 0, diamante: 0 };
     filtered.filter(f => f.franchiseStatus === "active").forEach(f => {
       if (counts[f.qualification] !== undefined) counts[f.qualification]++;
     });
@@ -298,7 +298,7 @@ export default function InternalCadastros() {
   }, [filtered]);
 
   const barColors: Record<string, string> = { bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400" };
-  const qualBarColors: Record<string, string> = { starter: "bg-muted-foreground/40", bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400", diamond: "bg-violet-400" };
+  const qualBarColors: Record<string, string> = { consultor: "bg-muted-foreground/40", distribuidor: "bg-blue-400", lider: "bg-blue-600", rubi: "bg-red-400", esmeralda: "bg-emerald-400", diamante: "bg-violet-400" };
 
   return (
     <div>
@@ -429,7 +429,7 @@ export default function InternalCadastros() {
               {/* Chart: qualification (active only) */}
               <div className="space-y-1.5 px-2">
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.activeQualOnly")}</h4>
-                {(["starter", "bronze", "silver", "gold", "platinum", "diamond"] as const).map(q => {
+                {(["consultor", "distribuidor", "lider", "rubi", "esmeralda", "diamante"] as const).map(q => {
                   const count = qualBreakdown[q] || 0;
                   const maxQ = Math.max(...Object.values(qualBreakdown), 1);
                   return (
@@ -705,12 +705,12 @@ export default function InternalCadastros() {
                 <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.qualificationFilter")} /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t("internal.cadastros.qualificationFilter")}</SelectItem>
-                  <SelectItem value="starter" disabled={!availableQualifications.has("starter")} className={!availableQualifications.has("starter") ? "opacity-40" : ""}>{t("internal.cadastros.qualStarter")}</SelectItem>
-                  <SelectItem value="bronze" disabled={!availableQualifications.has("bronze")} className={!availableQualifications.has("bronze") ? "opacity-40" : ""}>{t("internal.cadastros.qualBronze")}</SelectItem>
-                  <SelectItem value="silver" disabled={!availableQualifications.has("silver")} className={!availableQualifications.has("silver") ? "opacity-40" : ""}>{t("internal.cadastros.qualSilver")}</SelectItem>
-                  <SelectItem value="gold" disabled={!availableQualifications.has("gold")} className={!availableQualifications.has("gold") ? "opacity-40" : ""}>{t("internal.cadastros.qualGold")}</SelectItem>
-                  <SelectItem value="platinum" disabled={!availableQualifications.has("platinum")} className={!availableQualifications.has("platinum") ? "opacity-40" : ""}>{t("internal.cadastros.qualPlatinum")}</SelectItem>
-                  <SelectItem value="diamond" disabled={!availableQualifications.has("diamond")} className={!availableQualifications.has("diamond") ? "opacity-40" : ""}>{t("internal.cadastros.qualDiamond")}</SelectItem>
+                  <SelectItem value="consultor" disabled={!availableQualifications.has("consultor")} className={!availableQualifications.has("consultor") ? "opacity-40" : ""}>{t("internal.cadastros.qualConsultor")}</SelectItem>
+                  <SelectItem value="distribuidor" disabled={!availableQualifications.has("distribuidor")} className={!availableQualifications.has("distribuidor") ? "opacity-40" : ""}>{t("internal.cadastros.qualDistribuidor")}</SelectItem>
+                  <SelectItem value="lider" disabled={!availableQualifications.has("lider")} className={!availableQualifications.has("lider") ? "opacity-40" : ""}>{t("internal.cadastros.qualLider")}</SelectItem>
+                  <SelectItem value="rubi" disabled={!availableQualifications.has("rubi")} className={!availableQualifications.has("rubi") ? "opacity-40" : ""}>{t("internal.cadastros.qualRubi")}</SelectItem>
+                  <SelectItem value="esmeralda" disabled={!availableQualifications.has("esmeralda")} className={!availableQualifications.has("esmeralda") ? "opacity-40" : ""}>{t("internal.cadastros.qualEsmeralda")}</SelectItem>
+                  <SelectItem value="diamante" disabled={!availableQualifications.has("diamante")} className={!availableQualifications.has("diamante") ? "opacity-40" : ""}>{t("internal.cadastros.qualDiamante")}</SelectItem>
                 </SelectContent>
               </Select>
 
