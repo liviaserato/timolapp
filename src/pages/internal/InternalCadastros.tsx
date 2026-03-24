@@ -124,8 +124,8 @@ function HBarChart({ items, barColorClass = "bg-primary/60", labelWidth = "w-14"
             <span className={`text-xs ${labelWidth} shrink-0 text-muted-foreground truncate`}>
               {extra && <span className="mr-1">{extra}</span>}{label}
             </span>
-            <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
-              <div className={`h-full rounded-full ${barColorClass} transition-all`} style={{ width: `${Math.max(pct, count > 0 ? 6 : 0)}%` }} />
+            <div className="flex-1 h-4 bg-muted rounded overflow-hidden">
+              <div className={`h-full rounded ${barColorClass} transition-all`} style={{ width: `${Math.max(pct, count > 0 ? 6 : 0)}%` }} />
             </div>
             <span className="text-xs font-semibold w-6 text-right">{count}</span>
           </div>
