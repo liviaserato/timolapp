@@ -36,6 +36,7 @@ interface FranchiseEntry {
   recoveryEmailSentAt?: string | null;
   whatsappSentAt?: string | null;
   sponsorNotifiedAt?: string | null;
+  attendantName?: string | null;
 }
 
 interface Franchisee {
