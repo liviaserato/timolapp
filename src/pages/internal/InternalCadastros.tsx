@@ -399,8 +399,8 @@ export default function InternalCadastros() {
                   return (
                     <div key={plan} className="flex items-center gap-2">
                       <span className="text-xs w-14 shrink-0 text-muted-foreground">{t(planLabelKeys[plan])}</span>
-                      <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
-                        <div className={`h-full rounded-full ${barColors[plan]} transition-all`} style={{ width: `${count > 0 ? Math.max(Math.round((count / Math.max(...Object.values(planBreakdown), 1)) * 100), 6) : 0}%` }} />
+                      <div className="flex-1 h-4 bg-muted rounded overflow-hidden">
+                        <div className={`h-full rounded ${barColors[plan]} transition-all`} style={{ width: `${count > 0 ? Math.max(Math.round((count / Math.max(...Object.values(planBreakdown), 1)) * 100), 6) : 0}%` }} />
                       </div>
                       <span className="text-xs font-semibold w-6 text-right">{count}</span>
                     </div>
