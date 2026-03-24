@@ -615,7 +615,7 @@ export default function InternalCadastros() {
                 })()}
               </div>
             </div>
-
+          </div>
         </DashboardCard>
       </div>
 
