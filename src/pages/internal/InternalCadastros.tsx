@@ -314,7 +314,7 @@ export default function InternalCadastros() {
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
                 <div className="flex items-center justify-center gap-1.5 mb-1">
                   <TrendingUp className="h-4 w-4 text-emerald-500" />
-                  <span className="text-xs text-muted-foreground">Taxa de Ativação</span>
+                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.activationRate")}</span>
                 </div>
                 <span className="text-2xl font-bold text-foreground">{conversionRate}%</span>
               </div>
