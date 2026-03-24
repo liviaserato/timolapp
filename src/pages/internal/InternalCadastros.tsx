@@ -110,7 +110,13 @@ function getMonthRange(date: Date): { from: string; to: string } {
 
 const uniqueCities = Array.from(new Set(mockFranchisees.map(f => f.city))).sort();
 
-/* ── Horizontal bar chart helper ── */
+/* ── Mock annual data ── */
+const annualDataCurrentYear: Record<number, number> = { 0: 12, 1: 18, 2: 8, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0 };
+const annualDataPreviousYear: Record<number, number> = { 0: 8, 1: 14, 2: 11, 3: 9, 4: 15, 5: 20, 6: 17, 7: 22, 8: 13, 9: 19, 10: 16, 11: 10 };
+const currentYearValue = new Date().getFullYear();
+const currentMonthIdx = new Date().getMonth();
+
+
 function HBarChart({ items, barColorClass = "bg-primary/60", labelWidth = "w-14" }: { items: { label: string; count: number; extra?: string; tooltip?: string }[]; barColorClass?: string; labelWidth?: string }) {
   const max = Math.max(...items.map(i => i.count), 1);
   return (
