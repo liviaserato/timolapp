@@ -237,8 +237,8 @@ export default function InternalCadastros() {
   const filtered = useMemo(() => {
     if (!hasActiveFilters) return [];
     let list = mockFranchisees as Franchisee[];
-    if (franchiseStatusFilter === "active") list = list.filter(f => pf(f).franchiseStatus === "active");
-    else if (franchiseStatusFilter === "inactive") list = list.filter(f => pf(f).franchiseStatus !== "active");
+    if (franchiseStatusFilter === "active") list = list.filter(f => isEffectivelyActive(f));
+    else if (franchiseStatusFilter === "inactive") list = list.filter(f => !isEffectivelyActive(f));
     if (registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
     if (qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (planType !== "all") list = list.filter(f => pf(f).planCode === planType);
