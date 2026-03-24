@@ -455,17 +455,20 @@ export default function InternalCadastros() {
             {/* ─── Column 3: Média Franquias por Franqueado ─── */}
             <div className="flex flex-col gap-3">
                <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-2">
-                  <Trophy className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardAvgFranchises")}</span>
-                  <Tooltip delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipAvgFranchises")}</TooltipContent>
-                  </Tooltip>
+                <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1">
+                      <Trophy className="h-4 w-4 text-primary shrink-0" />
+                      <span>{t("internal.cadastros.cardAvgFranchisesLine1")}</span>
+                      <Info className="h-3 w-3 text-muted-foreground shrink-0" />
+                    </h3>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipAvgFranchises")}</TooltipContent>
+                </Tooltip>
+                <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-3xl font-bold text-foreground">{Math.round(Number(avgFranchises))}</span>
+                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.franchisesLabel")}</span>
                 </div>
-                <span className="text-3xl font-bold text-foreground block text-center">{avgFranchises}</span>
               </div>
               {/* Chart: top sponsors */}
               <div className="space-y-1.5">
