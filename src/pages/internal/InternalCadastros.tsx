@@ -771,7 +771,7 @@ export default function InternalCadastros() {
               {/* Plan Type */}
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] text-muted-foreground/70 px-1">{t("internal.cadastros.franchiseLegend")}</span>
-                <Select value={planType} onValueChange={v => { setPlanType(v); scrollToSearch(); }}>
+                <Select value={planType} onValueChange={v => { setPlanType(v); activateCheckboxes(); scrollToSearch(); }}>
                   <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.allStatuses")} /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
