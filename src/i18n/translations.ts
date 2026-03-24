@@ -539,7 +539,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "internal.cadastros.days": "dias",
     "internal.cadastros.tooltipAvgActivation": "Média de dias entre a data de criação do cadastro e a data de pagamento.",
     "internal.cadastros.abandonedFooter": "No mês anterior, {count} cadastros foram abandonados (sem conclusão após 15 dias da criação).",
-    "internal.cadastros.activeQualOnly": "Qualificação (apenas ativas)",
+    "internal.cadastros.activeQualOnly": "Qualificação",
     "header.digitalOffice": "Escritório Digital",
     "header.user": "Usuário",
     "header.myData": "Meus Dados",
