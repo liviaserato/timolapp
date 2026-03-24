@@ -203,7 +203,8 @@ export default function InternalCadastros() {
   const isCurrentMonth = monthRef.getFullYear() === today.getFullYear() && monthRef.getMonth() === today.getMonth();
 
   const franchiseStatusFilter = (!showActive && !showInactive) ? "none" : (!showActive ? "inactive" : (!showInactive ? "active" : "all"));
-  const hasFilters = franchiseStatusFilter !== "all" || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || cityFilter !== "" || search.trim() !== "" || dateFilterMode !== "off";
+  const hasSearchFilters = franchiseStatusFilter !== "all" || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || cityFilter !== "" || search.trim() !== "";
+  const hasFilters = hasSearchFilters;
 
   const scrollToSearch = () => {
     searchCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
