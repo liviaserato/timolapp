@@ -262,15 +262,11 @@ export default function InternalCadastros() {
 
   return (
     <div>
-      <header className="mb-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+      <header className="mb-4">
         <div>
           <h1 className="text-2xl font-bold text-primary">{t("internal.cadastros.title")}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t("internal.cadastros.subtitle")}</p>
         </div>
-        <Button variant="outline" size="sm" className="gap-1.5 shrink-0 self-start" onClick={() => setShowPending(true)}>
-          <ClipboardList className="h-4 w-4" />
-          {t("internal.cadastros.pendingBtn")}
-        </Button>
       </header>
 
       <div ref={searchCardRef}>
