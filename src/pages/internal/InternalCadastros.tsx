@@ -790,7 +790,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
               {t("internal.cadastros.sponsor")}: {f.sponsorName} (ID {f.sponsorId})
             </p>
             <p className="text-xs text-muted-foreground">
-              {t("internal.cadastros.registrationDate")}: {f.createdAt.split("-").reverse().join("-")}
+              {t("internal.cadastros.registrationDate")}: {f.createdAt.split("-").reverse().join("/")}
             </p>
             <p className="text-xs text-foreground">
               Franquia {planLabels[f.planCode] || f.planCode}
