@@ -218,7 +218,7 @@ export default function InternalCadastros() {
     if (exclude !== "registrationStatus" && registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
     if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (exclude !== "planType" && planType !== "all") list = list.filter(f => pf(f).planCode === planType);
-    if (exclude !== "city" && cityFilter) list = list.filter(f => f.city === cityFilter);
+    
     if (search.trim()) {
       const q = search.toLowerCase().replace(/[.\-\/]/g, "");
       list = list.filter(f => {
