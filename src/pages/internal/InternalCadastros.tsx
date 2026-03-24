@@ -4,7 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Users, Filter, X, Phone, Mail, KeyRound, MapPin, ChevronRight, ChevronLeft, BarChart3, TrendingUp, UserCheck, UserX, MapPinned } from "lucide-react";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import {
+  Search, Users, Filter, X, Phone, Mail, KeyRound, MapPin, ChevronRight, ChevronLeft,
+  BarChart3, TrendingUp, TrendingDown, UserCheck, UserX, MapPinned, Info, Clock, Trophy, Layers
+} from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 /* ── Types ── */
@@ -21,6 +25,7 @@ interface Franchisee {
   city: string;
   state: string;
   country: string;
+  countryFlag: string;
   planCode: string;
   planLabel: string;
   franchiseStatus: "active" | "suspended" | "cancelled";
@@ -29,17 +34,24 @@ interface Franchisee {
   sponsorName: string;
   sponsorId: string;
   createdAt: string;
+  paidAt: string | null;
 }
 
 /* ── Mock Data ── */
 const mockFranchisees: Franchisee[] = [
-  { id: "1", franchiseId: "100231", fullName: "Lívia Serato", document: "123.456.789-00", birthDate: "15/03/1990", gender: "Feminino", email: "livia.serato@email.com", phone: "+55 11 99999-0000", username: "livia.serato", city: "São Paulo", state: "SP", country: "Brasil", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "gold", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2024-01-15" },
-  { id: "2", franchiseId: "100232", fullName: "Carlos Eduardo Mendes", document: "987.654.321-00", birthDate: "22/08/1985", gender: "Masculino", email: "carlos.mendes@email.com", phone: "+55 21 98888-1111", username: "carlos.mendes", city: "Rio de Janeiro", state: "RJ", country: "Brasil", planCode: "platinum", planLabel: "Platina", franchiseStatus: "active", activationStatus: "activated", qualification: "platinum", sponsorName: "Lívia Serato", sponsorId: "100231", createdAt: "2024-02-20" },
-  { id: "3", franchiseId: "100233", fullName: "Ana Paula Costa", document: "456.789.123-00", birthDate: "10/12/1992", gender: "Feminino", email: "ana.costa@email.com", phone: "+55 31 97777-2222", username: "ana.costa", city: "Belo Horizonte", state: "MG", country: "Brasil", planCode: "bronze", planLabel: "Bronze", franchiseStatus: "active", activationStatus: "pending", qualification: "starter", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2024-03-10" },
-  { id: "4", franchiseId: "100234", fullName: "Roberto Almeida Filho", document: "321.654.987-00", birthDate: "05/06/1978", gender: "Masculino", email: "roberto.almeida@email.com", phone: "+55 41 96666-3333", username: "roberto.almeida", city: "Curitiba", state: "PR", country: "Brasil", planCode: "silver", planLabel: "Prata", franchiseStatus: "suspended", activationStatus: "inactive", qualification: "bronze", sponsorName: "Ana Costa", sponsorId: "100233", createdAt: "2024-04-05" },
-  { id: "5", franchiseId: "100235", fullName: "Fernanda Oliveira Santos", document: "654.321.987-00", birthDate: "18/09/1988", gender: "Feminino", email: "fernanda.santos@email.com", phone: "+55 51 95555-4444", username: "fernanda.santos", city: "Porto Alegre", state: "RS", country: "Brasil", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "silver", sponsorName: "Roberto Almeida", sponsorId: "100234", createdAt: "2024-05-12" },
-  { id: "6", franchiseId: "100236", fullName: "Pedro Henrique Lima", document: "789.123.456-00", birthDate: "30/01/1995", gender: "Masculino", email: "pedro.lima@email.com", phone: "+55 61 94444-5555", username: "pedro.lima", city: "Brasília", state: "DF", country: "Brasil", planCode: "bronze", planLabel: "Bronze", franchiseStatus: "cancelled", activationStatus: "inactive", qualification: "starter", sponsorName: "Fernanda Santos", sponsorId: "100235", createdAt: "2024-06-01" },
+  { id: "1", franchiseId: "100231", fullName: "Lívia Serato", document: "123.456.789-00", birthDate: "15/03/1990", gender: "Feminino", email: "livia.serato@email.com", phone: "+55 11 99999-0000", username: "livia.serato", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "gold", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-02", paidAt: "2026-03-05" },
+  { id: "2", franchiseId: "100232", fullName: "Carlos Eduardo Mendes", document: "987.654.321-00", birthDate: "22/08/1985", gender: "Masculino", email: "carlos.mendes@email.com", phone: "+55 21 98888-1111", username: "carlos.mendes", city: "Rio de Janeiro", state: "RJ", country: "Brasil", countryFlag: "🇧🇷", planCode: "platinum", planLabel: "Platina", franchiseStatus: "active", activationStatus: "activated", qualification: "platinum", sponsorName: "Lívia Serato", sponsorId: "100231", createdAt: "2026-03-10", paidAt: "2026-03-12" },
+  { id: "3", franchiseId: "100233", fullName: "Ana Paula Costa", document: "456.789.123-00", birthDate: "10/12/1992", gender: "Feminino", email: "ana.costa@email.com", phone: "+55 31 97777-2222", username: "ana.costa", city: "Belo Horizonte", state: "MG", country: "Brasil", countryFlag: "🇧🇷", planCode: "bronze", planLabel: "Bronze", franchiseStatus: "active", activationStatus: "pending", qualification: "starter", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-15", paidAt: null },
+  { id: "4", franchiseId: "100234", fullName: "Roberto Almeida Filho", document: "321.654.987-00", birthDate: "05/06/1978", gender: "Masculino", email: "roberto.almeida@email.com", phone: "+55 41 96666-3333", username: "roberto.almeida", city: "Curitiba", state: "PR", country: "Brasil", countryFlag: "🇧🇷", planCode: "silver", planLabel: "Prata", franchiseStatus: "suspended", activationStatus: "inactive", qualification: "bronze", sponsorName: "Ana Costa", sponsorId: "100233", createdAt: "2026-03-08", paidAt: "2026-03-20" },
+  { id: "5", franchiseId: "100235", fullName: "Fernanda Oliveira Santos", document: "654.321.987-00", birthDate: "18/09/1988", gender: "Feminino", email: "fernanda.santos@email.com", phone: "+55 51 95555-4444", username: "fernanda.santos", city: "Porto Alegre", state: "RS", country: "Brasil", countryFlag: "🇧🇷", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "silver", sponsorName: "Roberto Almeida", sponsorId: "100234", createdAt: "2026-03-01", paidAt: "2026-03-03" },
+  { id: "6", franchiseId: "100236", fullName: "Pedro Henrique Lima", document: "789.123.456-00", birthDate: "30/01/1995", gender: "Masculino", email: "pedro.lima@email.com", phone: "+55 61 94444-5555", username: "pedro.lima", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "bronze", planLabel: "Bronze", franchiseStatus: "cancelled", activationStatus: "inactive", qualification: "starter", sponsorName: "Fernanda Santos", sponsorId: "100235", createdAt: "2026-02-15", paidAt: null },
+  { id: "7", franchiseId: "100237", fullName: "Maria Silva", document: "111.222.333-00", birthDate: "12/07/1980", gender: "Feminino", email: "maria.silva@email.com", phone: "+55 11 93333-6666", username: "maria.silva", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", planCode: "platinum", planLabel: "Platina", franchiseStatus: "active", activationStatus: "activated", qualification: "diamond", sponsorName: "Timol", sponsorId: "00001", createdAt: "2026-02-01", paidAt: "2026-02-02" },
+  { id: "8", franchiseId: "100238", fullName: "Juan García López", document: "A12345678", birthDate: "03/11/1991", gender: "Masculino", email: "juan.garcia@email.com", phone: "+34 612 345 678", username: "juan.garcia", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", planCode: "gold", planLabel: "Ouro", franchiseStatus: "active", activationStatus: "activated", qualification: "gold", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", paidAt: "2026-03-19" },
 ];
+
+/* Previous month mock for trend comparison */
+const prevMonthCompleted = 3;
+const prevMonthAbandoned = 2;
 
 /* ── Helpers ── */
 const statusColors: Record<string, string> = {
@@ -51,7 +63,6 @@ const statusColors: Record<string, string> = {
   inactive: "bg-muted text-muted-foreground border-border",
 };
 
-/* Status/qualification label keys mapped to translation keys */
 const statusLabelKeys: Record<string, string> = {
   active: "internal.cadastros.statusActive",
   suspended: "internal.cadastros.statusSuspended",
@@ -100,6 +111,30 @@ function getMonthRange(date: Date): { from: string; to: string } {
 }
 
 const uniqueCities = Array.from(new Set(mockFranchisees.map(f => f.city))).sort();
+
+/* ── Horizontal bar chart helper ── */
+function HBarChart({ items, barColorClass = "bg-primary/60", labelWidth = "w-14" }: { items: { label: string; count: number; extra?: string }[]; barColorClass?: string; labelWidth?: string }) {
+  const max = Math.max(...items.map(i => i.count), 1);
+  return (
+    <div className="space-y-1.5">
+      {items.map(({ label, count, extra }) => {
+        const pct = Math.round((count / max) * 100);
+        return (
+          <div key={label} className="flex items-center gap-2">
+            <span className={`text-xs ${labelWidth} shrink-0 text-muted-foreground truncate`}>
+              {extra && <span className="mr-1">{extra}</span>}{label}
+            </span>
+            <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
+              <div className={`h-full rounded-full ${barColorClass} transition-all`} style={{ width: `${Math.max(pct, count > 0 ? 6 : 0)}%` }} />
+            </div>
+            <span className="text-xs font-semibold w-6 text-right">{count}</span>
+          </div>
+        );
+      })}
+      {items.length === 0 && <p className="text-xs text-muted-foreground italic">—</p>}
+    </div>
+  );
+}
 
 /* ── Component ── */
 export default function InternalCadastros() {
@@ -161,7 +196,6 @@ export default function InternalCadastros() {
     if (qualification !== "all") list = list.filter(f => f.qualification === qualification);
     if (planType !== "all") list = list.filter(f => f.planCode === planType);
     if (city !== "all") list = list.filter(f => f.city === city);
-
     if (dateFilterMode === "month") {
       const range = getMonthRange(monthRef);
       list = list.filter(f => f.createdAt >= range.from && f.createdAt <= range.to);
@@ -169,18 +203,12 @@ export default function InternalCadastros() {
       if (dateFrom) list = list.filter(f => f.createdAt >= dateFrom);
       if (dateTo) list = list.filter(f => f.createdAt <= dateTo);
     }
-
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(f =>
-        f.fullName.toLowerCase().includes(q) ||
-        f.franchiseId.includes(q) ||
-        f.document.includes(q) ||
-        f.email.toLowerCase().includes(q) ||
-        f.phone.includes(q) ||
-        f.username.toLowerCase().includes(q) ||
-        f.city.toLowerCase().includes(q) ||
-        f.sponsorName.toLowerCase().includes(q)
+        f.fullName.toLowerCase().includes(q) || f.franchiseId.includes(q) || f.document.includes(q) ||
+        f.email.toLowerCase().includes(q) || f.phone.includes(q) || f.username.toLowerCase().includes(q) ||
+        f.city.toLowerCase().includes(q) || f.sponsorName.toLowerCase().includes(q)
       );
     }
     return list;
@@ -198,237 +226,305 @@ export default function InternalCadastros() {
     setDateTo("");
   };
 
-  /* ── Dashboard metrics computed from filtered data ── */
-  const totalCadastros = filtered.length;
-  const allData = mockFranchisees;
+  /* ── Dashboard metrics ── */
+  const completedCount = useMemo(() => filtered.filter(f => f.paidAt).length, [filtered]);
+  const pendingCount = useMemo(() => filtered.filter(f => !f.paidAt).length, [filtered]);
+  const conversionRate = (completedCount + pendingCount) > 0 ? Math.round((completedCount / (completedCount + pendingCount)) * 100) : 0;
 
-  // Franchise type breakdown
+  // Trend: only when month filter is active
+  const showTrend = dateFilterMode === "month";
+  const trendDiff = showTrend ? completedCount - prevMonthCompleted : 0;
+  const trendUp = trendDiff > 0;
+  const trendDown = trendDiff < 0;
+
+  // Franchise status
+  const activeCount = useMemo(() => filtered.filter(f => f.franchiseStatus === "active").length, [filtered]);
+  const inactiveCount = useMemo(() => filtered.filter(f => f.franchiseStatus !== "active").length, [filtered]);
+
+  // Avg franchises per franchisee (mock: unique sponsors who are active)
+  const activeFranchisees = useMemo(() => {
+    const uniqueOwners = new Set(filtered.filter(f => f.franchiseStatus === "active").map(f => f.fullName));
+    return uniqueOwners.size;
+  }, [filtered]);
+  const avgFranchises = activeFranchisees > 0 ? (activeCount / activeFranchisees).toFixed(1) : "0";
+
+  // Avg activation time (days between createdAt and paidAt)
+  const avgActivationDays = useMemo(() => {
+    const completed = filtered.filter(f => f.paidAt);
+    if (completed.length === 0) return 0;
+    const totalDays = completed.reduce((sum, f) => {
+      const d1 = new Date(f.createdAt);
+      const d2 = new Date(f.paidAt!);
+      return sum + Math.max(0, Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
+    }, 0);
+    return Math.round(totalDays / completed.length);
+  }, [filtered]);
+
+  // Plan breakdown
   const planBreakdown = useMemo(() => {
     const counts: Record<string, number> = { bronze: 0, silver: 0, gold: 0, platinum: 0 };
     filtered.forEach(f => { if (counts[f.planCode] !== undefined) counts[f.planCode]++; });
     return counts;
   }, [filtered]);
 
-  // Activation status breakdown
-  const activationBreakdown = useMemo(() => {
-    const counts = { activated: 0, pending: 0, inactive: 0 };
-    filtered.forEach(f => { if (counts[f.activationStatus as keyof typeof counts] !== undefined) counts[f.activationStatus as keyof typeof counts]++; });
+  // Qualification breakdown (active only)
+  const qualBreakdown = useMemo(() => {
+    const counts: Record<string, number> = { starter: 0, bronze: 0, silver: 0, gold: 0, platinum: 0, diamond: 0 };
+    filtered.filter(f => f.franchiseStatus === "active").forEach(f => {
+      if (counts[f.qualification] !== undefined) counts[f.qualification]++;
+    });
     return counts;
   }, [filtered]);
 
-  // Franchise status breakdown
-  const franchiseStatusBreakdown = useMemo(() => {
-    const counts = { active: 0, suspended: 0, cancelled: 0 };
-    filtered.forEach(f => { if (counts[f.franchiseStatus as keyof typeof counts] !== undefined) counts[f.franchiseStatus as keyof typeof counts]++; });
-    return counts;
+  // Top sponsors
+  const topSponsors = useMemo(() => {
+    const map = new Map<string, { name: string; id: string; count: number }>();
+    filtered.forEach(f => {
+      const existing = map.get(f.sponsorId);
+      if (existing) existing.count++;
+      else map.set(f.sponsorId, { name: f.sponsorName, id: f.sponsorId, count: 1 });
+    });
+    return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 5);
   }, [filtered]);
 
   // Top cities
   const topCities = useMemo(() => {
-    const map = new Map<string, number>();
-    filtered.forEach(f => map.set(f.city, (map.get(f.city) || 0) + 1));
-    return Array.from(map.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const map = new Map<string, { city: string; flag: string; count: number }>();
+    filtered.forEach(f => {
+      const existing = map.get(f.city);
+      if (existing) existing.count++;
+      else map.set(f.city, { city: f.city, flag: f.countryFlag, count: 1 });
+    });
+    return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 5);
   }, [filtered]);
 
-  // Conversion rate (activated / total)
-  const conversionRate = totalCadastros > 0 ? Math.round((activationBreakdown.activated / totalCadastros) * 100) : 0;
-
-  // Qualification breakdown
-  const qualBreakdown = useMemo(() => {
-    const counts: Record<string, number> = { starter: 0, bronze: 0, silver: 0, gold: 0, platinum: 0, diamond: 0 };
-    filtered.forEach(f => { if (counts[f.qualification] !== undefined) counts[f.qualification]++; });
-    return counts;
-  }, [filtered]);
+  const barColors: Record<string, string> = { bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400" };
+  const qualBarColors: Record<string, string> = { starter: "bg-muted-foreground/40", bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400", diamond: "bg-violet-400" };
 
   return (
     <div>
-       <header className="mb-4">
+      <header className="mb-4">
         <h1 className="text-2xl font-bold text-primary">{t("internal.cadastros.title")}</h1>
         <p className="text-sm text-muted-foreground mt-1">{t("internal.cadastros.subtitle")}</p>
       </header>
 
       {/* ── Indicadores Card ── */}
       <DashboardCard icon={BarChart3} title={t("internal.cadastros.indicators")}>
-          <div className="mt-2 space-y-4">
-            {/* Date filter row */}
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setDateFilterMode(dateFilterMode === "month" ? "off" : "month")}
-                  className={`px-3 h-9 text-xs font-medium transition-colors min-w-[52px] text-center ${
-                    dateFilterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-                  }`}
-                >
-                   {t("internal.cadastros.month")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (dateFilterMode === "custom") { setDateFilterMode("off"); }
-                    else { setDateFilterMode("custom"); setDateTo(todayStr); }
-                  }}
-                  className={`px-3 h-9 text-xs font-medium transition-colors min-w-[52px] text-center ${
-                    dateFilterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-                  }`}
-                >
-                  {t("internal.cadastros.period")}
-                </button>
-              </div>
-
-              {dateFilterMode === "month" && (
-                <div className="flex items-center gap-0 shrink-0">
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setMonthRef(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}>
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <span className="text-xs font-medium min-w-[120px] text-center">
-                    {getMonthLabel(monthRef, dateLocale)}
-                  </span>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { if (!isCurrentMonth) setMonthRef(d => new Date(d.getFullYear(), d.getMonth() + 1, 1)); }} disabled={isCurrentMonth}>
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
-
-              {dateFilterMode === "custom" && (
-                <div className="flex gap-2 items-center shrink-0">
-                  <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
-                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.until")}</span>
-                  <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateTo} onChange={e => setDateTo(e.target.value)} />
-                </div>
-              )}
-
-              {dateFilterMode !== "off" && (
-                <span className="text-xs font-semibold text-primary ml-auto">{totalCadastros} {totalCadastros !== 1 ? t("internal.cadastros.registrations") : t("internal.cadastros.registration")}</span>
-              )}
+        <div className="mt-2 space-y-4">
+          {/* Date filter row */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex rounded-md border border-app-card-border overflow-hidden shrink-0">
+              <button
+                type="button"
+                onClick={() => setDateFilterMode(dateFilterMode === "month" ? "off" : "month")}
+                className={`px-3 h-9 text-xs font-medium transition-colors min-w-[52px] text-center ${
+                  dateFilterMode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                {t("internal.cadastros.month")}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (dateFilterMode === "custom") { setDateFilterMode("off"); }
+                  else { setDateFilterMode("custom"); setDateTo(todayStr); }
+                }}
+                className={`px-3 h-9 text-xs font-medium transition-colors min-w-[52px] text-center ${
+                  dateFilterMode === "custom" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                {t("internal.cadastros.period")}
+              </button>
             </div>
 
-            {/* KPI row */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
-                <div className="flex items-center justify-center gap-1.5 mb-1">
+            {dateFilterMode === "month" && (
+              <div className="flex items-center gap-0 shrink-0">
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setMonthRef(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-xs font-medium min-w-[120px] text-center">
+                  {getMonthLabel(monthRef, dateLocale)}
+                </span>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { if (!isCurrentMonth) setMonthRef(d => new Date(d.getFullYear(), d.getMonth() + 1, 1)); }} disabled={isCurrentMonth}>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+
+            {dateFilterMode === "custom" && (
+              <div className="flex gap-2 items-center shrink-0">
+                <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
+                <span className="text-xs text-muted-foreground">{t("internal.cadastros.until")}</span>
+                <Input type="date" className="h-9 w-[148px] text-xs" max={todayStr} value={dateTo} onChange={e => setDateTo(e.target.value)} />
+              </div>
+            )}
+          </div>
+
+          {/* 4-column KPI + Chart layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* ─── Column 1: Cadastros ─── */}
+            <div className="flex flex-col gap-3">
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
+                <div className="flex items-center gap-1.5 mb-2">
                   <Users className="h-4 w-4 text-primary" />
-                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.totalRegistrations")}</span>
+                  <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardRegistrations")}</span>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipRegistrations")}</TooltipContent>
+                  </Tooltip>
                 </div>
-                <span className="text-2xl font-bold text-foreground">{totalCadastros}</span>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-3xl font-bold text-foreground">{completedCount}</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-semibold text-primary">{conversionRate}%</span>
+                    <span className="text-[10px] text-muted-foreground">{t("internal.cadastros.completionRate")}</span>
+                  </div>
+                  {showTrend && trendDiff !== 0 && (
+                    <div className={`flex items-center gap-0.5 ${trendUp ? "text-emerald-600" : "text-red-500"}`}>
+                      {trendUp ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
+                      <span className="text-[10px] font-medium">{trendUp ? "+" : ""}{trendDiff}</span>
+                    </div>
+                  )}
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-1">{pendingCount} {t("internal.cadastros.pendingRegistrations")}</p>
+                {showTrend && (
+                  <p className="text-[10px] text-muted-foreground/70 mt-0.5">{t("internal.cadastros.comparedPrevMonth")}</p>
+                )}
               </div>
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
-                <div className="flex items-center justify-center gap-1.5 mb-1">
-                  <TrendingUp className="h-4 w-4 text-emerald-500" />
-                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.activationRate")}</span>
-                </div>
-                <span className="text-2xl font-bold text-foreground">{conversionRate}%</span>
-              </div>
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
-                <div className="flex items-center justify-center gap-1.5 mb-1">
-                  <UserCheck className="h-4 w-4 text-emerald-500" />
-                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.activeFranchises")}</span>
-                </div>
-                <span className="text-2xl font-bold text-foreground">{franchiseStatusBreakdown.active}</span>
-              </div>
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 text-center">
-                <div className="flex items-center justify-center gap-1.5 mb-1">
-                  <UserX className="h-4 w-4 text-red-500" />
-                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.suspendedCancelled")}</span>
-                </div>
-                <span className="text-2xl font-bold text-foreground">{franchiseStatusBreakdown.suspended + franchiseStatusBreakdown.cancelled}</span>
+              {/* Chart: by franchise type */}
+              <div className="space-y-1.5">
+                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.byFranchiseType")}</h4>
+                {(["bronze", "silver", "gold", "platinum"] as const).map(plan => {
+                  const count = planBreakdown[plan] || 0;
+                  const planLabelKeys: Record<string, string> = { bronze: "internal.cadastros.qualBronze", silver: "internal.cadastros.qualSilver", gold: "internal.cadastros.qualGold", platinum: "internal.cadastros.qualPlatinum" };
+                  return (
+                    <div key={plan} className="flex items-center gap-2">
+                      <span className="text-xs w-14 shrink-0 text-muted-foreground">{t(planLabelKeys[plan])}</span>
+                      <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
+                        <div className={`h-full rounded-full ${barColors[plan]} transition-all`} style={{ width: `${count > 0 ? Math.max(Math.round((count / Math.max(...Object.values(planBreakdown), 1)) * 100), 6) : 0}%` }} />
+                      </div>
+                      <span className="text-xs font-semibold w-6 text-right">{count}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Breakdown row */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* Franchise types */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.byFranchiseType")}</h4>
-                <div className="space-y-1.5">
-                  {(["bronze", "silver", "gold", "platinum"] as const).map(plan => {
-                    const count = planBreakdown[plan] || 0;
-                    const pct = totalCadastros > 0 ? Math.round((count / totalCadastros) * 100) : 0;
-                    const planLabelKeys: Record<string, string> = { bronze: "internal.cadastros.qualBronze", silver: "internal.cadastros.qualSilver", gold: "internal.cadastros.qualGold", platinum: "internal.cadastros.qualPlatinum" };
-                    const barColors: Record<string, string> = { bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400" };
-                    return (
-                      <div key={plan} className="flex items-center gap-2">
-                        <span className="text-xs w-14 shrink-0 text-muted-foreground">{t(planLabelKeys[plan])}</span>
-                        <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
-                          <div className={`h-full rounded-full ${barColors[plan]} transition-all`} style={{ width: `${Math.max(pct, 2)}%` }} />
-                        </div>
-                        <span className="text-xs font-semibold w-8 text-right">{count}</span>
-                      </div>
-                    );
-                  })}
+            {/* ─── Column 2: Status das Franquias ─── */}
+            <div className="flex flex-col gap-3">
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Layers className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardFranchiseStatus")}</span>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipFranchiseStatus")}</TooltipContent>
+                  </Tooltip>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-center">
+                    <span className="text-3xl font-bold text-emerald-600">{activeCount}</span>
+                    <p className="text-[11px] text-muted-foreground">{t("internal.cadastros.activeCount")}</p>
+                  </div>
+                  <div className="text-center">
+                    <span className="text-3xl font-bold text-red-500">{inactiveCount}</span>
+                    <p className="text-[11px] text-muted-foreground">{t("internal.cadastros.inactiveCount")}</p>
+                  </div>
                 </div>
               </div>
-
-              {/* Qualification */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.byQualification")}</h4>
-                <div className="space-y-1.5">
-                  {(["starter", "bronze", "silver", "gold", "platinum", "diamond"] as const).map(q => {
-                    const count = qualBreakdown[q] || 0;
-                    const pct = totalCadastros > 0 ? Math.round((count / totalCadastros) * 100) : 0;
-                    const barColors: Record<string, string> = { starter: "bg-muted-foreground/40", bronze: "bg-orange-400", silver: "bg-slate-400", gold: "bg-yellow-400", platinum: "bg-cyan-400", diamond: "bg-violet-400" };
-                    return (
-                      <div key={q} className="flex items-center gap-2">
-                        <span className="text-xs w-14 shrink-0 text-muted-foreground">{t(qualificationLabelKeys[q])}</span>
-                        <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
-                          <div className={`h-full rounded-full ${barColors[q]} transition-all`} style={{ width: `${Math.max(pct, count > 0 ? 2 : 0)}%` }} />
-                        </div>
-                        <span className="text-xs font-semibold w-8 text-right">{count}</span>
+              {/* Chart: qualification (active only) */}
+              <div className="space-y-1.5">
+                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.activeQualOnly")}</h4>
+                {(["starter", "bronze", "silver", "gold", "platinum", "diamond"] as const).map(q => {
+                  const count = qualBreakdown[q] || 0;
+                  const maxQ = Math.max(...Object.values(qualBreakdown), 1);
+                  return (
+                    <div key={q} className="flex items-center gap-2">
+                      <span className="text-xs w-14 shrink-0 text-muted-foreground">{t(qualificationLabelKeys[q])}</span>
+                      <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
+                        <div className={`h-full rounded-full ${qualBarColors[q]} transition-all`} style={{ width: `${count > 0 ? Math.max(Math.round((count / maxQ) * 100), 6) : 0}%` }} />
                       </div>
-                    );
-                  })}
+                      <span className="text-xs font-semibold w-6 text-right">{count}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ─── Column 3: Média Franquias por Franqueado ─── */}
+            <div className="flex flex-col gap-3">
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Trophy className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardAvgFranchises")}</span>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipAvgFranchises")}</TooltipContent>
+                  </Tooltip>
+                </div>
+                <span className="text-3xl font-bold text-foreground">{avgFranchises}</span>
+              </div>
+              {/* Chart: top sponsors */}
+              <div className="space-y-1.5">
+                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t("internal.cadastros.topSponsors")}</h4>
+                <HBarChart
+                  items={topSponsors.map(s => ({ label: s.name, count: s.count, extra: `#${s.id}` }))}
+                  barColorClass="bg-primary/50"
+                  labelWidth="w-[120px]"
+                />
+              </div>
+            </div>
+
+            {/* ─── Column 4: Tempo Médio de Ativação ─── */}
+            <div className="flex flex-col gap-3">
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Clock className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardAvgActivation")}</span>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipAvgActivation")}</TooltipContent>
+                  </Tooltip>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-bold text-foreground">{avgActivationDays}</span>
+                  <span className="text-xs text-muted-foreground">{t("internal.cadastros.days")}</span>
                 </div>
               </div>
-
-              {/* Top cities */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
+              {/* Chart: top cities */}
+              <div className="space-y-1.5">
+                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
                   <MapPinned className="h-3.5 w-3.5" />
                   {t("internal.cadastros.topCities")}
                 </h4>
-                <div className="space-y-1.5">
-                  {topCities.length === 0 && (
-                    <p className="text-xs text-muted-foreground italic">{t("internal.cadastros.noData")}</p>
-                  )}
-                  {topCities.map(([cityName, count], i) => {
-                    const pct = totalCadastros > 0 ? Math.round((count / totalCadastros) * 100) : 0;
-                    return (
-                      <div key={cityName} className="flex items-center gap-2">
-                        <span className="text-xs w-[100px] shrink-0 text-muted-foreground truncate">{cityName}</span>
-                        <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full rounded-full bg-primary/60 transition-all" style={{ width: `${Math.max(pct, 2)}%` }} />
-                        </div>
-                        <span className="text-xs font-semibold w-8 text-right">{count}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Activation status mini-badges */}
-            <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-app-card-border">
-              <span className="text-xs text-muted-foreground">{t("internal.cadastros.activation")}:</span>
-              <div className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                <span className="text-xs">{t("internal.cadastros.activated")} <b>{activationBreakdown.activated}</b></span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
-                <span className="text-xs">{t("internal.cadastros.pendingPlural")} <b>{activationBreakdown.pending}</b></span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/40" />
-                <span className="text-xs">{t("internal.cadastros.inactivePlural")} <b>{activationBreakdown.inactive}</b></span>
+                <HBarChart
+                  items={topCities.map(c => ({ label: c.city, count: c.count, extra: c.flag }))}
+                  barColorClass="bg-primary/60"
+                  labelWidth="w-[120px]"
+                />
               </div>
             </div>
           </div>
+
+          {/* Footer: abandoned registrations */}
+          <p className="text-[11px] text-muted-foreground/70 pt-2 border-t border-app-card-border">
+            {t("internal.cadastros.abandonedFooter").replace("{count}", String(prevMonthAbandoned))}
+          </p>
+        </div>
       </DashboardCard>
 
+      {/* ── Buscar Franqueado ── */}
       <div className="mt-4">
         <DashboardCard icon={Search} title={t("internal.cadastros.searchFranchisee")}>
           <div className="mt-2 space-y-3">
-            {/* Search input only */}
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -446,7 +542,6 @@ export default function InternalCadastros() {
               </div>
             </div>
 
-            {/* Dropdowns row */}
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               <Select value={franchiseStatus} onValueChange={setFranchiseStatus}>
                 <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={t("internal.cadastros.franchiseStatus")} /></SelectTrigger>
