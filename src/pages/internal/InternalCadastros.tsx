@@ -928,24 +928,30 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
           </div>
 
           {/* ── Grid 4: Actions (right side, full height) ── */}
-          <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[170px] shrink-0 mt-3 lg:mt-0">
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
-              <MapPinHouse className="h-3 w-3" />
-              {t("internal.cadastros.btnAddresses")}
-            </Button>
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
-              <Landmark className="h-3 w-3" />
-              {t("internal.cadastros.btnFinancial")}
-            </Button>
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
-              <Pencil className="h-3 w-3" />
-              {t("internal.cadastros.btnEdit")}
-            </Button>
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
-              <Lock className="h-3 w-3" />
-              {t("internal.cadastros.btnCredentials")}
-            </Button>
-          </div>
+          {isCancelled ? (
+            <div className="flex items-center justify-center lg:w-[170px] shrink-0 mt-3 lg:mt-0 px-3">
+              <p className="text-xs text-muted-foreground italic text-center">{t("internal.cadastros.franchiseCancelledMsg")}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[170px] shrink-0 mt-3 lg:mt-0">
+              <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
+                <MapPinHouse className="h-3 w-3" />
+                {t("internal.cadastros.btnAddresses")}
+              </Button>
+              <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
+                <Landmark className="h-3 w-3" />
+                {t("internal.cadastros.btnFinancial")}
+              </Button>
+              <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
+                <Pencil className="h-3 w-3" />
+                {t("internal.cadastros.btnEdit")}
+              </Button>
+              <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
+                <Lock className="h-3 w-3" />
+                {t("internal.cadastros.btnCredentials")}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
