@@ -9,10 +9,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
-  Search, Users, Filter, X, Phone, Mail, MapPin, ChevronRight, ChevronLeft,
-  BarChart3, UserCheck, UserX, MapPinned, Info, Clock, Trophy, Layers, TrendingUp, TrendingDown,
-  Calendar, Award, ArrowDownRight, ArrowUpRight, MapPinHouse, Landmark, Pencil, Lock,
-  FileText, Cake, Gem, ArrowUpDown, ClipboardList, ArrowLeft
+  Search, X, Phone, Mail, MapPin,
+  MapPinHouse, Landmark, Pencil, Lock,
+  FileText, Cake, Gem, ArrowUpDown, ClipboardList, ArrowLeft, Calendar
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { qualificationConfig } from "@/components/app/rede/mock-data";
