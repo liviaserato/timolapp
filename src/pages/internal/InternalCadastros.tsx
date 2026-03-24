@@ -824,19 +824,19 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
 
           {/* ── Column 3: Actions ── */}
           <div className="flex lg:flex-col flex-row flex-wrap gap-2 lg:w-[160px] shrink-0">
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none">
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none justify-start">
               <MapPinHouse className="h-3 w-3" />
               {t("internal.cadastros.btnAddresses")}
             </Button>
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none">
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none justify-start">
               <Landmark className="h-3 w-3" />
               {t("internal.cadastros.btnFinancial")}
             </Button>
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none">
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none justify-start">
               <Pencil className="h-3 w-3" />
               {t("internal.cadastros.btnEdit")}
             </Button>
-            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none">
+            <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 flex-1 lg:flex-none justify-start">
               <Lock className="h-3 w-3" />
               {t("internal.cadastros.btnCredentials")}
             </Button>
