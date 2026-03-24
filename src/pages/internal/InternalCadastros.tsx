@@ -354,7 +354,7 @@ export default function InternalCadastros() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {/* Franchise status checkboxes */}
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterFranchiseStatus")}</span>
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.franchiseStatus")}</span>
                 <div className="flex items-center gap-3 h-9 px-2 rounded-md border border-input bg-background">
                   <label className="flex items-center gap-1.5 cursor-pointer flex-1 min-w-0">
                     <Checkbox checked={showActive} onCheckedChange={(v: boolean) => setShowActive(v)} className="h-3.5 w-3.5" />
@@ -368,7 +368,7 @@ export default function InternalCadastros() {
               </div>
               {/* Registration status */}
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterRegistrationStatus")}</span>
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.registrationStatusFilter")}</span>
                 <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); activateCheckboxes(); }}>
                   <SelectTrigger className="h-9 text-xs">
                     <SelectValue />
@@ -383,7 +383,7 @@ export default function InternalCadastros() {
               </div>
               {/* Qualification */}
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterQualification")}</span>
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.qualificationFilter")}</span>
                 <Select value={qualification} onValueChange={v => { setQualification(v); activateCheckboxes(); }}>
                   <SelectTrigger className="h-9 text-xs">
                     <SelectValue />
@@ -400,7 +400,7 @@ export default function InternalCadastros() {
               </div>
               {/* Plan type */}
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.filterPlanType")}</span>
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.franchiseType")}</span>
                 <Select value={planType} onValueChange={v => { setPlanType(v); activateCheckboxes(); }}>
                   <SelectTrigger className="h-9 text-xs">
                     <SelectValue />
