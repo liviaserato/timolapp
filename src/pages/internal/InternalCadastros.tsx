@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Users, Filter, X, Phone, Mail, KeyRound, MapPin, ChevronRight, ChevronLeft } from "lucide-react";
+import { Search, Users, Filter, X, Phone, Mail, KeyRound, MapPin, ChevronRight, ChevronLeft, BarChart3, TrendingUp, UserCheck, UserX, MapPinned } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 /* ── Types ── */
