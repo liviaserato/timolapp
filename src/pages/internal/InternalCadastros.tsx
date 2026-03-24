@@ -365,7 +365,7 @@ export default function InternalCadastros() {
             {/* ─── Column 1: Cadastros ─── */}
             <div className="flex flex-col gap-3">
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
-                <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex items-center justify-center gap-1.5 mb-2">
                   <Users className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardRegistrations")}</span>
                   <Tooltip delayDuration={0}>
@@ -375,23 +375,20 @@ export default function InternalCadastros() {
                     <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipRegistrations")}</TooltipContent>
                   </Tooltip>
                 </div>
-                <div className="flex items-baseline gap-3">
-                  <span className="text-3xl font-bold text-foreground">{completedCount}</span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm font-semibold text-primary">{conversionRate}%</span>
-                    <span className="text-[10px] text-muted-foreground">{t("internal.cadastros.completionRate")}</span>
-                  </div>
+                <div className="flex items-baseline justify-center gap-3">
                   {showTrend && trendDiff !== 0 && (
                     <div className={`flex items-center gap-0.5 ${trendUp ? "text-emerald-600" : "text-red-500"}`}>
                       {trendUp ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
                       <span className="text-[10px] font-medium">{trendUp ? "+" : ""}{trendDiff}</span>
                     </div>
                   )}
+                  <span className="text-3xl font-bold text-foreground">{completedCount}</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-semibold text-primary">{conversionRate}%</span>
+                    <span className="text-[10px] text-muted-foreground">{t("internal.cadastros.completionRate")}</span>
+                  </div>
                 </div>
-                <p className="text-[11px] text-muted-foreground mt-1">{pendingCount} {t("internal.cadastros.pendingRegistrations")}</p>
-                {showTrend && (
-                  <p className="text-[10px] text-muted-foreground/70 mt-0.5">{t("internal.cadastros.comparedPrevMonth")}</p>
-                )}
+                <p className="text-[11px] text-muted-foreground mt-1 text-center">{pendingCount} {t("internal.cadastros.pendingRegistrations")}</p>
               </div>
               {/* Chart: by franchise type */}
               <div className="space-y-1.5">
@@ -415,7 +412,7 @@ export default function InternalCadastros() {
             {/* ─── Column 2: Status das Franquias ─── */}
             <div className="flex flex-col gap-3">
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
-                <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex items-center justify-center gap-1.5 mb-2">
                   <Layers className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardFranchiseStatus")}</span>
                   <Tooltip delayDuration={0}>
@@ -425,7 +422,7 @@ export default function InternalCadastros() {
                     <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipFranchiseStatus")}</TooltipContent>
                   </Tooltip>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center gap-4">
                   <div className="text-center">
                     <span className="text-3xl font-bold text-emerald-600">{activeCount}</span>
                     <p className="text-[11px] text-muted-foreground">{t("internal.cadastros.activeCount")}</p>
@@ -458,7 +455,7 @@ export default function InternalCadastros() {
             {/* ─── Column 3: Média Franquias por Franqueado ─── */}
             <div className="flex flex-col gap-3">
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
-                <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex items-center justify-center gap-1.5 mb-2">
                   <Trophy className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardAvgFranchises")}</span>
                   <Tooltip delayDuration={0}>
@@ -468,7 +465,7 @@ export default function InternalCadastros() {
                     <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipAvgFranchises")}</TooltipContent>
                   </Tooltip>
                 </div>
-                <span className="text-3xl font-bold text-foreground">{avgFranchises}</span>
+                <span className="text-3xl font-bold text-foreground block text-center">{avgFranchises}</span>
               </div>
               {/* Chart: top sponsors */}
               <div className="space-y-1.5">
@@ -484,7 +481,7 @@ export default function InternalCadastros() {
             {/* ─── Column 4: Tempo Médio de Ativação ─── */}
             <div className="flex flex-col gap-3">
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3">
-                <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex items-center justify-center gap-1.5 mb-2">
                   <Clock className="h-4 w-4 text-primary" />
                   <span className="text-xs font-semibold text-foreground">{t("internal.cadastros.cardAvgActivation")}</span>
                   <Tooltip delayDuration={0}>
@@ -494,7 +491,7 @@ export default function InternalCadastros() {
                     <TooltipContent side="bottom" className="max-w-[240px] text-xs">{t("internal.cadastros.tooltipAvgActivation")}</TooltipContent>
                   </Tooltip>
                 </div>
-                <div className="flex items-baseline gap-1">
+                <div className="flex items-baseline justify-center gap-1">
                   <span className="text-3xl font-bold text-foreground">{avgActivationDays}</span>
                   <span className="text-xs text-muted-foreground">{t("internal.cadastros.days")}</span>
                 </div>
