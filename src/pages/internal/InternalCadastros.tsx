@@ -732,6 +732,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
         email={f.email}
         fullName={f.fullName}
       />
+    </div>
   );
 }
 
