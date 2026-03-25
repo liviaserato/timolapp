@@ -280,6 +280,7 @@ export default function InternalCadastros() {
     setShowActive(false);
     setShowInactive(false);
     setRegistrationStatus("all");
+    setAttendant("all");
     setQualification("all");
     setPlanType("all");
     setSearchFields([]);
