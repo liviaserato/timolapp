@@ -462,7 +462,18 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
 
             {/* CEP */}
             <div className="space-y-2">
-              <Label>{isBrazil ? "CEP" : "Código Postal"}</Label>
+              <div className="flex items-center justify-between">
+                <Label>{isBrazil ? "CEP" : "Código Postal"}</Label>
+                {!showCountryField && (
+                  <button
+                    type="button"
+                    className="text-[11px] text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+                    onClick={() => setShowCountryField(true)}
+                  >
+                    Alterar país
+                  </button>
+                )}
+              </div>
               <div className="relative">
                 <Input placeholder={isBrazil ? "00000-000" : "Código postal"} value={form.zipCode} onChange={(e) => handleCepChange(e.target.value)} maxLength={9} />
                 {loadingCep && <Loader2 className="h-4 w-4 animate-spin absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" />}
