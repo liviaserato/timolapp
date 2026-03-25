@@ -264,7 +264,7 @@ export default function InternalCadastros() {
       });
     }
     return list;
-  }, [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType, sortBy, hasActiveFilters]);
+  }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType, sortBy, hasActiveFilters]);
 
   const PAGE_SIZE = 10;
   const [currentPage, setCurrentPage] = useState(1);
