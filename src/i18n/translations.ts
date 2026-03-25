@@ -2258,6 +2258,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "internal.cadastros.toggleEmail": "Email",
     "internal.cadastros.franchiseStatus": "Franchise Status",
     "internal.cadastros.activationFilter": "Activation",
+    "internal.cadastros.attendantFilter": "Attendant",
     "internal.cadastros.qualificationFilter": "Qualification",
     "internal.cadastros.franchiseType": "Franchise Type",
     "internal.cadastros.city": "City",
