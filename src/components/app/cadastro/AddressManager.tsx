@@ -395,34 +395,36 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
               <Input placeholder="Ex: Casa, Trabalho" value={form.label} onChange={(e) => setForm((p) => ({ ...p, label: e.target.value }))} />
             </div>
 
-            {/* Country */}
-            <div className="space-y-2 relative" ref={countryRef}>
-              <Label>País</Label>
-              {form.country ? (
-                <div className="relative">
-                  <Input value={form.country} readOnly className="pr-8" />
-                  <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={clearCountry}>
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              ) : (
-                <Input
-                  placeholder="Buscar país..."
-                  value={countrySearch}
-                  onChange={(e) => { setCountrySearch(e.target.value); setShowCountryList(true); }}
-                  onFocus={() => setShowCountryList(true)}
-                />
-              )}
-              {showCountryList && !form.country && (
-                <div className="absolute z-50 w-full bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto mt-1">
-                  {filteredCountries.map((c) => (
-                    <button key={c.iso2} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-muted" onClick={() => selectCountry(c.iso2)}>
-                      {getCountryName(c, "pt")}
+            {/* Country (hidden by default, shown via "alterar país") */}
+            {showCountryField && (
+              <div className="space-y-2 relative" ref={countryRef}>
+                <Label>País</Label>
+                {form.country ? (
+                  <div className="relative">
+                    <Input value={form.country} readOnly className="pr-8" />
+                    <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={clearCountry}>
+                      <X className="h-4 w-4" />
                     </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                  </div>
+                ) : (
+                  <Input
+                    placeholder="Buscar país..."
+                    value={countrySearch}
+                    onChange={(e) => { setCountrySearch(e.target.value); setShowCountryList(true); }}
+                    onFocus={() => setShowCountryList(true)}
+                  />
+                )}
+                {showCountryList && !form.country && (
+                  <div className="absolute z-50 w-full bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto mt-1">
+                    {filteredCountries.map((c) => (
+                      <button key={c.iso2} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-muted" onClick={() => selectCountry(c.iso2)}>
+                        {getCountryName(c, "pt")}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Currency hint — same currency */}
             {form.countryIso2 && isSameCurrency && form.countryIso2 !== currentCountryIso2 && (
