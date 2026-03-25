@@ -272,7 +272,7 @@ export default function InternalCadastros() {
   const paginatedResults = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   // Reset page when filters change
-  useMemo(() => { setCurrentPage(1); }, [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType, sortBy]);
+  useMemo(() => { setCurrentPage(1); }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType, sortBy]);
 
   const clearFilters = () => {
     setSearch("");
