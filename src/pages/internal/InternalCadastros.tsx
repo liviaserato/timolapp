@@ -200,10 +200,11 @@ export default function InternalCadastros() {
   const [registrationStatus, setRegistrationStatus] = useState<string>("all");
   const [qualification, setQualification] = useState<string>("all");
   const [planType, setPlanType] = useState<string>("all");
+  const [attendant, setAttendant] = useState<string>("all");
   const [searchFields, setSearchFields] = useState<string[]>([]);
 
   const franchiseStatusFilter: string = (showActive && !showInactive) ? "active" : (!showActive && showInactive) ? "inactive" : "all";
-  const hasSearchFilters = (showActive || showInactive) || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || search.trim() !== "";
+  const hasSearchFilters = (showActive || showInactive) || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || attendant !== "all" || search.trim() !== "";
   const hasFilters = hasSearchFilters;
 
   const activateCheckboxes = () => {
@@ -221,6 +222,7 @@ export default function InternalCadastros() {
       else list = list.filter(f => !isEffectivelyActive(f));
     }
     if (exclude !== "registrationStatus" && registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
+    if (exclude !== "attendant" && attendant !== "all") list = list.filter(f => pf(f).attendantName === attendant);
     if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (exclude !== "planType" && planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     if (search.trim()) {
@@ -229,10 +231,14 @@ export default function InternalCadastros() {
     return list;
   };
 
-  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType]);
-  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType]);
+  const availableAttendants = useMemo(() => {
+    const names = getFilteredExcluding("attendant").map(f => pf(f).attendantName).filter(Boolean) as string[];
+    return [...new Set(names)].sort();
+  }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType]);
+  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType]);
+  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType]);
 
-  const hasActiveFilters = search.trim() !== "" || showActive || showInactive || registrationStatus !== "all" || qualification !== "all" || planType !== "all";
+  const hasActiveFilters = search.trim() !== "" || showActive || showInactive || registrationStatus !== "all" || attendant !== "all" || qualification !== "all" || planType !== "all";
 
   const filtered = useMemo(() => {
     if (!hasActiveFilters) return [];
@@ -240,6 +246,7 @@ export default function InternalCadastros() {
     if (franchiseStatusFilter === "active") list = list.filter(f => isEffectivelyActive(f));
     else if (franchiseStatusFilter === "inactive") list = list.filter(f => !isEffectivelyActive(f));
     if (registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
+    if (attendant !== "all") list = list.filter(f => pf(f).attendantName === attendant);
     if (qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     if (search.trim()) {
@@ -257,7 +264,7 @@ export default function InternalCadastros() {
       });
     }
     return list;
-  }, [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType, sortBy, hasActiveFilters]);
+  }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType, sortBy, hasActiveFilters]);
 
   const PAGE_SIZE = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -265,7 +272,7 @@ export default function InternalCadastros() {
   const paginatedResults = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   // Reset page when filters change
-  useMemo(() => { setCurrentPage(1); }, [search, searchFields, showActive, showInactive, registrationStatus, qualification, planType, sortBy]);
+  useMemo(() => { setCurrentPage(1); }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType, sortBy]);
 
   const clearFilters = () => {
     setSearch("");
@@ -273,6 +280,7 @@ export default function InternalCadastros() {
     setShowActive(false);
     setShowInactive(false);
     setRegistrationStatus("all");
+    setAttendant("all");
     setQualification("all");
     setPlanType("all");
     setSearchFields([]);
@@ -349,7 +357,7 @@ export default function InternalCadastros() {
             </div>
 
             {/* Row 2: Filters */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               {/* Franchise status checkboxes */}
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.franchiseStatusLegend")}</span>
@@ -376,6 +384,21 @@ export default function InternalCadastros() {
                     <SelectItem value="pendente">{t("internal.cadastros.regPending")}</SelectItem>
                     <SelectItem value="concluido">{t("internal.cadastros.regCompleted")}</SelectItem>
                     <SelectItem value="cancelado">{t("internal.cadastros.regCancelled")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {/* Attendant */}
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.attendantFilter")}</span>
+                <Select value={attendant} onValueChange={v => { setAttendant(v); activateCheckboxes(); }}>
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
+                    {availableAttendants.map(name => (
+                      <SelectItem key={name} value={name}>{name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
