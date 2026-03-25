@@ -16,6 +16,9 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { qualificationConfig } from "@/components/app/rede/mock-data";
+import { AddressManager, type Address } from "@/components/app/cadastro/AddressManager";
+import { FinancialManager, type FinancialAccount } from "@/components/app/cadastro/FinancialManager";
+import { CredentialsDialog } from "@/components/internal/CredentialsDialog";
 
 
 
