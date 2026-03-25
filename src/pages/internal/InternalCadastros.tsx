@@ -200,10 +200,11 @@ export default function InternalCadastros() {
   const [registrationStatus, setRegistrationStatus] = useState<string>("all");
   const [qualification, setQualification] = useState<string>("all");
   const [planType, setPlanType] = useState<string>("all");
+  const [attendant, setAttendant] = useState<string>("all");
   const [searchFields, setSearchFields] = useState<string[]>([]);
 
   const franchiseStatusFilter: string = (showActive && !showInactive) ? "active" : (!showActive && showInactive) ? "inactive" : "all";
-  const hasSearchFilters = (showActive || showInactive) || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || search.trim() !== "";
+  const hasSearchFilters = (showActive || showInactive) || registrationStatus !== "all" || qualification !== "all" || planType !== "all" || attendant !== "all" || search.trim() !== "";
   const hasFilters = hasSearchFilters;
 
   const activateCheckboxes = () => {
