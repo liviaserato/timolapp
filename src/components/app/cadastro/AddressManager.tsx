@@ -75,7 +75,7 @@ function formatAddress(a: Address): string {
 
 /* ── component ── */
 
-export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR", franchiseCurrency = "BRL" }: Props) {
+export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR", franchiseCurrency = "BRL", dialogOnly, open: externalOpen, onOpenChange }: Props) {
   const [listOpen, setListOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -88,6 +88,18 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
   const [countrySearch, setCountrySearch] = useState("");
   const [showCountryList, setShowCountryList] = useState(false);
   const countryRef = useRef<HTMLDivElement>(null);
+
+  // Controlled mode: sync external open state
+  useEffect(() => {
+    if (dialogOnly && externalOpen !== undefined) {
+      setListOpen(externalOpen);
+    }
+  }, [dialogOnly, externalOpen]);
+
+  const handleListOpenChange = (v: boolean) => {
+    setListOpen(v);
+    if (dialogOnly && onOpenChange) onOpenChange(v);
+  };
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
