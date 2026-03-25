@@ -171,7 +171,15 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
 
   const openAddDialog = () => {
     setEditingId(null);
-    setForm(emptyAddress());
+    // Pre-fill country from current franchise country
+    const defaultCountry = countries.find((c) => c.iso2 === currentCountryIso2);
+    const base = emptyAddress();
+    if (defaultCountry) {
+      base.country = getCountryName(defaultCountry, "pt");
+      base.countryIso2 = currentCountryIso2;
+    }
+    setForm(base);
+    setShowCountryField(false);
     setAddOpen(true);
   };
 
