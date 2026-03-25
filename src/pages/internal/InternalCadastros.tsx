@@ -238,7 +238,7 @@ export default function InternalCadastros() {
   const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType]);
   const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType]);
 
-  const hasActiveFilters = search.trim() !== "" || showActive || showInactive || registrationStatus !== "all" || qualification !== "all" || planType !== "all";
+  const hasActiveFilters = search.trim() !== "" || showActive || showInactive || registrationStatus !== "all" || attendant !== "all" || qualification !== "all" || planType !== "all";
 
   const filtered = useMemo(() => {
     if (!hasActiveFilters) return [];
