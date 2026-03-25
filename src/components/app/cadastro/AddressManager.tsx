@@ -87,6 +87,7 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
   const [cepError, setCepError] = useState("");
   const [countrySearch, setCountrySearch] = useState("");
   const [showCountryList, setShowCountryList] = useState(false);
+  const [showCountryField, setShowCountryField] = useState(false);
   const countryRef = useRef<HTMLDivElement>(null);
 
   // Controlled mode: sync external open state
@@ -170,7 +171,15 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
 
   const openAddDialog = () => {
     setEditingId(null);
-    setForm(emptyAddress());
+    // Pre-fill country from current franchise country
+    const defaultCountry = countries.find((c) => c.iso2 === currentCountryIso2);
+    const base = emptyAddress();
+    if (defaultCountry) {
+      base.country = getCountryName(defaultCountry, "pt");
+      base.countryIso2 = currentCountryIso2;
+    }
+    setForm(base);
+    setShowCountryField(false);
     setAddOpen(true);
   };
 
@@ -188,7 +197,7 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
       city: addr.city,
       state: addr.state,
     });
-    
+    setShowCountryField(addr.countryIso2 !== currentCountryIso2);
     setAddOpen(true);
   };
 
@@ -386,34 +395,36 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
               <Input placeholder="Ex: Casa, Trabalho" value={form.label} onChange={(e) => setForm((p) => ({ ...p, label: e.target.value }))} />
             </div>
 
-            {/* Country */}
-            <div className="space-y-2 relative" ref={countryRef}>
-              <Label>País</Label>
-              {form.country ? (
-                <div className="relative">
-                  <Input value={form.country} readOnly className="pr-8" />
-                  <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={clearCountry}>
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              ) : (
-                <Input
-                  placeholder="Buscar país..."
-                  value={countrySearch}
-                  onChange={(e) => { setCountrySearch(e.target.value); setShowCountryList(true); }}
-                  onFocus={() => setShowCountryList(true)}
-                />
-              )}
-              {showCountryList && !form.country && (
-                <div className="absolute z-50 w-full bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto mt-1">
-                  {filteredCountries.map((c) => (
-                    <button key={c.iso2} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-muted" onClick={() => selectCountry(c.iso2)}>
-                      {getCountryName(c, "pt")}
+            {/* Country (hidden by default, shown via "alterar país") */}
+            {showCountryField && (
+              <div className="space-y-2 relative" ref={countryRef}>
+                <Label>País</Label>
+                {form.country ? (
+                  <div className="relative">
+                    <Input value={form.country} readOnly className="pr-8" />
+                    <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={clearCountry}>
+                      <X className="h-4 w-4" />
                     </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                  </div>
+                ) : (
+                  <Input
+                    placeholder="Buscar país..."
+                    value={countrySearch}
+                    onChange={(e) => { setCountrySearch(e.target.value); setShowCountryList(true); }}
+                    onFocus={() => setShowCountryList(true)}
+                  />
+                )}
+                {showCountryList && !form.country && (
+                  <div className="absolute z-50 w-full bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto mt-1">
+                    {filteredCountries.map((c) => (
+                      <button key={c.iso2} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-muted" onClick={() => selectCountry(c.iso2)}>
+                        {getCountryName(c, "pt")}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Currency hint — same currency */}
             {form.countryIso2 && isSameCurrency && form.countryIso2 !== currentCountryIso2 && (
@@ -451,7 +462,18 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
 
             {/* CEP */}
             <div className="space-y-2">
-              <Label>{isBrazil ? "CEP" : "Código Postal"}</Label>
+              <div className="flex items-center justify-between">
+                <Label>{isBrazil ? "CEP" : "Código Postal"}</Label>
+                {!showCountryField && (
+                  <button
+                    type="button"
+                    className="text-[11px] text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+                    onClick={() => setShowCountryField(true)}
+                  >
+                    Alterar país
+                  </button>
+                )}
+              </div>
               <div className="relative">
                 <Input placeholder={isBrazil ? "00000-000" : "Código postal"} value={form.zipCode} onChange={(e) => handleCepChange(e.target.value)} maxLength={9} />
                 {loadingCep && <Loader2 className="h-4 w-4 animate-spin absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" />}

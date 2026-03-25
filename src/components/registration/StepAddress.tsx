@@ -25,6 +25,7 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
   const [cepError, setCepError] = useState("");
   const [countrySearch, setCountrySearch] = useState("");
   const [showCountryList, setShowCountryList] = useState(false);
+  const [showCountryField, setShowCountryField] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Auto-fill country from phone DDI
@@ -127,70 +128,82 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
 
   return (
     <div className="space-y-4">
-      {/* Country — single field with inline search */}
-      <div className="space-y-2 relative" ref={containerRef}>
-        <Label htmlFor="country">{t("step3.country")}</Label>
-        <div className="relative">
-          {data.country ? (
-            <>
+      {/* Country — hidden by default, revealed via "alterar país" */}
+      {showCountryField && (
+        <div className="space-y-2 relative" ref={containerRef}>
+          <Label htmlFor="country">{t("step3.country")}</Label>
+          <div className="relative">
+            {data.country ? (
+              <>
+                <Input
+                  id="country"
+                  value={data.country}
+                  readOnly
+                  className="pr-8"
+                />
+                <button
+                  type="button"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  onClick={clearCountry}
+                  title={t("step3.country.clear")}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </>
+            ) : (
               <Input
                 id="country"
-                value={data.country}
-                readOnly
-                className="pr-8"
-              />
-              <button
-                type="button"
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                onClick={clearCountry}
-                title={t("step3.country.clear")}
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </>
-          ) : (
-            <Input
-              id="country"
-              placeholder={t("step3.country.placeholder")}
-              value={countrySearch}
-              onChange={(e) => {
-                setCountrySearch(e.target.value);
-                setShowCountryList(true);
-              }}
-              onFocus={() => setShowCountryList(true)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  // If there's exactly one match, select it
-                  if (filteredCountries.length === 1) {
-                    selectCountry(filteredCountries[0].iso2);
+                placeholder={t("step3.country.placeholder")}
+                value={countrySearch}
+                onChange={(e) => {
+                  setCountrySearch(e.target.value);
+                  setShowCountryList(true);
+                }}
+                onFocus={() => setShowCountryList(true)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (filteredCountries.length === 1) {
+                      selectCountry(filteredCountries[0].iso2);
+                    }
                   }
-                }
-              }}
-            />
-          )}
-        </div>
-        {/* Country dropdown */}
-        {showCountryList && !data.country && (
-          <div className="absolute z-50 w-full bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto mt-1">
-            {filteredCountries.map((c) => (
-              <button
-                type="button"
-                key={c.iso2}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2"
-                onClick={() => selectCountry(c.iso2)}
-              >
-                <span>{getCountryName(c, language)}</span>
-              </button>
-            ))}
+                }}
+              />
+            )}
           </div>
-        )}
-        {errors.country && <p className="text-sm text-destructive">{errors.country}</p>}
-      </div>
+          {/* Country dropdown */}
+          {showCountryList && !data.country && (
+            <div className="absolute z-50 w-full bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto mt-1">
+              {filteredCountries.map((c) => (
+                <button
+                  type="button"
+                  key={c.iso2}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2"
+                  onClick={() => selectCountry(c.iso2)}
+                >
+                  <span>{getCountryName(c, language)}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {errors.country && <p className="text-sm text-destructive">{errors.country}</p>}
+        </div>
+      )}
 
       {/* CEP (Brazil) / Zip */}
       <div className="space-y-2">
-        <Label htmlFor="zipCode">{t("step3.zipCode")}</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="zipCode">{t("step3.zipCode")}</Label>
+          {!showCountryField && (
+            <button
+              type="button"
+              className="text-[11px] text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+              onClick={() => setShowCountryField(true)}
+            >
+              {t("step3.country.clear")}
+            </button>
+          )}
+        </div>
         <div className="relative">
           <Input
             id="zipCode"
