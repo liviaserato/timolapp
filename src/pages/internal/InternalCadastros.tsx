@@ -222,6 +222,7 @@ export default function InternalCadastros() {
       else list = list.filter(f => !isEffectivelyActive(f));
     }
     if (exclude !== "registrationStatus" && registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
+    if (exclude !== "attendant" && attendant !== "all") list = list.filter(f => pf(f).attendantName === attendant);
     if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
     if (exclude !== "planType" && planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     if (search.trim()) {
