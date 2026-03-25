@@ -387,6 +387,21 @@ export default function InternalCadastros() {
                   </SelectContent>
                 </Select>
               </div>
+              {/* Attendant */}
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.attendantFilter")}</span>
+                <Select value={attendant} onValueChange={v => { setAttendant(v); activateCheckboxes(); }}>
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
+                    {availableAttendants.map(name => (
+                      <SelectItem key={name} value={name}>{name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               {/* Qualification */}
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.qualificationFilter")}</span>
