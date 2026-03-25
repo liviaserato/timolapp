@@ -197,7 +197,7 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
       city: addr.city,
       state: addr.state,
     });
-    
+    setShowCountryField(addr.countryIso2 !== currentCountryIso2);
     setAddOpen(true);
   };
 
