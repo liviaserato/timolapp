@@ -687,11 +687,11 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             </div>
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[170px] shrink-0 mt-3 lg:mt-0">
-              <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
+              <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setAddressOpen(true)}>
                 <MapPinHouse className="h-3 w-3" />
                 {t("internal.cadastros.btnAddresses")}
               </Button>
-              <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
+              <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setFinancialOpen(true)}>
                 <Landmark className="h-3 w-3" />
                 {t("internal.cadastros.btnFinancial")}
               </Button>
@@ -699,7 +699,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                 <Pencil className="h-3 w-3" />
                 {t("internal.cadastros.btnEdit")}
               </Button>
-              <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full">
+              <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setCredentialsOpen(true)}>
                 <Lock className="h-3 w-3" />
                 {t("internal.cadastros.btnCredentials")}
               </Button>
@@ -707,7 +707,31 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
           )}
         </div>
       </div>
-    </div>
+
+      {/* Dialogs */}
+      <AddressManager
+        dialogOnly
+        open={addressOpen}
+        onOpenChange={setAddressOpen}
+        addresses={addresses}
+        onChange={setAddresses}
+        currentCountryIso2={f.country === "Brasil" ? "BR" : "ES"}
+        franchiseCurrency={f.country === "Brasil" ? "BRL" : "EUR"}
+      />
+      <FinancialManager
+        dialogOnly
+        open={financialOpen}
+        onOpenChange={setFinancialOpen}
+        accounts={accounts}
+        onChange={setAccounts}
+      />
+      <CredentialsDialog
+        open={credentialsOpen}
+        onOpenChange={setCredentialsOpen}
+        username={f.username}
+        email={f.email}
+        fullName={f.fullName}
+      />
   );
 }
 
