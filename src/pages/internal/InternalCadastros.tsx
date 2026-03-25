@@ -543,7 +543,10 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
   const [addresses, setAddresses] = useState<Address[]>([
     { id: "1", label: "Principal", country: f.country, countryIso2: f.country === "Brasil" ? "BR" : "ES", zipCode: "", street: `Endereço de ${f.fullName.split(" ")[0]}`, number: "100", complement: "", neighborhood: "", city: f.city, state: f.state, isDefault: true },
   ]);
-  const [accounts, setAccounts] = useState<FinancialAccount[]>([
+  const regStatus = getRegistrationStatus(f, sel);
+  const isCancelled = regStatus === "cancelado";
+  const isCompleted = regStatus === "concluido";
+
     { id: "1", type: "pix", label: "PIX Principal", pixKey: f.document, pixKeyType: "CPF", isDefault: true, status: "verified" },
   ]);
   const isActive = sel.franchiseStatus === "active";
