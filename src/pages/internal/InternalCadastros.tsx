@@ -357,7 +357,7 @@ export default function InternalCadastros() {
             </div>
 
             {/* Row 2: Filters */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               {/* Franchise status checkboxes */}
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.franchiseStatusLegend")}</span>
