@@ -104,7 +104,7 @@ interface Props {
   onOpenChange?: (open: boolean) => void;
 }
 
-export function FinancialManager({ accounts, onChange }: Props) {
+export function FinancialManager({ accounts, onChange, dialogOnly, open: externalOpen, onOpenChange }: Props) {
   const [listOpen, setListOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -113,6 +113,18 @@ export function FinancialManager({ accounts, onChange }: Props) {
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [formType, setFormType] = useState<AccountType>("bank");
   const [form, setForm] = useState<Record<string, string>>({});
+
+  // Controlled mode: sync external open state
+  useEffect(() => {
+    if (dialogOnly && externalOpen !== undefined) {
+      setListOpen(externalOpen);
+    }
+  }, [dialogOnly, externalOpen]);
+
+  const handleListOpenChange = (v: boolean) => {
+    setListOpen(v);
+    if (dialogOnly && onOpenChange) onOpenChange(v);
+  };
 
   const allSelectedForDelete = selectedForDelete.size > 0 && selectedForDelete.size >= accounts.length;
   const defaultAcc = accounts.find((a) => a.isDefault);
