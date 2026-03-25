@@ -95,6 +95,7 @@ const App = () => (
               </AuthGate>
             }>
               <Route index element={<Suspense fallback={<LazyFallback />}><InternalDashboard /></Suspense>} />
+              <Route path="cadastro" element={<Navigate to="/internal/cadastros" replace />} />
               <Route path="cadastros" element={<Suspense fallback={<LazyFallback />}><InternalCadastros /></Suspense>} />
               <Route path="financeiro" element={<Suspense fallback={<LazyFallback />}><InternalFinanceiro /></Suspense>} />
               <Route path="rede" element={<Suspense fallback={<LazyFallback />}><InternalRede /></Suspense>} />
