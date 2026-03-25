@@ -47,6 +47,10 @@ interface Props {
   onChange: (addresses: Address[]) => void;
   currentCountryIso2?: string;
   franchiseCurrency?: string;
+  /** When true, only render dialogs (no summary/button). Use open/onOpenChange to control. */
+  dialogOnly?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 /* ── helpers ── */

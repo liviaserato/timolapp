@@ -98,6 +98,10 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 interface Props {
   accounts: FinancialAccount[];
   onChange: (accounts: FinancialAccount[]) => void;
+  /** When true, only render dialogs (no DashboardCard). Use open/onOpenChange to control. */
+  dialogOnly?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function FinancialManager({ accounts, onChange }: Props) {
