@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -98,9 +98,13 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 interface Props {
   accounts: FinancialAccount[];
   onChange: (accounts: FinancialAccount[]) => void;
+  /** When true, only render dialogs (no DashboardCard). Use open/onOpenChange to control. */
+  dialogOnly?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function FinancialManager({ accounts, onChange }: Props) {
+export function FinancialManager({ accounts, onChange, dialogOnly, open: externalOpen, onOpenChange }: Props) {
   const [listOpen, setListOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -109,6 +113,18 @@ export function FinancialManager({ accounts, onChange }: Props) {
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [formType, setFormType] = useState<AccountType>("bank");
   const [form, setForm] = useState<Record<string, string>>({});
+
+  // Controlled mode: sync external open state
+  useEffect(() => {
+    if (dialogOnly && externalOpen !== undefined) {
+      setListOpen(externalOpen);
+    }
+  }, [dialogOnly, externalOpen]);
+
+  const handleListOpenChange = (v: boolean) => {
+    setListOpen(v);
+    if (dialogOnly && onOpenChange) onOpenChange(v);
+  };
 
   const allSelectedForDelete = selectedForDelete.size > 0 && selectedForDelete.size >= accounts.length;
   const defaultAcc = accounts.find((a) => a.isDefault);
@@ -245,27 +261,30 @@ export function FinancialManager({ accounts, onChange }: Props) {
 
   return (
     <>
-      <DashboardCard icon={Landmark} title="Dados Financeiros">
-        <div className="mt-1 flex-1">
-          {defaultAcc ? (
-            <Row label={accountTypeLabels[defaultAcc.type]} value={formatAccountSummary(defaultAcc)} />
-          ) : (
-            <p className="text-sm text-muted-foreground">Nenhuma conta cadastrada.</p>
-          )}
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="mt-2 text-xs h-7 w-full gap-1.5"
-          onClick={() => { setListOpen(true); setDeleteMode(false); setSelectedForDelete(new Set()); }}
-        >
-          <Settings className="h-3 w-3" />
-          Gerenciar contas
-        </Button>
-      </DashboardCard>
+      {/* Summary card (hidden in dialogOnly mode) */}
+      {!dialogOnly && (
+        <DashboardCard icon={Landmark} title="Dados Financeiros">
+          <div className="mt-1 flex-1">
+            {defaultAcc ? (
+              <Row label={accountTypeLabels[defaultAcc.type]} value={formatAccountSummary(defaultAcc)} />
+            ) : (
+              <p className="text-sm text-muted-foreground">Nenhuma conta cadastrada.</p>
+            )}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2 text-xs h-7 w-full gap-1.5"
+            onClick={() => { setListOpen(true); setDeleteMode(false); setSelectedForDelete(new Set()); }}
+          >
+            <Settings className="h-3 w-3" />
+            Gerenciar contas
+          </Button>
+        </DashboardCard>
+      )}
 
       {/* Account list dialog */}
-      <Dialog open={listOpen} onOpenChange={setListOpen}>
+      <Dialog open={listOpen} onOpenChange={handleListOpenChange}>
         <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Minhas Contas</DialogTitle>

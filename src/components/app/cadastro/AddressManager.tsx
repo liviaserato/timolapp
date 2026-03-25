@@ -47,6 +47,10 @@ interface Props {
   onChange: (addresses: Address[]) => void;
   currentCountryIso2?: string;
   franchiseCurrency?: string;
+  /** When true, only render dialogs (no summary/button). Use open/onOpenChange to control. */
+  dialogOnly?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 /* ── helpers ── */
@@ -71,7 +75,7 @@ function formatAddress(a: Address): string {
 
 /* ── component ── */
 
-export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR", franchiseCurrency = "BRL" }: Props) {
+export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR", franchiseCurrency = "BRL", dialogOnly, open: externalOpen, onOpenChange }: Props) {
   const [listOpen, setListOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -84,6 +88,18 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
   const [countrySearch, setCountrySearch] = useState("");
   const [showCountryList, setShowCountryList] = useState(false);
   const countryRef = useRef<HTMLDivElement>(null);
+
+  // Controlled mode: sync external open state
+  useEffect(() => {
+    if (dialogOnly && externalOpen !== undefined) {
+      setListOpen(externalOpen);
+    }
+  }, [dialogOnly, externalOpen]);
+
+  const handleListOpenChange = (v: boolean) => {
+    setListOpen(v);
+    if (dialogOnly && onOpenChange) onOpenChange(v);
+  };
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -223,23 +239,27 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
 
   return (
     <>
-      {/* Summary in card */}
-      <div className="mt-1 flex-1">
-        {defaultAddr && <p className="text-sm">{formatAddress(defaultAddr)}</p>}
-        {!defaultAddr && <p className="text-sm text-muted-foreground">Nenhum endereço cadastrado.</p>}
-      </div>
-      <Button
-        variant="outline"
-        size="sm"
-        className="mt-2 text-xs h-7 w-full"
-        onClick={() => { setListOpen(true); setDeleteMode(false); setSelectedForDelete(new Set()); }}
-      >
-        <MapPin className="h-3 w-3 mr-1" />
-        {defaultAddr ? "Trocar endereço" : "Adicionar endereço"}
-      </Button>
+      {/* Summary in card (hidden in dialogOnly mode) */}
+      {!dialogOnly && (
+        <>
+          <div className="mt-1 flex-1">
+            {defaultAddr && <p className="text-sm">{formatAddress(defaultAddr)}</p>}
+            {!defaultAddr && <p className="text-sm text-muted-foreground">Nenhum endereço cadastrado.</p>}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2 text-xs h-7 w-full"
+            onClick={() => { setListOpen(true); setDeleteMode(false); setSelectedForDelete(new Set()); }}
+          >
+            <MapPin className="h-3 w-3 mr-1" />
+            {defaultAddr ? "Trocar endereço" : "Adicionar endereço"}
+          </Button>
+        </>
+      )}
 
       {/* Address list popup */}
-      <Dialog open={listOpen} onOpenChange={setListOpen}>
+      <Dialog open={listOpen} onOpenChange={handleListOpenChange}>
         <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Meus Endereços</DialogTitle>
