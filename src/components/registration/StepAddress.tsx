@@ -25,6 +25,7 @@ export const StepAddress = ({ data, onChange, errors }: Props) => {
   const [cepError, setCepError] = useState("");
   const [countrySearch, setCountrySearch] = useState("");
   const [showCountryList, setShowCountryList] = useState(false);
+  const [showCountryField, setShowCountryField] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Auto-fill country from phone DDI
