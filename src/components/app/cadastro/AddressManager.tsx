@@ -239,23 +239,27 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
 
   return (
     <>
-      {/* Summary in card */}
-      <div className="mt-1 flex-1">
-        {defaultAddr && <p className="text-sm">{formatAddress(defaultAddr)}</p>}
-        {!defaultAddr && <p className="text-sm text-muted-foreground">Nenhum endereço cadastrado.</p>}
-      </div>
-      <Button
-        variant="outline"
-        size="sm"
-        className="mt-2 text-xs h-7 w-full"
-        onClick={() => { setListOpen(true); setDeleteMode(false); setSelectedForDelete(new Set()); }}
-      >
-        <MapPin className="h-3 w-3 mr-1" />
-        {defaultAddr ? "Trocar endereço" : "Adicionar endereço"}
-      </Button>
+      {/* Summary in card (hidden in dialogOnly mode) */}
+      {!dialogOnly && (
+        <>
+          <div className="mt-1 flex-1">
+            {defaultAddr && <p className="text-sm">{formatAddress(defaultAddr)}</p>}
+            {!defaultAddr && <p className="text-sm text-muted-foreground">Nenhum endereço cadastrado.</p>}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2 text-xs h-7 w-full"
+            onClick={() => { setListOpen(true); setDeleteMode(false); setSelectedForDelete(new Set()); }}
+          >
+            <MapPin className="h-3 w-3 mr-1" />
+            {defaultAddr ? "Trocar endereço" : "Adicionar endereço"}
+          </Button>
+        </>
+      )}
 
       {/* Address list popup */}
-      <Dialog open={listOpen} onOpenChange={setListOpen}>
+      <Dialog open={listOpen} onOpenChange={handleListOpenChange}>
         <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Meus Endereços</DialogTitle>

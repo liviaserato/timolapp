@@ -261,27 +261,30 @@ export function FinancialManager({ accounts, onChange, dialogOnly, open: externa
 
   return (
     <>
-      <DashboardCard icon={Landmark} title="Dados Financeiros">
-        <div className="mt-1 flex-1">
-          {defaultAcc ? (
-            <Row label={accountTypeLabels[defaultAcc.type]} value={formatAccountSummary(defaultAcc)} />
-          ) : (
-            <p className="text-sm text-muted-foreground">Nenhuma conta cadastrada.</p>
-          )}
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="mt-2 text-xs h-7 w-full gap-1.5"
-          onClick={() => { setListOpen(true); setDeleteMode(false); setSelectedForDelete(new Set()); }}
-        >
-          <Settings className="h-3 w-3" />
-          Gerenciar contas
-        </Button>
-      </DashboardCard>
+      {/* Summary card (hidden in dialogOnly mode) */}
+      {!dialogOnly && (
+        <DashboardCard icon={Landmark} title="Dados Financeiros">
+          <div className="mt-1 flex-1">
+            {defaultAcc ? (
+              <Row label={accountTypeLabels[defaultAcc.type]} value={formatAccountSummary(defaultAcc)} />
+            ) : (
+              <p className="text-sm text-muted-foreground">Nenhuma conta cadastrada.</p>
+            )}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2 text-xs h-7 w-full gap-1.5"
+            onClick={() => { setListOpen(true); setDeleteMode(false); setSelectedForDelete(new Set()); }}
+          >
+            <Settings className="h-3 w-3" />
+            Gerenciar contas
+          </Button>
+        </DashboardCard>
+      )}
 
       {/* Account list dialog */}
-      <Dialog open={listOpen} onOpenChange={setListOpen}>
+      <Dialog open={listOpen} onOpenChange={handleListOpenChange}>
         <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Minhas Contas</DialogTitle>
