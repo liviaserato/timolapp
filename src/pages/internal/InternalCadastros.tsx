@@ -539,6 +539,26 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
   const [financialOpen, setFinancialOpen] = useState(false);
   const [credentialsOpen, setCredentialsOpen] = useState(false);
 
+  // Inline editing
+  const [editing, setEditing] = useState(false);
+  const [editData, setEditData] = useState({
+    fullName: f.fullName, email: f.email, phone: f.phone,
+    document: f.document, birthDate: f.birthDate, gender: f.gender,
+    city: f.city, state: f.state,
+  });
+
+  const startEditing = () => {
+    setEditData({ fullName: f.fullName, email: f.email, phone: f.phone, document: f.document, birthDate: f.birthDate, gender: f.gender, city: f.city, state: f.state });
+    setEditing(true);
+  };
+  const cancelEditing = () => setEditing(false);
+  const saveEditing = () => {
+    // In production: API call to save
+    toast.success("Dados atualizados com sucesso");
+    setEditing(false);
+  };
+  const ed = (field: keyof typeof editData, value: string) => setEditData(prev => ({ ...prev, [field]: value }));
+
   // Mock data per franchisee (in production, fetched from API)
   const [addresses, setAddresses] = useState<Address[]>([
     { id: "1", label: "Principal", country: f.country, countryIso2: f.country === "Brasil" ? "BR" : "ES", zipCode: "", street: `Endereço de ${f.fullName.split(" ")[0]}`, number: "100", complement: "", neighborhood: "", city: f.city, state: f.state, isDefault: true },
