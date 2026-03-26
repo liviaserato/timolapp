@@ -622,7 +622,11 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                     ) : (
                       <span className="h-3.5 w-3.5 shrink-0" />
                     )}
-                    <span className="text-base font-bold text-foreground mr-1">{f.fullName}</span>
+                    {editing ? (
+                      <Input className="h-7 text-base font-bold px-1.5 mr-1 flex-1 min-w-0" value={editData.fullName} onChange={e => ed("fullName", e.target.value)} />
+                    ) : (
+                      <span className="text-base font-bold text-foreground mr-1">{f.fullName}</span>
+                    )}
                     {sortedFranchises.map((fr, idx) => (
                       <button
                         key={fr.franchiseId}
