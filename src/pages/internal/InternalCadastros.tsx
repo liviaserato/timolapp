@@ -676,25 +676,64 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                 )}
                 <p className="flex items-center gap-1.5 text-sm text-foreground">
                   <MapPin className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
-                  <span className="truncate">{f.city}, {f.state} {f.countryFlag}</span>
+                  {editing ? (
+                    <span className="flex items-center gap-1">
+                      <Input className="h-6 text-xs w-24 px-1.5" value={editData.city} onChange={e => ed("city", e.target.value)} placeholder="Cidade" />
+                      <Input className="h-6 text-xs w-12 px-1.5" value={editData.state} onChange={e => ed("state", e.target.value)} placeholder="UF" />
+                      <span>{f.countryFlag}</span>
+                    </span>
+                  ) : (
+                    <span className="truncate">{f.city}, {f.state} {f.countryFlag}</span>
+                  )}
                 </p>
               </div>
 
               <div className="space-y-1.5 min-w-0">
                 <p className="flex items-center gap-1.5 text-sm text-foreground truncate">
-                  <FileText className="h-3.5 w-3.5 shrink-0 text-foreground/70" />{docLabel}
+                  <FileText className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
+                  {editing ? (
+                    <Input className="h-6 text-xs flex-1 px-1.5" value={editData.document} onChange={e => ed("document", e.target.value)} />
+                  ) : docLabel}
                 </p>
                 <p className="flex items-center gap-1.5 text-sm text-foreground">
-                  <Cake className="h-3.5 w-3.5 shrink-0 text-foreground/70" />{f.birthDate} · {t(`step1.gender.${f.gender}`)}
+                  <Cake className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
+                  {editing ? (
+                    <span className="flex items-center gap-1">
+                      <Input className="h-6 text-xs w-24 px-1.5" value={editData.birthDate} onChange={e => ed("birthDate", e.target.value)} placeholder="DD/MM/AAAA" />
+                      <Select value={editData.gender} onValueChange={v => ed("gender", v)}>
+                        <SelectTrigger className="h-6 text-xs w-24 px-1.5"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="female">{t("step1.gender.female")}</SelectItem>
+                          <SelectItem value="male">{t("step1.gender.male")}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </span>
+                  ) : (
+                    <span>{f.birthDate} · {t(`step1.gender.${f.gender}`)}</span>
+                  )}
                 </p>
                 <p className="flex items-center gap-1.5 text-sm text-foreground">
-                  <Mail className="h-3.5 w-3.5 shrink-0 text-foreground/70" /><span className="truncate">{f.email}</span>
+                  <Mail className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
+                  {editing ? (
+                    <Input className="h-6 text-xs flex-1 px-1.5" value={editData.email} onChange={e => ed("email", e.target.value)} />
+                  ) : <span className="truncate">{f.email}</span>}
                 </p>
                 <p className="flex items-center gap-1.5 text-sm text-foreground">
-                  <Phone className="h-3.5 w-3.5 shrink-0 text-foreground/70" /><span className="truncate">{f.phone}</span>
+                  <Phone className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
+                  {editing ? (
+                    <Input className="h-6 text-xs flex-1 px-1.5" value={editData.phone} onChange={e => ed("phone", e.target.value)} />
+                  ) : <span className="truncate">{f.phone}</span>}
                 </p>
               </div>
             </div>
+
+            {/* Editing action bar */}
+            {editing && (
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/50">
+                <Button size="sm" className="h-7 text-xs gap-1.5" onClick={saveEditing}>Salvar</Button>
+                <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={cancelEditing}>Cancelar</Button>
+              </div>
+            )}
           </div>
 
           {/* ── Grid 4: Actions ── */}
