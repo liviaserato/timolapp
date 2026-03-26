@@ -15,6 +15,7 @@ import {
   MessageCircle, Bell, RotateCcw,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { toast } from "sonner";
 import { qualificationConfig } from "@/components/app/rede/mock-data";
 import { AddressManager, type Address } from "@/components/app/cadastro/AddressManager";
 import { FinancialManager, type FinancialAccount } from "@/components/app/cadastro/FinancialManager";
