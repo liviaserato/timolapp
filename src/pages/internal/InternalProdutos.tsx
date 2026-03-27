@@ -584,10 +584,10 @@ function ProductListCard({ product: p }: { product: Product }) {
             {p.pointsBinary != null && <span>B: {p.pointsBinary}</span>}
           </div>
           <div className="flex items-center gap-1">
-            {p.activatable && <span className="text-[9px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">Ativável</span>}
+            {p.activatable && <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Ativável</span>}
             <span className={cn(
               "text-[9px] px-1.5 py-0.5 rounded",
-              p.inStock ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
+              p.inStock ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
             )}>
               {p.inStock ? "Em estoque" : "Indisponível"}
             </span>
