@@ -336,7 +336,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                 </TabsList>
                 {CURRENCIES.map(c => (
                   <TabsContent key={c.id} value={c.id} className="mt-3">
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       {PRICE_TYPES.map(p => (
                         <div key={p.id} className="space-y-1">
                           <Label className="text-xs text-muted-foreground">{p.label}</Label>
