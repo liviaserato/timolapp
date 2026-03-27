@@ -182,7 +182,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
           <div className="space-y-6 pt-2">
 
             {/* ── SKU + Category + Subcategory ── */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>SKU *</Label>
                 <Input value={sku} onChange={e => setSku(e.target.value)} placeholder="EX: PRD-001" />
