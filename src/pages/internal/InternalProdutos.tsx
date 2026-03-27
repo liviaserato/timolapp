@@ -50,15 +50,20 @@ const LANGUAGES = [
   { id: "es", label: "Español", flag: "🇪🇸" },
 ];
 
-const MULTILINGUAL_FIELDS = [
+const ALWAYS_VISIBLE_FIELDS = [
   { key: "name", label: "Nome do produto", type: "input" as const },
   { key: "description", label: "Descrição", type: "textarea" as const },
+];
+
+const COLLAPSIBLE_FIELDS = [
   { key: "benefits", label: "Benefícios", type: "textarea" as const },
   { key: "instructions", label: "Instruções de uso", type: "textarea" as const },
   { key: "warranty", label: "Garantia", type: "textarea" as const },
   { key: "composition", label: "Composição", type: "textarea" as const },
   { key: "manufacturer", label: "Fabricante", type: "textarea" as const },
 ];
+
+const ALL_ML_FIELDS = [...ALWAYS_VISIBLE_FIELDS, ...COLLAPSIBLE_FIELDS];
 
 /* ── Helpers ── */
 function norm(s: string) { return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
