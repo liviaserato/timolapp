@@ -224,11 +224,25 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                 </TabsList>
                 {LANGUAGES.map(l => (
                   <TabsContent key={l.id} value={l.id} className="space-y-3 mt-3">
-                    {MULTILINGUAL_FIELDS.map(f => (
+                    {/* Always visible: name + description */}
+                    {ALWAYS_VISIBLE_FIELDS.map(f => (
                       <div key={f.key} className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">
-                          {f.label} {f.key === "name" && l.id === "pt" && "*"}
-                        </Label>
+                        <div className="flex items-center justify-between">
+                          <Label className="text-xs text-muted-foreground">
+                            {f.label} {f.key === "name" && l.id === "pt" && "*"}
+                          </Label>
+                          {l.id !== "pt" && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
+                              onClick={() => translateField(l.id, f.key)}
+                            >
+                              <Languages className="h-3 w-3" /> Traduzir do PT
+                            </Button>
+                          )}
+                        </div>
                         {f.type === "input" ? (
                           <Input
                             value={multilingualData[l.id][f.key]}
@@ -245,6 +259,41 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                         )}
                       </div>
                     ))}
+
+                    {/* Collapsible fields */}
+                    {COLLAPSIBLE_FIELDS.map(f => (
+                      <Collapsible
+                        key={f.key}
+                        open={collapsibleOpen[`${l.id}-${f.key}`] ?? false}
+                        onOpenChange={() => toggleCollapsible(`${l.id}-${f.key}`)}
+                      >
+                        <CollapsibleTrigger className="flex items-center gap-2 w-full py-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                          <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", collapsibleOpen[`${l.id}-${f.key}`] && "rotate-180")} />
+                          {f.label}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="space-y-1 pt-1">
+                          {l.id !== "pt" && (
+                            <div className="flex justify-end">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
+                                onClick={() => translateField(l.id, f.key)}
+                              >
+                                <Languages className="h-3 w-3" /> Traduzir do PT
+                              </Button>
+                            </div>
+                          )}
+                          <Textarea
+                            value={multilingualData[l.id][f.key]}
+                            onChange={e => updateML(l.id, f.key, e.target.value)}
+                            placeholder={f.label}
+                            rows={3}
+                          />
+                        </CollapsibleContent>
+                      </Collapsible>
+                    ))}
                   </TabsContent>
                 ))}
               </Tabs>
@@ -253,15 +302,10 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             {/* ── Points ── */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Pontuação</Label>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Pontos Unilevel</Label>
-                  <Input type="number" value={pointsUnilevel} onChange={e => setPointsUnilevel(e.target.value)} placeholder="0" />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Pontos Binário</Label>
-                  <Input type="number" value={pointsBinary} onChange={e => setPointsBinary(e.target.value)} placeholder="0" />
-                </div>
+              <div className="max-w-xs space-y-1">
+                <Label className="text-xs text-muted-foreground">Pontos por produto</Label>
+                <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" />
+                <p className="text-[10px] text-muted-foreground">1 ponto = 1 ponto Unilevel = 1 ponto Binário</p>
               </div>
             </div>
 
