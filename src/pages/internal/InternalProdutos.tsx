@@ -489,7 +489,7 @@ export default function InternalProdutos() {
             </div>
           )}
         </div>
-      </DashboardCard>
+      </div>
 
       {/* Results */}
       {filtered.length === 0 && hasFilters ? (
