@@ -594,6 +594,6 @@ function ProductListCard({ product: p }: { product: Product }) {
           </div>
         </div>
       </div>
-    </DashboardCard>
+    </div>
   );
 }
