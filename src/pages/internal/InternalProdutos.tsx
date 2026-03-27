@@ -119,6 +119,18 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
     setMultilingualData(prev => ({ ...prev, [lang]: { ...prev[lang], [field]: value } }));
   };
 
+  const translateField = (lang: string, fieldKey: string) => {
+    const ptValue = multilingualData.pt[fieldKey];
+    if (!ptValue.trim()) { toast.error("Preencha o campo em Português primeiro"); return; }
+    // Simulated translation — in production use AI translation API
+    updateML(lang, fieldKey, ptValue + ` [${lang.toUpperCase()}]`);
+    toast.success(`Campo traduzido para ${lang === "en" ? "Inglês" : "Espanhol"}`);
+  };
+
+  const toggleCollapsible = (key: string) => {
+    setCollapsibleOpen(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
   const updatePrice = (currency: string, priceType: string, value: string) => {
     setPrices(prev => ({ ...prev, [currency]: { ...prev[currency], [priceType]: value } }));
   };
