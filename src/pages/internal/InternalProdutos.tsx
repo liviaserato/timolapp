@@ -94,8 +94,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
   const [points, setPoints] = useState("");
 
-  const [pointsUnilevel, setPointsUnilevel] = useState("");
-  const [pointsBinary, setPointsBinary] = useState("");
+  const [collapsibleOpen, setCollapsibleOpen] = useState<Record<string, boolean>>({});
   const [visibleCountries, setVisibleCountries] = useState<string[]>(["BR"]);
 
   // Prices: { currency: { priceType: value } }
