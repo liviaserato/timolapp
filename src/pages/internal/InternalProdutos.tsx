@@ -415,7 +415,7 @@ export default function InternalProdutos() {
       </div>
 
       {/* Filters */}
-      <DashboardCard>
+      <div className="rounded-[10px] border border-border bg-card p-4 shadow-sm">
         <div className="space-y-4">
           {/* Search */}
           <div className="relative">
