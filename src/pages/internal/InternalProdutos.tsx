@@ -12,9 +12,11 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Search, X, Plus, Package, ChevronLeft, ChevronRight,
   Image as ImageIcon, Upload, Trash2, Eye, Pencil, Copy,
+  ChevronDown, Languages,
 } from "lucide-react";
 import { categories, products as mockProducts, type Product, type Category } from "@/data/mock-products";
 import { toast } from "sonner";
@@ -48,15 +50,20 @@ const LANGUAGES = [
   { id: "es", label: "Español", flag: "🇪🇸" },
 ];
 
-const MULTILINGUAL_FIELDS = [
+const ALWAYS_VISIBLE_FIELDS = [
   { key: "name", label: "Nome do produto", type: "input" as const },
   { key: "description", label: "Descrição", type: "textarea" as const },
+];
+
+const COLLAPSIBLE_FIELDS = [
   { key: "benefits", label: "Benefícios", type: "textarea" as const },
   { key: "instructions", label: "Instruções de uso", type: "textarea" as const },
   { key: "warranty", label: "Garantia", type: "textarea" as const },
   { key: "composition", label: "Composição", type: "textarea" as const },
   { key: "manufacturer", label: "Fabricante", type: "textarea" as const },
 ];
+
+const ALL_ML_FIELDS = [...ALWAYS_VISIBLE_FIELDS, ...COLLAPSIBLE_FIELDS];
 
 /* ── Helpers ── */
 function norm(s: string) { return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
@@ -80,13 +87,14 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
     const init: Record<string, Record<string, string>> = {};
     LANGUAGES.forEach(l => {
       init[l.id] = {};
-      MULTILINGUAL_FIELDS.forEach(f => { init[l.id][f.key] = ""; });
+      ALL_ML_FIELDS.forEach(f => { init[l.id][f.key] = ""; });
     });
     return init;
   });
 
-  const [pointsUnilevel, setPointsUnilevel] = useState("");
-  const [pointsBinary, setPointsBinary] = useState("");
+  const [points, setPoints] = useState("");
+
+  const [collapsibleOpen, setCollapsibleOpen] = useState<Record<string, boolean>>({});
   const [visibleCountries, setVisibleCountries] = useState<string[]>(["BR"]);
 
   // Prices: { currency: { priceType: value } }
@@ -109,6 +117,18 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
   const updateML = (lang: string, field: string, value: string) => {
     setMultilingualData(prev => ({ ...prev, [lang]: { ...prev[lang], [field]: value } }));
+  };
+
+  const translateField = (lang: string, fieldKey: string) => {
+    const ptValue = multilingualData.pt[fieldKey];
+    if (!ptValue.trim()) { toast.error("Preencha o campo em Português primeiro"); return; }
+    // Simulated translation — in production use AI translation API
+    updateML(lang, fieldKey, ptValue + ` [${lang.toUpperCase()}]`);
+    toast.success(`Campo traduzido para ${lang === "en" ? "Inglês" : "Espanhol"}`);
+  };
+
+  const toggleCollapsible = (key: string) => {
+    setCollapsibleOpen(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
   const updatePrice = (currency: string, priceType: string, value: string) => {
@@ -153,7 +173,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] p-0">
+      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] p-0">
         <DialogHeader className="p-6 pb-0">
           <DialogTitle className="text-lg font-bold text-primary">Novo Produto</DialogTitle>
         </DialogHeader>
@@ -162,7 +182,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
           <div className="space-y-6 pt-2">
 
             {/* ── SKU + Category + Subcategory ── */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>SKU *</Label>
                 <Input value={sku} onChange={e => setSku(e.target.value)} placeholder="EX: PRD-001" />
@@ -204,11 +224,25 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                 </TabsList>
                 {LANGUAGES.map(l => (
                   <TabsContent key={l.id} value={l.id} className="space-y-3 mt-3">
-                    {MULTILINGUAL_FIELDS.map(f => (
+                    {/* Always visible: name + description */}
+                    {ALWAYS_VISIBLE_FIELDS.map(f => (
                       <div key={f.key} className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">
-                          {f.label} {f.key === "name" && l.id === "pt" && "*"}
-                        </Label>
+                        <div className="flex items-center justify-between">
+                          <Label className="text-xs text-muted-foreground">
+                            {f.label} {f.key === "name" && l.id === "pt" && "*"}
+                          </Label>
+                          {l.id !== "pt" && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
+                              onClick={() => translateField(l.id, f.key)}
+                            >
+                              <Languages className="h-3 w-3" /> Traduzir do PT
+                            </Button>
+                          )}
+                        </div>
                         {f.type === "input" ? (
                           <Input
                             value={multilingualData[l.id][f.key]}
@@ -225,6 +259,41 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                         )}
                       </div>
                     ))}
+
+                    {/* Collapsible fields */}
+                    {COLLAPSIBLE_FIELDS.map(f => (
+                      <Collapsible
+                        key={f.key}
+                        open={collapsibleOpen[`${l.id}-${f.key}`] ?? false}
+                        onOpenChange={() => toggleCollapsible(`${l.id}-${f.key}`)}
+                      >
+                        <CollapsibleTrigger className="flex items-center gap-2 w-full py-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                          <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", collapsibleOpen[`${l.id}-${f.key}`] && "rotate-180")} />
+                          {f.label}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="space-y-1 pt-1">
+                          {l.id !== "pt" && (
+                            <div className="flex justify-end">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
+                                onClick={() => translateField(l.id, f.key)}
+                              >
+                                <Languages className="h-3 w-3" /> Traduzir do PT
+                              </Button>
+                            </div>
+                          )}
+                          <Textarea
+                            value={multilingualData[l.id][f.key]}
+                            onChange={e => updateML(l.id, f.key, e.target.value)}
+                            placeholder={f.label}
+                            rows={3}
+                          />
+                        </CollapsibleContent>
+                      </Collapsible>
+                    ))}
                   </TabsContent>
                 ))}
               </Tabs>
@@ -233,15 +302,10 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             {/* ── Points ── */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Pontuação</Label>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Pontos Unilevel</Label>
-                  <Input type="number" value={pointsUnilevel} onChange={e => setPointsUnilevel(e.target.value)} placeholder="0" />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Pontos Binário</Label>
-                  <Input type="number" value={pointsBinary} onChange={e => setPointsBinary(e.target.value)} placeholder="0" />
-                </div>
+              <div className="max-w-xs space-y-1">
+                <Label className="text-xs text-muted-foreground">Pontos por produto</Label>
+                <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" />
+                <p className="text-[10px] text-muted-foreground">1 ponto = 1 ponto Unilevel = 1 ponto Binário</p>
               </div>
             </div>
 
@@ -272,7 +336,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                 </TabsList>
                 {CURRENCIES.map(c => (
                   <TabsContent key={c.id} value={c.id} className="mt-3">
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       {PRICE_TYPES.map(p => (
                         <div key={p.id} className="space-y-1">
                           <Label className="text-xs text-muted-foreground">{p.label}</Label>
