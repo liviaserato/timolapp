@@ -546,7 +546,7 @@ export default function InternalProdutos() {
 /* ── Product Card ── */
 function ProductListCard({ product: p }: { product: Product }) {
   return (
-    <DashboardCard className="p-0 overflow-hidden hover:shadow-md transition-shadow">
+    <div className="rounded-[10px] border border-border bg-card overflow-hidden hover:shadow-md transition-shadow">
       {/* Image placeholder */}
       <div className="h-32 bg-muted/30 flex items-center justify-center">
         {p.image ? (
