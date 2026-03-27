@@ -87,10 +87,12 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
     const init: Record<string, Record<string, string>> = {};
     LANGUAGES.forEach(l => {
       init[l.id] = {};
-      MULTILINGUAL_FIELDS.forEach(f => { init[l.id][f.key] = ""; });
+      ALL_ML_FIELDS.forEach(f => { init[l.id][f.key] = ""; });
     });
     return init;
   });
+
+  const [points, setPoints] = useState("");
 
   const [pointsUnilevel, setPointsUnilevel] = useState("");
   const [pointsBinary, setPointsBinary] = useState("");
