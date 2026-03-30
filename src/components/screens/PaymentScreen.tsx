@@ -23,8 +23,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { loadStripe } from "@stripe/stripe-js";
-import { supabase } from "@/integrations/supabase/client";
 import visaIcon from "@/assets/credit-card-visa.svg";
 import masterIcon from "@/assets/credit-card-master.svg";
 import amexIcon from "@/assets/credit-card-amex.svg";
