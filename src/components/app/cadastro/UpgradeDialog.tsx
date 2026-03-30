@@ -119,7 +119,7 @@ const planLabels: Record<string, string> = { bronze: "Bronze", silver: "Prata", 
 /* ── Payment helpers ── */
 
 const PIX_DISCOUNT = 0.05;
-const STRIPE_PUBLISHABLE_KEY = "pk_live_51RlasdFteIQdimMI2ZGm9VfZ7KDmY1jUJxTqe0IdTaigPV0S6L97Yj0TGySaEzZ7De96cCS2qVNayXybUogpnFlz00VeYyJ5ZR";
+
 const PIX_CODE = "00020126580014BR.GOV.BCB.PIX0136timol-pix-key@timol.com.br5204000053039865802BR5913TIMOL SISTEMA6009SAO PAULO62070503***6304ABCD";
 
 const MOCK_COUPONS: Record<string, number> = { TESTE: 10 };
