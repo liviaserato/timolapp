@@ -26,8 +26,8 @@ import {
   AlertTriangle, X, Loader2, ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { loadStripe } from "@stripe/stripe-js";
-import { supabase } from "@/integrations/supabase/client";
+
+
 import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 import { openWhatsAppLink } from "@/lib/whatsapp";
 import { validateCoupon, type DiscountPreview } from "@/lib/api/coupons";
@@ -119,7 +119,7 @@ const planLabels: Record<string, string> = { bronze: "Bronze", silver: "Prata", 
 /* ── Payment helpers ── */
 
 const PIX_DISCOUNT = 0.05;
-const STRIPE_PUBLISHABLE_KEY = "pk_live_51RlasdFteIQdimMI2ZGm9VfZ7KDmY1jUJxTqe0IdTaigPV0S6L97Yj0TGySaEzZ7De96cCS2qVNayXybUogpnFlz00VeYyJ5ZR";
+
 const PIX_CODE = "00020126580014BR.GOV.BCB.PIX0136timol-pix-key@timol.com.br5204000053039865802BR5913TIMOL SISTEMA6009SAO PAULO62070503***6304ABCD";
 
 const MOCK_COUPONS: Record<string, number> = { TESTE: 10 };
@@ -332,19 +332,9 @@ export function UpgradeDialog({
     setLoading(true);
     try {
       if (method === "credit-card") {
-        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke("create-checkout", {
-          body: { price: priceAfterDeductions, currency: "brl", customerEmail: userEmail, franchiseTypeCode: selectedPlan, franchiseId: upgradeTargetId, installments: parseInt(installments), customerName: userName, balanceUsed: parsedBalance, couponCode: couponDiscount ? couponCode : undefined },
-        });
-        if (checkoutError || !checkoutData?.clientSecret) { setErrors({ general: "Erro ao processar pagamento. Tente novamente." }); setLoading(false); return; }
-        const stripe = await loadStripe(STRIPE_PUBLISHABLE_KEY);
-        if (!stripe) { setErrors({ general: "Erro ao carregar gateway de pagamento." }); setLoading(false); return; }
-        const [expMonth, expYear] = cardExpiry.split("/").map(Number);
-        const cardNumberClean = cardNumber.replace(/\s/g, "");
-        const { error: stripeError } = await stripe.confirmCardPayment(checkoutData.clientSecret, {
-          payment_method: { card: { number: cardNumberClean, exp_month: expMonth, exp_year: 2000 + expYear, cvc: cardCvv } as any, billing_details: { name: cardName, email: userEmail } },
-        });
+        // TODO: Integração de pagamento será feita pelo backend (Manus)
         setLoading(false);
-        if (stripeError) { setErrors({ general: stripeError.message || "Erro no pagamento." }); return; }
+        const cardNumberClean = cardNumber.replace(/\s/g, "");
         setPaymentResult({ method: "credit-card", cardLast4: cardNumberClean.slice(-4), installments: parseInt(installments), amount: priceAfterDeductions, balanceUsed: parsedBalance > 0 ? parsedBalance : undefined });
         setStep("confirmation");
       } else {
