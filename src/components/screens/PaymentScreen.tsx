@@ -146,69 +146,10 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
 
     try {
       if (method === "credit-card") {
-        // 1. Create PaymentIntent via edge function
-        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
-          "create-checkout",
-          {
-            body: {
-              price,
-              currency: currencyCode,
-              customerEmail: data.email,
-              franchiseTypeCode: data.franchiseTypeCode,
-              franchiseId: data.franchiseId,
-              installments: isBrazilAddress && !isForeigner ? parseInt(installments) : 1,
-              customerName: data.fullName,
-              authUserId: data.authUserId,
-            },
-          }
-        );
-
-        if (checkoutError || !checkoutData?.clientSecret) {
-          console.error("Checkout error:", checkoutError, checkoutData);
-          setErrors({ general: t("payment.error.general") });
-          setLoading(false);
-          return;
-        }
-
-        // 2. Confirm payment with Stripe.js
-        const stripe = await loadStripe(STRIPE_PUBLISHABLE_KEY);
-        if (!stripe) {
-          setErrors({ general: t("payment.error.general") });
-          setLoading(false);
-          return;
-        }
-
-        const [expMonth, expYear] = cardExpiry.split("/").map(Number);
-        const cardNumberClean = cardNumber.replace(/\s/g, "");
-
-        const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(
-          checkoutData.clientSecret,
-          {
-            payment_method: {
-              card: {
-                number: cardNumberClean,
-                exp_month: expMonth,
-                exp_year: 2000 + expYear,
-                cvc: cardCvv,
-              } as any,
-              billing_details: {
-                name: cardName,
-                email: data.email,
-              },
-            },
-          }
-        );
-
+        // TODO: Integração de pagamento será feita pelo backend (Manus)
         setLoading(false);
-
-        if (stripeError) {
-          console.error("Stripe error:", stripeError);
-          setErrors({ general: stripeError.message || t("payment.error.general") });
-          return;
-        }
-
+        const cardNumberClean = cardNumber.replace(/\s/g, "");
         const last4 = cardNumberClean.slice(-4);
-        const succeeded = paymentIntent?.status === "succeeded";
 
         onConfirm({
           paymentMethod: "credit-card",
@@ -217,8 +158,7 @@ export const PaymentScreen = ({ data, onConfirm, onBack }: Props) => {
           cardHolderName: cardName.trim(),
           amountPaid: price,
           currencyCode,
-          // Signal to Index.tsx whether payment succeeded
-          registrationStatus: succeeded ? "payment_confirmed" : "payment_pending",
+          registrationStatus: "payment_pending",
         });
       } else {
         // PIX flow — unchanged
