@@ -146,7 +146,7 @@ const Index = () => {
               updateData(paymentInfo);
               const method = paymentInfo.paymentMethod ?? "credit-card";
               if (method === "credit-card") {
-                // Real Stripe result — registrationStatus set by PaymentScreen
+                // Payment result — registrationStatus set by PaymentScreen
                 const confirmed = paymentInfo.registrationStatus === "payment_confirmed";
                 if (confirmed) {
                   updateRegistrationStatus({ payment_completed: true, status: "completed" });
