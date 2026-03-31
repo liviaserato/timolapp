@@ -26,7 +26,7 @@ import {
   Plus, AlertTriangle, X, Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { loadStripe } from "@stripe/stripe-js";
+
 import { supabase } from "@/integrations/supabase/client";
 import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 import { openWhatsAppLink } from "@/lib/whatsapp";
@@ -368,61 +368,9 @@ export function NewFranchiseDialog({
 
     try {
       if (method === "credit-card") {
-        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
-          "create-checkout",
-          {
-            body: {
-              price: priceAfterDeductions,
-              currency: "brl",
-              customerEmail: userEmail,
-              franchiseTypeCode: selectedPlan,
-              sponsorFranchiseId: sponsorId,
-              installments: parseInt(installments),
-              customerName: userName,
-              isNewFranchise: true,
-              balanceUsed: parsedBalance,
-              couponCode: couponDiscount ? couponCode : undefined,
-            },
-          }
-        );
-
-        if (checkoutError || !checkoutData?.clientSecret) {
-          setErrors({ general: "Erro ao processar pagamento. Tente novamente." });
-          setLoading(false);
-          return;
-        }
-
-        const stripe = await loadStripe(STRIPE_PUBLISHABLE_KEY);
-        if (!stripe) {
-          setErrors({ general: "Erro ao carregar gateway de pagamento." });
-          setLoading(false);
-          return;
-        }
-
-        const [expMonth, expYear] = cardExpiry.split("/").map(Number);
-        const cardNumberClean = cardNumber.replace(/\s/g, "");
-
-        const { error: stripeError } = await stripe.confirmCardPayment(
-          checkoutData.clientSecret,
-          {
-            payment_method: {
-              card: {
-                number: cardNumberClean,
-                exp_month: expMonth,
-                exp_year: 2000 + expYear,
-                cvc: cardCvv,
-              } as any,
-              billing_details: { name: cardName, email: userEmail },
-            },
-          }
-        );
-
+        // TODO: Integração de pagamento será feita pelo backend (Manus)
+        await new Promise((r) => setTimeout(r, 1500));
         setLoading(false);
-
-        if (stripeError) {
-          setErrors({ general: stripeError.message || "Erro no pagamento." });
-          return;
-        }
 
         const mockNewId = String(Math.floor(100000 + Math.random() * 900000));
         setGeneratedFranchiseId(mockNewId);
@@ -434,7 +382,7 @@ export function NewFranchiseDialog({
 
         setPaymentResult({
           method: "credit-card",
-          cardLast4: cardNumberClean.slice(-4),
+          cardLast4: cardNumber.replace(/\s/g, "").slice(-4),
           installments: parseInt(installments),
           amount: priceAfterDeductions,
           balanceUsed: parsedBalance > 0 ? parsedBalance : undefined,
