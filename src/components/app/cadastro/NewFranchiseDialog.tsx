@@ -382,7 +382,7 @@ export function NewFranchiseDialog({
 
         setPaymentResult({
           method: "credit-card",
-          cardLast4: cardNumberClean.slice(-4),
+          cardLast4: cardNumber.replace(/\s/g, "").slice(-4),
           installments: parseInt(installments),
           amount: priceAfterDeductions,
           balanceUsed: parsedBalance > 0 ? parsedBalance : undefined,
