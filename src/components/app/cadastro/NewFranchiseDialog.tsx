@@ -26,7 +26,7 @@ import {
   Plus, AlertTriangle, X, Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { loadStripe } from "@stripe/stripe-js";
+
 import { supabase } from "@/integrations/supabase/client";
 import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader";
 import { openWhatsAppLink } from "@/lib/whatsapp";
