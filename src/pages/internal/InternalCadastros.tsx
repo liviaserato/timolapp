@@ -627,24 +627,40 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                     ) : (
                       <span className="text-base font-bold text-foreground mr-1">{f.fullName}</span>
                     )}
-                    {sortedFranchises.length <= 1 ? (
-                      sortedFranchises.map((fr, idx) => (
-                        <button
-                          key={fr.franchiseId}
-                          type="button"
-                          onClick={() => setSelectedIdx(idx)}
-                          className={cn(
-                            "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border inline-flex items-center transition-colors cursor-pointer",
-                            idx === selectedIdx
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
-                          )}
-                        >
-                          ID {fr.franchiseId}
-                        </button>
-                      ))
-                    ) : null}
+                    {/* Single ID: always inline */}
+                    {sortedFranchises.length <= 1 && sortedFranchises.map((fr, idx) => (
+                      <button
+                        key={fr.franchiseId}
+                        type="button"
+                        onClick={() => setSelectedIdx(idx)}
+                        className={cn(
+                          "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border inline-flex items-center transition-colors cursor-pointer",
+                          idx === selectedIdx
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
+                        )}
+                      >
+                        ID {fr.franchiseId}
+                      </button>
+                    ))}
+                    {/* Multiple IDs: inline on desktop only */}
+                    {sortedFranchises.length > 1 && sortedFranchises.map((fr, idx) => (
+                      <button
+                        key={fr.franchiseId}
+                        type="button"
+                        onClick={() => setSelectedIdx(idx)}
+                        className={cn(
+                          "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border hidden sm:inline-flex items-center transition-colors cursor-pointer",
+                          idx === selectedIdx
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
+                        )}
+                      >
+                        ID {fr.franchiseId}
+                      </button>
+                    ))}
                   </div>
+                  {/* Multiple IDs on mobile: separate row */}
                   {sortedFranchises.length > 1 && (
                     <div className="flex sm:hidden flex-wrap gap-1 mt-0.5" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
                       {sortedFranchises.map((fr, idx) => (
@@ -663,11 +679,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                         </button>
                       ))}
                     </div>
-                  )}
-                  {sortedFranchises.length > 1 && (
-                    <div className="hidden sm:contents">
-                      {/* On desktop, IDs are rendered inline in the name row above — re-render them there */}
-                    </div>
+                  )
                   )}
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-1.5 mt-0.5 sm:justify-between" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
