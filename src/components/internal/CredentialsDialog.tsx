@@ -171,7 +171,7 @@ export function CredentialsDialog({ open, onOpenChange, username, email, fullNam
                   <ShieldCheck className="h-5 w-5 text-emerald-600" />
                 </div>
                 <div className="text-center space-y-1">
-                  <p className="text-sm font-medium">Um link de redefinição foi enviado para</p>
+                  <p className="text-sm font-medium">Um link de redefinição de senha foi enviado para</p>
                   <p className="text-sm font-medium text-muted-foreground">{maskedEmail}</p>
                 </div>
               </div>
