@@ -95,8 +95,10 @@ export function CredentialsDialog({ open, onOpenChange, username, email, fullNam
             <User className="h-5 w-5" />
             Usuário e Senha
           </DialogTitle>
-          <DialogDescription>
-            Gerencie as credenciais de acesso de {fullName}.
+          <DialogDescription className="space-y-0.5">
+            <span>Gerencie as credenciais de acesso de</span>
+            <br />
+            <span className="font-semibold text-foreground">{fullName}</span>
           </DialogDescription>
         </DialogHeader>
 
@@ -172,44 +174,28 @@ export function CredentialsDialog({ open, onOpenChange, username, email, fullNam
                   <ShieldCheck className="h-5 w-5 text-emerald-600" />
                 </div>
                 <div className="text-center space-y-1">
-                  <p className="text-sm font-medium">E-mail enviado!</p>
-                  <p className="text-xs text-muted-foreground">
-                    Um link de redefinição foi enviado para {maskedEmail}
-                  </p>
+                  <p className="text-sm font-medium">Um link de redefinição foi enviado para</p>
+                  <p className="text-sm font-medium text-muted-foreground">{maskedEmail}</p>
                 </div>
               </div>
             ) : (
-              <div className="space-y-2">
-                <div className="flex items-start gap-2 rounded-md border border-muted bg-muted/30 p-2.5">
-                  <Mail className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Um e-mail de redefinição de senha será enviado para <span className="font-medium text-foreground">{maskedEmail}</span>
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full gap-1.5 h-8 text-xs"
-                  onClick={handleResetPassword}
-                  disabled={resetSending}
-                >
-                  {resetSending ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <KeyRound className="h-3.5 w-3.5" />
-                  )}
-                  {resetSending ? "Enviando..." : "Enviar e-mail de redefinição"}
-                </Button>
-              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full gap-1.5 h-8 text-xs"
+                onClick={handleResetPassword}
+                disabled={resetSending}
+              >
+                {resetSending ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <KeyRound className="h-3.5 w-3.5" />
+                )}
+                {resetSending ? "Enviando..." : "Enviar e-mail de redefinição da senha"}
+              </Button>
             )}
           </div>
         </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full">
-            Fechar
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
