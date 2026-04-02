@@ -733,9 +733,9 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
 
             {/* Editing action bar */}
             {editing && (
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/50">
-                <Button size="sm" className="h-7 text-xs gap-1.5" onClick={saveEditing}>Salvar</Button>
+              <div className="flex items-center justify-end gap-2 mt-3 pt-3 border-t border-border/50">
                 <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={cancelEditing}>Cancelar</Button>
+                <Button size="sm" className="h-7 text-xs gap-1.5" onClick={saveEditing}>Salvar</Button>
               </div>
             )}
           </div>
