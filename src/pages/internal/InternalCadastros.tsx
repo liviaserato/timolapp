@@ -750,7 +750,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[170px] shrink-0 mt-3 lg:mt-0">
+            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[170px] shrink-0 mt-3 lg:mt-0 self-start">
               <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setAddressOpen(true)}>
                 <MapPinHouse className="h-3 w-3" />
                 {t("internal.cadastros.btnAddresses")}
