@@ -162,12 +162,9 @@ export function CredentialsDialog({ open, onOpenChange, username, email, fullNam
             )}
           </div>
 
-          {/* Separator */}
-          <div className="border-t border-border" />
 
           {/* Password reset section */}
           <div className="space-y-3">
-            <Label className="text-xs text-muted-foreground">Senha</Label>
             {resetSent ? (
               <div className="flex flex-col items-center gap-3 py-3">
                 <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
