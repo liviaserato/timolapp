@@ -643,7 +643,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                       </button>
                     ))}
                   </div>
-                  <div className="flex items-center gap-1.5 mt-0.5 justify-between" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-1.5 mt-0.5 sm:justify-between" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
                     <p className="text-xs text-muted-foreground min-w-0 truncate">
                       {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
                     </p>
