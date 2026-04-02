@@ -759,13 +759,13 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                 <Landmark className="h-3 w-3" />
                 {t("internal.cadastros.btnFinancial")}
               </Button>
-              <Button variant={editing ? "default" : "outline"} size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={editing ? cancelEditing : startEditing}>
-                <Pencil className="h-3 w-3" />
-                {editing ? "Cancelar edição" : t("internal.cadastros.btnEdit")}
-              </Button>
               <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setCredentialsOpen(true)}>
                 <Lock className="h-3 w-3" />
                 {t("internal.cadastros.btnCredentials")}
+              </Button>
+              <Button variant={editing ? "default" : "outline"} size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={editing ? cancelEditing : startEditing}>
+                <Pencil className="h-3 w-3" />
+                {editing ? "Cancelar edição" : t("internal.cadastros.btnEdit")}
               </Button>
             </div>
           )}
