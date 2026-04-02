@@ -162,19 +162,16 @@ export function CredentialsDialog({ open, onOpenChange, username, email, fullNam
             )}
           </div>
 
-          {/* Separator */}
-          <div className="border-t border-border" />
 
           {/* Password reset section */}
           <div className="space-y-3">
-            <Label className="text-xs text-muted-foreground">Senha</Label>
             {resetSent ? (
               <div className="flex flex-col items-center gap-3 py-3">
                 <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
                   <ShieldCheck className="h-5 w-5 text-emerald-600" />
                 </div>
                 <div className="text-center space-y-1">
-                  <p className="text-sm font-medium">Um link de redefinição foi enviado para</p>
+                  <p className="text-sm font-medium">Um link de redefinição de senha foi enviado para</p>
                   <p className="text-sm font-medium text-muted-foreground">{maskedEmail}</p>
                 </div>
               </div>
