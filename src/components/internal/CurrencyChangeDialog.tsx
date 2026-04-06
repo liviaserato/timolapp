@@ -178,15 +178,14 @@ export function CurrencyChangeDialog({
 
               {/* Timer hint */}
               <div className={cn(
-                "flex flex-col items-center gap-1 rounded-md border px-3 py-2.5 text-xs text-center",
+                "flex flex-col items-center gap-0.5 rounded-md border px-3 py-2.5 text-xs text-center",
                 expired
                   ? "border-red-200 bg-red-50 text-red-700"
                   : "border-amber-200 bg-amber-50 text-amber-700"
               )}>
                 {expired ? (
                   <>
-                    <AlertTriangle className="h-4 w-4 shrink-0" />
-                    <span>Prazo expirado. Os valores precisam ser recalculados.</span>
+                    <span className="inline-flex items-center gap-1.5"><AlertTriangle className="h-3.5 w-3.5 shrink-0" />Prazo expirado. Os valores precisam ser recalculados.</span>
                     <button
                       onClick={handleRecalculate}
                       className="inline-flex items-center gap-1 text-xs font-medium text-red-800 underline underline-offset-2 hover:text-red-900 shrink-0"
@@ -197,8 +196,7 @@ export function CurrencyChangeDialog({
                   </>
                 ) : (
                   <>
-                    <Clock className="h-4 w-4 shrink-0" />
-                    <span>Os valores apresentados expiram em <span className="font-semibold">{mm(secondsLeft)}</span>.</span>
+                    <span className="inline-flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 shrink-0" />Os valores apresentados expiram em <span className="font-semibold">{mm(secondsLeft)}</span>.</span>
                     <span>Valide com o franqueado antes de confirmar.</span>
                   </>
                 )}
