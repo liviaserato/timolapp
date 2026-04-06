@@ -801,7 +801,7 @@ function FranchiseeCard({ franchisee: f, visibleFranchises }: { franchisee: Fran
           <div className="flex-1 min-w-0">
             {/* ── Grid 1: Name + IDs + Sponsor ── */}
             <div className="mb-3 pb-3 border-b border-border/50">
-              <div className="flex items-center gap-3">
+              <div className="flex items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     {regStatus === "concluido" ? (
