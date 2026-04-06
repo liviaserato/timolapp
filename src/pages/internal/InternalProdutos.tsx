@@ -465,6 +465,7 @@ export default function InternalProdutos() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | "">("");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | "">("");
+  const [onlyActivatable, setOnlyActivatable] = useState(false);
   const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -482,9 +483,10 @@ export default function InternalProdutos() {
       }
       if (selectedCategory && p.category !== selectedCategory) return false;
       if (selectedSubcategory && p.subcategory !== selectedSubcategory) return false;
+      if (onlyActivatable && !p.activatable) return false;
       return true;
     });
-  }, [searchTerm, selectedCategory, selectedSubcategory]);
+  }, [searchTerm, selectedCategory, selectedSubcategory, onlyActivatable]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -493,10 +495,11 @@ export default function InternalProdutos() {
     setSearchTerm("");
     setSelectedCategory("");
     setSelectedSubcategory("");
+    setOnlyActivatable(false);
     setPage(1);
   };
 
-  const hasFilters = !!searchTerm || !!selectedCategory || !!selectedSubcategory;
+  const hasFilters = !!searchTerm || !!selectedCategory || !!selectedSubcategory || onlyActivatable;
 
   return (
     <div className="space-y-6 pb-10">
