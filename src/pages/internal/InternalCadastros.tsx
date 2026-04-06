@@ -366,8 +366,6 @@ export default function InternalCadastros() {
     if (qualification !== "all") parts.push(`Qualificação: ${t(qualificationLabelKeys[qualification])}`);
     if (planType !== "all") parts.push(`Tipo de franquia: ${t(`franchise.${planType}`)}`);
     if (locationSearch.trim()) parts.push(`Localidade: ${locationSearch}`);
-    if (franchiseStatusFilter === "active") parts.push(`Status: ${t("internal.cadastros.statusActive")}`);
-    if (franchiseStatusFilter === "inactive") parts.push(`Status: ${t("internal.cadastros.statusInactive")}`);
     return parts;
   }, [attendant, qualification, planType, locationSearch, registrationStatus, franchiseStatusFilter, t]);
 
