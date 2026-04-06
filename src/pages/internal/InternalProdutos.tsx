@@ -561,15 +561,21 @@ export default function InternalProdutos() {
                 onValueChange={(v) => { setSelectedCategory(v || ""); setSelectedSubcategory(""); setPage(1); }}
                 className="flex flex-wrap justify-start gap-1"
               >
-                {categories.map(c => (
-                  <ToggleGroupItem
-                    key={c.id}
-                    value={c.id}
-                    className="text-xs px-3 py-1 h-8 rounded-md border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                  >
-                    {c.name}
-                  </ToggleGroupItem>
-                ))}
+                {categories.map(c => {
+                  const hasProducts = onlyActivatable
+                    ? mockProducts.some(p => p.category === c.id && p.activatable)
+                    : true;
+                  return (
+                    <ToggleGroupItem
+                      key={c.id}
+                      value={c.id}
+                      disabled={!hasProducts}
+                      className="text-xs px-3 py-1 h-8 rounded-md border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      {c.name}
+                    </ToggleGroupItem>
+                  );
+                })}
               </ToggleGroup>
             </div>
 
@@ -582,15 +588,21 @@ export default function InternalProdutos() {
                   onValueChange={(v) => { setSelectedSubcategory(v || ""); setPage(1); }}
                   className="flex flex-wrap justify-start gap-1"
                 >
-                  {subcategories.map(s => (
-                    <ToggleGroupItem
-                      key={s}
-                      value={s}
-                      className="text-xs px-3 py-1 h-7 rounded-md border data-[state=on]:bg-primary/80 data-[state=on]:text-primary-foreground"
-                    >
-                      {s}
-                    </ToggleGroupItem>
-                  ))}
+                  {subcategories.map(s => {
+                    const hasProducts = onlyActivatable
+                      ? mockProducts.some(p => p.category === selectedCategory && p.subcategory === s && p.activatable)
+                      : true;
+                    return (
+                      <ToggleGroupItem
+                        key={s}
+                        value={s}
+                        disabled={!hasProducts}
+                        className="text-xs px-3 py-1 h-7 rounded-md border data-[state=on]:bg-primary/80 data-[state=on]:text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        {s}
+                      </ToggleGroupItem>
+                    );
+                  })}
                 </ToggleGroup>
               </div>
             )}
