@@ -559,11 +559,10 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
     fullName: f.fullName, email: f.email, phone: f.phone,
     phoneDdi: f.phoneDdi, phoneNumber: f.phoneNumber,
     document: f.document, birthDate: f.birthDate, gender: f.gender,
-    city: f.city, state: f.state,
   });
 
   const startEditing = () => {
-    setEditData({ fullName: f.fullName, email: f.email, phone: f.phone, phoneDdi: f.phoneDdi, phoneNumber: f.phoneNumber, document: f.document, birthDate: f.birthDate, gender: f.gender, city: f.city, state: f.state });
+    setEditData({ fullName: f.fullName, email: f.email, phone: f.phone, phoneDdi: f.phoneDdi, phoneNumber: f.phoneNumber, document: f.document, birthDate: f.birthDate, gender: f.gender });
     setEditing(true);
   };
     setEditing(true);
