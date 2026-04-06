@@ -627,7 +627,7 @@ function ProductDetailDialog({ product: p, open, onOpenChange }: { product: Prod
         </DialogHeader>
 
         {sections.length > 0 && (
-          <div className="space-y-4 pt-2">
+          <div className="space-y-4 pt-0">
             {sections.map(({ label, value }) => (
               <div key={label}>
                 <h4 className="text-xs font-semibold text-foreground mb-1">{label}</h4>
