@@ -713,7 +713,9 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                   <FileText className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
                   {editing ? (
                     <Input className="h-6 text-xs flex-1 px-1.5" value={editData.document} onChange={e => ed("document", e.target.value)} />
-                  ) : docLabel}
+                  ) : (
+                    <span>Documento:<br />{docLabel}</span>
+                  )}
                 </p>
                 <p className="flex items-center gap-1.5 text-sm text-foreground">
                   <Cake className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
@@ -729,20 +731,20 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                       </Select>
                     </span>
                   ) : (
-                    <span>{f.birthDate} · {t(`step1.gender.${f.gender}`)}</span>
+                    <span>Data de Nascimento: {f.birthDate} · {t(`step1.gender.${f.gender}`)}</span>
                   )}
                 </p>
                 <p className="flex items-center gap-1.5 text-sm text-foreground">
                   <Mail className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
                   {editing ? (
                     <Input className="h-6 text-xs flex-1 px-1.5" value={editData.email} onChange={e => ed("email", e.target.value)} />
-                  ) : <span className="truncate">{f.email}</span>}
+                  ) : <span className="truncate">Email: {f.email}</span>}
                 </p>
                 <p className="flex items-center gap-1.5 text-sm text-foreground">
                   <Phone className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
                   {editing ? (
                     <Input className="h-6 text-xs flex-1 px-1.5" value={editData.phone} onChange={e => ed("phone", e.target.value)} />
-                  ) : <span className="truncate">{f.phone}</span>}
+                  ) : <span className="truncate">Telefone: {f.phone}</span>}
                 </p>
                 <p className="flex items-center gap-1.5 text-sm text-foreground">
                   <MapPin className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
@@ -753,7 +755,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                       <span>{f.countryFlag}</span>
                     </span>
                   ) : (
-                    <span className="truncate">{f.city}, {f.state} · {f.countryFlag} {f.country}</span>
+                    <span className="truncate">País de Residência: {f.city}, {f.state} · {f.countryFlag} {f.country}</span>
                   )}
                 </p>
               </div>
