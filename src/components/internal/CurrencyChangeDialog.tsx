@@ -44,6 +44,7 @@ export function CurrencyChangeDialog({
   bonusAmount, walletBalance,
 }: CurrencyChangeDialogProps) {
   const [targetCurrency, setTargetCurrency] = useState<string>("");
+  const [showSuccess, setShowSuccess] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(EXPIRY_SECONDS);
   const [expired, setExpired] = useState(false);
