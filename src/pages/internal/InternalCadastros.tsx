@@ -415,21 +415,24 @@ export default function InternalCadastros() {
           <div className="mt-2 space-y-3">
             {/* Row 1: Search + Registration Status */}
             <div className="space-y-1.5">
-              <div className="grid grid-cols-[3fr_1fr] gap-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder={t("internal.cadastros.searchPlaceholder")}
-                    value={search}
-                    onChange={e => { setSearch(e.target.value); setSearchFields([]); activateCheckboxes(); scrollToSearch(); }}
-                    onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); (e.target as HTMLInputElement).select(); } }}
-                    className="pl-9 pr-9 h-9 text-xs"
-                  />
-                  {search && (
-                    <button onClick={() => { setSearch(""); setSearchFields([]); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
+              <div className="grid grid-cols-[3fr_1fr] gap-2 items-end">
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.searchLabel") || "Buscar franqueado"}</span>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder={t("internal.cadastros.searchPlaceholder")}
+                      value={search}
+                      onChange={e => { setSearch(e.target.value); setSearchFields([]); activateCheckboxes(); scrollToSearch(); }}
+                      onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); (e.target as HTMLInputElement).select(); } }}
+                      className="pl-9 pr-9 h-9 text-xs"
+                    />
+                    {search && (
+                      <button onClick={() => { setSearch(""); setSearchFields([]); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                        <X className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.registrationStatusFilter")}</span>
