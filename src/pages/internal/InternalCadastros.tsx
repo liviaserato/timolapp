@@ -590,9 +590,10 @@ const registrationStatusBorder: Record<RegistrationStatus, string> = {
 };
 
 /* ── Franchisee Result Card ── */
-function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
+function FranchiseeCard({ franchisee: f, visibleFranchises }: { franchisee: Franchisee; visibleFranchises?: FranchiseEntry[] }) {
   const { t } = useLanguage();
-  const sortedFranchises = useMemo(() => [...f.franchises].sort((a, b) => a.createdAt.localeCompare(b.createdAt)), [f.franchises]);
+  const displayFranchises = visibleFranchises ?? f.franchises;
+  const sortedFranchises = useMemo(() => [...displayFranchises].sort((a, b) => a.createdAt.localeCompare(b.createdAt)), [displayFranchises]);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const sel = sortedFranchises[selectedIdx] || sortedFranchises[0];
 
