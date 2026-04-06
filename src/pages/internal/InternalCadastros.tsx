@@ -248,7 +248,7 @@ export default function InternalCadastros() {
   const [search, setSearch] = useState("");
   
   const [sortBy, setSortBy] = useState<string>("recent");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [sortDir, setSortDir] = useState<"neutral" | "asc" | "desc">("neutral");
   const [showActive, setShowActive] = useState(false);
   const [showInactive, setShowInactive] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState<string>("all");
@@ -630,12 +630,23 @@ export default function InternalCadastros() {
                   )}
                   {/* Sort */}
                   <div className="flex items-center gap-0.5 ml-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 w-8 p-0 border-dashed rounded-r-none"
+                      onClick={() => setSortDir(d => d === "neutral" ? "asc" : d === "asc" ? "desc" : "asc")}
+                      title={sortDir === "neutral" ? "Ordenação padrão" : sortDir === "asc" ? "Ascendente" : "Descendente"}
+                    >
+                      {sortDir === "neutral"
+                        ? <ArrowUpDown className="h-3.5 w-3.5" />
+                        : sortDir === "asc"
+                          ? <ArrowUp className="h-3.5 w-3.5" />
+                          : <ArrowDown className="h-3.5 w-3.5" />
+                      }
+                    </Button>
                     <Select value={sortBy} onValueChange={v => setSortBy(v)}>
-                      <SelectTrigger className="h-8 text-xs w-auto min-w-[160px] border-dashed rounded-r-none">
-                        <div className="flex items-center gap-1.5">
-                          <ArrowUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                          <SelectValue placeholder={t("internal.cadastros.classify")} />
-                        </div>
+                      <SelectTrigger className="h-8 text-xs w-auto min-w-[130px] border-dashed rounded-l-none">
+                        <span>{t("internal.cadastros.classify")}</span>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="recent">{t("internal.cadastros.sortRecent")}</SelectItem>
@@ -644,15 +655,6 @@ export default function InternalCadastros() {
                         <SelectItem value="qualification">{t("internal.cadastros.sortQualification")}</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-8 w-8 p-0 border-dashed rounded-l-none"
-                      onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")}
-                      title={sortDir === "asc" ? "Ascendente" : "Descendente"}
-                    >
-                      {sortDir === "asc" ? <ArrowUp className="h-3.5 w-3.5" /> : <ArrowDown className="h-3.5 w-3.5" />}
-                    </Button>
                   </div>
                 </div>
               </div>
