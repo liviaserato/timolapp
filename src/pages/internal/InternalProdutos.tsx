@@ -643,10 +643,7 @@ function ProductListCard({ product: p }: { product: Product }) {
         {/* Meta row */}
         <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 border-t border-border">
           <span>SKU: {p.id}</span>
-          <div className="flex items-center gap-2">
-            {p.pointsUnilevel != null && <span>U: {p.pointsUnilevel}</span>}
-            {p.pointsBinary != null && <span>B: {p.pointsBinary}</span>}
-          </div>
+          {p.pointsUnilevel != null && <span>Pontos: {p.pointsUnilevel}</span>}
           <div className="flex items-center gap-1">
             {p.activatable && <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Ativável</span>}
             <span className={cn(
