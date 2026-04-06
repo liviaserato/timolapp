@@ -755,10 +755,17 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><Phone className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
                   {editing ? (
                     <span className="flex items-center gap-1.5 flex-1 min-w-0">
-                      <span className="flex items-center gap-1 shrink-0 text-xs text-muted-foreground">
-                        <span className="text-base leading-none">{getCountryByIso2(editData.phoneDdi)?.flag ?? "🏳️"}</span>
-                        <span>{getCountryByIso2(editData.phoneDdi)?.dialCode ?? ""}</span>
-                      </span>
+                      <select
+                        className="h-6 text-xs border rounded px-1 bg-background text-foreground shrink-0 appearance-none cursor-pointer"
+                        value={editData.phoneDdi}
+                        onChange={e => ed("phoneDdi", e.target.value)}
+                      >
+                        {countries.filter(c => c.dialCode).map(c => (
+                          <option key={c.iso2} value={c.iso2}>
+                            {c.flag} {c.dialCode}
+                          </option>
+                        ))}
+                      </select>
                       <Input className="h-6 text-xs flex-1 px-1.5" value={editData.phoneNumber} onChange={e => ed("phoneNumber", e.target.value.replace(/[^\d\s()-]/g, ""))} />
                     </span>
                   ) : (
