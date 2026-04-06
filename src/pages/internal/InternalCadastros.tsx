@@ -563,18 +563,6 @@ export default function InternalCadastros() {
               </div>
             </div>
 
-            {/* Row 3: Subfiltro — Status da franquia (discreto) */}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-1">
-              <span className="text-[10px] text-muted-foreground">{t("internal.cadastros.franchiseStatusSubfilter")}:</span>
-              <label className="flex items-center gap-1.5 cursor-pointer">
-                <Checkbox checked={showActive} onCheckedChange={(v: boolean) => setShowActive(v)} className="h-3 w-3" />
-                <span className="text-[11px] text-muted-foreground">{t("internal.cadastros.statusActive")}</span>
-              </label>
-              <label className="flex items-center gap-1.5 cursor-pointer">
-                <Checkbox checked={showInactive} onCheckedChange={(v: boolean) => setShowInactive(v)} className="h-3 w-3" />
-                <span className="text-[11px] text-muted-foreground">{t("internal.cadastros.statusInactive")}</span>
-              </label>
-            </div>
 
             {/* Clear filters */}
             {hasFilters && (
