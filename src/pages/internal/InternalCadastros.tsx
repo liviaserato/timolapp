@@ -775,7 +775,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                 {qualConfig && (
                   <p className="text-sm flex items-center gap-1.5">
                     <span className="text-foreground/70">{qualConfig.icon}</span>
-                    <span className="text-foreground">{t(qualificationLabelKeys[sel.qualification])}</span>
+                    <span className="text-foreground">{t("internal.cadastros.qualLabel") !== "internal.cadastros.qualLabel" ? t("internal.cadastros.qualLabel") : "Qualificação"}: {t(qualificationLabelKeys[sel.qualification])}</span>
                   </p>
                 )}
               </div>
