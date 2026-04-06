@@ -999,7 +999,7 @@ function FranchiseeCard({ franchisee: f, visibleFranchises }: { franchisee: Fran
           ) : (
             <div className="flex flex-col lg:w-[170px] shrink-0 mt-3 lg:mt-0 self-stretch">
               <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
-                <Button variant={editing ? "default" : "outline"} size="sm" className={cn("text-xs h-7 gap-1.5 justify-start w-full", editing && "bg-[hsl(214,100%,33%)] hover:bg-[hsl(214,100%,28%)]")} onClick={editing ? cancelEditing : startEditing}>
+                <Button variant={editing ? "default" : "outline"} size="sm" className={cn("text-xs h-7 gap-1.5 justify-start w-full", editing ? "bg-[hsl(214,100%,33%)] hover:bg-[hsl(214,100%,28%)]" : "text-muted-foreground")} onClick={editing ? cancelEditing : startEditing}>
                   <Pencil className="h-3 w-3" />
                   {editing ? "Cancelar edição" : t("internal.cadastros.btnEdit")}
                 </Button>
