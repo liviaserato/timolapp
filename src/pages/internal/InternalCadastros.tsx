@@ -611,7 +611,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             <div className="mb-3 pb-3 border-b border-border/50">
               <div className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 flex-wrap">
+                  <div className="flex items-center gap-1.5">
                     {regStatus === "concluido" ? (
                       <Tooltip delayDuration={0}>
                         <TooltipTrigger asChild>
@@ -634,38 +634,40 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                     ) : (
                       <span className="text-base font-bold text-foreground mr-1">{f.fullName}</span>
                     )}
-                    {/* Single ID: always inline */}
-                    {sortedFranchises.length <= 1 && sortedFranchises.map((fr, idx) => (
-                      <button
-                        key={fr.franchiseId}
-                        type="button"
-                        onClick={() => setSelectedIdx(idx)}
-                        className={cn(
-                          "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border inline-flex items-center transition-colors cursor-pointer",
-                          idx === selectedIdx
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
-                        )}
-                      >
-                        ID {fr.franchiseId}
-                      </button>
-                    ))}
-                    {/* Multiple IDs: inline on desktop only */}
-                    {sortedFranchises.length > 1 && sortedFranchises.map((fr, idx) => (
-                      <button
-                        key={fr.franchiseId}
-                        type="button"
-                        onClick={() => setSelectedIdx(idx)}
-                        className={cn(
-                          "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border hidden sm:inline-flex items-center transition-colors cursor-pointer",
-                          idx === selectedIdx
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
-                        )}
-                      >
-                        ID {fr.franchiseId}
-                      </button>
-                    ))}
+                    <div className="ml-auto flex items-center gap-1 flex-wrap justify-end">
+                      {/* Single ID: always inline */}
+                      {sortedFranchises.length <= 1 && sortedFranchises.map((fr, idx) => (
+                        <button
+                          key={fr.franchiseId}
+                          type="button"
+                          onClick={() => setSelectedIdx(idx)}
+                          className={cn(
+                            "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border inline-flex items-center transition-colors cursor-pointer",
+                            idx === selectedIdx
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
+                          )}
+                        >
+                          ID {fr.franchiseId}
+                        </button>
+                      ))}
+                      {/* Multiple IDs: inline on desktop only */}
+                      {sortedFranchises.length > 1 && sortedFranchises.map((fr, idx) => (
+                        <button
+                          key={fr.franchiseId}
+                          type="button"
+                          onClick={() => setSelectedIdx(idx)}
+                          className={cn(
+                            "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border hidden sm:inline-flex items-center transition-colors cursor-pointer",
+                            idx === selectedIdx
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
+                          )}
+                        >
+                          ID {fr.franchiseId}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   {/* Multiple IDs on mobile: separate row */}
                   {sortedFranchises.length > 1 && (
