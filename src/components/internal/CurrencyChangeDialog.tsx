@@ -5,7 +5,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertTriangle, RefreshCw, Clock } from "lucide-react";
+import { AlertTriangle, RefreshCw, Clock, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -44,6 +44,7 @@ export function CurrencyChangeDialog({
   bonusAmount, walletBalance,
 }: CurrencyChangeDialogProps) {
   const [targetCurrency, setTargetCurrency] = useState<string>("");
+  const [showSuccess, setShowSuccess] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(EXPIRY_SECONDS);
   const [expired, setExpired] = useState(false);
@@ -100,8 +101,13 @@ export function CurrencyChangeDialog({
   const canConfirm = !!targetCurrency && confirmed && !expired;
 
   const handleConfirm = () => {
-    toast.success(`Moeda alterada de ${currencyMeta[currentCurrency].label} para ${currencyMeta[targetCurrency].label}`);
+    setShowSuccess(true);
+  };
+
+  const handleCloseSuccess = () => {
+    setShowSuccess(false);
     onOpenChange(false);
+  };
   };
 
   const handleRecalculate = () => {
@@ -111,6 +117,7 @@ export function CurrencyChangeDialog({
   const availableCurrencies = (["BRL", "EUR", "USD"] as const).filter(c => c !== currentCurrency);
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[460px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
@@ -231,5 +238,23 @@ export function CurrencyChangeDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    {/* Success confirmation popup */}
+    <Dialog open={showSuccess} onOpenChange={handleCloseSuccess}>
+      <DialogContent className="sm:max-w-[380px] text-center">
+        <DialogHeader className="items-center">
+          <CheckCircle2 className="h-10 w-10 text-emerald-500 mb-2" />
+          <DialogTitle>Moeda alterada com sucesso</DialogTitle>
+          <DialogDescription className="pt-1">
+            A moeda da franquia foi alterada de {currencyMeta[currentCurrency].label} para {targetCurrency ? currencyMeta[targetCurrency].label : ""}.
+            {"\n"}A partir de agora, todas as transações serão realizadas na nova moeda.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="sm:justify-center pt-2">
+          <Button onClick={handleCloseSuccess}>Fechar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
