@@ -565,7 +565,7 @@ export default function InternalProdutos() {
                   <ToggleGroupItem
                     key={c.id}
                     value={c.id}
-                    className="text-xs px-3 py-1 h-8 rounded-full border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                    className="text-xs px-3 py-1 h-8 rounded-md border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
                   >
                     {c.name}
                   </ToggleGroupItem>
@@ -586,7 +586,7 @@ export default function InternalProdutos() {
                     <ToggleGroupItem
                       key={s}
                       value={s}
-                      className="text-xs px-3 py-1 h-7 rounded-full border data-[state=on]:bg-primary/80 data-[state=on]:text-primary-foreground"
+                      className="text-xs px-3 py-1 h-7 rounded-md border data-[state=on]:bg-primary/80 data-[state=on]:text-primary-foreground"
                     >
                       {s}
                     </ToggleGroupItem>
@@ -756,7 +756,7 @@ function ProductListCard({ product: p }: { product: Product }) {
         <div className="p-3 space-y-2">
           {/* Category badge */}
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-md font-medium">
               {categories.find(c => c.id === p.category)?.name ?? p.category}
             </span>
             <span className="text-[10px] text-muted-foreground">{p.subcategory}</span>
