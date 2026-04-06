@@ -91,10 +91,7 @@ export function CredentialsDialog({ open, onOpenChange, username, email, fullNam
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Usuário e Senha
-          </DialogTitle>
+          <DialogTitle>Usuário e Senha</DialogTitle>
           <DialogDescription className="space-y-0.5 text-left">
             <span>Gerencie as credenciais de acesso de</span>
             <br />
