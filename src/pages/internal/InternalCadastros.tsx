@@ -338,7 +338,7 @@ export default function InternalCadastros() {
       matchingFranchises: getMatchingFranchises(f, currentFilters),
     })).filter(r => r.matchingFranchises.length > 0);
 
-    const dir = sortDir === "asc" ? 1 : -1;
+    const dir = sortDir === "asc" ? 1 : -1; // "neutral" treated as desc
     if (sortBy === "recent") {
       results = [...results].sort((a, b) => dir * a.matchingFranchises[0].createdAt.localeCompare(b.matchingFranchises[0].createdAt));
     } else if (sortBy === "name") {
