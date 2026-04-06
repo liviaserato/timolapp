@@ -98,7 +98,7 @@ export function CredentialsDialog({ open, onOpenChange, username, email, fullNam
           <DialogDescription className="space-y-0.5">
             <span>Gerencie as credenciais de acesso de</span>
             <br />
-            <span className="font-semibold text-foreground">{fullName}</span>
+            <span className="font-semibold text-foreground text-xl">{fullName}</span>
           </DialogDescription>
         </DialogHeader>
 
