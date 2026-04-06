@@ -457,7 +457,7 @@ export default function InternalCadastros() {
                     ? (t("internal.cadastros.noResults") !== "internal.cadastros.noResults" ? t("internal.cadastros.noResults") : "Nenhum resultado encontrado")
                     : filtered.length === 1
                       ? `1 ${t("internal.cadastros.resultFound") !== "internal.cadastros.resultFound" ? t("internal.cadastros.resultFound") : "resultado encontrado"}`
-                      : `${filtered.length} ${t("internal.cadastros.resultsFound")}`}
+                      : `${filtered.length} ${t("internal.cadastros.resultsFound") !== "internal.cadastros.resultsFound" ? t("internal.cadastros.resultsFound") : "resultados encontrados"}`}
                 </span>
                 <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
                   <X className="h-3 w-3" />
