@@ -465,6 +465,7 @@ export default function InternalProdutos() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | "">("");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | "">("");
+  const [onlyActivatable, setOnlyActivatable] = useState(false);
   const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -482,9 +483,10 @@ export default function InternalProdutos() {
       }
       if (selectedCategory && p.category !== selectedCategory) return false;
       if (selectedSubcategory && p.subcategory !== selectedSubcategory) return false;
+      if (onlyActivatable && !p.activatable) return false;
       return true;
     });
-  }, [searchTerm, selectedCategory, selectedSubcategory]);
+  }, [searchTerm, selectedCategory, selectedSubcategory, onlyActivatable]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -493,10 +495,11 @@ export default function InternalProdutos() {
     setSearchTerm("");
     setSelectedCategory("");
     setSelectedSubcategory("");
+    setOnlyActivatable(false);
     setPage(1);
   };
 
-  const hasFilters = !!searchTerm || !!selectedCategory || !!selectedSubcategory;
+  const hasFilters = !!searchTerm || !!selectedCategory || !!selectedSubcategory || onlyActivatable;
 
   return (
     <div className="space-y-6 pb-10">
@@ -512,80 +515,95 @@ export default function InternalProdutos() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-[10px] border border-border bg-card p-4 shadow-sm">
-        <div className="space-y-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              value={searchTerm}
-              onChange={e => { setSearchTerm(e.target.value); setPage(1); }}
-              placeholder="Buscar por nome ou código..."
-              className="pl-9 pr-9"
-            />
-            {searchTerm && (
-              <button
-                onClick={() => { setSearchTerm(""); setPage(1); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
-              >
-                <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-              </button>
-            )}
-          </div>
+      <div className="rounded-[10px] border border-border bg-card p-4 shadow-sm space-y-0">
+        {/* Card title */}
+        <div className="flex items-center gap-2 mb-4">
+          <Search className="h-4 w-4 text-primary" />
+          <span className="text-sm font-semibold text-primary">Busca</span>
+        </div>
 
-          {/* Categories */}
-          <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Categorias</Label>
-            <ToggleGroup
-              type="single"
-              value={selectedCategory}
-              onValueChange={(v) => { setSelectedCategory(v || ""); setSelectedSubcategory(""); setPage(1); }}
-              className="flex flex-wrap justify-start gap-1"
-            >
-              {categories.map(c => (
-                <ToggleGroupItem
-                  key={c.id}
-                  value={c.id}
-                  className="text-xs px-3 py-1 h-8 rounded-full border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Left column: search + toggle + count */}
+          <div className="space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={searchTerm}
+                onChange={e => { setSearchTerm(e.target.value); setPage(1); }}
+                placeholder="Digite o nome ou código..."
+                className="pl-9 pr-9"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => { setSearchTerm(""); setPage(1); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
                 >
-                  {c.name}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
+                  <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Switch checked={onlyActivatable} onCheckedChange={v => { setOnlyActivatable(v); setPage(1); }} />
+              <span className="text-xs text-muted-foreground">Apenas produtos ativáveis</span>
+            </div>
+
+            <span className="text-xs text-muted-foreground">{filtered.length} produto(s) encontrado(s)</span>
           </div>
 
-          {/* Subcategories */}
-          {selectedCategory && subcategories.length > 0 && (
-            <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Subcategorias</Label>
+          {/* Right column: categories + subcategories + clear */}
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">Categorias</Label>
               <ToggleGroup
                 type="single"
-                value={selectedSubcategory}
-                onValueChange={(v) => { setSelectedSubcategory(v || ""); setPage(1); }}
+                value={selectedCategory}
+                onValueChange={(v) => { setSelectedCategory(v || ""); setSelectedSubcategory(""); setPage(1); }}
                 className="flex flex-wrap justify-start gap-1"
               >
-                {subcategories.map(s => (
+                {categories.map(c => (
                   <ToggleGroupItem
-                    key={s}
-                    value={s}
-                    className="text-xs px-3 py-1 h-7 rounded-full border data-[state=on]:bg-primary/80 data-[state=on]:text-primary-foreground"
+                    key={c.id}
+                    value={c.id}
+                    className="text-xs px-3 py-1 h-8 rounded-full border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
                   >
-                    {s}
+                    {c.name}
                   </ToggleGroupItem>
                 ))}
               </ToggleGroup>
             </div>
-          )}
 
-          {hasFilters && (
-            <div className="flex items-center justify-between pt-1">
-              <span className="text-xs text-muted-foreground">{filtered.length} produto(s) encontrado(s)</span>
-              <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
-                <X className="h-3 w-3" />
-                Limpar filtros
-              </Button>
-            </div>
-          )}
+            {selectedCategory && subcategories.length > 0 && (
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Subcategorias</Label>
+                <ToggleGroup
+                  type="single"
+                  value={selectedSubcategory}
+                  onValueChange={(v) => { setSelectedSubcategory(v || ""); setPage(1); }}
+                  className="flex flex-wrap justify-start gap-1"
+                >
+                  {subcategories.map(s => (
+                    <ToggleGroupItem
+                      key={s}
+                      value={s}
+                      className="text-xs px-3 py-1 h-7 rounded-full border data-[state=on]:bg-primary/80 data-[state=on]:text-primary-foreground"
+                    >
+                      {s}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              </div>
+            )}
+
+            {hasFilters && (
+              <div className="flex justify-end">
+                <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
+                  <X className="h-3 w-3" />
+                  Limpar filtros
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -700,7 +718,7 @@ function ProductListCard({ product: p }: { product: Product }) {
       >
         {/* Activatable ribbon - positioned at card level to overflow image */}
         {p.activatable && (
-          <div className="absolute top-[13px] right-2 z-10 flex flex-col items-end">
+          <div className="absolute top-[13px] -right-[6px] z-10 flex flex-col items-end">
             <span
               className="text-[9px] font-bold uppercase tracking-wide text-white pr-2 pl-3 py-[3px]"
               style={{
