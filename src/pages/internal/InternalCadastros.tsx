@@ -591,8 +591,8 @@ export default function InternalCadastros() {
             <div className="space-y-1.5 px-1">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-semibold text-foreground">
-                    {registrationStatus === "pendente" ? "Cadastros Pendentes" : registrationStatus === "cancelado" ? "Cadastros Cancelados" : t("internal.cadastros.resultsHeader")}
+                  <h2 className="font-semibold text-foreground text-lg">
+                    {registrationStatus === "pendente" ? "Cadastros Pendentes" : registrationStatus === "cancelado" ? "Cadastros Cancelados" : "Resultado da Busca"}
                   </h2>
                   <span className="text-xs text-muted-foreground">
                     ({filtered.length} {filtered.length === 1 ? "registro encontrado" : "registros encontrados"})
