@@ -173,6 +173,44 @@ const planColors: Record<string, string> = {
 /** Primary franchise accessor — uses first franchise sorted by createdAt */
 const pf = (f: Franchisee): FranchiseEntry => f.franchises[0];
 
+/** Check if a single franchise entry matches a set of filters */
+function franchiseMatchesFilters(
+  f: Franchisee,
+  fr: FranchiseEntry,
+  filters: {
+    franchiseStatusFilter: string;
+    registrationStatus: string;
+    attendant: string;
+    qualification: string;
+    planType: string;
+  }
+): boolean {
+  if (filters.franchiseStatusFilter !== "all") {
+    const active = isEffectivelyActive(f, fr);
+    if (filters.franchiseStatusFilter === "active" && !active) return false;
+    if (filters.franchiseStatusFilter === "inactive" && active) return false;
+  }
+  if (filters.registrationStatus !== "all" && getRegistrationStatus(f, fr) !== filters.registrationStatus) return false;
+  if (filters.attendant !== "all" && fr.attendantName !== filters.attendant) return false;
+  if (filters.qualification !== "all" && fr.qualification !== filters.qualification) return false;
+  if (filters.planType !== "all" && fr.planCode !== filters.planType) return false;
+  return true;
+}
+
+/** Get all franchises of a person that match the given filters */
+function getMatchingFranchises(
+  f: Franchisee,
+  filters: {
+    franchiseStatusFilter: string;
+    registrationStatus: string;
+    attendant: string;
+    qualification: string;
+    planType: string;
+  }
+): FranchiseEntry[] {
+  return f.franchises.filter(fr => franchiseMatchesFilters(f, fr, filters));
+}
+
 
 
 
@@ -226,56 +264,71 @@ export default function InternalCadastros() {
     searchCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const buildFilters = (exclude?: string) => ({
+    franchiseStatusFilter: exclude === "franchiseStatus" ? "all" : franchiseStatusFilter,
+    registrationStatus: exclude === "registrationStatus" ? "all" : registrationStatus,
+    attendant: exclude === "attendant" ? "all" : attendant,
+    qualification: exclude === "qualification" ? "all" : qualification,
+    planType: exclude === "planType" ? "all" : planType,
+  });
+
   const getFilteredExcluding = (exclude: string) => {
-     let list = mockFranchisees as Franchisee[];
-    if (exclude !== "franchiseStatus" && franchiseStatusFilter !== "all") {
-      if (franchiseStatusFilter === "active") list = list.filter(f => isEffectivelyActive(f));
-      else list = list.filter(f => !isEffectivelyActive(f));
-    }
-    if (exclude !== "registrationStatus" && registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
-    if (exclude !== "attendant" && attendant !== "all") list = list.filter(f => pf(f).attendantName === attendant);
-    if (exclude !== "qualification" && qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
-    if (exclude !== "planType" && planType !== "all") list = list.filter(f => pf(f).planCode === planType);
+    const filters = buildFilters(exclude);
+    let list = mockFranchisees as Franchisee[];
+    // Keep only people who have at least one franchise matching the filters
+    list = list.filter(f => getMatchingFranchises(f, filters).length > 0);
     if (search.trim()) {
       list = list.filter(f => matchesSearch(f, search, searchFields));
     }
-    return list;
+    return { people: list, filters };
   };
 
   const availableAttendants = useMemo(() => {
-    const names = getFilteredExcluding("attendant").map(f => pf(f).attendantName).filter(Boolean) as string[];
+    const { people, filters } = getFilteredExcluding("attendant");
+    const names = people.flatMap(f => getMatchingFranchises(f, filters).map(fr => fr.attendantName)).filter(Boolean) as string[];
     return [...new Set(names)].sort();
   }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType]);
-  const availableQualifications = useMemo(() => new Set(getFilteredExcluding("qualification").map(f => pf(f).qualification)), [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType]);
-  const availablePlans = useMemo(() => new Set(getFilteredExcluding("planType").map(f => pf(f).planCode)), [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType]);
+
+  const availableQualifications = useMemo(() => {
+    const { people, filters } = getFilteredExcluding("qualification");
+    return new Set(people.flatMap(f => getMatchingFranchises(f, filters).map(fr => fr.qualification)));
+  }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType]);
+
+  const availablePlans = useMemo(() => {
+    const { people, filters } = getFilteredExcluding("planType");
+    return new Set(people.flatMap(f => getMatchingFranchises(f, filters).map(fr => fr.planCode)));
+  }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType]);
 
   const hasActiveFilters = search.trim() !== "" || showActive || showInactive || registrationStatus !== "all" || attendant !== "all" || qualification !== "all" || planType !== "all";
 
+  const currentFilters = useMemo(() => buildFilters(), [franchiseStatusFilter, registrationStatus, attendant, qualification, planType]);
+
   const filtered = useMemo(() => {
-    if (!hasActiveFilters) return [];
+    if (!hasActiveFilters) return [] as { person: Franchisee; matchingFranchises: FranchiseEntry[] }[];
     let list = mockFranchisees as Franchisee[];
-    if (franchiseStatusFilter === "active") list = list.filter(f => isEffectivelyActive(f));
-    else if (franchiseStatusFilter === "inactive") list = list.filter(f => !isEffectivelyActive(f));
-    if (registrationStatus !== "all") list = list.filter(f => getRegistrationStatus(f) === registrationStatus);
-    if (attendant !== "all") list = list.filter(f => pf(f).attendantName === attendant);
-    if (qualification !== "all") list = list.filter(f => pf(f).qualification === qualification);
-    if (planType !== "all") list = list.filter(f => pf(f).planCode === planType);
     if (search.trim()) {
       list = list.filter(f => matchesSearch(f, search, searchFields));
     }
+    // Build result with matching franchises per person
+    let results = list.map(f => ({
+      person: f,
+      matchingFranchises: getMatchingFranchises(f, currentFilters),
+    })).filter(r => r.matchingFranchises.length > 0);
+
+    // Sort using the first matching franchise as reference
     if (sortBy === "recent" || sortBy === "") {
-      list = [...list].sort((a, b) => pf(b).createdAt.localeCompare(pf(a).createdAt));
+      results = [...results].sort((a, b) => b.matchingFranchises[0].createdAt.localeCompare(a.matchingFranchises[0].createdAt));
     } else if (sortBy === "qualification") {
-      list = [...list].sort((a, b) => (qualPriority[pf(b).qualification] || 0) - (qualPriority[pf(a).qualification] || 0));
+      results = [...results].sort((a, b) => (qualPriority[b.matchingFranchises[0].qualification] || 0) - (qualPriority[a.matchingFranchises[0].qualification] || 0));
     } else if (sortBy === "active_first") {
-      list = [...list].sort((a, b) => {
-        const aActive = isEffectivelyActive(a) ? 0 : 1;
-        const bActive = isEffectivelyActive(b) ? 0 : 1;
+      results = [...results].sort((a, b) => {
+        const aActive = isEffectivelyActive(a.person, a.matchingFranchises[0]) ? 0 : 1;
+        const bActive = isEffectivelyActive(b.person, b.matchingFranchises[0]) ? 0 : 1;
         return aActive - bActive;
       });
     }
-    return list;
-  }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType, sortBy, hasActiveFilters]);
+    return results;
+  }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType, sortBy, hasActiveFilters, currentFilters]);
 
   const PAGE_SIZE = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -481,8 +534,8 @@ export default function InternalCadastros() {
           </p>
         ) : (
           <>
-            {paginatedResults.map(f => (
-              <FranchiseeCard key={f.id} franchisee={f} />
+            {paginatedResults.map(r => (
+              <FranchiseeCard key={r.person.id} franchisee={r.person} visibleFranchises={r.matchingFranchises} />
             ))}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 pt-2">
@@ -537,9 +590,10 @@ const registrationStatusBorder: Record<RegistrationStatus, string> = {
 };
 
 /* ── Franchisee Result Card ── */
-function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
+function FranchiseeCard({ franchisee: f, visibleFranchises }: { franchisee: Franchisee; visibleFranchises?: FranchiseEntry[] }) {
   const { t } = useLanguage();
-  const sortedFranchises = useMemo(() => [...f.franchises].sort((a, b) => a.createdAt.localeCompare(b.createdAt)), [f.franchises]);
+  const displayFranchises = visibleFranchises ?? f.franchises;
+  const sortedFranchises = useMemo(() => [...displayFranchises].sort((a, b) => a.createdAt.localeCompare(b.createdAt)), [displayFranchises]);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const sel = sortedFranchises[selectedIdx] || sortedFranchises[0];
 
