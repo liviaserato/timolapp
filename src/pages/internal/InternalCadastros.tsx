@@ -563,18 +563,6 @@ export default function InternalCadastros() {
               </div>
             </div>
 
-            {/* Row 3: Subfiltro — Status da franquia (discreto) */}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-1">
-              <span className="text-[10px] text-muted-foreground">{t("internal.cadastros.franchiseStatusSubfilter")}:</span>
-              <label className="flex items-center gap-1.5 cursor-pointer">
-                <Checkbox checked={showActive} onCheckedChange={(v: boolean) => setShowActive(v)} className="h-3 w-3" />
-                <span className="text-[11px] text-muted-foreground">{t("internal.cadastros.statusActive")}</span>
-              </label>
-              <label className="flex items-center gap-1.5 cursor-pointer">
-                <Checkbox checked={showInactive} onCheckedChange={(v: boolean) => setShowInactive(v)} className="h-3 w-3" />
-                <span className="text-[11px] text-muted-foreground">{t("internal.cadastros.statusInactive")}</span>
-              </label>
-            </div>
 
             {/* Clear filters */}
             {hasFilters && (
@@ -610,10 +598,34 @@ export default function InternalCadastros() {
                     ({filtered.length} {filtered.length === 1 ? "registro encontrado" : "registros encontrados"})
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-[11px] text-emerald-700">{activeCount} {activeCount === 1 ? "ativo" : "ativos"}</span>
-                  <span className="text-[11px] text-red-600">{inactiveCount} {inactiveCount === 1 ? "inativo" : "inativos"}</span>
-                  <div className="flex items-center gap-0.5">
+                <div className="flex items-center gap-2">
+                  {/* Status pills — clickable filters + counts */}
+                  <button
+                    onClick={() => setShowActive(v => !v)}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
+                      showActive
+                        ? "bg-emerald-100 text-emerald-700 border-emerald-300 shadow-sm"
+                        : "bg-transparent text-emerald-600/70 border-transparent hover:bg-emerald-50 hover:border-emerald-200"
+                    )}
+                  >
+                    <span className={cn("h-1.5 w-1.5 rounded-full", showActive ? "bg-emerald-500" : "bg-emerald-400/50")} />
+                    {activeCount} {activeCount === 1 ? "ativo" : "ativos"}
+                  </button>
+                  <button
+                    onClick={() => setShowInactive(v => !v)}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
+                      showInactive
+                        ? "bg-red-100 text-red-700 border-red-300 shadow-sm"
+                        : "bg-transparent text-red-500/70 border-transparent hover:bg-red-50 hover:border-red-200"
+                    )}
+                  >
+                    <span className={cn("h-1.5 w-1.5 rounded-full", showInactive ? "bg-red-500" : "bg-red-400/50")} />
+                    {inactiveCount} {inactiveCount === 1 ? "inativo" : "inativos"}
+                  </button>
+                  {/* Sort */}
+                  <div className="flex items-center gap-0.5 ml-1">
                     <Select value={sortBy} onValueChange={v => setSortBy(v)}>
                       <SelectTrigger className="h-8 text-xs w-auto min-w-[160px] border-dashed rounded-r-none">
                         <div className="flex items-center gap-1.5">
