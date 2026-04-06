@@ -483,7 +483,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "internal.configuracoes.desc": "Configurações do sistema, permissões de acesso, parâmetros gerais e integrações.",
     "internal.placeholder.underConstruction": "Esta seção está em construção e será disponibilizada em breve.",
     "internal.cadastros.title": "Cadastros",
-    "internal.cadastros.subtitle": "Busque e gerencie os cadastros de franqueados",
+    "internal.cadastros.subtitle": "Busque e gerencie informações dos franqueados",
     "internal.cadastros.pendingBtn": "Cadastros Pendentes",
     "internal.cadastros.pendingTitle": "Cadastros Pendentes",
     "internal.cadastros.pendingSubtitle": "Acompanhe e gerencie os cadastros que ainda não foram concluídos",
