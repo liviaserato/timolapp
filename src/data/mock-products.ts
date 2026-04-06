@@ -23,6 +23,11 @@ export interface Product {
   warranty?: string;
   composition?: string;
   manufacturer?: string;
+  packageHeight?: number;
+  packageWidth?: number;
+  packageLength?: number;
+  packageDiameter?: number;
+  packageWeight?: number;
 }
 
 export interface Category {
@@ -77,6 +82,10 @@ export const products: Product[] = [
     warranty: "12 meses de garantia contra defeitos de fabricação.\nAssistência técnica em todo o Brasil.",
     composition: "Corpo em ABS de alta resistência, filtro de carvão ativado, membrana de ultrafiltração e refil alcalino mineral.",
     manufacturer: "Timol Indústria e Comércio Ltda.\nCNPJ: 00.000.000/0001-00\nSão Paulo – SP",
+    packageHeight: 45,
+    packageWidth: 30,
+    packageLength: 25,
+    packageWeight: 3200,
   },
   {
     id: "p2",

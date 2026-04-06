@@ -111,6 +111,12 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
   const [activatable, setActivatable] = useState(false);
   const [activationDays, setActivationDays] = useState("30");
 
+  const [pkgHeight, setPkgHeight] = useState("");
+  const [pkgWidth, setPkgWidth] = useState("");
+  const [pkgLength, setPkgLength] = useState("");
+  const [pkgDiameter, setPkgDiameter] = useState("");
+  const [pkgWeight, setPkgWeight] = useState("");
+
   const [mediaFiles, setMediaFiles] = useState<{ name: string; url: string }[]>([]);
 
   const selectedCategory = categories.find(c => c.id === category);
@@ -381,6 +387,33 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
               </div>
             </div>
 
+            {/* ── Package Dimensions ── */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Dimensões da Embalagem</Label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Altura (cm)</Label>
+                  <Input type="number" step="0.1" value={pkgHeight} onChange={e => setPkgHeight(e.target.value)} placeholder="0" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Largura (cm)</Label>
+                  <Input type="number" step="0.1" value={pkgWidth} onChange={e => setPkgWidth(e.target.value)} placeholder="0" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Comprimento (cm)</Label>
+                  <Input type="number" step="0.1" value={pkgLength} onChange={e => setPkgLength(e.target.value)} placeholder="0" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Diâmetro (cm)</Label>
+                  <Input type="number" step="0.1" value={pkgDiameter} onChange={e => setPkgDiameter(e.target.value)} placeholder="0" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Peso (g)</Label>
+                  <Input type="number" step="1" value={pkgWeight} onChange={e => setPkgWeight(e.target.value)} placeholder="0" />
+                </div>
+              </div>
+            </div>
+
             {/* ── Media Upload ── */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Mídias</Label>
@@ -610,6 +643,14 @@ export default function InternalProdutos() {
 
 /* ── Product Detail Dialog ── */
 function ProductDetailDialog({ product: p, open, onOpenChange }: { product: Product; open: boolean; onOpenChange: (v: boolean) => void }) {
+  const dimensionParts: string[] = [];
+  if (p.packageHeight || p.packageWidth || p.packageLength) {
+    dimensionParts.push(`${p.packageHeight ?? '–'} × ${p.packageWidth ?? '–'} × ${p.packageLength ?? '–'} cm (A × L × C)`);
+  }
+  if (p.packageDiameter) dimensionParts.push(`Diâmetro: ${p.packageDiameter} cm`);
+  if (p.packageWeight) dimensionParts.push(`Peso: ${p.packageWeight} g`);
+  const dimensionText = dimensionParts.length > 0 ? dimensionParts.join('\n') : undefined;
+
   const sections = [
     { label: "Descrição", value: p.description },
     { label: "Benefícios", value: p.benefits },
@@ -617,6 +658,7 @@ function ProductDetailDialog({ product: p, open, onOpenChange }: { product: Prod
     { label: "Garantia", value: p.warranty },
     { label: "Composição", value: p.composition },
     { label: "Fabricante", value: p.manufacturer },
+    { label: "Dimensões da Embalagem", value: dimensionText },
   ].filter(s => s.value);
 
   return (
