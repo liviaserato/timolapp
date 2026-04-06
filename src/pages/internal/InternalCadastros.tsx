@@ -820,7 +820,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                   <Lock className="h-3 w-3" />
                   {t("internal.cadastros.btnCredentials")}
                 </Button>
-                <Button variant={editing ? "default" : "outline"} size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={editing ? cancelEditing : startEditing}>
+                <Button variant={editing ? "default" : "outline"} size="sm" className={cn("text-xs h-7 gap-1.5 justify-start w-full", editing && "bg-sidebar-primary hover:bg-sidebar-primary/90")} onClick={editing ? cancelEditing : startEditing}>
                   <Pencil className="h-3 w-3" />
                   {editing ? "Cancelar edição" : t("internal.cadastros.btnEdit")}
                 </Button>
