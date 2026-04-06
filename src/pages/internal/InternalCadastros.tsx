@@ -690,16 +690,13 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                     </div>
                   )}
 
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-1.5 mt-0.5 sm:justify-between" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
-                    <p className="text-xs text-muted-foreground min-w-0 truncate">
-                      {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
-                    </p>
-                    {isCompleted && (
+                  {isCompleted && (
+                    <div className="mt-0.5" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
                       <p className="text-xs text-muted-foreground shrink-0">
                         Atendente: <span className="font-medium text-foreground">{sel.attendantName ?? "—"}</span>
                       </p>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
                 {/* Touchpoint icons: show for pendente and cancelado, hide for concluido */}
                 {!isCompleted && (
