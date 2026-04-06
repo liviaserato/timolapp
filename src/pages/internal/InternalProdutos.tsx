@@ -521,36 +521,37 @@ export default function InternalProdutos() {
           <span className="shrink-0">Busca</span>
         </legend>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Left column: search + toggle + count */}
+        <div className="grid grid-cols-1 md:grid-cols-[35%_1fr] gap-4">
+          {/* Left column: search + toggle */}
           <div className="space-y-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                value={searchTerm}
-                onChange={e => { setSearchTerm(e.target.value); setPage(1); }}
-                placeholder="Digite o nome ou código..."
-                className="pl-9 pr-9"
-              />
-              {searchTerm && (
-                <button
-                  onClick={() => { setSearchTerm(""); setPage(1); }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                >
-                  <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                </button>
-              )}
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">Buscar produto</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={searchTerm}
+                  onChange={e => { setSearchTerm(e.target.value); setPage(1); }}
+                  placeholder="Digite o nome ou código..."
+                  className="pl-9 pr-9"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => { setSearchTerm(""); setPage(1); }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center gap-2">
               <Switch checked={onlyActivatable} onCheckedChange={v => { setOnlyActivatable(v); setPage(1); }} />
               <span className="text-xs text-muted-foreground">Apenas produtos ativáveis</span>
             </div>
-
-            <span className="text-xs text-muted-foreground">{filtered.length} produto(s) encontrado(s)</span>
           </div>
 
-          {/* Right column: categories + subcategories + clear */}
+          {/* Right column: categories + subcategories */}
           <div className="space-y-3">
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Categorias</Label>
@@ -593,16 +594,18 @@ export default function InternalProdutos() {
                 </ToggleGroup>
               </div>
             )}
-
-            {hasFilters && (
-              <div className="flex justify-end">
-                <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
-                  <X className="h-3 w-3" />
-                  Limpar filtros
-                </Button>
-              </div>
-            )}
           </div>
+        </div>
+
+        {/* Bottom row: count + clear filters */}
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+          <span className="text-xs text-muted-foreground">{filtered.length} produto(s) encontrado(s)</span>
+          {hasFilters && (
+            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
+              <X className="h-3 w-3" />
+              Limpar filtros
+            </Button>
+          )}
         </div>
       </fieldset>
 
