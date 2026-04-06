@@ -250,7 +250,7 @@ export function CurrencyChangeDialog({
         <DialogHeader className="items-center">
           <CheckCircle2 className="h-10 w-10 text-emerald-500 mb-2" />
           <DialogTitle>Moeda alterada com sucesso</DialogTitle>
-          <DialogDescription className="pt-1">
+          <DialogDescription className="pt-1 text-justify">
             A moeda da franquia foi alterada de {currencyMeta[currentCurrency].label} para {targetCurrency ? currencyMeta[targetCurrency].label : ""}.
             {"\n"}A partir de agora, todas as transações serão realizadas na nova moeda.
           </DialogDescription>
