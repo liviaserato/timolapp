@@ -112,14 +112,11 @@ export function CurrencyChangeDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[460px]">
+      <DialogContent className="sm:max-w-[460px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-base">
-            <CircleDollarSign className="h-5 w-5 text-primary" />
-            Alteração de Moeda
-          </DialogTitle>
-          <DialogDescription className="text-xs">
-            Franqueado: <span className="font-medium text-foreground">{franchiseeFullName}</span> · ID {franchiseId}
+          <DialogTitle>Alteração de Moeda</DialogTitle>
+          <DialogDescription>
+            Altere a moeda da franquia <span className="font-medium text-foreground">{franchiseeFullName}</span> · ID {franchiseId}.
           </DialogDescription>
         </DialogHeader>
 
