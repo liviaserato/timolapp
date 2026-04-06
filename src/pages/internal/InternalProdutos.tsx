@@ -622,21 +622,21 @@ function ProductDetailDialog({ product: p, open, onOpenChange }: { product: Prod
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
-        <DialogHeader className="text-center">
-          <DialogTitle className="text-lg">{p.name}</DialogTitle>
-          <div className="flex items-center justify-center gap-2 pt-1">
-            <span className="text-sm font-bold text-primary">{formatCurrency(p.price)}</span>
-            {p.oldPrice && (
-              <span className="text-xs text-muted-foreground line-through">{formatCurrency(p.oldPrice)}</span>
-            )}
-          </div>
-          <div className="flex items-center justify-center gap-2 pt-1">
+        <DialogHeader className="text-left">
+          <div className="flex items-center gap-2">
             <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
               {categories.find(c => c.id === p.category)?.name ?? p.category}
             </span>
             <span className="text-[10px] text-muted-foreground">{p.subcategory}</span>
             {p.pointsUnilevel != null && (
               <span className="text-[10px] text-muted-foreground">• Pontos: {p.pointsUnilevel}</span>
+            )}
+          </div>
+          <DialogTitle className="text-lg">{p.name}</DialogTitle>
+          <div className="flex items-center gap-2 pt-1">
+            <span className="text-sm font-bold text-primary">{formatCurrency(p.price)}</span>
+            {p.oldPrice && (
+              <span className="text-xs text-muted-foreground line-through">{formatCurrency(p.oldPrice)}</span>
             )}
           </div>
         </DialogHeader>
