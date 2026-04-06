@@ -21,8 +21,7 @@ import { qualificationConfig } from "@/components/app/rede/mock-data";
 import { AddressManager, type Address } from "@/components/app/cadastro/AddressManager";
 import { FinancialManager, type FinancialAccount } from "@/components/app/cadastro/FinancialManager";
 import { CredentialsDialog } from "@/components/internal/CredentialsDialog";
-
-
+import { CurrencyChangeDialog } from "@/components/internal/CurrencyChangeDialog";
 
 /* ── Types ── */
 interface FranchiseEntry {
