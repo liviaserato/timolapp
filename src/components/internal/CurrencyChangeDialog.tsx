@@ -101,8 +101,13 @@ export function CurrencyChangeDialog({
   const canConfirm = !!targetCurrency && confirmed && !expired;
 
   const handleConfirm = () => {
-    toast.success(`Moeda alterada de ${currencyMeta[currentCurrency].label} para ${currencyMeta[targetCurrency].label}`);
+    setShowSuccess(true);
+  };
+
+  const handleCloseSuccess = () => {
+    setShowSuccess(false);
     onOpenChange(false);
+  };
   };
 
   const handleRecalculate = () => {
