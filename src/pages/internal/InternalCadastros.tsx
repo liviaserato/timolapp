@@ -730,6 +730,7 @@ function FranchiseeCard({ franchisee: f, visibleFranchises }: { franchisee: Fran
   const [addressOpen, setAddressOpen] = useState(false);
   const [financialOpen, setFinancialOpen] = useState(false);
   const [credentialsOpen, setCredentialsOpen] = useState(false);
+  const [currencyChangeOpen, setCurrencyChangeOpen] = useState(false);
 
   // Inline editing
   const [editing, setEditing] = useState(false);
@@ -1014,7 +1015,7 @@ function FranchiseeCard({ franchisee: f, visibleFranchises }: { franchisee: Fran
                   <Landmark className="h-3 w-3" />
                   {t("internal.cadastros.btnFinancial")}
                 </Button>
-                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => toast.info("Funcionalidade em desenvolvimento")}>
+                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setCurrencyChangeOpen(true)}>
                   <CircleDollarSign className="h-3 w-3" />
                   Alterar moeda
                 </Button>
