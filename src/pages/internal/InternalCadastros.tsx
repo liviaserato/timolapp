@@ -354,7 +354,7 @@ export default function InternalCadastros() {
       });
     }
     return results;
-  }, [search, searchFields, locationSearch, showActive, showInactive, registrationStatus, attendant, qualification, planType, sortBy, hasActiveFilters, currentFilters]);
+  }, [search, searchFields, locationSearch, showActive, showInactive, registrationStatus, attendant, qualification, planType, sortBy, sortDir, hasActiveFilters, currentFilters]);
 
   /** Active/inactive counts from filtered results */
   const activeCount = useMemo(() => filtered.reduce((sum, r) => sum + r.matchingFranchises.filter(fr => isEffectivelyActive(r.person, fr)).length, 0), [filtered]);
