@@ -668,12 +668,34 @@ function ProductListCard({ product: p }: { product: Product }) {
   return (
     <>
       <div
-        className="rounded-[10px] border border-border bg-card overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+        className="rounded-[10px] border border-border bg-card overflow-visible hover:shadow-md transition-shadow cursor-pointer relative"
         onClick={() => setDetailOpen(true)}
       >
-        {/* Image placeholder */}
+        {/* Activatable ribbon - positioned at card level to overflow image */}
+        {p.activatable && (
+          <div className="absolute top-3 -right-[2px] z-10 flex flex-col items-end">
+            <span
+              className="text-[9px] font-bold uppercase tracking-wide text-white pr-2 pl-3 py-[3px]"
+              style={{
+                background: '#16a34a',
+                clipPath: 'polygon(6px 0, 100% 0, 100% 100%, 6px 100%, 0 50%)',
+              }}
+            >
+              Ativável
+            </span>
+            <div
+              className="w-[6px] h-[6px]"
+              style={{
+                background: '#15803d',
+                clipPath: 'polygon(0 0, 100% 0, 0 100%)',
+              }}
+            />
+          </div>
+        )}
+
+        {/* Image */}
         <div
-          className="h-32 bg-muted/30 flex items-center justify-center relative"
+          className="h-32 mx-2 mt-2 rounded-lg border border-border bg-muted/30 flex items-center justify-center overflow-hidden"
           onClick={(e) => {
             e.stopPropagation();
             // TODO: open image slide modal
@@ -683,26 +705,6 @@ function ProductListCard({ product: p }: { product: Product }) {
             <img src={p.image} alt={p.name} className="h-full w-full object-cover" />
           ) : (
             <ImageIcon className="h-10 w-10 text-muted-foreground/20" />
-          )}
-          {p.activatable && (
-            <div className="absolute top-2 right-0 flex flex-col items-end">
-              <span
-                className="text-[9px] font-bold uppercase tracking-wide text-white pr-2 pl-3 py-[3px]"
-                style={{
-                  background: '#16a34a',
-                  clipPath: 'polygon(6px 0, 100% 0, 100% 100%, 6px 100%, 0 50%)',
-                }}
-              >
-                Ativável
-              </span>
-              <div
-                className="w-[6px] h-[6px]"
-                style={{
-                  background: '#15803d',
-                  clipPath: 'polygon(0 0, 100% 0, 0 100%)',
-                }}
-              />
-            </div>
           )}
         </div>
 
