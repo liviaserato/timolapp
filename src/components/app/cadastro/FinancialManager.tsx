@@ -278,7 +278,7 @@ export function FinancialManager({ accounts, onChange, dialogOnly, open: externa
             onClick={() => { setListOpen(true); setDeleteMode(false); setSelectedForDelete(new Set()); }}
           >
             <Settings className="h-3 w-3" />
-            Gerenciar contas
+            Alterar conta
           </Button>
         </DashboardCard>
       )}

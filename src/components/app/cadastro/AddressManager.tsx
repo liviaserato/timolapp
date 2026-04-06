@@ -262,7 +262,7 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
             onClick={() => { setListOpen(true); setDeleteMode(false); setSelectedForDelete(new Set()); }}
           >
             <MapPin className="h-3 w-3 mr-1" />
-            {defaultAddr ? "Trocar endereço" : "Adicionar endereço"}
+            {defaultAddr ? "Escolher endereço" : "Adicionar endereço"}
           </Button>
         </>
       )}
