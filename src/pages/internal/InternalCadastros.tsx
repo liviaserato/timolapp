@@ -12,7 +12,7 @@ import {
   Search, X, Phone, Mail, MapPin,
   MapPinHouse, Landmark, Pencil, Lock,
   FileText, Cake, Gem, ArrowUpDown, Calendar,
-  MessageCircle, Bell, RotateCcw, UserRound,
+  MessageCircle, Bell, RotateCcw, UserRound, Globe, Coins, User,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
