@@ -143,19 +143,25 @@ export function CurrencyChangeDialog({
             </div>
           </div>
 
-          {/* Target currency selector */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-medium text-foreground">Nova moeda</label>
-            <Select value={targetCurrency} onValueChange={v => { setTargetCurrency(v); setConfirmed(false); }}>
-              <SelectTrigger className="h-9 text-sm">
-                <SelectValue placeholder="Selecione a nova moeda" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableCurrencies.map(c => (
-                  <SelectItem key={c} value={c}>{currencyMeta[c].label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Target currency toggle */}
+          <div className="flex items-center gap-3">
+            <label className="text-xs font-medium text-foreground whitespace-nowrap">Alterar para:</label>
+            <div className="flex rounded-lg border border-border overflow-hidden flex-1">
+              {availableCurrencies.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => { setTargetCurrency(c); setConfirmed(false); }}
+                  className={cn(
+                    "flex-1 px-3 py-1.5 text-sm font-medium transition-colors",
+                    targetCurrency === c
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-background text-muted-foreground hover:bg-accent/50"
+                  )}
+                >
+                  {currencyMeta[c].label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Conversion preview — only shown after selection */}
