@@ -1055,6 +1055,15 @@ function FranchiseeCard({ franchisee: f, visibleFranchises }: { franchisee: Fran
         email={f.email}
         fullName={f.fullName}
       />
+      <CurrencyChangeDialog
+        open={currencyChangeOpen}
+        onOpenChange={setCurrencyChangeOpen}
+        currentCurrency={f.country === "Brasil" ? "BRL" : f.country === "España" ? "EUR" : "USD"}
+        franchiseeFullName={f.fullName}
+        franchiseId={sel.franchiseId}
+        bonusAmount={1250.75}
+        walletBalance={3480.50}
+      />
     </div>
   );
 }
