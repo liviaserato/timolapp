@@ -566,21 +566,6 @@ export default function InternalCadastros() {
                 <Checkbox checked={showInactive} onCheckedChange={(v: boolean) => setShowInactive(v)} className="h-3 w-3" />
                 <span className="text-[11px] text-muted-foreground">{t("internal.cadastros.statusInactive")}</span>
               </label>
-              {/* Registration status inline */}
-              <div className="flex items-center gap-1.5 ml-auto">
-                <span className="text-[10px] text-muted-foreground">{t("internal.cadastros.registrationStatusFilter")}:</span>
-                <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); activateCheckboxes(); }}>
-                  <SelectTrigger className="h-7 text-[11px] w-auto min-w-[100px] border-dashed">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
-                    <SelectItem value="pendente">{t("internal.cadastros.regPending")}</SelectItem>
-                    <SelectItem value="concluido">{t("internal.cadastros.regCompleted")}</SelectItem>
-                    <SelectItem value="cancelado">{t("internal.cadastros.regCancelled")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
 
             {/* Clear filters */}
