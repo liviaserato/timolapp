@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Separator } from "@/components/ui/separator";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
@@ -193,15 +192,15 @@ export function CurrencyChangeDialog({
               <div className={cn(
                 "flex flex-col items-center gap-0.5 rounded-md border px-3 py-2.5 text-xs text-center",
                 expired
-                  ? "border-red-200/60 bg-red-50/60 text-red-400"
-                  : "border-amber-200/60 bg-amber-50/60 text-amber-500"
+                  ? "border-red-200 bg-red-50 text-red-700"
+                  : "border-amber-200 bg-amber-50 text-amber-700"
               )}>
                 {expired ? (
                   <>
                     <span className="inline-flex items-center gap-1.5"><AlertTriangle className="h-3.5 w-3.5 shrink-0" />Prazo expirado. Os valores precisam ser recalculados.</span>
                     <button
                       onClick={handleRecalculate}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-red-500 underline underline-offset-2 hover:text-red-600 shrink-0"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-red-800 underline underline-offset-2 hover:text-red-900 shrink-0"
                     >
                       <RefreshCw className="h-3 w-3" />
                       Recalcular
@@ -226,7 +225,7 @@ export function CurrencyChangeDialog({
                   disabled={expired}
                   className="mt-0.5"
                 />
-                <span className="text-xs text-muted-foreground leading-relaxed">
+                <span className="text-xs text-foreground leading-relaxed">
                   Confirmo que os valores foram apresentados ao franqueado e aprovados para alteração de moeda.
                 </span>
               </label>
@@ -234,7 +233,6 @@ export function CurrencyChangeDialog({
           )}
         </div>
 
-        <Separator className="mt-1" />
         <DialogFooter className="gap-2 sm:gap-0">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
