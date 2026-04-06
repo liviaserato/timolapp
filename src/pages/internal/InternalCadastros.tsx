@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Input } from "@/components/ui/input";
@@ -552,7 +552,14 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
     setEditData({ fullName: f.fullName, email: f.email, phone: f.phone, document: f.document, birthDate: f.birthDate, gender: f.gender, city: f.city, state: f.state });
     setEditing(true);
   };
-  const cancelEditing = () => setEditing(false);
+  const cancelEditing = useCallback(() => setEditing(false), []);
+
+  useEffect(() => {
+    if (!editing) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") cancelEditing(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [editing, cancelEditing]);
   const saveEditing = () => {
     // In production: API call to save
     toast.success("Dados atualizados com sucesso");
