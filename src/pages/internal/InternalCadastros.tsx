@@ -447,7 +447,6 @@ export default function InternalCadastros() {
                     ) : (
                       <>
                         <ToggleGroupItem value="name" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleName")}</ToggleGroupItem>
-                        <ToggleGroupItem value="city" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleCity")}</ToggleGroupItem>
                         <ToggleGroupItem value="email" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleEmail")}</ToggleGroupItem>
                       </>
                     )}
@@ -470,37 +469,8 @@ export default function InternalCadastros() {
               </Select>
             </div>
 
-            {/* Row 2: Filters */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-              {/* Franchise status checkboxes */}
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.franchiseStatusLegend")}</span>
-                <div className="flex items-center gap-3 h-9 px-2 rounded-md border border-input bg-background">
-                  <label className="flex items-center gap-1.5 cursor-pointer flex-1 min-w-0">
-                    <Checkbox checked={showActive} onCheckedChange={(v: boolean) => setShowActive(v)} className="h-3.5 w-3.5" />
-                    <span className="text-xs truncate">{t("internal.cadastros.statusActive")}</span>
-                  </label>
-                  <label className="flex items-center gap-1.5 cursor-pointer flex-1 min-w-0">
-                    <Checkbox checked={showInactive} onCheckedChange={(v: boolean) => setShowInactive(v)} className="h-3.5 w-3.5" />
-                    <span className="text-xs truncate">{t("internal.cadastros.statusInactive")}</span>
-                  </label>
-                </div>
-              </div>
-              {/* Registration status */}
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.registrationStatusFilter")}</span>
-                <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); activateCheckboxes(); }}>
-                  <SelectTrigger className="h-9 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
-                    <SelectItem value="pendente">{t("internal.cadastros.regPending")}</SelectItem>
-                    <SelectItem value="concluido">{t("internal.cadastros.regCompleted")}</SelectItem>
-                    <SelectItem value="cancelado">{t("internal.cadastros.regCancelled")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            {/* Row 2: Main Filters — Atendente, Qualificação, Tipo Franquia, Localidade */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {/* Attendant */}
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.attendantFilter")}</span>
@@ -550,18 +520,72 @@ export default function InternalCadastros() {
                   </SelectContent>
                 </Select>
               </div>
+              {/* Location autocomplete */}
+              <div className="flex flex-col gap-1" ref={locationRef}>
+                <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.locationFilter")}</span>
+                <div className="relative">
+                  <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input
+                    placeholder={t("internal.cadastros.locationPlaceholder")}
+                    value={locationSearch}
+                    onChange={e => { setLocationSearch(e.target.value); setShowLocationDropdown(true); activateCheckboxes(); }}
+                    onFocus={() => setShowLocationDropdown(true)}
+                    onKeyDown={e => { if (e.key === "Escape") { setShowLocationDropdown(false); (e.target as HTMLInputElement).select(); } }}
+                    className="pl-8 pr-8 h-9 text-xs"
+                  />
+                  {locationSearch && (
+                    <button onClick={() => { setLocationSearch(""); setShowLocationDropdown(false); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                  {showLocationDropdown && locationSuggestions.length > 0 && (
+                    <div className="absolute z-50 top-full left-0 right-0 mt-1 rounded-md border border-border bg-popover shadow-md max-h-[200px] overflow-y-auto">
+                      {locationSuggestions.map(s => (
+                        <button
+                          key={s}
+                          className="w-full text-left px-3 py-1.5 text-xs hover:bg-accent transition-colors"
+                          onMouseDown={e => { e.preventDefault(); setLocationSearch(s); setShowLocationDropdown(false); activateCheckboxes(); }}
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
-            {/* Active filters + clear */}
+            {/* Row 3: Subfiltro — Status da franquia (discreto) */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-1">
+              <span className="text-[10px] text-muted-foreground">{t("internal.cadastros.franchiseStatusSubfilter")}:</span>
+              <label className="flex items-center gap-1.5 cursor-pointer">
+                <Checkbox checked={showActive} onCheckedChange={(v: boolean) => setShowActive(v)} className="h-3 w-3" />
+                <span className="text-[11px] text-muted-foreground">{t("internal.cadastros.statusActive")}</span>
+              </label>
+              <label className="flex items-center gap-1.5 cursor-pointer">
+                <Checkbox checked={showInactive} onCheckedChange={(v: boolean) => setShowInactive(v)} className="h-3 w-3" />
+                <span className="text-[11px] text-muted-foreground">{t("internal.cadastros.statusInactive")}</span>
+              </label>
+              {/* Registration status inline */}
+              <div className="flex items-center gap-1.5 ml-auto">
+                <span className="text-[10px] text-muted-foreground">{t("internal.cadastros.registrationStatusFilter")}:</span>
+                <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); activateCheckboxes(); }}>
+                  <SelectTrigger className="h-7 text-[11px] w-auto min-w-[100px] border-dashed">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
+                    <SelectItem value="pendente">{t("internal.cadastros.regPending")}</SelectItem>
+                    <SelectItem value="concluido">{t("internal.cadastros.regCompleted")}</SelectItem>
+                    <SelectItem value="cancelado">{t("internal.cadastros.regCancelled")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Clear filters */}
             {hasFilters && (
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">
-                  {filtered.length === 0
-                    ? (t("internal.cadastros.noResults") !== "internal.cadastros.noResults" ? t("internal.cadastros.noResults") : "Nenhum resultado encontrado")
-                    : filtered.length === 1
-                      ? `1 ${t("internal.cadastros.resultFound") !== "internal.cadastros.resultFound" ? t("internal.cadastros.resultFound") : "resultado encontrado"}`
-                      : `${filtered.length} ${t("internal.cadastros.resultsFound") !== "internal.cadastros.resultsFound" ? t("internal.cadastros.resultsFound") : "resultados encontrados"}`}
-                </span>
+              <div className="flex items-center justify-end">
                 <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
                   <X className="h-3 w-3" />
                   {t("internal.cadastros.clearFilters")}
@@ -572,7 +596,7 @@ export default function InternalCadastros() {
         </DashboardCard>
       </div>
 
-      {/* ── Results ── */}
+      {/* ── Results header + listing ── */}
       <div className="mt-4 space-y-3">
         {!hasActiveFilters ? (
           <p className="text-sm text-muted-foreground text-center py-8">
@@ -584,6 +608,29 @@ export default function InternalCadastros() {
           </p>
         ) : (
           <>
+            {/* Results context header */}
+            <div className="space-y-1.5 px-1">
+              <h2 className="text-sm font-semibold text-foreground">{t("internal.cadastros.resultsHeader")}</h2>
+              {filterDescription.length > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  {filterDescription.join("  ·  ")}
+                </p>
+              )}
+              <div className="flex items-center gap-3 text-[11px]">
+                <span className="text-muted-foreground">
+                  {filtered.length} {filtered.length === 1 ? "registro" : "registros"}
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+                  <span className="text-emerald-700">{activeCount} {activeCount === 1 ? "ativo" : "ativos"}</span>
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
+                  <span className="text-red-600">{inactiveCount} {inactiveCount === 1 ? "inativo" : "inativos"}</span>
+                </span>
+              </div>
+            </div>
+
             {paginatedResults.map(r => (
               <FranchiseeCard key={r.person.id} franchisee={r.person} visibleFranchises={r.matchingFranchises} />
             ))}
