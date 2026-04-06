@@ -617,7 +617,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
       className={`rounded-r-lg rounded-l-[2px] border border-app-card-border bg-card overflow-hidden border-l-[5px] transition-shadow hover:shadow-md ${registrationStatusBorder[regStatus]} ${isCancelled ? "opacity-50" : ""}`}
     >
       <div className="p-4">
-        <div className="flex flex-col lg:flex-row gap-x-6">
+        <div className="flex flex-col lg:flex-row gap-x-6 min-h-[340px]">
           {/* ── Left side (Grids 1-3) ── */}
           <div className="flex-1 min-w-0">
             {/* ── Grid 1: Name + IDs + Sponsor ── */}
