@@ -864,7 +864,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
         onOpenChange={setAddressOpen}
         addresses={addresses}
         onChange={setAddresses}
-        currentCountryIso2={f.country === "Brasil" ? "BR" : "ES"}
+        currentCountryIso2={f.countryIso2}
         franchiseCurrency={f.country === "Brasil" ? "BRL" : "EUR"}
       />
       <FinancialManager
