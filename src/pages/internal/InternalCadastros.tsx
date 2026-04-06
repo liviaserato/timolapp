@@ -708,15 +708,15 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             {/* ── Grid 2 (Dados Pessoais) + Grid 3 (Franquia) side by side ── */}
             <div className="flex flex-col sm:flex-row gap-x-14 gap-y-2">
               {/* Dados Pessoais */}
-              <div className="space-y-1.5 min-w-0">
-                <p className="flex items-center gap-1.5 text-sm text-foreground truncate">
-                  <FileText className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
+              <div className="space-y-1.5 min-w-0 flex-1">
+                <p className="flex items-center gap-1.5 text-sm text-foreground truncate" aria-label={`Documento: ${f.document}`}>
+                  <FileText className="h-3.5 w-3.5 shrink-0 text-foreground/70" aria-hidden="true" />
                   {editing ? (
                     <Input className="h-6 text-xs flex-1 px-1.5" value={editData.document} onChange={e => ed("document", e.target.value)} />
                   ) : docLabel}
                 </p>
-                <p className="flex items-center gap-1.5 text-sm text-foreground">
-                  <Cake className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
+                <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`Data de nascimento: ${f.birthDate}`}>
+                  <Cake className="h-3.5 w-3.5 shrink-0 text-foreground/70" aria-hidden="true" />
                   {editing ? (
                     <span className="flex items-center gap-1">
                       <Input className="h-6 text-xs w-24 px-1.5" value={editData.birthDate} onChange={e => ed("birthDate", e.target.value)} placeholder="DD/MM/AAAA" />
@@ -729,23 +729,27 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                       </Select>
                     </span>
                   ) : (
-                    <span>{f.birthDate} · {t(`step1.gender.${f.gender}`)}</span>
+                    <span>{f.birthDate}</span>
                   )}
                 </p>
-                <p className="flex items-center gap-1.5 text-sm text-foreground">
-                  <Mail className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
+                <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`Gênero: ${t(`step1.gender.${f.gender}`)}`}>
+                  <User className="h-3.5 w-3.5 shrink-0 text-foreground/70" aria-hidden="true" />
+                  {editing ? null : <span>{t(`step1.gender.${f.gender}`)}</span>}
+                </p>
+                <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`E-mail: ${f.email}`}>
+                  <Mail className="h-3.5 w-3.5 shrink-0 text-foreground/70" aria-hidden="true" />
                   {editing ? (
                     <Input className="h-6 text-xs flex-1 px-1.5" value={editData.email} onChange={e => ed("email", e.target.value)} />
                   ) : <span className="truncate">{f.email}</span>}
                 </p>
-                <p className="flex items-center gap-1.5 text-sm text-foreground">
-                  <Phone className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
+                <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`Telefone: ${f.phone}`}>
+                  <Phone className="h-3.5 w-3.5 shrink-0 text-foreground/70" aria-hidden="true" />
                   {editing ? (
                     <Input className="h-6 text-xs flex-1 px-1.5" value={editData.phone} onChange={e => ed("phone", e.target.value)} />
                   ) : <span className="truncate">{f.phone}</span>}
                 </p>
-                <p className="flex items-center gap-1.5 text-sm text-foreground">
-                  <MapPin className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
+                <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`País de residência: ${f.country}`}>
+                  <Globe className="h-3.5 w-3.5 shrink-0 text-foreground/70" aria-hidden="true" />
                   {editing ? (
                     <span className="flex items-center gap-1">
                       <Input className="h-6 text-xs w-24 px-1.5" value={editData.city} onChange={e => ed("city", e.target.value)} placeholder="Cidade" />
@@ -753,41 +757,37 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                       <span>{f.countryFlag}</span>
                     </span>
                   ) : (
-                    <span className="truncate">{f.city}, {f.state} · {f.countryFlag} {f.country}</span>
+                    <span className="truncate">{f.countryFlag} {f.country} · {f.city}, {f.state}</span>
                   )}
                 </p>
               </div>
 
               {/* Dados da Franquia */}
-              <div className="space-y-1.5 min-w-0">
-                <p className="text-sm text-foreground flex items-center gap-1.5 truncate">
-                  <UserRound className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
-                  {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
-                </p>
+              <div className="space-y-1.5 min-w-0 flex-1">
                 <p className="text-sm text-foreground flex items-center gap-1.5">
-                  <Calendar className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
-                  {t("internal.cadastros.registrationDate")}: {sel.createdAt.split("-").reverse().join("/")}
-                </p>
-                <p className="text-sm text-foreground flex items-center gap-1.5">
-                  <Gem className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
+                  <Gem className="h-3.5 w-3.5 shrink-0 text-foreground/70" aria-hidden="true" />
                   {t("payment.franchise.label")}: {planLabels[sel.planCode] || sel.planCode}
                 </p>
                 {qualConfig && (
                   <p className="text-sm flex items-center gap-1.5">
-                    <span className="text-foreground/70">{qualConfig.icon}</span>
+                    <span className="text-foreground/70" aria-hidden="true">{qualConfig.icon}</span>
                     <span className="text-foreground">{t("internal.cadastros.qualLabel") !== "internal.cadastros.qualLabel" ? t("internal.cadastros.qualLabel") : "Qualificação"}: {t(qualificationLabelKeys[sel.qualification])}</span>
                   </p>
                 )}
+                <p className="text-sm text-foreground flex items-center gap-1.5 truncate">
+                  <UserRound className="h-3.5 w-3.5 shrink-0 text-foreground/70" aria-hidden="true" />
+                  {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
+                </p>
+                <p className="text-sm text-foreground flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5 shrink-0 text-foreground/70" aria-hidden="true" />
+                  {t("internal.cadastros.registrationDate")}: {sel.createdAt.split("-").reverse().join("/")}
+                </p>
+                <p className="text-sm text-foreground flex items-center gap-1.5">
+                  <Coins className="h-3.5 w-3.5 shrink-0 text-foreground/70" aria-hidden="true" />
+                  Moeda: {f.country === "Brasil" ? "BRL (R$)" : f.country === "España" ? "EUR (€)" : "USD ($)"}
+                </p>
               </div>
             </div>
-
-            {/* Editing action bar */}
-            {editing && (
-              <div className="flex items-center justify-end gap-2 mt-3 pt-3 border-t border-border/50">
-                <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={cancelEditing}>Cancelar</Button>
-                <Button size="sm" className="h-7 text-xs gap-1.5" onClick={saveEditing}>Salvar</Button>
-              </div>
-            )}
           </div>
 
           {/* ── Grid 4: Actions ── */}
