@@ -735,12 +735,8 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                       </Select>
                     </span>
                   ) : (
-                    <span>{f.birthDate}</span>
+                    <span>{f.birthDate} <span className="text-muted-foreground mx-0.5">·</span> <span aria-label={`Gênero: ${t(`step1.gender.${f.gender}`)}`}>{t(`step1.gender.${f.gender}`)}</span></span>
                   )}
-                </p>
-                <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`Gênero: ${t(`step1.gender.${f.gender}`)}`}>
-                  <User className="h-3.5 w-3.5 shrink-0 text-foreground/70" aria-hidden="true" />
-                  {editing ? null : <span>{t(`step1.gender.${f.gender}`)}</span>}
                 </p>
                 <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`E-mail: ${f.email}`}>
                   <Mail className="h-3.5 w-3.5 shrink-0 text-foreground/70" aria-hidden="true" />
@@ -820,7 +816,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                   <Lock className="h-3 w-3" />
                   {t("internal.cadastros.btnCredentials")}
                 </Button>
-                <Button variant={editing ? "default" : "outline"} size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={editing ? cancelEditing : startEditing}>
+                <Button variant={editing ? "default" : "outline"} size="sm" className={cn("text-xs h-7 gap-1.5 justify-start w-full", editing && "bg-[hsl(214,100%,33%)] hover:bg-[hsl(214,100%,28%)]")} onClick={editing ? cancelEditing : startEditing}>
                   <Pencil className="h-3 w-3" />
                   {editing ? "Cancelar edição" : t("internal.cadastros.btnEdit")}
                 </Button>
