@@ -633,12 +633,6 @@ function ProductDetailDialog({ product: p, open, onOpenChange }: { product: Prod
             )}
           </div>
           <DialogTitle className="text-lg">{p.name}</DialogTitle>
-          <div className="flex items-center gap-2 pt-1">
-            <span className="text-sm font-bold text-primary">{formatCurrency(p.price)}</span>
-            {p.oldPrice && (
-              <span className="text-xs text-muted-foreground line-through">{formatCurrency(p.oldPrice)}</span>
-            )}
-          </div>
         </DialogHeader>
 
         {sections.length > 0 && (
