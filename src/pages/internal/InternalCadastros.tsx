@@ -339,15 +339,18 @@ export default function InternalCadastros() {
       matchingFranchises: getMatchingFranchises(f, currentFilters),
     })).filter(r => r.matchingFranchises.length > 0);
 
-    if (sortBy === "recent" || sortBy === "") {
-      results = [...results].sort((a, b) => b.matchingFranchises[0].createdAt.localeCompare(a.matchingFranchises[0].createdAt));
+    const dir = sortDir === "asc" ? 1 : -1;
+    if (sortBy === "recent") {
+      results = [...results].sort((a, b) => dir * a.matchingFranchises[0].createdAt.localeCompare(b.matchingFranchises[0].createdAt));
+    } else if (sortBy === "name") {
+      results = [...results].sort((a, b) => dir * a.person.fullName.localeCompare(b.person.fullName));
     } else if (sortBy === "qualification") {
-      results = [...results].sort((a, b) => (qualPriority[b.matchingFranchises[0].qualification] || 0) - (qualPriority[a.matchingFranchises[0].qualification] || 0));
+      results = [...results].sort((a, b) => dir * ((qualPriority[a.matchingFranchises[0].qualification] || 0) - (qualPriority[b.matchingFranchises[0].qualification] || 0)));
     } else if (sortBy === "active_first") {
       results = [...results].sort((a, b) => {
         const aActive = isEffectivelyActive(a.person, a.matchingFranchises[0]) ? 0 : 1;
         const bActive = isEffectivelyActive(b.person, b.matchingFranchises[0]) ? 0 : 1;
-        return aActive - bActive;
+        return dir * (aActive - bActive);
       });
     }
     return results;
