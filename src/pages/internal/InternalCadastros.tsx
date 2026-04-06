@@ -481,11 +481,6 @@ export default function InternalCadastros() {
           </p>
         ) : (
           <>
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">
-                {filtered.length} {filtered.length === 1 ? "resultado encontrado" : "resultados encontrados"}
-              </p>
-            </div>
             {paginatedResults.map(f => (
               <FranchiseeCard key={f.id} franchisee={f} />
             ))}
