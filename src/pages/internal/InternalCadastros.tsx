@@ -605,29 +605,29 @@ export default function InternalCadastros() {
                     ({filtered.length} {filtered.length === 1 ? "registro encontrado" : "registros encontrados"})
                   </span>
                 </div>
-                <Select value={sortBy} onValueChange={v => setSortBy(v)}>
-                  <SelectTrigger className="h-8 text-xs w-auto min-w-[160px] border-dashed">
-                    <div className="flex items-center gap-1.5">
-                      <ArrowUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                      <SelectValue placeholder={t("internal.cadastros.classify")} />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="recent">{t("internal.cadastros.sortRecent")}</SelectItem>
-                    <SelectItem value="active_first">{t("internal.cadastros.sortActiveFirst")}</SelectItem>
-                    <SelectItem value="qualification">{t("internal.cadastros.sortQualification")}</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-3">
+                  <span className="text-[11px] text-emerald-700">{activeCount} {activeCount === 1 ? "ativo" : "ativos"}</span>
+                  <span className="text-[11px] text-red-600">{inactiveCount} {inactiveCount === 1 ? "inativo" : "inativos"}</span>
+                  <Select value={sortBy} onValueChange={v => setSortBy(v)}>
+                    <SelectTrigger className="h-8 text-xs w-auto min-w-[160px] border-dashed">
+                      <div className="flex items-center gap-1.5">
+                        <ArrowUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                        <SelectValue placeholder={t("internal.cadastros.classify")} />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="recent">{t("internal.cadastros.sortRecent")}</SelectItem>
+                      <SelectItem value="active_first">{t("internal.cadastros.sortActiveFirst")}</SelectItem>
+                      <SelectItem value="qualification">{t("internal.cadastros.sortQualification")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               {filterDescription.length > 0 && (
                 <p className="text-xs text-muted-foreground">
                   {filterDescription.join("  ·  ")}
                 </p>
               )}
-              <div className="flex items-center gap-3 text-[11px]">
-                <span className="text-emerald-700">{activeCount} {activeCount === 1 ? "ativo" : "ativos"}</span>
-                <span className="text-red-600">{inactiveCount} {inactiveCount === 1 ? "inativo" : "inativos"}</span>
-              </div>
             </div>
 
             {paginatedResults.map(r => (
