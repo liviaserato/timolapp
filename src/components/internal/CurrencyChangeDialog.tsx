@@ -255,5 +255,6 @@ export function CurrencyChangeDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
