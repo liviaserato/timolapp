@@ -11,7 +11,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Search, X, Phone, Mail, MapPin,
   MapPinHouse, Landmark, Pencil, Lock,
-  FileText, Cake, Gem, ArrowUpDown, Calendar,
+  FileText, Cake, Gem, ArrowUpDown, ArrowUp, ArrowDown, Calendar,
   MessageCircle, Bell, RotateCcw, UserRound, Globe, Coins, CircleDollarSign,
 } from "lucide-react";
 import { countries } from "@/data/countries";
@@ -248,7 +248,8 @@ export default function InternalCadastros() {
   const searchCardRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState("");
   
-  const [sortBy, setSortBy] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("recent");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [showActive, setShowActive] = useState(false);
   const [showInactive, setShowInactive] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState<string>("all");
