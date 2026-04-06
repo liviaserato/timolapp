@@ -608,54 +608,122 @@ export default function InternalProdutos() {
 }
 
 
+/* ── Product Detail Dialog ── */
+function ProductDetailDialog({ product: p, open, onOpenChange }: { product: Product; open: boolean; onOpenChange: (v: boolean) => void }) {
+  const sections = [
+    { label: "Descrição", value: p.description },
+    { label: "Benefícios", value: p.benefits },
+    { label: "Instruções de Uso", value: p.instructions },
+    { label: "Garantia", value: p.warranty },
+    { label: "Composição", value: p.composition },
+    { label: "Fabricante", value: p.manufacturer },
+  ].filter(s => s.value);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
+        <DialogHeader className="text-center">
+          <DialogTitle className="text-lg">{p.name}</DialogTitle>
+          <div className="flex items-center justify-center gap-2 pt-1">
+            <span className="text-sm font-bold text-primary">{formatCurrency(p.price)}</span>
+            {p.oldPrice && (
+              <span className="text-xs text-muted-foreground line-through">{formatCurrency(p.oldPrice)}</span>
+            )}
+          </div>
+          <div className="flex items-center justify-center gap-2 pt-1">
+            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+              {categories.find(c => c.id === p.category)?.name ?? p.category}
+            </span>
+            <span className="text-[10px] text-muted-foreground">{p.subcategory}</span>
+            {p.pointsUnilevel != null && (
+              <span className="text-[10px] text-muted-foreground">• Pontos: {p.pointsUnilevel}</span>
+            )}
+          </div>
+        </DialogHeader>
+
+        {sections.length > 0 && (
+          <div className="space-y-4 pt-2">
+            {sections.map(({ label, value }) => (
+              <div key={label}>
+                <h4 className="text-xs font-semibold text-foreground mb-1">{label}</h4>
+                <p className="text-xs text-muted-foreground whitespace-pre-line leading-relaxed">{value}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {sections.length === 0 && (
+          <p className="text-sm text-muted-foreground text-center py-4">Nenhuma informação adicional cadastrada.</p>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+
 /* ── Product Card ── */
 function ProductListCard({ product: p }: { product: Product }) {
+  const [detailOpen, setDetailOpen] = useState(false);
+
   return (
-    <div className="rounded-[10px] border border-border bg-card overflow-hidden hover:shadow-md transition-shadow">
-      {/* Image placeholder */}
-      <div className="h-32 bg-muted/30 flex items-center justify-center">
-        {p.image ? (
-          <img src={p.image} alt={p.name} className="h-full w-full object-cover" />
-        ) : (
-          <ImageIcon className="h-10 w-10 text-muted-foreground/20" />
-        )}
-      </div>
-
-      <div className="p-3 space-y-2">
-        {/* Category badge */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
-            {categories.find(c => c.id === p.category)?.name ?? p.category}
-          </span>
-          <span className="text-[10px] text-muted-foreground">{p.subcategory}</span>
-        </div>
-
-        {/* Name */}
-        <p className="text-sm font-semibold text-foreground leading-tight line-clamp-2">{p.name}</p>
-
-        {/* Price */}
-        <div className="flex items-baseline gap-2">
-          <span className="text-sm font-bold text-primary">{formatCurrency(p.price)}</span>
-          {p.oldPrice && (
-            <span className="text-xs text-muted-foreground line-through">{formatCurrency(p.oldPrice)}</span>
+    <>
+      <div
+        className="rounded-[10px] border border-border bg-card overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+        onClick={() => setDetailOpen(true)}
+      >
+        {/* Image placeholder */}
+        <div
+          className="h-32 bg-muted/30 flex items-center justify-center"
+          onClick={(e) => {
+            e.stopPropagation();
+            // TODO: open image slide modal
+          }}
+        >
+          {p.image ? (
+            <img src={p.image} alt={p.name} className="h-full w-full object-cover" />
+          ) : (
+            <ImageIcon className="h-10 w-10 text-muted-foreground/20" />
           )}
         </div>
 
-        {/* Meta row */}
-        <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 border-t border-border">
-          <span>SKU: {p.id}</span>
-          {p.pointsUnilevel != null && <span>Pontos: {p.pointsUnilevel}</span>}
-          <div className="flex items-center gap-1">
-            {p.activatable && <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Ativável</span>}
-            <span className={cn(
-              "text-[9px] px-1.5 py-0.5 rounded",
-              p.inStock ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
-            )}>
-              {p.inStock ? "Em estoque" : "Indisponível"}
+        <div className="p-3 space-y-2">
+          {/* Category badge */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+              {categories.find(c => c.id === p.category)?.name ?? p.category}
             </span>
+            <span className="text-[10px] text-muted-foreground">{p.subcategory}</span>
+          </div>
+
+          {/* Name */}
+          <p className="text-sm font-semibold text-foreground leading-tight line-clamp-2">{p.name}</p>
+
+          {/* Price */}
+          <div className="flex items-baseline gap-2">
+            <span className="text-sm font-bold text-primary">{formatCurrency(p.price)}</span>
+            {p.oldPrice && (
+              <span className="text-xs text-muted-foreground line-through">{formatCurrency(p.oldPrice)}</span>
+            )}
+          </div>
+
+          {/* Meta row */}
+          <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 border-t border-border">
+            <span>SKU: {p.id}</span>
+            {p.pointsUnilevel != null && <span>Pontos: {p.pointsUnilevel}</span>}
+            <div className="flex items-center gap-1">
+              {p.activatable && <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Ativável</span>}
+              <span className={cn(
+                "text-[9px] px-1.5 py-0.5 rounded",
+                p.inStock ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
+              )}>
+                {p.inStock ? "Em estoque" : "Indisponível"}
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <ProductDetailDialog product={p} open={detailOpen} onOpenChange={setDetailOpen} />
+    </>
   );
 }
