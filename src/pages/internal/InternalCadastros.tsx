@@ -690,16 +690,13 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                     </div>
                   )}
 
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-1.5 mt-0.5 sm:justify-between" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
-                    <p className="text-xs text-muted-foreground min-w-0 truncate">
-                      {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
-                    </p>
-                    {isCompleted && (
+                  {isCompleted && (
+                    <div className="mt-0.5" style={{ marginLeft: "calc(0.875rem + 0.375rem)" }}>
                       <p className="text-xs text-muted-foreground shrink-0">
                         Atendente: <span className="font-medium text-foreground">{sel.attendantName ?? "—"}</span>
                       </p>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
                 {/* Touchpoint icons: show for pendente and cancelado, hide for concluido */}
                 {!isCompleted && (
@@ -708,37 +705,9 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
               </div>
             </div>
 
-            {/* ── Grid 2 + Grid 3 side by side ── */}
+            {/* ── Grid 2 (Dados Pessoais) + Grid 3 (Franquia) side by side ── */}
             <div className="flex flex-col sm:flex-row gap-x-14 gap-y-2">
-              <div className="space-y-1.5 min-w-0">
-                <p className="text-sm text-foreground flex items-center gap-1.5">
-                  <Calendar className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
-                  {t("internal.cadastros.registrationDate")}: {sel.createdAt.split("-").reverse().join("/")}
-                </p>
-                <p className="text-sm text-foreground flex items-center gap-1.5">
-                  <Gem className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
-                  {t("payment.franchise.label")}: {planLabels[sel.planCode] || sel.planCode}
-                </p>
-                {qualConfig && (
-                  <p className="text-sm flex items-center gap-1.5">
-                    <span className="text-foreground/70">{qualConfig.icon}</span>
-                    <span className="text-foreground">{t(qualificationLabelKeys[sel.qualification])}</span>
-                  </p>
-                )}
-                <p className="flex items-center gap-1.5 text-sm text-foreground">
-                  <MapPin className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
-                  {editing ? (
-                    <span className="flex items-center gap-1">
-                      <Input className="h-6 text-xs w-24 px-1.5" value={editData.city} onChange={e => ed("city", e.target.value)} placeholder="Cidade" />
-                      <Input className="h-6 text-xs w-12 px-1.5" value={editData.state} onChange={e => ed("state", e.target.value)} placeholder="UF" />
-                      <span>{f.countryFlag}</span>
-                    </span>
-                  ) : (
-                    <span className="truncate">{f.city}, {f.state} {f.countryFlag}</span>
-                  )}
-                </p>
-              </div>
-
+              {/* Dados Pessoais */}
               <div className="space-y-1.5 min-w-0">
                 <p className="flex items-center gap-1.5 text-sm text-foreground truncate">
                   <FileText className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
@@ -775,6 +744,39 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                     <Input className="h-6 text-xs flex-1 px-1.5" value={editData.phone} onChange={e => ed("phone", e.target.value)} />
                   ) : <span className="truncate">{f.phone}</span>}
                 </p>
+                <p className="flex items-center gap-1.5 text-sm text-foreground">
+                  <MapPin className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
+                  {editing ? (
+                    <span className="flex items-center gap-1">
+                      <Input className="h-6 text-xs w-24 px-1.5" value={editData.city} onChange={e => ed("city", e.target.value)} placeholder="Cidade" />
+                      <Input className="h-6 text-xs w-12 px-1.5" value={editData.state} onChange={e => ed("state", e.target.value)} placeholder="UF" />
+                      <span>{f.countryFlag}</span>
+                    </span>
+                  ) : (
+                    <span className="truncate">{f.city}, {f.state} · {f.countryFlag} {f.country}</span>
+                  )}
+                </p>
+              </div>
+
+              {/* Dados da Franquia */}
+              <div className="space-y-1.5 min-w-0">
+                <p className="text-xs text-muted-foreground min-w-0 truncate flex items-center gap-1.5">
+                  {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
+                </p>
+                <p className="text-sm text-foreground flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
+                  {t("internal.cadastros.registrationDate")}: {sel.createdAt.split("-").reverse().join("/")}
+                </p>
+                <p className="text-sm text-foreground flex items-center gap-1.5">
+                  <Gem className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
+                  {t("payment.franchise.label")}: {planLabels[sel.planCode] || sel.planCode}
+                </p>
+                {qualConfig && (
+                  <p className="text-sm flex items-center gap-1.5">
+                    <span className="text-foreground/70">{qualConfig.icon}</span>
+                    <span className="text-foreground">{t(qualificationLabelKeys[sel.qualification])}</span>
+                  </p>
+                )}
               </div>
             </div>
 
