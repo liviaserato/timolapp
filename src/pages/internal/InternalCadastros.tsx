@@ -771,17 +771,9 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                     </span>
                   )}
                 </p>
-                <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`País de residência: ${f.country}`}>
+                <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`Localidade: ${f.city}, ${f.state} - ${f.country}`}>
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><Globe className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
-                  {editing ? (
-                    <span className="flex items-center gap-1">
-                      <Input className="h-6 text-xs w-24 px-1.5" value={editData.city} onChange={e => ed("city", e.target.value)} placeholder="Cidade" />
-                      <Input className="h-6 text-xs w-12 px-1.5" value={editData.state} onChange={e => ed("state", e.target.value)} placeholder="UF" />
-                      <span>{f.countryFlag}</span>
-                    </span>
-                  ) : (
-                    <span className="truncate">{f.countryFlag} {f.country} · {f.city}, {f.state}</span>
-                  )}
+                  <span className="truncate text-muted-foreground italic text-xs">{f.city}, {f.state} · {f.countryFlag} {f.country}</span>
                 </p>
               </div>
 
