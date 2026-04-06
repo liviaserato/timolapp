@@ -647,40 +647,6 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                     ) : (
                       <span className="text-base font-bold text-foreground mr-1">{f.fullName}</span>
                     )}
-                    <div className="ml-auto flex items-center gap-1 flex-wrap justify-end">
-                      {/* Single ID: always inline */}
-                      {sortedFranchises.length <= 1 && sortedFranchises.map((fr, idx) => (
-                        <button
-                          key={fr.franchiseId}
-                          type="button"
-                          onClick={() => setSelectedIdx(idx)}
-                          className={cn(
-                            "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border inline-flex items-center transition-colors cursor-pointer",
-                            idx === selectedIdx
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
-                          )}
-                        >
-                          ID {fr.franchiseId}
-                        </button>
-                      ))}
-                      {/* Multiple IDs: inline on desktop only */}
-                      {sortedFranchises.length > 1 && sortedFranchises.map((fr, idx) => (
-                        <button
-                          key={fr.franchiseId}
-                          type="button"
-                          onClick={() => setSelectedIdx(idx)}
-                          className={cn(
-                            "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border hidden sm:inline-flex items-center transition-colors cursor-pointer",
-                            idx === selectedIdx
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
-                          )}
-                        >
-                          ID {fr.franchiseId}
-                        </button>
-                      ))}
-                    </div>
                   </div>
                   {/* Multiple IDs on mobile: separate row */}
                   {sortedFranchises.length > 1 && (
@@ -715,6 +681,39 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                 {!isCompleted && (
                   <TouchpointIcons franchise={sel} />
                 )}
+                {/* ID badges after touchpoint icons */}
+                <div className="flex items-center gap-1 flex-wrap justify-end shrink-0">
+                  {sortedFranchises.length <= 1 && sortedFranchises.map((fr, idx) => (
+                    <button
+                      key={fr.franchiseId}
+                      type="button"
+                      onClick={() => setSelectedIdx(idx)}
+                      className={cn(
+                        "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border inline-flex items-center transition-colors cursor-pointer",
+                        idx === selectedIdx
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
+                      )}
+                    >
+                      ID {fr.franchiseId}
+                    </button>
+                  ))}
+                  {sortedFranchises.length > 1 && sortedFranchises.map((fr, idx) => (
+                    <button
+                      key={fr.franchiseId}
+                      type="button"
+                      onClick={() => setSelectedIdx(idx)}
+                      className={cn(
+                        "text-xs px-1.5 py-0 h-5 font-medium rounded-sm border hidden sm:inline-flex items-center transition-colors cursor-pointer",
+                        idx === selectedIdx
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
+                      )}
+                    >
+                      ID {fr.franchiseId}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
