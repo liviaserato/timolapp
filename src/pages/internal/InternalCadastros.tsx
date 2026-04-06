@@ -413,22 +413,38 @@ export default function InternalCadastros() {
       <div ref={searchCardRef}>
         <DashboardCard icon={Search} title={t("internal.cadastros.searchFranchisee")}>
           <div className="mt-2 space-y-3">
-            {/* Row 1: Search + Sort */}
+            {/* Row 1: Search + Registration Status */}
             <div className="space-y-1.5">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={t("internal.cadastros.searchPlaceholder")}
-                  value={search}
-                  onChange={e => { setSearch(e.target.value); setSearchFields([]); activateCheckboxes(); scrollToSearch(); }}
-                  onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); (e.target as HTMLInputElement).select(); } }}
-                  className="pl-9 pr-9 h-9 text-xs"
-                />
-                {search && (
-                  <button onClick={() => { setSearch(""); setSearchFields([]); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
+              <div className="grid grid-cols-[3fr_1fr] gap-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder={t("internal.cadastros.searchPlaceholder")}
+                    value={search}
+                    onChange={e => { setSearch(e.target.value); setSearchFields([]); activateCheckboxes(); scrollToSearch(); }}
+                    onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); (e.target as HTMLInputElement).select(); } }}
+                    className="pl-9 pr-9 h-9 text-xs"
+                  />
+                  {search && (
+                    <button onClick={() => { setSearch(""); setSearchFields([]); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.registrationStatusFilter")}</span>
+                  <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); activateCheckboxes(); }}>
+                    <SelectTrigger className="h-9 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
+                      <SelectItem value="pendente">{t("internal.cadastros.regPending")}</SelectItem>
+                      <SelectItem value="concluido">{t("internal.cadastros.regCompleted")}</SelectItem>
+                      <SelectItem value="cancelado">{t("internal.cadastros.regCancelled")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               {search.trim() && (
                 <ToggleGroup
@@ -550,21 +566,6 @@ export default function InternalCadastros() {
                 <Checkbox checked={showInactive} onCheckedChange={(v: boolean) => setShowInactive(v)} className="h-3 w-3" />
                 <span className="text-[11px] text-muted-foreground">{t("internal.cadastros.statusInactive")}</span>
               </label>
-              {/* Registration status inline */}
-              <div className="flex items-center gap-1.5 ml-auto">
-                <span className="text-[10px] text-muted-foreground">{t("internal.cadastros.registrationStatusFilter")}:</span>
-                <Select value={registrationStatus} onValueChange={v => { setRegistrationStatus(v); activateCheckboxes(); }}>
-                  <SelectTrigger className="h-7 text-[11px] w-auto min-w-[100px] border-dashed">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t("internal.cadastros.allStatuses")}</SelectItem>
-                    <SelectItem value="pendente">{t("internal.cadastros.regPending")}</SelectItem>
-                    <SelectItem value="concluido">{t("internal.cadastros.regCompleted")}</SelectItem>
-                    <SelectItem value="cancelado">{t("internal.cadastros.regCancelled")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
 
             {/* Clear filters */}
@@ -595,7 +596,12 @@ export default function InternalCadastros() {
             {/* Results context header */}
             <div className="space-y-1.5 px-1">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-foreground">{t("internal.cadastros.resultsHeader")}</h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-semibold text-foreground">{t("internal.cadastros.resultsHeader")}</h2>
+                  <span className="text-xs text-muted-foreground">
+                    ({filtered.length} {filtered.length === 1 ? "registro encontrado" : "registros encontrados"})
+                  </span>
+                </div>
                 <Select value={sortBy} onValueChange={v => setSortBy(v)}>
                   <SelectTrigger className="h-8 text-xs w-auto min-w-[160px] border-dashed">
                     <div className="flex items-center gap-1.5">
@@ -616,17 +622,8 @@ export default function InternalCadastros() {
                 </p>
               )}
               <div className="flex items-center gap-3 text-[11px]">
-                <span className="text-muted-foreground">
-                  {filtered.length} {filtered.length === 1 ? "registro" : "registros"}
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-                  <span className="text-emerald-700">{activeCount} {activeCount === 1 ? "ativo" : "ativos"}</span>
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
-                  <span className="text-red-600">{inactiveCount} {inactiveCount === 1 ? "inativo" : "inativos"}</span>
-                </span>
+                <span className="text-emerald-700">{activeCount} {activeCount === 1 ? "ativo" : "ativos"}</span>
+                <span className="text-red-600">{inactiveCount} {inactiveCount === 1 ? "inativo" : "inativos"}</span>
               </div>
             </div>
 
