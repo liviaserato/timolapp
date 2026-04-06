@@ -12,7 +12,7 @@ import {
   Search, X, Phone, Mail, MapPin,
   MapPinHouse, Landmark, Pencil, Lock,
   FileText, Cake, Gem, ArrowUpDown, Calendar,
-  MessageCircle, Bell, RotateCcw,
+  MessageCircle, Bell, RotateCcw, UserRound,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
@@ -760,7 +760,8 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
 
               {/* Dados da Franquia */}
               <div className="space-y-1.5 min-w-0">
-                <p className="text-xs text-muted-foreground min-w-0 truncate flex items-center gap-1.5">
+                <p className="text-sm text-foreground flex items-center gap-1.5 truncate">
+                  <UserRound className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
                   {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
                 </p>
                 <p className="text-sm text-foreground flex items-center gap-1.5">
