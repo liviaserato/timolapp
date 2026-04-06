@@ -36,7 +36,6 @@ interface FranchiseEntry {
   franchiseStatus: "active" | "suspended" | "cancelled";
   activationStatus: "activated" | "pending" | "inactive";
   paidAt: string | null;
-  /* Touchpoint tracking for pending registrations */
   recoveryEmailSentAt?: string | null;
   whatsappSentAt?: string | null;
   sponsorNotifiedAt?: string | null;
@@ -51,12 +50,20 @@ interface Franchisee {
   gender: string;
   email: string;
   phone: string;
+  phoneDdi: string;
+  phoneNumber: string;
   username: string;
   city: string;
   state: string;
   country: string;
+  countryIso2: string;
   countryFlag: string;
   franchises: FranchiseEntry[];
+}
+
+/* ── Helper: find country by iso2 ── */
+function getCountryByIso2(iso2: string) {
+  return countries.find(c => c.iso2 === iso2);
 }
 
 /* ── Mock Data ── */
