@@ -287,7 +287,7 @@ export function FinancialManager({ accounts, onChange, dialogOnly, open: externa
       <Dialog open={listOpen} onOpenChange={handleListOpenChange}>
         <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Minhas Contas</DialogTitle>
+            <DialogTitle>Gerenciar Contas</DialogTitle>
             <DialogDescription>Selecione a conta principal ou gerencie suas contas.</DialogDescription>
           </DialogHeader>
 
