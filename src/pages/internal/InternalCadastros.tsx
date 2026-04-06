@@ -367,7 +367,6 @@ export default function InternalCadastros() {
     if (qualification !== "all") parts.push(`Qualificação: ${t(qualificationLabelKeys[qualification])}`);
     if (planType !== "all") parts.push(`Tipo de franquia: ${t(`franchise.${planType}`)}`);
     if (locationSearch.trim()) parts.push(`Localidade: ${locationSearch}`);
-    if (registrationStatus !== "all") parts.push(`Cadastro: ${t(`internal.cadastros.reg${registrationStatus.charAt(0).toUpperCase() + registrationStatus.slice(1)}`)}`);
     if (franchiseStatusFilter === "active") parts.push(`Status: ${t("internal.cadastros.statusActive")}`);
     if (franchiseStatusFilter === "inactive") parts.push(`Status: ${t("internal.cadastros.statusInactive")}`);
     return parts;
@@ -593,14 +592,16 @@ export default function InternalCadastros() {
             <div className="space-y-1.5 px-1">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-semibold text-foreground">{t("internal.cadastros.resultsHeader")}</h2>
+                  <h2 className="text-sm font-semibold text-foreground">
+                    {registrationStatus === "pendente" ? "Cadastros Pendentes" : registrationStatus === "cancelado" ? "Cadastros Cancelados" : t("internal.cadastros.resultsHeader")}
+                  </h2>
                   <span className="text-xs text-muted-foreground">
                     ({filtered.length} {filtered.length === 1 ? "registro encontrado" : "registros encontrados"})
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   {/* Status pills — clickable filters + counts */}
-                  <button
+                  {(registrationStatus === "all" || registrationStatus === "concluido") && <button
                     onClick={() => setShowActive(v => !v)}
                     className={cn(
                       "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
