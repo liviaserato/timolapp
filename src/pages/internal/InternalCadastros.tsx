@@ -722,13 +722,13 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             <div className="flex flex-col sm:flex-row gap-x-6 gap-y-2">
               {/* Dados Pessoais */}
               <div className="space-y-1.5 min-w-0 flex-1">
-                <p className="flex items-center gap-1.5 text-sm text-foreground truncate" aria-label={`Documento: ${f.document}`}>
+                <p className="flex items-center gap-1.5 text-sm text-foreground truncate" title={`Documento: ${f.document}`}>
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><FileText className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
                   {editing ? (
                     <Input className="h-6 text-xs flex-1 px-1.5" value={editData.document} onChange={e => ed("document", e.target.value)} />
                   ) : docLabel}
                 </p>
-                <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`Data de nascimento: ${f.birthDate}`}>
+                <p className="flex items-center gap-1.5 text-sm text-foreground" title={`Data de nascimento: ${f.birthDate} · ${t(`step1.gender.${f.gender}`)}`}>
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><Cake className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
                   {editing ? (
                     <span className="flex items-center gap-1">
@@ -742,16 +742,16 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                       </Select>
                     </span>
                   ) : (
-                    <span>{f.birthDate} <span className="text-muted-foreground mx-0.5">·</span> <span aria-label={`Gênero: ${t(`step1.gender.${f.gender}`)}`}>{t(`step1.gender.${f.gender}`)}</span></span>
+                    <span>{f.birthDate} <span className="text-muted-foreground mx-0.5">·</span> <span>{t(`step1.gender.${f.gender}`)}</span></span>
                   )}
                 </p>
-                <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`E-mail: ${f.email}`}>
+                <p className="flex items-center gap-1.5 text-sm text-foreground" title={`E-mail: ${f.email}`}>
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><Mail className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
                   {editing ? (
                     <Input className="h-6 text-xs flex-1 px-1.5" value={editData.email} onChange={e => ed("email", e.target.value)} />
                   ) : <span className="truncate">{f.email}</span>}
                 </p>
-                <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`Telefone: ${f.phone}`}>
+                <p className="flex items-center gap-1.5 text-sm text-foreground" title={`Telefone: ${f.phone}`}>
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><Phone className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
                   {editing ? (
                     <span className="flex items-center gap-1.5 flex-1 min-w-0">
@@ -768,9 +768,9 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                     </span>
                   )}
                 </p>
-                <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`Localidade: ${f.city}, ${f.state} - ${f.country}`}>
+                <p className="flex items-center gap-1.5 text-sm text-foreground" title={`Localidade: ${f.city}, ${f.state} - ${f.countryFlag} ${f.country}`}>
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><Globe className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
-                  <span className="truncate text-muted-foreground italic text-xs">{f.city}, {f.state} · {f.countryFlag} {f.country}</span>
+                  <span className="truncate">{f.city}, {f.state} · {f.countryFlag} {f.country}</span>
                 </p>
               </div>
 
