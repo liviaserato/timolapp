@@ -436,26 +436,12 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
               </div>
             )}
 
-            {/* Currency hint — different currency (blocks save) */}
+            {/* Currency hint — different currency (informational) */}
             {isDifferentCurrency && (
-              <div className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/5 p-3">
-                <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-destructive leading-relaxed">
-                  Este país utiliza uma moeda diferente da configurada na sua franquia. Para alterar a moeda de cadastro, é necessário solicitar a análise da equipe da Timol abrindo um chamado na seção <em>Precisa de ajuda</em>,{" "}
-                  <button
-                    type="button"
-                    className="underline underline-offset-2 font-semibold hover:opacity-80"
-                    onClick={() => {
-                      setAddOpen(false);
-                      setListOpen(false);
-                      // Scroll to help card
-                      setTimeout(() => {
-                        document.getElementById("help-card")?.scrollIntoView({ behavior: "smooth" });
-                      }, 300);
-                    }}
-                  >
-                    clicando aqui
-                  </button>.
+              <div className="flex items-start gap-2 rounded-md border border-yellow-500/40 bg-yellow-50 p-3">
+                <AlertTriangle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-yellow-700 leading-relaxed">
+                  Este país utiliza uma moeda diferente da configurada na sua franquia. Ao realizar um novo pedido, verifique os custos e tarifas adicionais antes de concluir. Alguns produtos podem não estar disponíveis para o país selecionado.
                 </p>
               </div>
             )}
@@ -512,7 +498,7 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSaveAddress} disabled={!form.street || !form.city || !form.country || !!isDifferentCurrency}>Salvar</Button>
+            <Button onClick={handleSaveAddress} disabled={!form.street || !form.city || !form.country}>Salvar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
