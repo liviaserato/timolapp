@@ -32,7 +32,10 @@ function mapRoute(currentPath: string, fromPrefix: string, toPrefix: string): st
 export function AppHeader() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { toggle } = useSidebarState();
+  const appSidebar = useSidebarState();
+  const internalSidebar = useInternalSidebarState();
+  const isInternalView = location.pathname.startsWith("/internal");
+  const toggle = isInternalView ? internalSidebar.toggle : appSidebar.toggle;
   const { profiles, selected, setSelectedId, hasMultiple } = useFranchise();
   const { t, language, setLanguage } = useLanguage();
 
