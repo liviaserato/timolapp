@@ -123,7 +123,8 @@ export function CurrencyChangeDialog({
         <div className="space-y-4 py-1">
           {/* Current currency info */}
           <div className="rounded-lg border bg-muted/40 p-3 space-y-1.5 text-center">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Moeda atual · <span className="text-foreground">{currencyMeta[currentCurrency].label}</span></p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Moeda atual · <span className="text-foreground normal-case">{currencyMeta[currentCurrency].label}</span></p>
+            <hr className="border-border/50 mt-1.5" />
             <div className="grid grid-cols-2 gap-3 mt-2">
               <div>
                 <p className="text-[10px] text-muted-foreground">Bônus a receber</p>
