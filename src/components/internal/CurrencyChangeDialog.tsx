@@ -155,18 +155,22 @@ export function CurrencyChangeDialog({
           {/* Conversion preview — only shown after selection */}
           {targetCurrency && (
             <>
-              {/* Exchange rate */}
-              <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
-                <p className="text-xs text-muted-foreground">
-                  Taxa de conversão: <span className="font-semibold text-foreground">{fmt(1, currentCurrency)} ≈ {fmt(rate, targetCurrency)}</span>
-                </p>
-                <div className="grid grid-cols-2 gap-3">
+              {/* Exchange rate - outside card */}
+              <p className="text-xs text-muted-foreground text-center">
+                Taxa de conversão: <span className="font-semibold text-foreground">{fmt(1, currentCurrency)} ≈ {fmt(rate, targetCurrency)}</span>
+              </p>
+
+              {/* New currency card - identical to current */}
+              <div className="rounded-lg border bg-muted/40 p-3 space-y-1.5 text-center">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Nova moeda · <span className="text-foreground normal-case">{currencyMeta[targetCurrency].label}</span></p>
+                <hr className="border-border/50 mt-1.5" />
+                <div className="grid grid-cols-2 gap-3 mt-2">
                   <div>
-                    <p className="text-[10px] text-muted-foreground">Bônus a receber convertido</p>
+                    <p className="text-[10px] text-muted-foreground">Bônus a receber</p>
                     <p className="text-sm font-semibold text-foreground">{fmt(convertedBonus, targetCurrency)}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-muted-foreground">Saldo em carteira convertido</p>
+                    <p className="text-[10px] text-muted-foreground">Saldo em carteira</p>
                     <p className="text-sm font-semibold text-foreground">{fmt(convertedWallet, targetCurrency)}</p>
                   </div>
                 </div>
