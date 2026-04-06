@@ -59,6 +59,7 @@ export const products: Product[] = [
   {
     id: "p1",
     name: "Combo Mega",
+    image: "/assets/produto-combo-mega.jpg",
     price: 189.9,
     activatable: true,
     category: "agua-saudavel",
