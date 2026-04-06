@@ -601,30 +601,34 @@ export default function InternalCadastros() {
                 </div>
                 <div className="flex items-center gap-2">
                   {/* Status pills — clickable filters + counts */}
-                  {(registrationStatus === "all" || registrationStatus === "concluido") && <button
-                    onClick={() => setShowActive(v => !v)}
-                    className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
-                      showActive
-                        ? "bg-emerald-100 text-emerald-700 border-emerald-300 shadow-sm"
-                        : "bg-transparent text-emerald-600/70 border-transparent hover:bg-emerald-50 hover:border-emerald-200"
-                    )}
-                  >
-                    <span className={cn("h-1.5 w-1.5 rounded-full", showActive ? "bg-emerald-500" : "bg-emerald-400/50")} />
-                    {activeCount} {activeCount === 1 ? "ativo" : "ativos"}
-                  </button>
-                  <button
-                    onClick={() => setShowInactive(v => !v)}
-                    className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
-                      showInactive
-                        ? "bg-red-100 text-red-700 border-red-300 shadow-sm"
-                        : "bg-transparent text-red-500/70 border-transparent hover:bg-red-50 hover:border-red-200"
-                    )}
-                  >
-                    <span className={cn("h-1.5 w-1.5 rounded-full", showInactive ? "bg-red-500" : "bg-red-400/50")} />
-                    {inactiveCount} {inactiveCount === 1 ? "inativo" : "inativos"}
-                  </button>
+                  {(registrationStatus === "all" || registrationStatus === "concluido") && (
+                    <>
+                      <button
+                        onClick={() => setShowActive(v => !v)}
+                        className={cn(
+                          "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
+                          showActive
+                            ? "bg-emerald-100 text-emerald-700 border-emerald-300 shadow-sm"
+                            : "bg-transparent text-emerald-600/70 border-transparent hover:bg-emerald-50 hover:border-emerald-200"
+                        )}
+                      >
+                        <span className={cn("h-1.5 w-1.5 rounded-full", showActive ? "bg-emerald-500" : "bg-emerald-400/50")} />
+                        {activeCount} {activeCount === 1 ? "ativo" : "ativos"}
+                      </button>
+                      <button
+                        onClick={() => setShowInactive(v => !v)}
+                        className={cn(
+                          "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
+                          showInactive
+                            ? "bg-red-100 text-red-700 border-red-300 shadow-sm"
+                            : "bg-transparent text-red-500/70 border-transparent hover:bg-red-50 hover:border-red-200"
+                        )}
+                      >
+                        <span className={cn("h-1.5 w-1.5 rounded-full", showInactive ? "bg-red-500" : "bg-red-400/50")} />
+                        {inactiveCount} {inactiveCount === 1 ? "inativo" : "inativos"}
+                      </button>
+                    </>
+                  )}
                   {/* Sort */}
                   <div className="flex items-center gap-0.5 ml-1">
                     <Select value={sortBy} onValueChange={v => setSortBy(v)}>
