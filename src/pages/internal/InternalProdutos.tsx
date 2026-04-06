@@ -685,9 +685,24 @@ function ProductListCard({ product: p }: { product: Product }) {
             <ImageIcon className="h-10 w-10 text-muted-foreground/20" />
           )}
           {p.activatable && (
-            <span className="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-emerald-500 text-white px-2 py-0.5 rounded shadow-sm">
-              Ativável
-            </span>
+            <div className="absolute top-2 left-0 flex flex-col items-start">
+              <span
+                className="text-[9px] font-bold uppercase tracking-wide text-white pl-2 pr-3 py-[3px]"
+                style={{
+                  background: '#16a34a',
+                  clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 0 100%)',
+                }}
+              >
+                Ativável
+              </span>
+              <div
+                className="w-[6px] h-[6px]"
+                style={{
+                  background: '#15803d',
+                  clipPath: 'polygon(100% 0, 0 0, 100% 100%)',
+                }}
+              />
+            </div>
           )}
         </div>
 
