@@ -695,7 +695,7 @@ function ProductListCard({ product: p }: { product: Product }) {
 
         {/* Image */}
         <div
-          className="h-32 mx-2 mt-2 rounded-lg border border-border bg-muted/30 flex items-center justify-center overflow-hidden"
+          className="h-32 mx-2 mt-2 border border-border bg-muted/30 flex items-center justify-center overflow-hidden"
           onClick={(e) => {
             e.stopPropagation();
             // TODO: open image slide modal
