@@ -604,7 +604,7 @@ export default function InternalProdutos() {
             )}
           </div>
         </div>
-      </div>
+      </fieldset>
 
       {/* Results */}
       {filtered.length === 0 && hasFilters ? (
