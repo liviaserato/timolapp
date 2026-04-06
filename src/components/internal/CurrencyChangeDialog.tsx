@@ -178,35 +178,30 @@ export function CurrencyChangeDialog({
 
               {/* Timer hint */}
               <div className={cn(
-                "flex items-start gap-2 rounded-md border px-3 py-2 text-xs",
+                "flex flex-col items-center gap-1 rounded-md border px-3 py-2.5 text-xs text-center",
                 expired
                   ? "border-red-200 bg-red-50 text-red-700"
                   : "border-amber-200 bg-amber-50 text-amber-700"
               )}>
                 {expired ? (
-                  <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                  <>
+                    <AlertTriangle className="h-4 w-4 shrink-0" />
+                    <span>Prazo expirado. Os valores precisam ser recalculados.</span>
+                    <button
+                      onClick={handleRecalculate}
+                      className="inline-flex items-center gap-1 text-xs font-medium text-red-800 underline underline-offset-2 hover:text-red-900 shrink-0"
+                    >
+                      <RefreshCw className="h-3 w-3" />
+                      Recalcular
+                    </button>
+                  </>
                 ) : (
-                  <Clock className="h-4 w-4 shrink-0 mt-0.5" />
+                  <>
+                    <Clock className="h-4 w-4 shrink-0" />
+                    <span>Os valores apresentados expiram em <span className="font-semibold">{mm(secondsLeft)}</span>.</span>
+                    <span>Valide com o franqueado antes de confirmar.</span>
+                  </>
                 )}
-                <div className="flex-1">
-                  {expired ? (
-                    <div className="flex items-center justify-between">
-                      <span>Prazo expirado. Os valores precisam ser recalculados.</span>
-                      <button
-                        onClick={handleRecalculate}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-red-800 underline underline-offset-2 hover:text-red-900 ml-2 shrink-0"
-                      >
-                        <RefreshCw className="h-3 w-3" />
-                        Recalcular
-                      </button>
-                    </div>
-                  ) : (
-                    <span>
-                      Os valores apresentados expiram em <span className="font-semibold">{mm(secondsLeft)}</span>.
-                      {" "}Valide com o franqueado antes de confirmar.
-                    </span>
-                  )}
-                </div>
               </div>
 
               {/* Confirmation checkbox */}
