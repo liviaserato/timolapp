@@ -11,7 +11,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Search, X, Phone, Mail, MapPin,
   MapPinHouse, Landmark, Pencil, Lock,
-  FileText, Cake, Gem, ArrowUpDown, Calendar,
+  FileText, Cake, Gem, ArrowUpDown, ArrowUp, ArrowDown, Calendar,
   MessageCircle, Bell, RotateCcw, UserRound, Globe, Coins, CircleDollarSign,
 } from "lucide-react";
 import { countries } from "@/data/countries";
@@ -248,7 +248,8 @@ export default function InternalCadastros() {
   const searchCardRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState("");
   
-  const [sortBy, setSortBy] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("recent");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [showActive, setShowActive] = useState(false);
   const [showInactive, setShowInactive] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState<string>("all");
@@ -338,19 +339,22 @@ export default function InternalCadastros() {
       matchingFranchises: getMatchingFranchises(f, currentFilters),
     })).filter(r => r.matchingFranchises.length > 0);
 
-    if (sortBy === "recent" || sortBy === "") {
-      results = [...results].sort((a, b) => b.matchingFranchises[0].createdAt.localeCompare(a.matchingFranchises[0].createdAt));
+    const dir = sortDir === "asc" ? 1 : -1;
+    if (sortBy === "recent") {
+      results = [...results].sort((a, b) => dir * a.matchingFranchises[0].createdAt.localeCompare(b.matchingFranchises[0].createdAt));
+    } else if (sortBy === "name") {
+      results = [...results].sort((a, b) => dir * a.person.fullName.localeCompare(b.person.fullName));
     } else if (sortBy === "qualification") {
-      results = [...results].sort((a, b) => (qualPriority[b.matchingFranchises[0].qualification] || 0) - (qualPriority[a.matchingFranchises[0].qualification] || 0));
+      results = [...results].sort((a, b) => dir * ((qualPriority[a.matchingFranchises[0].qualification] || 0) - (qualPriority[b.matchingFranchises[0].qualification] || 0)));
     } else if (sortBy === "active_first") {
       results = [...results].sort((a, b) => {
         const aActive = isEffectivelyActive(a.person, a.matchingFranchises[0]) ? 0 : 1;
         const bActive = isEffectivelyActive(b.person, b.matchingFranchises[0]) ? 0 : 1;
-        return aActive - bActive;
+        return dir * (aActive - bActive);
       });
     }
     return results;
-  }, [search, searchFields, locationSearch, showActive, showInactive, registrationStatus, attendant, qualification, planType, sortBy, hasActiveFilters, currentFilters]);
+  }, [search, searchFields, locationSearch, showActive, showInactive, registrationStatus, attendant, qualification, planType, sortBy, sortDir, hasActiveFilters, currentFilters]);
 
   /** Active/inactive counts from filtered results */
   const activeCount = useMemo(() => filtered.reduce((sum, r) => sum + r.matchingFranchises.filter(fr => isEffectivelyActive(r.person, fr)).length, 0), [filtered]);
@@ -389,7 +393,8 @@ export default function InternalCadastros() {
 
   const clearFilters = () => {
     setSearch("");
-    setSortBy("");
+    setSortBy("recent");
+    setSortDir("desc");
     setShowActive(false);
     setShowInactive(false);
     setRegistrationStatus("all");
@@ -608,19 +613,31 @@ export default function InternalCadastros() {
                 <div className="flex items-center gap-3">
                   <span className="text-[11px] text-emerald-700">{activeCount} {activeCount === 1 ? "ativo" : "ativos"}</span>
                   <span className="text-[11px] text-red-600">{inactiveCount} {inactiveCount === 1 ? "inativo" : "inativos"}</span>
-                  <Select value={sortBy} onValueChange={v => setSortBy(v)}>
-                    <SelectTrigger className="h-8 text-xs w-auto min-w-[160px] border-dashed">
-                      <div className="flex items-center gap-1.5">
-                        <ArrowUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                        <SelectValue placeholder={t("internal.cadastros.classify")} />
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="recent">{t("internal.cadastros.sortRecent")}</SelectItem>
-                      <SelectItem value="active_first">{t("internal.cadastros.sortActiveFirst")}</SelectItem>
-                      <SelectItem value="qualification">{t("internal.cadastros.sortQualification")}</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center gap-0.5">
+                    <Select value={sortBy} onValueChange={v => setSortBy(v)}>
+                      <SelectTrigger className="h-8 text-xs w-auto min-w-[160px] border-dashed rounded-r-none">
+                        <div className="flex items-center gap-1.5">
+                          <ArrowUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                          <SelectValue placeholder={t("internal.cadastros.classify")} />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="recent">{t("internal.cadastros.sortRecent")}</SelectItem>
+                        <SelectItem value="name">{t("internal.cadastros.sortName")}</SelectItem>
+                        <SelectItem value="active_first">{t("internal.cadastros.sortActiveFirst")}</SelectItem>
+                        <SelectItem value="qualification">{t("internal.cadastros.sortQualification")}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 w-8 p-0 border-dashed rounded-l-none"
+                      onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")}
+                      title={sortDir === "asc" ? "Ascendente" : "Descendente"}
+                    >
+                      {sortDir === "asc" ? <ArrowUp className="h-3.5 w-3.5" /> : <ArrowDown className="h-3.5 w-3.5" />}
+                    </Button>
+                  </div>
                 </div>
               </div>
               {filterDescription.length > 0 && (
