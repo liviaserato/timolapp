@@ -612,7 +612,7 @@ export default function InternalCadastros() {
                         )}
                       >
                         <span className={cn("h-1.5 w-1.5 rounded-full", showActive ? "bg-emerald-500" : "bg-emerald-400/50")} />
-                        {activeCount} {activeCount === 1 ? "ativo" : "ativos"}
+                        {showActive ? `${activeCount} ` : ""}{activeCount === 1 ? "ativo" : "ativos"}
                       </button>
                       <button
                         onClick={() => setShowInactive(v => !v)}
@@ -624,7 +624,7 @@ export default function InternalCadastros() {
                         )}
                       >
                         <span className={cn("h-1.5 w-1.5 rounded-full", showInactive ? "bg-red-500" : "bg-red-400/50")} />
-                        {inactiveCount} {inactiveCount === 1 ? "inativo" : "inativos"}
+                        {showInactive ? `${inactiveCount} ` : ""}{inactiveCount === 1 ? "inativo" : "inativos"}
                       </button>
                     </>
                   )}
