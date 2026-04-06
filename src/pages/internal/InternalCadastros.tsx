@@ -722,7 +722,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             </div>
 
             {/* ── Grid 2 (Dados Pessoais) + Grid 3 (Franquia) side by side ── */}
-            <div className="flex flex-col sm:flex-row gap-x-14 gap-y-2">
+            <div className="flex flex-col sm:flex-row gap-x-6 gap-y-2">
               {/* Dados Pessoais */}
               <div className="space-y-1.5 min-w-0 flex-1">
                 <p className="flex items-center gap-1.5 text-sm text-foreground truncate" aria-label={`Documento: ${f.document}`}>
@@ -757,8 +757,19 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                 <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`Telefone: ${f.phone}`}>
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><Phone className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
                   {editing ? (
-                    <Input className="h-6 text-xs flex-1 px-1.5" value={editData.phone} onChange={e => ed("phone", e.target.value)} />
-                  ) : <span className="truncate">{f.phone}</span>}
+                    <span className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <span className="flex items-center gap-1 shrink-0 text-xs text-muted-foreground">
+                        <span className="text-base leading-none">{getCountryByIso2(editData.phoneDdi)?.flag ?? "🏳️"}</span>
+                        <span>{getCountryByIso2(editData.phoneDdi)?.dialCode ?? ""}</span>
+                      </span>
+                      <Input className="h-6 text-xs flex-1 px-1.5" value={editData.phoneNumber} onChange={e => ed("phoneNumber", e.target.value.replace(/[^\d\s()-]/g, ""))} />
+                    </span>
+                  ) : (
+                    <span className="truncate">
+                      <span className="text-base leading-none mr-1">{getCountryByIso2(f.phoneDdi)?.flag}</span>
+                      {f.phone}
+                    </span>
+                  )}
                 </p>
                 <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`País de residência: ${f.country}`}>
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><Globe className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
@@ -786,9 +797,9 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                     <span className="text-foreground">{t("internal.cadastros.qualLabel") !== "internal.cadastros.qualLabel" ? t("internal.cadastros.qualLabel") : "Qualificação"}: {t(qualificationLabelKeys[sel.qualification])}</span>
                   </p>
                 )}
-                <p className="text-sm text-foreground flex items-center gap-1.5 truncate">
+                <p className="text-sm text-foreground flex items-center gap-1.5 min-w-0">
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><UserRound className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
-                  {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
+                  <span className="truncate">{t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})</span>
                 </p>
                 <p className="text-sm text-foreground flex items-center gap-1.5">
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><Calendar className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
@@ -814,6 +825,14 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
           ) : (
             <div className="flex flex-col lg:w-[170px] shrink-0 mt-3 lg:mt-0 self-stretch">
               <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
+                <Button variant={editing ? "default" : "outline"} size="sm" className={cn("text-xs h-7 gap-1.5 justify-start w-full", editing && "bg-[hsl(214,100%,33%)] hover:bg-[hsl(214,100%,28%)]")} onClick={editing ? cancelEditing : startEditing}>
+                  <Pencil className="h-3 w-3" />
+                  {editing ? "Cancelar edição" : t("internal.cadastros.btnEdit")}
+                </Button>
+                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setCredentialsOpen(true)}>
+                  <Lock className="h-3 w-3" />
+                  {t("internal.cadastros.btnCredentials")}
+                </Button>
                 <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setAddressOpen(true)}>
                   <MapPinHouse className="h-3 w-3" />
                   {t("internal.cadastros.btnAddresses")}
@@ -822,13 +841,9 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                   <Landmark className="h-3 w-3" />
                   {t("internal.cadastros.btnFinancial")}
                 </Button>
-                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setCredentialsOpen(true)}>
-                  <Lock className="h-3 w-3" />
-                  {t("internal.cadastros.btnCredentials")}
-                </Button>
-                <Button variant={editing ? "default" : "outline"} size="sm" className={cn("text-xs h-7 gap-1.5 justify-start w-full", editing && "bg-[hsl(214,100%,33%)] hover:bg-[hsl(214,100%,28%)]")} onClick={editing ? cancelEditing : startEditing}>
-                  <Pencil className="h-3 w-3" />
-                  {editing ? "Cancelar edição" : t("internal.cadastros.btnEdit")}
+                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => toast.info("Funcionalidade em desenvolvimento")}>
+                  <CircleDollarSign className="h-3 w-3" />
+                  Alterar moeda
                 </Button>
               </div>
               {editing && (
