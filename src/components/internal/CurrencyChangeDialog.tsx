@@ -116,7 +116,7 @@ export function CurrencyChangeDialog({
         <DialogHeader>
           <DialogTitle>Alteração de Moeda</DialogTitle>
           <DialogDescription>
-            Altere a moeda da franquia <span className="font-medium text-foreground">{franchiseeFullName}</span> · ID {franchiseId}.
+            Altere a moeda da franquia ID {franchiseId} · <span className="font-medium text-foreground">{franchiseeFullName}</span>.
           </DialogDescription>
         </DialogHeader>
 
