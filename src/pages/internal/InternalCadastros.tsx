@@ -12,8 +12,9 @@ import {
   Search, X, Phone, Mail, MapPin,
   MapPinHouse, Landmark, Pencil, Lock,
   FileText, Cake, Gem, ArrowUpDown, Calendar,
-  MessageCircle, Bell, RotateCcw, UserRound, Globe, Coins,
+  MessageCircle, Bell, RotateCcw, UserRound, Globe, Coins, CircleDollarSign,
 } from "lucide-react";
+import { countries } from "@/data/countries";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
 import { qualificationConfig } from "@/components/app/rede/mock-data";
