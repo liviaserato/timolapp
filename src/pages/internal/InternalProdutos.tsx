@@ -628,9 +628,6 @@ function ProductDetailDialog({ product: p, open, onOpenChange }: { product: Prod
               {categories.find(c => c.id === p.category)?.name ?? p.category}
             </span>
             <span className="text-[10px] text-muted-foreground">{p.subcategory}</span>
-            {p.pointsUnilevel != null && (
-              <span className="text-[10px] text-muted-foreground">• Pontos: {p.pointsUnilevel}</span>
-            )}
           </div>
           <DialogTitle className="text-lg">{p.name}</DialogTitle>
         </DialogHeader>
