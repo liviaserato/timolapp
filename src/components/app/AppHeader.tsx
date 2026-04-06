@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSidebarState } from "@/pages/AppLayout";
+import { useInternalSidebarState } from "@/pages/InternalLayout";
 import { useFranchise } from "@/contexts/FranchiseContext";
 import { logout, getUserRole } from "@/lib/api";
 import { useLanguage } from "@/i18n/LanguageContext";
