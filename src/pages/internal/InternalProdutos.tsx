@@ -547,9 +547,10 @@ export default function InternalProdutos() {
           {hasFilters && (
             <div className="flex items-center justify-between pt-1">
               <span className="text-xs text-muted-foreground">{filtered.length} produto(s) encontrado(s)</span>
-              <button onClick={clearFilters} className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2">
+              <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
+                <X className="h-3 w-3" />
                 Limpar filtros
-              </button>
+              </Button>
             </div>
           )}
         </div>
