@@ -534,8 +534,8 @@ export default function InternalCadastros() {
           </p>
         ) : (
           <>
-            {paginatedResults.map(f => (
-              <FranchiseeCard key={f.id} franchisee={f} />
+            {paginatedResults.map(r => (
+              <FranchiseeCard key={r.person.id} franchisee={r.person} visibleFranchises={r.matchingFranchises} />
             ))}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 pt-2">
