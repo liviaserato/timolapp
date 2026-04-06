@@ -800,23 +800,31 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[170px] shrink-0 mt-3 lg:mt-0 self-start">
-              <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setAddressOpen(true)}>
-                <MapPinHouse className="h-3 w-3" />
-                {t("internal.cadastros.btnAddresses")}
-              </Button>
-              <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setFinancialOpen(true)}>
-                <Landmark className="h-3 w-3" />
-                {t("internal.cadastros.btnFinancial")}
-              </Button>
-              <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setCredentialsOpen(true)}>
-                <Lock className="h-3 w-3" />
-                {t("internal.cadastros.btnCredentials")}
-              </Button>
-              <Button variant={editing ? "default" : "outline"} size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={editing ? cancelEditing : startEditing}>
-                <Pencil className="h-3 w-3" />
-                {editing ? "Cancelar edição" : t("internal.cadastros.btnEdit")}
-              </Button>
+            <div className="flex flex-col lg:w-[170px] shrink-0 mt-3 lg:mt-0 self-stretch">
+              <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
+                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setAddressOpen(true)}>
+                  <MapPinHouse className="h-3 w-3" />
+                  {t("internal.cadastros.btnAddresses")}
+                </Button>
+                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setFinancialOpen(true)}>
+                  <Landmark className="h-3 w-3" />
+                  {t("internal.cadastros.btnFinancial")}
+                </Button>
+                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setCredentialsOpen(true)}>
+                  <Lock className="h-3 w-3" />
+                  {t("internal.cadastros.btnCredentials")}
+                </Button>
+                <Button variant={editing ? "default" : "outline"} size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={editing ? cancelEditing : startEditing}>
+                  <Pencil className="h-3 w-3" />
+                  {editing ? "Cancelar edição" : t("internal.cadastros.btnEdit")}
+                </Button>
+              </div>
+              {editing && (
+                <div className="flex items-center justify-end gap-2 mt-auto pt-3">
+                  <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={cancelEditing}>Cancelar</Button>
+                  <Button size="sm" className="h-7 text-xs gap-1.5" onClick={saveEditing}>Salvar</Button>
+                </div>
+              )}
             </div>
           )}
         </div>
