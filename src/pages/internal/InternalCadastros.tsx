@@ -1003,19 +1003,19 @@ function FranchiseeCard({ franchisee: f, visibleFranchises }: { franchisee: Fran
                   <Pencil className="h-3 w-3" />
                   {editing ? "Cancelar edição" : t("internal.cadastros.btnEdit")}
                 </Button>
-                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setCredentialsOpen(true)}>
+                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full text-muted-foreground" onClick={() => setCredentialsOpen(true)}>
                   <Lock className="h-3 w-3" />
                   {t("internal.cadastros.btnCredentials")}
                 </Button>
-                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setAddressOpen(true)}>
+                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full text-muted-foreground" onClick={() => setAddressOpen(true)}>
                   <MapPinHouse className="h-3 w-3" />
                   {t("internal.cadastros.btnAddresses")}
                 </Button>
-                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setFinancialOpen(true)}>
+                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full text-muted-foreground" onClick={() => setFinancialOpen(true)}>
                   <Landmark className="h-3 w-3" />
                   {t("internal.cadastros.btnFinancial")}
                 </Button>
-                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setCurrencyChangeOpen(true)}>
+                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full text-muted-foreground" onClick={() => setCurrencyChangeOpen(true)}>
                   <CircleDollarSign className="h-3 w-3" />
                   Alterar moeda
                 </Button>
