@@ -1169,7 +1169,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "finm.noAccount": "Nenhuma conta cadastrada.",
     "finm.manageAccounts": "Gerenciar contas",
     "finm.myAccounts": "Gerenciar Contas",
-    "finm.myAccountsDesc": "Selecione a conta principal ou gerencie suas contas.",
+    "finm.myAccountsDesc": "Selecione a conta principal ou gerencie as contas.",
     "finm.addAccount": "Adicionar conta",
     "finm.deleteAccounts": "Excluir contas",
     "finm.editAccount": "Editar Conta",
