@@ -173,6 +173,44 @@ const planColors: Record<string, string> = {
 /** Primary franchise accessor — uses first franchise sorted by createdAt */
 const pf = (f: Franchisee): FranchiseEntry => f.franchises[0];
 
+/** Check if a single franchise entry matches a set of filters */
+function franchiseMatchesFilters(
+  f: Franchisee,
+  fr: FranchiseEntry,
+  filters: {
+    franchiseStatusFilter: string;
+    registrationStatus: string;
+    attendant: string;
+    qualification: string;
+    planType: string;
+  }
+): boolean {
+  if (filters.franchiseStatusFilter !== "all") {
+    const active = isEffectivelyActive(f, fr);
+    if (filters.franchiseStatusFilter === "active" && !active) return false;
+    if (filters.franchiseStatusFilter === "inactive" && active) return false;
+  }
+  if (filters.registrationStatus !== "all" && getRegistrationStatus(f, fr) !== filters.registrationStatus) return false;
+  if (filters.attendant !== "all" && fr.attendantName !== filters.attendant) return false;
+  if (filters.qualification !== "all" && fr.qualification !== filters.qualification) return false;
+  if (filters.planType !== "all" && fr.planCode !== filters.planType) return false;
+  return true;
+}
+
+/** Get all franchises of a person that match the given filters */
+function getMatchingFranchises(
+  f: Franchisee,
+  filters: {
+    franchiseStatusFilter: string;
+    registrationStatus: string;
+    attendant: string;
+    qualification: string;
+    planType: string;
+  }
+): FranchiseEntry[] {
+  return f.franchises.filter(fr => franchiseMatchesFilters(f, fr, filters));
+}
+
 
 
 
