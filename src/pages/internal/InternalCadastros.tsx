@@ -414,59 +414,43 @@ export default function InternalCadastros() {
         <DashboardCard icon={Search} title={t("internal.cadastros.searchFranchisee")}>
           <div className="mt-2 space-y-3">
             {/* Row 1: Search + Sort */}
-            <div className="flex flex-wrap items-start gap-2">
-              <div className="flex-1 min-w-[200px] space-y-1.5">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder={t("internal.cadastros.searchPlaceholder")}
-                    value={search}
-                    onChange={e => { setSearch(e.target.value); setSearchFields([]); activateCheckboxes(); scrollToSearch(); }}
-                    onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); (e.target as HTMLInputElement).select(); } }}
-                    className="pl-9 pr-9 h-9 text-xs"
-                  />
-                  {search && (
-                    <button onClick={() => { setSearch(""); setSearchFields([]); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
-                {search.trim() && (
-                  <ToggleGroup
-                    type="multiple"
-                    value={searchFields}
-                    onValueChange={setSearchFields}
-                    className="justify-start gap-1 flex-wrap"
-                  >
-                    {isNumericSearch(search) ? (
-                      <>
-                        <ToggleGroupItem value="id" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleId")}</ToggleGroupItem>
-                        <ToggleGroupItem value="document" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleDocument")}</ToggleGroupItem>
-                        <ToggleGroupItem value="phone" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.togglePhone")}</ToggleGroupItem>
-                      </>
-                    ) : (
-                      <>
-                        <ToggleGroupItem value="name" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleName")}</ToggleGroupItem>
-                        <ToggleGroupItem value="email" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleEmail")}</ToggleGroupItem>
-                      </>
-                    )}
-                  </ToggleGroup>
+            <div className="space-y-1.5">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder={t("internal.cadastros.searchPlaceholder")}
+                  value={search}
+                  onChange={e => { setSearch(e.target.value); setSearchFields([]); activateCheckboxes(); scrollToSearch(); }}
+                  onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); (e.target as HTMLInputElement).select(); } }}
+                  className="pl-9 pr-9 h-9 text-xs"
+                />
+                {search && (
+                  <button onClick={() => { setSearch(""); setSearchFields([]); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <X className="h-4 w-4" />
+                  </button>
                 )}
               </div>
-              {/* Sort */}
-              <Select value={sortBy} onValueChange={v => { setSortBy(v); activateCheckboxes(); }}>
-                <SelectTrigger className="h-9 text-xs w-full sm:w-[180px]">
-                  <div className="flex items-center gap-1.5">
-                    <ArrowUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                    <SelectValue placeholder={t("internal.cadastros.classify")} />
-                  </div>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="recent">{t("internal.cadastros.sortRecent")}</SelectItem>
-                  <SelectItem value="active_first">{t("internal.cadastros.sortActiveFirst")}</SelectItem>
-                  <SelectItem value="qualification">{t("internal.cadastros.sortQualification")}</SelectItem>
-                </SelectContent>
-              </Select>
+              {search.trim() && (
+                <ToggleGroup
+                  type="multiple"
+                  value={searchFields}
+                  onValueChange={setSearchFields}
+                  className="justify-start gap-1 flex-wrap"
+                >
+                  {isNumericSearch(search) ? (
+                    <>
+                      <ToggleGroupItem value="id" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleId")}</ToggleGroupItem>
+                      <ToggleGroupItem value="document" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleDocument")}</ToggleGroupItem>
+                      <ToggleGroupItem value="phone" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.togglePhone")}</ToggleGroupItem>
+                    </>
+                  ) : (
+                    <>
+                      <ToggleGroupItem value="name" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleName")}</ToggleGroupItem>
+                      <ToggleGroupItem value="email" variant="outline" size="sm" className="h-6 text-[11px] px-2.5 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{t("internal.cadastros.toggleEmail")}</ToggleGroupItem>
+                    </>
+                  )}
+                </ToggleGroup>
+              )}
             </div>
 
             {/* Row 2: Main Filters — Atendente, Qualificação, Tipo Franquia, Localidade */}
@@ -610,7 +594,22 @@ export default function InternalCadastros() {
           <>
             {/* Results context header */}
             <div className="space-y-1.5 px-1">
-              <h2 className="text-sm font-semibold text-foreground">{t("internal.cadastros.resultsHeader")}</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-semibold text-foreground">{t("internal.cadastros.resultsHeader")}</h2>
+                <Select value={sortBy} onValueChange={v => setSortBy(v)}>
+                  <SelectTrigger className="h-8 text-xs w-auto min-w-[160px] border-dashed">
+                    <div className="flex items-center gap-1.5">
+                      <ArrowUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                      <SelectValue placeholder={t("internal.cadastros.classify")} />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="recent">{t("internal.cadastros.sortRecent")}</SelectItem>
+                    <SelectItem value="active_first">{t("internal.cadastros.sortActiveFirst")}</SelectItem>
+                    <SelectItem value="qualification">{t("internal.cadastros.sortQualification")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               {filterDescription.length > 0 && (
                 <p className="text-xs text-muted-foreground">
                   {filterDescription.join("  ·  ")}
