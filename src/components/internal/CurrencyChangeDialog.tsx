@@ -117,6 +117,7 @@ export function CurrencyChangeDialog({
   const availableCurrencies = (["BRL", "EUR", "USD"] as const).filter(c => c !== currentCurrency);
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[460px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
