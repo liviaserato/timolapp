@@ -21,8 +21,7 @@ import { qualificationConfig } from "@/components/app/rede/mock-data";
 import { AddressManager, type Address } from "@/components/app/cadastro/AddressManager";
 import { FinancialManager, type FinancialAccount } from "@/components/app/cadastro/FinancialManager";
 import { CredentialsDialog } from "@/components/internal/CredentialsDialog";
-
-
+import { CurrencyChangeDialog } from "@/components/internal/CurrencyChangeDialog";
 
 /* ── Types ── */
 interface FranchiseEntry {
@@ -731,6 +730,7 @@ function FranchiseeCard({ franchisee: f, visibleFranchises }: { franchisee: Fran
   const [addressOpen, setAddressOpen] = useState(false);
   const [financialOpen, setFinancialOpen] = useState(false);
   const [credentialsOpen, setCredentialsOpen] = useState(false);
+  const [currencyChangeOpen, setCurrencyChangeOpen] = useState(false);
 
   // Inline editing
   const [editing, setEditing] = useState(false);
@@ -1015,7 +1015,7 @@ function FranchiseeCard({ franchisee: f, visibleFranchises }: { franchisee: Fran
                   <Landmark className="h-3 w-3" />
                   {t("internal.cadastros.btnFinancial")}
                 </Button>
-                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => toast.info("Funcionalidade em desenvolvimento")}>
+                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setCurrencyChangeOpen(true)}>
                   <CircleDollarSign className="h-3 w-3" />
                   Alterar moeda
                 </Button>
@@ -1054,6 +1054,15 @@ function FranchiseeCard({ franchisee: f, visibleFranchises }: { franchisee: Fran
         username={f.username}
         email={f.email}
         fullName={f.fullName}
+      />
+      <CurrencyChangeDialog
+        open={currencyChangeOpen}
+        onOpenChange={setCurrencyChangeOpen}
+        currentCurrency={f.country === "Brasil" ? "BRL" : f.country === "España" ? "EUR" : "USD"}
+        franchiseeFullName={f.fullName}
+        franchiseId={sel.franchiseId}
+        bonusAmount={1250.75}
+        walletBalance={3480.50}
       />
     </div>
   );
