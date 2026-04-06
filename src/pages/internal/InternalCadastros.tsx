@@ -12,8 +12,9 @@ import {
   Search, X, Phone, Mail, MapPin,
   MapPinHouse, Landmark, Pencil, Lock,
   FileText, Cake, Gem, ArrowUpDown, Calendar,
-  MessageCircle, Bell, RotateCcw, UserRound, Globe, Coins,
+  MessageCircle, Bell, RotateCcw, UserRound, Globe, Coins, CircleDollarSign,
 } from "lucide-react";
+import { countries } from "@/data/countries";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
 import { qualificationConfig } from "@/components/app/rede/mock-data";
@@ -35,7 +36,6 @@ interface FranchiseEntry {
   franchiseStatus: "active" | "suspended" | "cancelled";
   activationStatus: "activated" | "pending" | "inactive";
   paidAt: string | null;
-  /* Touchpoint tracking for pending registrations */
   recoveryEmailSentAt?: string | null;
   whatsappSentAt?: string | null;
   sponsorNotifiedAt?: string | null;
@@ -50,49 +50,56 @@ interface Franchisee {
   gender: string;
   email: string;
   phone: string;
+  phoneDdi: string;
+  phoneNumber: string;
   username: string;
   city: string;
   state: string;
   country: string;
+  countryIso2: string;
   countryFlag: string;
   franchises: FranchiseEntry[];
 }
 
+/* ── Helper: find country by iso2 ── */
+function getCountryByIso2(iso2: string) {
+  return countries.find(c => c.iso2 === iso2);
+}
+
 /* ── Mock Data ── */
 const mockFranchisees: Franchisee[] = [
-  { id: "1", fullName: "Lívia Serato", document: "123.456.789-00", birthDate: "15/03/1990", gender: "female", email: "livia.serato@email.com", phone: "+55 11 99999-0000", username: "livia.serato", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+  { id: "1", fullName: "Lívia Serato", document: "123.456.789-00", birthDate: "15/03/1990", gender: "female", email: "livia.serato@email.com", phone: "+55 11 99999-0000", phoneDdi: "BR", phoneNumber: "11 99999-0000", username: "livia.serato", city: "São Paulo", state: "SP", country: "Brasil", countryIso2: "BR", countryFlag: "🇧🇷", franchises: [
     { franchiseId: "100231", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-02", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-05", recoveryEmailSentAt: null, whatsappSentAt: null, sponsorNotifiedAt: null, attendantName: "Camila Souza" },
   ]},
-  { id: "2", fullName: "Carlos Eduardo Mendes", document: "987.654.321-00", birthDate: "22/08/1985", gender: "male", email: "carlos.mendes@email.com", phone: "+55 21 98888-1111", username: "carlos.mendes", city: "Rio de Janeiro", state: "RJ", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+  { id: "2", fullName: "Carlos Eduardo Mendes", document: "987.654.321-00", birthDate: "22/08/1985", gender: "male", email: "carlos.mendes@email.com", phone: "+55 21 98888-1111", phoneDdi: "BR", phoneNumber: "21 98888-1111", username: "carlos.mendes", city: "Rio de Janeiro", state: "RJ", country: "Brasil", countryIso2: "BR", countryFlag: "🇧🇷", franchises: [
     { franchiseId: "100232", sponsorName: "Lívia Serato", sponsorId: "100231", createdAt: "2026-03-10", planCode: "platinum", planLabel: "Platina", qualification: "rubi", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-12", attendantName: "Camila Souza" },
   ]},
-  { id: "3", fullName: "Ana Paula Costa", document: "456.789.123-00", birthDate: "10/12/1992", gender: "female", email: "ana.costa@email.com", phone: "+55 31 97777-2222", username: "ana.costa", city: "Belo Horizonte", state: "MG", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+  { id: "3", fullName: "Ana Paula Costa", document: "456.789.123-00", birthDate: "10/12/1992", gender: "female", email: "ana.costa@email.com", phone: "+55 31 97777-2222", phoneDdi: "BR", phoneNumber: "31 97777-2222", username: "ana.costa", city: "Belo Horizonte", state: "MG", country: "Brasil", countryIso2: "BR", countryFlag: "🇧🇷", franchises: [
     { franchiseId: "100233", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-15", planCode: "bronze", planLabel: "Bronze", qualification: "consultor", franchiseStatus: "active", activationStatus: "pending", paidAt: null, recoveryEmailSentAt: "2026-03-16T09:00:00Z", whatsappSentAt: "2026-03-17T11:00:00Z", sponsorNotifiedAt: null },
   ]},
-  { id: "4", fullName: "Roberto Almeida Filho", document: "321.654.987-00", birthDate: "05/06/1978", gender: "male", email: "roberto.almeida@email.com", phone: "+55 41 96666-3333", username: "roberto.almeida", city: "Curitiba", state: "PR", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+  { id: "4", fullName: "Roberto Almeida Filho", document: "321.654.987-00", birthDate: "05/06/1978", gender: "male", email: "roberto.almeida@email.com", phone: "+55 41 96666-3333", phoneDdi: "BR", phoneNumber: "41 96666-3333", username: "roberto.almeida", city: "Curitiba", state: "PR", country: "Brasil", countryIso2: "BR", countryFlag: "🇧🇷", franchises: [
     { franchiseId: "100234", sponsorName: "Ana Costa", sponsorId: "100233", createdAt: "2026-03-08", planCode: "silver", planLabel: "Prata", qualification: "distribuidor", franchiseStatus: "suspended", activationStatus: "inactive", paidAt: "2026-03-20", attendantName: "Renata Dias" },
   ]},
-  { id: "5", fullName: "Fernanda Oliveira Santos", document: "654.321.987-00", birthDate: "18/09/1988", gender: "female", email: "fernanda.santos@email.com", phone: "+55 51 95555-4444", username: "fernanda.santos", city: "Porto Alegre", state: "RS", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+  { id: "5", fullName: "Fernanda Oliveira Santos", document: "654.321.987-00", birthDate: "18/09/1988", gender: "female", email: "fernanda.santos@email.com", phone: "+55 51 95555-4444", phoneDdi: "BR", phoneNumber: "51 95555-4444", username: "fernanda.santos", city: "Porto Alegre", state: "RS", country: "Brasil", countryIso2: "BR", countryFlag: "🇧🇷", franchises: [
     { franchiseId: "100235", sponsorName: "Roberto Almeida", sponsorId: "100234", createdAt: "2026-03-01", planCode: "gold", planLabel: "Ouro", qualification: "lider", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-03", attendantName: "Camila Souza" },
   ]},
-  { id: "6", fullName: "Pedro Henrique Lima", document: "789.123.456-00", birthDate: "30/01/1995", gender: "male", email: "pedro.lima@email.com", phone: "+55 61 94444-5555", username: "pedro.lima", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+  { id: "6", fullName: "Pedro Henrique Lima", document: "789.123.456-00", birthDate: "30/01/1995", gender: "male", email: "pedro.lima@email.com", phone: "+55 61 94444-5555", phoneDdi: "BR", phoneNumber: "61 94444-5555", username: "pedro.lima", city: "São Paulo", state: "SP", country: "Brasil", countryIso2: "BR", countryFlag: "🇧🇷", franchises: [
     { franchiseId: "100236", sponsorName: "Fernanda Santos", sponsorId: "100235", createdAt: "2026-02-15", planCode: "bronze", planLabel: "Bronze", qualification: "consultor", franchiseStatus: "cancelled", activationStatus: "inactive", paidAt: null },
   ]},
-  { id: "7", fullName: "Maria Silva", document: "111.222.333-00", birthDate: "12/07/1980", gender: "female", email: "maria.silva@email.com", phone: "+55 11 93333-6666", username: "maria.silva", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+  { id: "7", fullName: "Maria Silva", document: "111.222.333-00", birthDate: "12/07/1980", gender: "female", email: "maria.silva@email.com", phone: "+55 11 93333-6666", phoneDdi: "BR", phoneNumber: "11 93333-6666", username: "maria.silva", city: "São Paulo", state: "SP", country: "Brasil", countryIso2: "BR", countryFlag: "🇧🇷", franchises: [
     { franchiseId: "100237", sponsorName: "Timol", sponsorId: "00001", createdAt: "2026-02-01", planCode: "platinum", planLabel: "Platina", qualification: "diamante", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-02-02", attendantName: "Renata Dias" },
     { franchiseId: "100299", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-10", planCode: "gold", planLabel: "Ouro", qualification: "rubi", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-11", attendantName: "Camila Souza" },
   ]},
-  { id: "8", fullName: "Juan García López", document: "A12345678", birthDate: "03/11/1991", gender: "male", email: "juan.garcia@email.com", phone: "+34 612 345 678", username: "juan.garcia", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", franchises: [
+  { id: "8", fullName: "Juan García López", document: "A12345678", birthDate: "03/11/1991", gender: "male", email: "juan.garcia@email.com", phone: "+34 612 345 678", phoneDdi: "ES", phoneNumber: "612 345 678", username: "juan.garcia", city: "Madrid", state: "MD", country: "España", countryIso2: "ES", countryFlag: "🇪🇸", franchises: [
     { franchiseId: "100238", sponsorName: "Maria Silva", sponsorId: "99001", createdAt: "2026-03-18", planCode: "gold", planLabel: "Ouro", qualification: "esmeralda", franchiseStatus: "active", activationStatus: "activated", paidAt: "2026-03-19", recoveryEmailSentAt: null, whatsappSentAt: null, sponsorNotifiedAt: null, attendantName: "Camila Souza" },
   ]},
-  /* Pending registrations with touchpoint data */
-  { id: "9", fullName: "Juliana Ferreira Costa", document: "321.654.987-00", birthDate: "14/06/1993", gender: "female", email: "juliana.ferreira@email.com", phone: "+55 11 98765-4321", username: "juliana.ferreira", city: "São Paulo", state: "SP", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+  { id: "9", fullName: "Juliana Ferreira Costa", document: "321.654.987-00", birthDate: "14/06/1993", gender: "female", email: "juliana.ferreira@email.com", phone: "+55 11 98765-4321", phoneDdi: "BR", phoneNumber: "11 98765-4321", username: "juliana.ferreira", city: "São Paulo", state: "SP", country: "Brasil", countryIso2: "BR", countryFlag: "🇧🇷", franchises: [
     { franchiseId: "200501", sponsorName: "Lívia Serato", sponsorId: "100231", createdAt: "2026-03-20", planCode: "gold", planLabel: "Ouro", qualification: "consultor", franchiseStatus: "active", activationStatus: "pending", paidAt: null, recoveryEmailSentAt: "2026-03-21T10:00:00Z", whatsappSentAt: null, sponsorNotifiedAt: null },
   ]},
-  { id: "10", fullName: "Ricardo Alves Santos", document: "654.321.987-00", birthDate: "08/02/1987", gender: "male", email: "ricardo.alves@email.com", phone: "+55 21 97654-3210", username: "ricardo.alves", city: "Rio de Janeiro", state: "RJ", country: "Brasil", countryFlag: "🇧🇷", franchises: [
+  { id: "10", fullName: "Ricardo Alves Santos", document: "654.321.987-00", birthDate: "08/02/1987", gender: "male", email: "ricardo.alves@email.com", phone: "+55 21 97654-3210", phoneDdi: "BR", phoneNumber: "21 97654-3210", username: "ricardo.alves", city: "Rio de Janeiro", state: "RJ", country: "Brasil", countryIso2: "BR", countryFlag: "🇧🇷", franchises: [
     { franchiseId: "200502", sponsorName: "Carlos Mendes", sponsorId: "100232", createdAt: "2026-03-18", planCode: "platinum", planLabel: "Platina", qualification: "consultor", franchiseStatus: "active", activationStatus: "pending", paidAt: null, recoveryEmailSentAt: "2026-03-19T08:00:00Z", whatsappSentAt: "2026-03-20T16:00:00Z", sponsorNotifiedAt: null },
   ]},
-  { id: "11", fullName: "Pedro Augusto Lima", document: "B98765432", birthDate: "25/04/1991", gender: "male", email: "pedro.augusto@email.com", phone: "+34 612 987 654", username: "pedro.augusto", city: "Madrid", state: "MD", country: "España", countryFlag: "🇪🇸", franchises: [
+  { id: "11", fullName: "Pedro Augusto Lima", document: "B98765432", birthDate: "25/04/1991", gender: "male", email: "pedro.augusto@email.com", phone: "+34 612 987 654", phoneDdi: "ES", phoneNumber: "612 987 654", username: "pedro.augusto", city: "Madrid", state: "MD", country: "España", countryIso2: "ES", countryFlag: "🇪🇸", franchises: [
     { franchiseId: "200504", sponsorName: "Juan García López", sponsorId: "100238", createdAt: "2026-03-22", planCode: "silver", planLabel: "Prata", qualification: "consultor", franchiseStatus: "active", activationStatus: "pending", paidAt: null, recoveryEmailSentAt: null, whatsappSentAt: null, sponsorNotifiedAt: null },
   ]},
 ];
@@ -550,12 +557,15 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
   const [editing, setEditing] = useState(false);
   const [editData, setEditData] = useState({
     fullName: f.fullName, email: f.email, phone: f.phone,
+    phoneDdi: f.phoneDdi, phoneNumber: f.phoneNumber,
     document: f.document, birthDate: f.birthDate, gender: f.gender,
     city: f.city, state: f.state,
   });
 
   const startEditing = () => {
-    setEditData({ fullName: f.fullName, email: f.email, phone: f.phone, document: f.document, birthDate: f.birthDate, gender: f.gender, city: f.city, state: f.state });
+    setEditData({ fullName: f.fullName, email: f.email, phone: f.phone, phoneDdi: f.phoneDdi, phoneNumber: f.phoneNumber, document: f.document, birthDate: f.birthDate, gender: f.gender, city: f.city, state: f.state });
+    setEditing(true);
+  };
     setEditing(true);
   };
   const cancelEditing = useCallback(() => setEditing(false), []);
@@ -712,7 +722,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
             </div>
 
             {/* ── Grid 2 (Dados Pessoais) + Grid 3 (Franquia) side by side ── */}
-            <div className="flex flex-col sm:flex-row gap-x-14 gap-y-2">
+            <div className="flex flex-col sm:flex-row gap-x-6 gap-y-2">
               {/* Dados Pessoais */}
               <div className="space-y-1.5 min-w-0 flex-1">
                 <p className="flex items-center gap-1.5 text-sm text-foreground truncate" aria-label={`Documento: ${f.document}`}>
@@ -747,8 +757,19 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                 <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`Telefone: ${f.phone}`}>
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><Phone className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
                   {editing ? (
-                    <Input className="h-6 text-xs flex-1 px-1.5" value={editData.phone} onChange={e => ed("phone", e.target.value)} />
-                  ) : <span className="truncate">{f.phone}</span>}
+                    <span className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <span className="flex items-center gap-1 shrink-0 text-xs text-muted-foreground">
+                        <span className="text-base leading-none">{getCountryByIso2(editData.phoneDdi)?.flag ?? "🏳️"}</span>
+                        <span>{getCountryByIso2(editData.phoneDdi)?.dialCode ?? ""}</span>
+                      </span>
+                      <Input className="h-6 text-xs flex-1 px-1.5" value={editData.phoneNumber} onChange={e => ed("phoneNumber", e.target.value.replace(/[^\d\s()-]/g, ""))} />
+                    </span>
+                  ) : (
+                    <span className="truncate">
+                      <span className="text-base leading-none mr-1">{getCountryByIso2(f.phoneDdi)?.flag}</span>
+                      {f.phone}
+                    </span>
+                  )}
                 </p>
                 <p className="flex items-center gap-1.5 text-sm text-foreground" aria-label={`País de residência: ${f.country}`}>
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><Globe className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
@@ -776,9 +797,9 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                     <span className="text-foreground">{t("internal.cadastros.qualLabel") !== "internal.cadastros.qualLabel" ? t("internal.cadastros.qualLabel") : "Qualificação"}: {t(qualificationLabelKeys[sel.qualification])}</span>
                   </p>
                 )}
-                <p className="text-sm text-foreground flex items-center gap-1.5 truncate">
+                <p className="text-sm text-foreground flex items-center gap-1.5 min-w-0">
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><UserRound className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
-                  {t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})
+                  <span className="truncate">{t("internal.cadastros.sponsor")}: {sel.sponsorName} (ID {sel.sponsorId})</span>
                 </p>
                 <p className="text-sm text-foreground flex items-center gap-1.5">
                   <span className="h-4 w-4 shrink-0 flex items-center justify-center"><Calendar className="h-3.5 w-3.5 text-foreground/70" aria-hidden="true" /></span>
@@ -804,6 +825,14 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
           ) : (
             <div className="flex flex-col lg:w-[170px] shrink-0 mt-3 lg:mt-0 self-stretch">
               <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
+                <Button variant={editing ? "default" : "outline"} size="sm" className={cn("text-xs h-7 gap-1.5 justify-start w-full", editing && "bg-[hsl(214,100%,33%)] hover:bg-[hsl(214,100%,28%)]")} onClick={editing ? cancelEditing : startEditing}>
+                  <Pencil className="h-3 w-3" />
+                  {editing ? "Cancelar edição" : t("internal.cadastros.btnEdit")}
+                </Button>
+                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setCredentialsOpen(true)}>
+                  <Lock className="h-3 w-3" />
+                  {t("internal.cadastros.btnCredentials")}
+                </Button>
                 <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setAddressOpen(true)}>
                   <MapPinHouse className="h-3 w-3" />
                   {t("internal.cadastros.btnAddresses")}
@@ -812,13 +841,9 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
                   <Landmark className="h-3 w-3" />
                   {t("internal.cadastros.btnFinancial")}
                 </Button>
-                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => setCredentialsOpen(true)}>
-                  <Lock className="h-3 w-3" />
-                  {t("internal.cadastros.btnCredentials")}
-                </Button>
-                <Button variant={editing ? "default" : "outline"} size="sm" className={cn("text-xs h-7 gap-1.5 justify-start w-full", editing && "bg-[hsl(214,100%,33%)] hover:bg-[hsl(214,100%,28%)]")} onClick={editing ? cancelEditing : startEditing}>
-                  <Pencil className="h-3 w-3" />
-                  {editing ? "Cancelar edição" : t("internal.cadastros.btnEdit")}
+                <Button variant="outline" size="sm" className="text-xs h-7 gap-1.5 justify-start w-full" onClick={() => toast.info("Funcionalidade em desenvolvimento")}>
+                  <CircleDollarSign className="h-3 w-3" />
+                  Alterar moeda
                 </Button>
               </div>
               {editing && (
@@ -839,7 +864,7 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
         onOpenChange={setAddressOpen}
         addresses={addresses}
         onChange={setAddresses}
-        currentCountryIso2={f.country === "Brasil" ? "BR" : "ES"}
+        currentCountryIso2={f.countryIso2}
         franchiseCurrency={f.country === "Brasil" ? "BRL" : "EUR"}
       />
       <FinancialManager
