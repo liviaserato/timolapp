@@ -417,7 +417,7 @@ export default function InternalCadastros() {
             <div className="space-y-1.5">
               <div className="grid grid-cols-[3fr_1fr] gap-2 items-end">
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.searchLabel") || "Buscar franqueado"}</span>
+                  <span className="text-[10px] text-muted-foreground font-medium">{t("internal.cadastros.searchLabel")}</span>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
