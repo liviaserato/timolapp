@@ -565,8 +565,6 @@ function FranchiseeCard({ franchisee: f }: { franchisee: Franchisee }) {
     setEditData({ fullName: f.fullName, email: f.email, phone: f.phone, phoneDdi: f.phoneDdi, phoneNumber: f.phoneNumber, document: f.document, birthDate: f.birthDate, gender: f.gender });
     setEditing(true);
   };
-    setEditing(true);
-  };
   const cancelEditing = useCallback(() => setEditing(false), []);
 
   useEffect(() => {
