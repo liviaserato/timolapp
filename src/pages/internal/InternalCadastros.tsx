@@ -112,7 +112,7 @@ const isNumericSearch = (q: string) => /\d/.test(q) && !/[a-zA-ZÀ-ÿ]/.test(q);
 function matchesSearch(f: Franchisee, q: string, fields: string[]): boolean {
   const nq = norm(q);
   const numeric = isNumericSearch(q);
-  const activeFields = fields.length > 0 ? fields : (numeric ? ["id", "document", "phone"] : ["name", "city", "email"]);
+  const activeFields = fields.length > 0 ? fields : (numeric ? ["id", "document", "phone"] : ["name", "email"]);
 
   return activeFields.some(field => {
     switch (field) {
@@ -120,11 +120,16 @@ function matchesSearch(f: Franchisee, q: string, fields: string[]): boolean {
       case "document": return norm(f.document).includes(nq);
       case "phone": return norm(f.phone).includes(nq);
       case "name": return norm(f.fullName).includes(nq);
-      case "city": return norm(f.city).includes(nq);
       case "email": return norm(f.email).includes(nq);
       default: return false;
     }
   });
+}
+
+/** Location matching helper — matches city, state or country */
+function matchesLocation(f: Franchisee, q: string): boolean {
+  const nq = norm(q);
+  return norm(f.city).includes(nq) || norm(f.state).includes(nq) || norm(f.country).includes(nq);
 }
 
 /* ── Helpers ── */
