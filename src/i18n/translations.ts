@@ -1133,7 +1133,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "addr.noAddress": "Nenhum endereço cadastrado.",
     "addr.changeAddress": "Trocar endereço",
     "addr.addAddress": "Adicionar endereço",
-    "addr.myAddresses": "Meus Endereços",
+    "addr.myAddresses": "Endereços",
     "addr.myAddressesDesc": "Selecione o endereço principal ou gerencie seus endereços.",
     "addr.editAddress": "Editar Endereço",
     "addr.newAddress": "Novo Endereço",

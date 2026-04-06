@@ -271,7 +271,7 @@ export function AddressManager({ addresses, onChange, currentCountryIso2 = "BR",
       <Dialog open={listOpen} onOpenChange={handleListOpenChange}>
         <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Meus Endereços</DialogTitle>
+            <DialogTitle>Endereços</DialogTitle>
             <DialogDescription>Selecione o endereço principal ou gerencie seus endereços.</DialogDescription>
           </DialogHeader>
 
