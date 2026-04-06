@@ -445,7 +445,13 @@ export default function InternalCadastros() {
             {/* Active filters + clear */}
             {hasFilters && (
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">{filtered.length} {t("internal.cadastros.resultsFound")}</span>
+                <span className="text-xs text-muted-foreground">
+                  {filtered.length === 0
+                    ? (t("internal.cadastros.noResults") !== "internal.cadastros.noResults" ? t("internal.cadastros.noResults") : "Nenhum resultado encontrado")
+                    : filtered.length === 1
+                      ? `1 ${t("internal.cadastros.resultFound") !== "internal.cadastros.resultFound" ? t("internal.cadastros.resultFound") : "resultado encontrado"}`
+                      : `${filtered.length} ${t("internal.cadastros.resultsFound")}`}
+                </span>
                 <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
                   <X className="h-3 w-3" />
                   {t("internal.cadastros.clearFilters")}
