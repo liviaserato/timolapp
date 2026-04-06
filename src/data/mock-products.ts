@@ -23,6 +23,11 @@ export interface Product {
   warranty?: string;
   composition?: string;
   manufacturer?: string;
+  packageHeight?: number;
+  packageWidth?: number;
+  packageLength?: number;
+  packageDiameter?: number;
+  packageWeight?: number;
 }
 
 export interface Category {
