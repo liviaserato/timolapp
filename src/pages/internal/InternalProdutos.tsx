@@ -515,12 +515,11 @@ export default function InternalProdutos() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-[10px] border border-border bg-card p-4 shadow-sm space-y-0">
-        {/* Card title */}
-        <div className="flex items-center gap-2 mb-4">
-          <Search className="h-4 w-4 text-primary" />
-          <span className="text-sm font-semibold text-primary">Busca</span>
-        </div>
+      <fieldset className="relative rounded-[10px] border border-border bg-card p-4 shadow-sm">
+        <legend className="flex items-center gap-2 px-1 text-base font-bold text-primary">
+          <Search className="h-5 w-5 shrink-0" />
+          <span className="shrink-0">Busca</span>
+        </legend>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Left column: search + toggle + count */}
@@ -605,7 +604,7 @@ export default function InternalProdutos() {
             )}
           </div>
         </div>
-      </div>
+      </fieldset>
 
       {/* Results */}
       {filtered.length === 0 && hasFilters ? (
