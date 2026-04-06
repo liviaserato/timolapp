@@ -623,12 +623,6 @@ function ProductDetailDialog({ product: p, open, onOpenChange }: { product: Prod
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
         <DialogHeader className="text-left">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
-              {categories.find(c => c.id === p.category)?.name ?? p.category}
-            </span>
-            <span className="text-[10px] text-muted-foreground">{p.subcategory}</span>
-          </div>
           <DialogTitle className="text-lg">{p.name}</DialogTitle>
         </DialogHeader>
 
