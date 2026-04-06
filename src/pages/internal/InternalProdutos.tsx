@@ -716,7 +716,7 @@ function ProductListCard({ product: p }: { product: Product }) {
             <span>SKU: {p.id}</span>
             {p.pointsUnilevel != null && <span>Pontos: {p.pointsUnilevel}</span>}
             <div className="flex items-center gap-1">
-              {p.activatable && <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Ativável</span>}
+              
               <span className={cn(
                 "text-[9px] px-1.5 py-0.5 rounded",
                 p.inStock ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
