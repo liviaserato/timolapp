@@ -281,10 +281,12 @@ export default function InternalCadastros() {
   const getFilteredExcluding = (exclude: string) => {
     const filters = buildFilters(exclude);
     let list = mockFranchisees as Franchisee[];
-    // Keep only people who have at least one franchise matching the filters
     list = list.filter(f => getMatchingFranchises(f, filters).length > 0);
     if (search.trim()) {
       list = list.filter(f => matchesSearch(f, search, searchFields));
+    }
+    if (locationSearch.trim()) {
+      list = list.filter(f => matchesLocation(f, locationSearch));
     }
     return { people: list, filters };
   };
@@ -293,19 +295,32 @@ export default function InternalCadastros() {
     const { people, filters } = getFilteredExcluding("attendant");
     const names = people.flatMap(f => getMatchingFranchises(f, filters).map(fr => fr.attendantName)).filter(Boolean) as string[];
     return [...new Set(names)].sort();
-  }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType]);
+  }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType, locationSearch]);
 
   const availableQualifications = useMemo(() => {
     const { people, filters } = getFilteredExcluding("qualification");
     return new Set(people.flatMap(f => getMatchingFranchises(f, filters).map(fr => fr.qualification)));
-  }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType]);
+  }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType, locationSearch]);
 
   const availablePlans = useMemo(() => {
     const { people, filters } = getFilteredExcluding("planType");
     return new Set(people.flatMap(f => getMatchingFranchises(f, filters).map(fr => fr.planCode)));
-  }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType]);
+  }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType, locationSearch]);
 
-  const hasActiveFilters = search.trim() !== "" || showActive || showInactive || registrationStatus !== "all" || attendant !== "all" || qualification !== "all" || planType !== "all";
+  /** Location suggestions for autocomplete */
+  const locationSuggestions = useMemo(() => {
+    if (locationSearch.trim().length < 2) return [];
+    const nq = norm(locationSearch);
+    const suggestions = new Set<string>();
+    mockFranchisees.forEach(f => {
+      if (norm(f.city).includes(nq)) suggestions.add(f.city);
+      if (norm(f.state).includes(nq)) suggestions.add(f.state);
+      if (norm(f.country).includes(nq)) suggestions.add(f.country);
+    });
+    return [...suggestions].sort().slice(0, 8);
+  }, [locationSearch]);
+
+  const hasActiveFilters = search.trim() !== "" || locationSearch.trim() !== "" || showActive || showInactive || registrationStatus !== "all" || attendant !== "all" || qualification !== "all" || planType !== "all";
 
   const currentFilters = useMemo(() => buildFilters(), [franchiseStatusFilter, registrationStatus, attendant, qualification, planType]);
 
@@ -315,13 +330,14 @@ export default function InternalCadastros() {
     if (search.trim()) {
       list = list.filter(f => matchesSearch(f, search, searchFields));
     }
-    // Build result with matching franchises per person
+    if (locationSearch.trim()) {
+      list = list.filter(f => matchesLocation(f, locationSearch));
+    }
     let results = list.map(f => ({
       person: f,
       matchingFranchises: getMatchingFranchises(f, currentFilters),
     })).filter(r => r.matchingFranchises.length > 0);
 
-    // Sort using the first matching franchise as reference
     if (sortBy === "recent" || sortBy === "") {
       results = [...results].sort((a, b) => b.matchingFranchises[0].createdAt.localeCompare(a.matchingFranchises[0].createdAt));
     } else if (sortBy === "qualification") {
@@ -334,15 +350,42 @@ export default function InternalCadastros() {
       });
     }
     return results;
-  }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType, sortBy, hasActiveFilters, currentFilters]);
+  }, [search, searchFields, locationSearch, showActive, showInactive, registrationStatus, attendant, qualification, planType, sortBy, hasActiveFilters, currentFilters]);
+
+  /** Active/inactive counts from filtered results */
+  const activeCount = useMemo(() => filtered.reduce((sum, r) => sum + r.matchingFranchises.filter(fr => isEffectivelyActive(r.person, fr)).length, 0), [filtered]);
+  const inactiveCount = useMemo(() => filtered.reduce((sum, r) => sum + r.matchingFranchises.filter(fr => !isEffectivelyActive(r.person, fr)).length, 0), [filtered]);
+
+  /** Build dynamic filter description */
+  const filterDescription = useMemo(() => {
+    const parts: string[] = [];
+    if (attendant !== "all") parts.push(`Atendente: ${attendant}`);
+    if (qualification !== "all") parts.push(`Qualificação: ${t(qualificationLabelKeys[qualification])}`);
+    if (planType !== "all") parts.push(`Tipo de franquia: ${t(`franchise.${planType}`)}`);
+    if (locationSearch.trim()) parts.push(`Localidade: ${locationSearch}`);
+    if (registrationStatus !== "all") parts.push(`Cadastro: ${t(`internal.cadastros.reg${registrationStatus.charAt(0).toUpperCase() + registrationStatus.slice(1)}`)}`);
+    if (franchiseStatusFilter === "active") parts.push(`Status: ${t("internal.cadastros.statusActive")}`);
+    if (franchiseStatusFilter === "inactive") parts.push(`Status: ${t("internal.cadastros.statusInactive")}`);
+    return parts;
+  }, [attendant, qualification, planType, locationSearch, registrationStatus, franchiseStatusFilter, t]);
 
   const PAGE_SIZE = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginatedResults = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
-  // Reset page when filters change
-  useMemo(() => { setCurrentPage(1); }, [search, searchFields, showActive, showInactive, registrationStatus, attendant, qualification, planType, sortBy]);
+  useMemo(() => { setCurrentPage(1); }, [search, searchFields, locationSearch, showActive, showInactive, registrationStatus, attendant, qualification, planType, sortBy]);
+
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const locationRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (locationRef.current && !locationRef.current.contains(e.target as Node)) setShowLocationDropdown(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   const clearFilters = () => {
     setSearch("");
@@ -354,6 +397,7 @@ export default function InternalCadastros() {
     setQualification("all");
     setPlanType("all");
     setSearchFields([]);
+    setLocationSearch("");
   };
 
 
