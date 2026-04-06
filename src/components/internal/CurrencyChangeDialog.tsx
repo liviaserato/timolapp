@@ -237,5 +237,22 @@ export function CurrencyChangeDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    {/* Success confirmation popup */}
+    <Dialog open={showSuccess} onOpenChange={handleCloseSuccess}>
+      <DialogContent className="sm:max-w-[380px] text-center">
+        <DialogHeader className="items-center">
+          <CheckCircle2 className="h-10 w-10 text-emerald-500 mb-2" />
+          <DialogTitle>Moeda alterada com sucesso</DialogTitle>
+          <DialogDescription className="pt-1">
+            A moeda da franquia foi alterada de {currencyMeta[currentCurrency].label} para {targetCurrency ? currencyMeta[targetCurrency].label : ""}.
+            {"\n"}A partir de agora, todas as transações serão realizadas na nova moeda.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="sm:justify-center pt-2">
+          <Button onClick={handleCloseSuccess}>Fechar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
