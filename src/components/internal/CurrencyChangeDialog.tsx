@@ -108,7 +108,6 @@ export function CurrencyChangeDialog({
     setShowSuccess(false);
     onOpenChange(false);
   };
-  };
 
   const handleRecalculate = () => {
     startTimer();
