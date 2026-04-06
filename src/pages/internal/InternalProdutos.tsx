@@ -673,7 +673,7 @@ function ProductListCard({ product: p }: { product: Product }) {
       >
         {/* Image placeholder */}
         <div
-          className="h-32 bg-muted/30 flex items-center justify-center"
+          className="h-32 bg-muted/30 flex items-center justify-center relative"
           onClick={(e) => {
             e.stopPropagation();
             // TODO: open image slide modal
@@ -683,6 +683,11 @@ function ProductListCard({ product: p }: { product: Product }) {
             <img src={p.image} alt={p.name} className="h-full w-full object-cover" />
           ) : (
             <ImageIcon className="h-10 w-10 text-muted-foreground/20" />
+          )}
+          {p.activatable && (
+            <span className="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-emerald-500 text-white px-2 py-0.5 rounded shadow-sm">
+              Ativável
+            </span>
           )}
         </div>
 
@@ -711,7 +716,7 @@ function ProductListCard({ product: p }: { product: Product }) {
             <span>SKU: {p.id}</span>
             {p.pointsUnilevel != null && <span>Pontos: {p.pointsUnilevel}</span>}
             <div className="flex items-center gap-1">
-              {p.activatable && <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Ativável</span>}
+              
               <span className={cn(
                 "text-[9px] px-1.5 py-0.5 rounded",
                 p.inStock ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
