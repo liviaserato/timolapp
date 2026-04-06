@@ -700,7 +700,7 @@ function ProductListCard({ product: p }: { product: Product }) {
       >
         {/* Activatable ribbon - positioned at card level to overflow image */}
         {p.activatable && (
-          <div className="absolute top-3 -right-[2px] z-10 flex flex-col items-end">
+          <div className="absolute top-[13px] -right-[1px] z-10 flex flex-col items-end">
             <span
               className="text-[9px] font-bold uppercase tracking-wide text-white pr-2 pl-3 py-[3px]"
               style={{
