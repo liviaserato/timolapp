@@ -603,7 +603,7 @@ export default function InternalCadastros() {
                   {(registrationStatus === "all" || registrationStatus === "concluido") && (
                     <>
                       <button
-                        onClick={() => setShowActive(v => !v)}
+                        onClick={() => { if (showActive && !showInactive) return; setShowActive(v => !v); }}
                         className={cn(
                           "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
                           showActive
@@ -615,7 +615,7 @@ export default function InternalCadastros() {
                         {showActive ? `${activeCount} ` : ""}{activeCount === 1 ? "ativo" : "ativos"}
                       </button>
                       <button
-                        onClick={() => setShowInactive(v => !v)}
+                        onClick={() => { if (showInactive && !showActive) return; setShowInactive(v => !v); }}
                         className={cn(
                           "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
                           showInactive
