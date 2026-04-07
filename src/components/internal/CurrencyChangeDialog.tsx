@@ -208,7 +208,11 @@ export function CurrencyChangeDialog({
                   </>
                 ) : (
                   <>
-                    <span className="inline-flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 shrink-0" />Os valores apresentados expiram em <span className="font-semibold">{mm(secondsLeft)}</span>.</span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5 shrink-0" />
+                      Os valores apresentados expiram em
+                    </span>
+                    <span className="font-semibold">{mm(secondsLeft)}.</span>
                     <span>Valide com o franqueado antes de confirmar.</span>
                   </>
                 )}
