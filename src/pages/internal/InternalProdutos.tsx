@@ -673,51 +673,8 @@ export default function InternalProdutos() {
 }
 
 
-/* ── Product Detail Dialog ── */
-function ProductDetailDialog({ product: p, open, onOpenChange }: { product: Product; open: boolean; onOpenChange: (v: boolean) => void }) {
-  const dimensionParts: string[] = [];
-  if (p.packageHeight || p.packageWidth || p.packageLength) {
-    dimensionParts.push(`${p.packageHeight ?? '–'} × ${p.packageWidth ?? '–'} × ${p.packageLength ?? '–'} cm (A × L × C)`);
-  }
-  if (p.packageDiameter) dimensionParts.push(`Diâmetro: ${p.packageDiameter} cm`);
-  if (p.packageWeight) dimensionParts.push(`Peso: ${p.packageWeight} g`);
-  const dimensionText = dimensionParts.length > 0 ? dimensionParts.join('\n') : undefined;
-
-  const sections = [
-    { label: "Descrição", value: p.description },
-    { label: "Benefícios", value: p.benefits },
-    { label: "Instruções de Uso", value: p.instructions },
-    { label: "Garantia", value: p.warranty },
-    { label: "Composição", value: p.composition },
-    { label: "Fabricante", value: p.manufacturer },
-    { label: "Dimensões da Embalagem", value: dimensionText },
-  ].filter(s => s.value);
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
-        <DialogHeader className="text-left">
-          <DialogTitle className="text-lg">{p.name}</DialogTitle>
-        </DialogHeader>
-
-        {sections.length > 0 && (
-          <div className="space-y-4 pt-0">
-            {sections.map(({ label, value }) => (
-              <div key={label}>
-                <h4 className="text-xs font-semibold text-foreground mb-1">{label}</h4>
-                <p className="text-xs text-muted-foreground whitespace-pre-line leading-relaxed">{value}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {sections.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-4">Nenhuma informação adicional cadastrada.</p>
-        )}
-      </DialogContent>
-    </Dialog>
-  );
-}
+/* ── Product Detail Dialog (reuses shared component) ── */
+import { ProductDetailDialog } from "@/components/app/pedidos/store/ProductDetailDialog";
 
 
 /* ── Product Card ── */

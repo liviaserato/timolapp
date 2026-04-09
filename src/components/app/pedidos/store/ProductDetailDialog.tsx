@@ -26,13 +26,25 @@ interface ProductDetailDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+function buildDimensionText(product: Product): string | undefined {
+  const parts: string[] = [];
+  if (product.packageHeight || product.packageWidth || product.packageLength) {
+    parts.push(`${product.packageHeight ?? '–'} × ${product.packageWidth ?? '–'} × ${product.packageLength ?? '–'} cm (A × L × C)`);
+  }
+  if (product.packageDiameter) parts.push(`Diâmetro: ${product.packageDiameter} cm`);
+  if (product.packageWeight) parts.push(`Peso: ${product.packageWeight} g`);
+  return parts.length > 0 ? parts.join('\n') : undefined;
+}
+
 export function ProductDetailDialog({ product, open, onOpenChange }: ProductDetailDialogProps) {
   if (!product) return null;
 
   const img = productImages[product.name];
+  const dimensionText = buildDimensionText(product);
 
   const sections: Section[] = [
     { title: "Benefícios", content: product.benefits },
+    { title: "Dimensões da Embalagem", content: dimensionText },
     { title: "Instruções de uso", content: product.instructions },
     { title: "Garantia", content: product.warranty },
     { title: "Composição", content: product.composition },
