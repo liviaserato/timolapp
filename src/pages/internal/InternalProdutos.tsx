@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { categories, products as mockProducts, type Product, type Category } from "@/data/mock-products";
 import { toast } from "sonner";
+import { ProductDetailDialog } from "@/components/app/pedidos/store/ProductDetailDialog";
 
 /* ── Constants ── */
 const ITEMS_PER_PAGE = 12;
@@ -673,8 +674,6 @@ export default function InternalProdutos() {
 }
 
 
-/* ── Product Detail Dialog (reuses shared component) ── */
-import { ProductDetailDialog } from "@/components/app/pedidos/store/ProductDetailDialog";
 
 
 /* ── Product Card ── */
