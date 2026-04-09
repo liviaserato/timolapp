@@ -55,7 +55,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: ProductDeta
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm p-0 gap-0 rounded-lg overflow-hidden border-primary">
+      <DialogContent className="max-w-md w-[95vw] p-0 gap-0 rounded-lg overflow-hidden border-primary">
         {/* Image */}
         <div className="bg-muted/30 flex items-center justify-center py-2">
           {img ? (
