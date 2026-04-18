@@ -185,8 +185,8 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
           <DialogTitle className="text-lg font-bold text-primary">Novo Produto</DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-120px)] px-6 pb-6">
-          <div className="space-y-6 pt-2">
+        <ScrollArea className="max-h-[calc(90vh-120px)]">
+          <div className="space-y-6 pt-2 px-6 pb-6">
 
             {/* ── SKU + Category + Subcategory ── */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
