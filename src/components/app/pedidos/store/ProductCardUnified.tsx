@@ -194,16 +194,18 @@ export function ProductCardUnified({
                     {variation.options.map((opt) => (
                       <button
                         key={opt}
-                        onClick={() => handleSelectVariation(variation.type, opt)}
-                        disabled={mode === "staff"}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelectVariation(variation.type, opt);
+                        }}
                         className={cn(
                           "px-2 py-0.5 text-[11px] rounded border transition-colors",
                           selections[variation.type] === opt
                             ? "border-primary bg-primary/10 text-primary font-semibold"
                             : hasError
                               ? "border-destructive/50 text-muted-foreground hover:border-destructive"
-                              : "border-border text-muted-foreground hover:border-primary/50",
-                          mode === "staff" && "cursor-default opacity-90 hover:border-border"
+                              : "border-border text-muted-foreground hover:border-primary/50"
                         )}
                       >
                         {opt}
