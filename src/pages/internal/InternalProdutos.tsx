@@ -15,12 +15,11 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Search, X, Plus, Package, ChevronLeft, ChevronRight,
-  Image as ImageIcon, Upload, Trash2, Eye, Pencil, Copy,
+  Upload, Trash2, Eye, Pencil, Copy,
   ChevronDown, Languages,
 } from "lucide-react";
 import { categories, products as mockProducts, type Product, type Category } from "@/data/mock-products";
 import { toast } from "sonner";
-import { ProductDetailDialog } from "@/components/app/pedidos/store/ProductDetailDialog";
 import { ProductCardUnified } from "@/components/app/pedidos/store/ProductCardUnified";
 
 /* ── Constants ── */
