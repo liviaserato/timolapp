@@ -14,7 +14,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 import { categories, products } from "@/data/mock-products";
 import { useCart } from "@/hooks/useCart";
-import { ProductCard } from "@/components/app/pedidos/store/ProductCard";
+import { ProductCardUnified } from "@/components/app/pedidos/store/ProductCardUnified";
 import { ProductCardHorizontal } from "@/components/app/pedidos/store/ProductCardHorizontal";
 import { CartDrawer } from "@/components/app/pedidos/store/CartDrawer";
 
@@ -181,9 +181,10 @@ export default function RealizarPedido() {
           layout === "grid" ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {filtered.map((product) => (
-                <ProductCard
+                <ProductCardUnified
                   key={product.id}
                   product={product}
+                  mode="franchisee"
                   onAddToCart={handleAddToCart}
                 />
               ))}

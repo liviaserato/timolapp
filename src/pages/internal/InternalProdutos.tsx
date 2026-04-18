@@ -15,12 +15,12 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Search, X, Plus, Package, ChevronLeft, ChevronRight,
-  Image as ImageIcon, Upload, Trash2, Eye, Pencil, Copy,
+  Upload, Trash2, Eye, Pencil, Copy,
   ChevronDown, Languages,
 } from "lucide-react";
 import { categories, products as mockProducts, type Product, type Category } from "@/data/mock-products";
 import { toast } from "sonner";
-import { ProductDetailDialog } from "@/components/app/pedidos/store/ProductDetailDialog";
+import { ProductCardUnified } from "@/components/app/pedidos/store/ProductCardUnified";
 
 /* ── Constants ── */
 const ITEMS_PER_PAGE = 12;
@@ -637,7 +637,7 @@ export default function InternalProdutos() {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {paginated.map(p => (
-              <ProductListCard key={p.id} product={p} />
+              <ProductCardUnified key={p.id} product={p} mode="staff" />
             ))}
           </div>
 
@@ -673,94 +673,3 @@ export default function InternalProdutos() {
   );
 }
 
-
-
-
-/* ── Product Card ── */
-function ProductListCard({ product: p }: { product: Product }) {
-  const [detailOpen, setDetailOpen] = useState(false);
-
-  return (
-    <>
-      <div
-        className="rounded-[10px] border border-border bg-card overflow-visible hover:shadow-md transition-shadow cursor-pointer relative"
-        onClick={() => setDetailOpen(true)}
-      >
-        {/* Activatable ribbon - positioned at card level to overflow image */}
-        {p.activatable && (
-          <div className="absolute top-[13px] -right-[6px] z-10 flex flex-col items-end">
-            <span
-              className="text-[9px] font-bold uppercase tracking-wide text-white pr-2 pl-3 py-[3px]"
-              style={{
-                background: '#16a34a',
-                clipPath: 'polygon(6px 0, 100% 0, 100% 100%, 6px 100%, 0 50%)',
-              }}
-            >
-              Ativável
-            </span>
-            <div
-              className="w-[6px] h-[6px]"
-              style={{
-                background: '#15803d',
-                clipPath: 'polygon(0 0, 100% 0, 0 100%)',
-              }}
-            />
-          </div>
-        )}
-
-        {/* Image */}
-        <div
-          className="h-32 mx-2 mt-2 border border-border bg-muted/30 flex items-center justify-center overflow-hidden"
-          onClick={(e) => {
-            e.stopPropagation();
-            // TODO: open image slide modal
-          }}
-        >
-          {p.image ? (
-            <img src={p.image} alt={p.name} className="h-full w-full object-cover" />
-          ) : (
-            <ImageIcon className="h-10 w-10 text-muted-foreground/20" />
-          )}
-        </div>
-
-        <div className="p-3 space-y-2">
-          {/* Category badge */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-md font-medium">
-              {categories.find(c => c.id === p.category)?.name ?? p.category}
-            </span>
-            <span className="text-[10px] text-muted-foreground">{p.subcategory}</span>
-          </div>
-
-          {/* Name */}
-          <p className="text-sm font-semibold text-foreground leading-tight line-clamp-2">{p.name}</p>
-
-          {/* Price */}
-          <div className="flex items-baseline gap-2">
-            <span className="text-sm font-bold text-primary">{formatCurrency(p.price)}</span>
-            {p.oldPrice && (
-              <span className="text-xs text-muted-foreground line-through">{formatCurrency(p.oldPrice)}</span>
-            )}
-          </div>
-
-          {/* Meta row */}
-          <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 border-t border-border">
-            <span>SKU: {p.id}</span>
-            {p.pointsUnilevel != null && <span>Pontos: {p.pointsUnilevel}</span>}
-            <div className="flex items-center gap-1">
-              
-              <span className={cn(
-                "text-[9px] px-1.5 py-0.5 rounded",
-                p.inStock ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
-              )}>
-                {p.inStock ? "Em estoque" : "Indisponível"}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <ProductDetailDialog product={p} open={detailOpen} onOpenChange={setDetailOpen} />
-    </>
-  );
-}
