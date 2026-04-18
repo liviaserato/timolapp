@@ -21,6 +21,7 @@ import {
 import { categories, products as mockProducts, type Product, type Category } from "@/data/mock-products";
 import { toast } from "sonner";
 import { ProductDetailDialog } from "@/components/app/pedidos/store/ProductDetailDialog";
+import { ProductCardUnified } from "@/components/app/pedidos/store/ProductCardUnified";
 
 /* ── Constants ── */
 const ITEMS_PER_PAGE = 12;
@@ -637,7 +638,7 @@ export default function InternalProdutos() {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {paginated.map(p => (
-              <ProductListCard key={p.id} product={p} />
+              <ProductCardUnified key={p.id} product={p} mode="staff" />
             ))}
           </div>
 
