@@ -181,7 +181,7 @@ export default function RealizarPedido() {
           layout === "grid" ? (
             <div className="flex flex-wrap gap-3">
               {filtered.map((product) => (
-                <div key={product.id} className="w-full sm:w-[240px]">
+                <div key={product.id} className="w-full sm:w-[200px]">
                   <ProductCardUnified
                     product={product}
                     mode="franchisee"
