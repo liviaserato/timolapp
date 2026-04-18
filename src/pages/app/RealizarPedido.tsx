@@ -179,15 +179,14 @@ export default function RealizarPedido() {
           </div>
         ) : (
           layout === "grid" ? (
-            <div className="flex flex-wrap gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {filtered.map((product) => (
-                <div key={product.id} className="w-full sm:w-[200px]">
-                  <ProductCardUnified
-                    product={product}
-                    mode="franchisee"
-                    onAddToCart={handleAddToCart}
-                  />
-                </div>
+                <ProductCardUnified
+                  key={product.id}
+                  product={product}
+                  mode="franchisee"
+                  onAddToCart={handleAddToCart}
+                />
               ))}
             </div>
           ) : (

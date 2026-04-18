@@ -635,11 +635,9 @@ export default function InternalProdutos() {
         </div>
       ) : (
         <>
-          <div className="flex flex-wrap gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {paginated.map(p => (
-              <div key={p.id} className="w-full sm:w-[200px]">
-                <ProductCardUnified product={p} mode="staff" />
-              </div>
+              <ProductCardUnified key={p.id} product={p} mode="staff" />
             ))}
           </div>
 
