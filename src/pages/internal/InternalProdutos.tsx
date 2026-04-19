@@ -550,6 +550,11 @@ export default function InternalProdutos() {
               <Switch checked={onlyActivatable} onCheckedChange={v => { setOnlyActivatable(v); setPage(1); }} />
               <span className="text-xs text-muted-foreground">Apenas produtos ativáveis</span>
             </div>
+
+            <div className="flex items-center gap-2">
+              <Switch checked={onlyInStock} onCheckedChange={v => { setOnlyInStock(v); setPage(1); }} />
+              <span className="text-xs text-muted-foreground">Apenas produtos em estoque</span>
+            </div>
           </div>
 
           {/* Right column: categories + subcategories */}
@@ -610,16 +615,15 @@ export default function InternalProdutos() {
           </div>
         </div>
 
-        {/* Bottom row: count + clear filters */}
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-          <span className="text-xs text-muted-foreground">{filtered.length} produto(s) encontrado(s)</span>
-          {hasFilters && (
+        {/* Bottom row: clear filters */}
+        {hasFilters && (
+          <div className="flex items-center justify-end mt-3 pt-3 border-t border-border">
             <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
               <X className="h-3 w-3" />
               Limpar filtros
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </fieldset>
 
       {/* Results */}
@@ -635,6 +639,50 @@ export default function InternalProdutos() {
         </div>
       ) : (
         <>
+          {/* Results context header — same pattern as Cadastros */}
+          <div className="space-y-1.5 px-1">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <h2 className="font-semibold text-foreground text-lg">Resultado da Busca</h2>
+                <span className="text-xs text-muted-foreground">
+                  ({filtered.length} {filtered.length === 1 ? "produto encontrado" : "produtos encontrados"})
+                </span>
+              </div>
+              {/* Sort */}
+              <div className="flex items-center gap-0.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0 border-dashed rounded-r-none"
+                  onClick={() => setSortDir(d => d === "neutral" ? "asc" : d === "asc" ? "desc" : "asc")}
+                  title={sortDir === "neutral" ? "Ordenação padrão" : sortDir === "asc" ? "Ascendente" : "Descendente"}
+                >
+                  {sortDir === "neutral"
+                    ? <ArrowUpDown className="h-3.5 w-3.5" />
+                    : sortDir === "asc"
+                      ? <ArrowUp className="h-3.5 w-3.5" />
+                      : <ArrowDown className="h-3.5 w-3.5" />
+                  }
+                </Button>
+                <Select value={sortBy} onValueChange={v => setSortBy(v)}>
+                  <SelectTrigger className="h-8 text-xs w-auto min-w-[130px] border-dashed rounded-l-none">
+                    <span>Classificar</span>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="name">Nome</SelectItem>
+                    <SelectItem value="price">Valor</SelectItem>
+                    <SelectItem value="sku">SKU</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {filterDescription.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                {filterDescription.join("  ·  ")}
+              </p>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {paginated.map(p => (
               <ProductCardUnified key={p.id} product={p} mode="staff" />
