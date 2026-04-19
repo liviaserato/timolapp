@@ -467,15 +467,18 @@ export default function InternalProdutos() {
   const [selectedCategory, setSelectedCategory] = useState<string | "">("");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | "">("");
   const [onlyActivatable, setOnlyActivatable] = useState(false);
+  const [onlyInStock, setOnlyInStock] = useState(false);
   const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<string>("name");
+  const [sortDir, setSortDir] = useState<"neutral" | "asc" | "desc">("neutral");
 
   const categoryObj = categories.find(c => c.id === selectedCategory);
   const subcategories = categoryObj?.subcategories ?? [];
 
   /* Filter */
   const filtered = useMemo(() => {
-    return mockProducts.filter(p => {
+    const list = mockProducts.filter(p => {
       if (searchTerm) {
         const q = norm(searchTerm);
         const matchName = norm(p.name).includes(q);
@@ -485,9 +488,20 @@ export default function InternalProdutos() {
       if (selectedCategory && p.category !== selectedCategory) return false;
       if (selectedSubcategory && p.subcategory !== selectedSubcategory) return false;
       if (onlyActivatable && !p.activatable) return false;
+      if (onlyInStock && !p.inStock) return false;
       return true;
     });
-  }, [searchTerm, selectedCategory, selectedSubcategory, onlyActivatable]);
+
+    if (sortDir === "neutral") return list;
+    const sorted = [...list].sort((a, b) => {
+      let cmp = 0;
+      if (sortBy === "name") cmp = a.name.localeCompare(b.name, "pt-BR");
+      else if (sortBy === "price") cmp = a.price - b.price;
+      else if (sortBy === "sku") cmp = a.id.localeCompare(b.id);
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+    return sorted;
+  }, [searchTerm, selectedCategory, selectedSubcategory, onlyActivatable, onlyInStock, sortBy, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -497,10 +511,24 @@ export default function InternalProdutos() {
     setSelectedCategory("");
     setSelectedSubcategory("");
     setOnlyActivatable(false);
+    setOnlyInStock(false);
     setPage(1);
   };
 
-  const hasFilters = !!searchTerm || !!selectedCategory || !!selectedSubcategory || onlyActivatable;
+  const hasFilters = !!searchTerm || !!selectedCategory || !!selectedSubcategory || onlyActivatable || onlyInStock;
+
+  /** Build dynamic filter description (excluding "apenas ativáveis") */
+  const filterDescription = useMemo(() => {
+    const parts: string[] = [];
+    if (searchTerm.trim()) parts.push(`Busca: "${searchTerm.trim()}"`);
+    if (selectedCategory) {
+      const cat = categories.find(c => c.id === selectedCategory);
+      if (cat) parts.push(`Categoria: ${cat.name}`);
+    }
+    if (selectedSubcategory) parts.push(`Subcategoria: ${selectedSubcategory}`);
+    if (onlyInStock) parts.push("Apenas em estoque");
+    return parts;
+  }, [searchTerm, selectedCategory, selectedSubcategory, onlyInStock]);
 
   return (
     <div className="space-y-6 pb-10">
