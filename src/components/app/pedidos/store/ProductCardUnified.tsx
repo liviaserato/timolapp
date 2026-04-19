@@ -268,9 +268,10 @@ export function ProductCardUnified({
               </Button>
             </>
           ) : (
-            <>
+            <div className="flex flex-col w-full gap-2">
               {/* Divider line above SKU and stock */}
-              <div className="w-full h-px bg-border mb-2" />
+              <div className="w-full h-px bg-border" />
+              
               <div className="flex items-center gap-1.5 w-full">
                 {/* SKU — same width as qty control (h-7, w-[68px]) */}
                 <div className="flex items-center justify-center h-7 px-2 border border-border rounded shrink-0 bg-muted/30">
@@ -290,7 +291,7 @@ export function ProductCardUnified({
                   {product.inStock ? "Em estoque" : "Indisponível"}
                 </div>
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>
