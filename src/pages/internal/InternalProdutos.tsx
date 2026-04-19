@@ -16,7 +16,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import {
   Search, X, Plus, Package, ChevronLeft, ChevronRight,
   Upload, Trash2, Eye, Pencil, Copy,
-  ChevronDown, Languages,
+  ChevronDown, Languages, ArrowUpDown, ArrowUp, ArrowDown,
 } from "lucide-react";
 import { categories, products as mockProducts, type Product, type Category } from "@/data/mock-products";
 import { toast } from "sonner";
@@ -467,15 +467,18 @@ export default function InternalProdutos() {
   const [selectedCategory, setSelectedCategory] = useState<string | "">("");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | "">("");
   const [onlyActivatable, setOnlyActivatable] = useState(false);
+  const [onlyInStock, setOnlyInStock] = useState(false);
   const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<string>("name");
+  const [sortDir, setSortDir] = useState<"neutral" | "asc" | "desc">("neutral");
 
   const categoryObj = categories.find(c => c.id === selectedCategory);
   const subcategories = categoryObj?.subcategories ?? [];
 
   /* Filter */
   const filtered = useMemo(() => {
-    return mockProducts.filter(p => {
+    const list = mockProducts.filter(p => {
       if (searchTerm) {
         const q = norm(searchTerm);
         const matchName = norm(p.name).includes(q);
@@ -485,9 +488,20 @@ export default function InternalProdutos() {
       if (selectedCategory && p.category !== selectedCategory) return false;
       if (selectedSubcategory && p.subcategory !== selectedSubcategory) return false;
       if (onlyActivatable && !p.activatable) return false;
+      if (onlyInStock && !p.inStock) return false;
       return true;
     });
-  }, [searchTerm, selectedCategory, selectedSubcategory, onlyActivatable]);
+
+    if (sortDir === "neutral") return list;
+    const sorted = [...list].sort((a, b) => {
+      let cmp = 0;
+      if (sortBy === "name") cmp = a.name.localeCompare(b.name, "pt-BR");
+      else if (sortBy === "price") cmp = a.price - b.price;
+      else if (sortBy === "sku") cmp = a.id.localeCompare(b.id);
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+    return sorted;
+  }, [searchTerm, selectedCategory, selectedSubcategory, onlyActivatable, onlyInStock, sortBy, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -497,10 +511,24 @@ export default function InternalProdutos() {
     setSelectedCategory("");
     setSelectedSubcategory("");
     setOnlyActivatable(false);
+    setOnlyInStock(false);
     setPage(1);
   };
 
-  const hasFilters = !!searchTerm || !!selectedCategory || !!selectedSubcategory || onlyActivatable;
+  const hasFilters = !!searchTerm || !!selectedCategory || !!selectedSubcategory || onlyActivatable || onlyInStock;
+
+  /** Build dynamic filter description (excluding "apenas ativáveis") */
+  const filterDescription = useMemo(() => {
+    const parts: string[] = [];
+    if (searchTerm.trim()) parts.push(`Busca: "${searchTerm.trim()}"`);
+    if (selectedCategory) {
+      const cat = categories.find(c => c.id === selectedCategory);
+      if (cat) parts.push(`Categoria: ${cat.name}`);
+    }
+    if (selectedSubcategory) parts.push(`Subcategoria: ${selectedSubcategory}`);
+    if (onlyInStock) parts.push("Apenas em estoque");
+    return parts;
+  }, [searchTerm, selectedCategory, selectedSubcategory, onlyInStock]);
 
   return (
     <div className="space-y-6 pb-10">
@@ -549,6 +577,11 @@ export default function InternalProdutos() {
             <div className="flex items-center gap-2">
               <Switch checked={onlyActivatable} onCheckedChange={v => { setOnlyActivatable(v); setPage(1); }} />
               <span className="text-xs text-muted-foreground">Apenas produtos ativáveis</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Switch checked={onlyInStock} onCheckedChange={v => { setOnlyInStock(v); setPage(1); }} />
+              <span className="text-xs text-muted-foreground">Apenas produtos em estoque</span>
             </div>
           </div>
 
@@ -610,16 +643,15 @@ export default function InternalProdutos() {
           </div>
         </div>
 
-        {/* Bottom row: count + clear filters */}
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-          <span className="text-xs text-muted-foreground">{filtered.length} produto(s) encontrado(s)</span>
-          {hasFilters && (
+        {/* Bottom row: clear filters */}
+        {hasFilters && (
+          <div className="flex items-center justify-end mt-3 pt-3 border-t border-border">
             <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
               <X className="h-3 w-3" />
               Limpar filtros
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </fieldset>
 
       {/* Results */}
@@ -635,6 +667,50 @@ export default function InternalProdutos() {
         </div>
       ) : (
         <>
+          {/* Results context header — same pattern as Cadastros */}
+          <div className="space-y-1.5 px-1">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <h2 className="font-semibold text-foreground text-lg">Resultado da Busca</h2>
+                <span className="text-xs text-muted-foreground">
+                  ({filtered.length} {filtered.length === 1 ? "produto encontrado" : "produtos encontrados"})
+                </span>
+              </div>
+              {/* Sort */}
+              <div className="flex items-center gap-0.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0 border-dashed rounded-r-none"
+                  onClick={() => setSortDir(d => d === "neutral" ? "asc" : d === "asc" ? "desc" : "asc")}
+                  title={sortDir === "neutral" ? "Ordenação padrão" : sortDir === "asc" ? "Ascendente" : "Descendente"}
+                >
+                  {sortDir === "neutral"
+                    ? <ArrowUpDown className="h-3.5 w-3.5" />
+                    : sortDir === "asc"
+                      ? <ArrowUp className="h-3.5 w-3.5" />
+                      : <ArrowDown className="h-3.5 w-3.5" />
+                  }
+                </Button>
+                <Select value={sortBy} onValueChange={v => setSortBy(v)}>
+                  <SelectTrigger className="h-8 text-xs w-auto min-w-[130px] border-dashed rounded-l-none">
+                    <span>Classificar</span>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="name">Nome</SelectItem>
+                    <SelectItem value="price">Valor</SelectItem>
+                    <SelectItem value="sku">SKU</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {filterDescription.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                {filterDescription.join("  ·  ")}
+              </p>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {paginated.map(p => (
               <ProductCardUnified key={p.id} product={p} mode="staff" />
