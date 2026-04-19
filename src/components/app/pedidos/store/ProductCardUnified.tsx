@@ -164,10 +164,10 @@ export function ProductCardUnified({
             </span>
           </div>
 
-          {/* Points (plain text, no highlight) */}
+          {/* Points - highlighted in primary blue */}
           {totalPoints != null && (
             <p className="text-[11px] text-muted-foreground">
-              <span className="font-semibold text-foreground">{totalPoints}</span> pontos
+              <span className="font-semibold text-primary">{totalPoints} pontos</span>
             </p>
           )}
         </div>
@@ -269,22 +269,26 @@ export function ProductCardUnified({
             </>
           ) : (
             <>
-              {/* SKU — same width as qty control (h-7, w-[68px]) */}
-              <div className="flex items-center justify-center h-7 px-2 border border-border rounded shrink-0 bg-muted/30">
-                <span className="text-[10px] font-medium text-muted-foreground truncate">
-                  SKU: <span className="text-foreground font-semibold">{product.id}</span>
-                </span>
-              </div>
-              {/* Stock tag — fills the rest, same height */}
-              <div
-                className={cn(
-                  "flex-1 min-w-0 flex items-center justify-center h-7 px-2 rounded text-[11px] font-semibold",
-                  product.inStock
-                    ? "bg-primary/10 text-primary border border-primary/30"
-                    : "bg-destructive/10 text-destructive border border-destructive/30"
-                )}
-              >
-                {product.inStock ? "Em estoque" : "Indisponível"}
+              {/* Divider line above SKU and stock */}
+              <div className="w-full h-px bg-border mb-2" />
+              <div className="flex items-center gap-1.5 w-full">
+                {/* SKU — same width as qty control (h-7, w-[68px]) */}
+                <div className="flex items-center justify-center h-7 px-2 border border-border rounded shrink-0 bg-muted/30">
+                  <span className="text-[10px] font-medium text-muted-foreground truncate">
+                    SKU: <span className="text-foreground font-semibold">{product.id}</span>
+                  </span>
+                </div>
+                {/* Stock tag — discreet, no border/bg */}
+                <div
+                  className={cn(
+                    "flex-1 min-w-0 flex items-center justify-center h-7 px-2 text-[11px] font-medium",
+                    product.inStock
+                      ? "text-primary"
+                      : "text-destructive"
+                  )}
+                >
+                  {product.inStock ? "Em estoque" : "Indisponível"}
+                </div>
               </div>
             </>
           )}
