@@ -497,7 +497,7 @@ export default function InternalProdutos() {
       let cmp = 0;
       if (sortBy === "name") cmp = a.name.localeCompare(b.name, "pt-BR");
       else if (sortBy === "price") cmp = a.price - b.price;
-      else if (sortBy === "sku") cmp = a.id.localeCompare(b.id);
+      else if (sortBy === "sku") cmp = a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: "base" });
       return sortDir === "asc" ? cmp : -cmp;
     });
     return sorted;
@@ -561,7 +561,7 @@ export default function InternalProdutos() {
                   value={searchTerm}
                   onChange={e => { setSearchTerm(e.target.value); setPage(1); }}
                   placeholder="Digite o nome ou código..."
-                  className="pl-9 pr-9"
+                  className="pl-9 pr-9 h-8"
                 />
                 {searchTerm && (
                   <button
@@ -575,12 +575,12 @@ export default function InternalProdutos() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Switch checked={onlyActivatable} onCheckedChange={v => { setOnlyActivatable(v); setPage(1); }} />
+              <Switch checked={onlyActivatable} onCheckedChange={v => { setOnlyActivatable(v); setPage(1); }} className="scale-75 origin-left" />
               <span className="text-xs text-muted-foreground">Apenas produtos ativáveis</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <Switch checked={onlyInStock} onCheckedChange={v => { setOnlyInStock(v); setPage(1); }} />
+              <Switch checked={onlyInStock} onCheckedChange={v => { setOnlyInStock(v); setPage(1); }} className="scale-75 origin-left" />
               <span className="text-xs text-muted-foreground">Apenas produtos em estoque</span>
             </div>
           </div>
@@ -604,7 +604,7 @@ export default function InternalProdutos() {
                       key={c.id}
                       value={c.id}
                       disabled={!hasProducts}
-                      className="text-xs px-3 py-1 h-8 rounded-md border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="text-xs px-3 h-8 rounded-md border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {c.name}
                     </ToggleGroupItem>
@@ -704,11 +704,6 @@ export default function InternalProdutos() {
                 </Select>
               </div>
             </div>
-            {filterDescription.length > 0 && (
-              <p className="text-xs text-muted-foreground">
-                {filterDescription.join("  ·  ")}
-              </p>
-            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
