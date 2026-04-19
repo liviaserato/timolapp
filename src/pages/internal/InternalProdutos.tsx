@@ -671,7 +671,7 @@ export default function InternalProdutos() {
           <div className="space-y-1.5 px-1">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <h2 className="font-semibold text-foreground text-lg">Resultado da Busca</h2>
+                <h2 className="font-semibold text-foreground text-lg">{hasFilters ? "Resultado da Busca" : "Catálogo Completo"}</h2>
                 <span className="text-xs text-muted-foreground">
                   ({filtered.length} {filtered.length === 1 ? "produto encontrado" : "produtos encontrados"})
                 </span>
