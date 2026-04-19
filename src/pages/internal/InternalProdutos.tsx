@@ -645,7 +645,7 @@ export default function InternalProdutos() {
 
         {/* Bottom row: clear filters */}
         {hasFilters && (
-          <div className="flex items-center justify-end mt-3 pt-3 border-t border-border">
+          <div className="flex items-center justify-end mt-3">
             <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
               <X className="h-3 w-3" />
               Limpar filtros
