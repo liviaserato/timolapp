@@ -561,7 +561,7 @@ export default function InternalProdutos() {
                   value={searchTerm}
                   onChange={e => { setSearchTerm(e.target.value); setPage(1); }}
                   placeholder="Digite o nome ou código..."
-                  className="pl-9 pr-9"
+                  className="pl-9 pr-9 h-8"
                 />
                 {searchTerm && (
                   <button
@@ -575,12 +575,12 @@ export default function InternalProdutos() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Switch checked={onlyActivatable} onCheckedChange={v => { setOnlyActivatable(v); setPage(1); }} />
+              <Switch checked={onlyActivatable} onCheckedChange={v => { setOnlyActivatable(v); setPage(1); }} className="scale-75 origin-left" />
               <span className="text-xs text-muted-foreground">Apenas produtos ativáveis</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <Switch checked={onlyInStock} onCheckedChange={v => { setOnlyInStock(v); setPage(1); }} />
+              <Switch checked={onlyInStock} onCheckedChange={v => { setOnlyInStock(v); setPage(1); }} className="scale-75 origin-left" />
               <span className="text-xs text-muted-foreground">Apenas produtos em estoque</span>
             </div>
           </div>
@@ -604,7 +604,7 @@ export default function InternalProdutos() {
                       key={c.id}
                       value={c.id}
                       disabled={!hasProducts}
-                      className="text-xs px-3 py-1 h-8 rounded-md border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="text-xs px-3 h-8 rounded-md border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {c.name}
                     </ToggleGroupItem>
