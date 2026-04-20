@@ -544,6 +544,9 @@ export default function InternalProdutos() {
         </Button>
       </div>
 
+      {/* Indicators (preview — to be moved to Reports > Products) */}
+      <ProductReportsTab />
+
       {/* Filters */}
       <fieldset className="relative rounded-[10px] border border-border bg-card p-4 shadow-sm">
         <legend className="flex items-center gap-2 px-1 text-base font-bold text-primary">
