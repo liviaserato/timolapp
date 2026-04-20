@@ -21,6 +21,7 @@ import {
 import { categories, products as mockProducts, type Product, type Category } from "@/data/mock-products";
 import { toast } from "sonner";
 import { ProductCardUnified } from "@/components/app/pedidos/store/ProductCardUnified";
+import ProductReportsTab from "@/components/internal/ProductReportsTab";
 
 /* ── Constants ── */
 const ITEMS_PER_PAGE = 12;
