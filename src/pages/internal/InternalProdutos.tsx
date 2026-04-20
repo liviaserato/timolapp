@@ -21,6 +21,7 @@ import {
 import { categories, products as mockProducts, type Product, type Category } from "@/data/mock-products";
 import { toast } from "sonner";
 import { ProductCardUnified } from "@/components/app/pedidos/store/ProductCardUnified";
+import ProductReportsTab from "@/components/internal/ProductReportsTab";
 
 /* ── Constants ── */
 const ITEMS_PER_PAGE = 12;
@@ -542,6 +543,9 @@ export default function InternalProdutos() {
           <Plus className="h-4 w-4" /> Novo Produto
         </Button>
       </div>
+
+      {/* Indicators (preview — to be moved to Reports > Products) */}
+      <ProductReportsTab />
 
       {/* Filters */}
       <fieldset className="relative rounded-[10px] border border-border bg-card p-4 shadow-sm">
