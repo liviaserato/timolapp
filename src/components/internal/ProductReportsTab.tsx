@@ -405,13 +405,6 @@ export default function ProductReportsTab() {
                     </div>
                     <span className="text-xs font-semibold tabular-nums">{inactiveCount} <span className="text-muted-foreground/70 font-normal">/ {totalCatalog}</span></span>
                   </div>
-                  <div className="flex items-center justify-between py-1 px-2 rounded bg-muted/40">
-                    <div className="flex items-center gap-1.5">
-                      <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
-                      <span className="text-xs text-muted-foreground">Maior alta</span>
-                    </div>
-                    <span className="text-xs font-semibold tabular-nums text-emerald-600">+{bestGrowth?.growthPct ?? 0}%</span>
-                  </div>
                 </div>
               </div>
             </div>
