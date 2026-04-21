@@ -400,13 +400,6 @@ export default function ProductReportsTab() {
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between py-1 px-2 rounded bg-muted/40">
                     <div className="flex items-center gap-1.5">
-                      <RotateCcw className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">Devolvidos</span>
-                    </div>
-                    <span className="text-xs font-semibold tabular-nums">{totalReturned} <span className="text-muted-foreground/70 font-normal">({returnRate}%)</span></span>
-                  </div>
-                  <div className="flex items-center justify-between py-1 px-2 rounded bg-muted/40">
-                    <div className="flex items-center gap-1.5">
                       <PackageX className="h-3.5 w-3.5 text-muted-foreground" />
                       <span className="text-xs text-muted-foreground">Sem venda no período</span>
                     </div>
