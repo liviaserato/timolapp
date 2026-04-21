@@ -502,6 +502,7 @@ export default function InternalProdutos() {
       if (sortBy === "name") cmp = a.name.localeCompare(b.name, "pt-BR");
       else if (sortBy === "price") cmp = a.price - b.price;
       else if (sortBy === "sku") cmp = a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: "base" });
+      else if (sortBy === "availability") cmp = (a.inStock === b.inStock) ? 0 : (a.inStock ? -1 : 1);
       return sortDir === "asc" ? cmp : -cmp;
     });
     return sorted;
