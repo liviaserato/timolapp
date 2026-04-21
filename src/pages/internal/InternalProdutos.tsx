@@ -468,7 +468,8 @@ export default function InternalProdutos() {
   const [selectedCategory, setSelectedCategory] = useState<string | "">("");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | "">("");
   const [onlyActivatable, setOnlyActivatable] = useState(false);
-  const [onlyInStock, setOnlyInStock] = useState(false);
+  const [showInStock, setShowInStock] = useState(true);
+  const [showOutOfStock, setShowOutOfStock] = useState(true);
   const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [sortBy, setSortBy] = useState<string>("name");
@@ -489,7 +490,9 @@ export default function InternalProdutos() {
       if (selectedCategory && p.category !== selectedCategory) return false;
       if (selectedSubcategory && p.subcategory !== selectedSubcategory) return false;
       if (onlyActivatable && !p.activatable) return false;
-      if (onlyInStock && !p.inStock) return false;
+      // Stock filter: at least one of the two pills must be on (UI guarantees that)
+      if (p.inStock && !showInStock) return false;
+      if (!p.inStock && !showOutOfStock) return false;
       return true;
     });
 
@@ -502,34 +505,40 @@ export default function InternalProdutos() {
       return sortDir === "asc" ? cmp : -cmp;
     });
     return sorted;
-  }, [searchTerm, selectedCategory, selectedSubcategory, onlyActivatable, onlyInStock, sortBy, sortDir]);
+  }, [searchTerm, selectedCategory, selectedSubcategory, onlyActivatable, showInStock, showOutOfStock, sortBy, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
+  /* Stock counts (respect search/category filters but ignore the pills themselves) */
+  const stockCounts = useMemo(() => {
+    const base = mockProducts.filter(p => {
+      if (searchTerm) {
+        const q = norm(searchTerm);
+        if (!norm(p.name).includes(q) && !norm(p.id).includes(q)) return false;
+      }
+      if (selectedCategory && p.category !== selectedCategory) return false;
+      if (selectedSubcategory && p.subcategory !== selectedSubcategory) return false;
+      if (onlyActivatable && !p.activatable) return false;
+      return true;
+    });
+    return {
+      inStock: base.filter(p => p.inStock).length,
+      outOfStock: base.filter(p => !p.inStock).length,
+    };
+  }, [searchTerm, selectedCategory, selectedSubcategory, onlyActivatable]);
 
   const clearFilters = () => {
     setSearchTerm("");
     setSelectedCategory("");
     setSelectedSubcategory("");
     setOnlyActivatable(false);
-    setOnlyInStock(false);
+    setShowInStock(true);
+    setShowOutOfStock(true);
     setPage(1);
   };
 
-  const hasFilters = !!searchTerm || !!selectedCategory || !!selectedSubcategory || onlyActivatable || onlyInStock;
-
-  /** Build dynamic filter description (excluding "apenas ativáveis") */
-  const filterDescription = useMemo(() => {
-    const parts: string[] = [];
-    if (searchTerm.trim()) parts.push(`Busca: "${searchTerm.trim()}"`);
-    if (selectedCategory) {
-      const cat = categories.find(c => c.id === selectedCategory);
-      if (cat) parts.push(`Categoria: ${cat.name}`);
-    }
-    if (selectedSubcategory) parts.push(`Subcategoria: ${selectedSubcategory}`);
-    if (onlyInStock) parts.push("Apenas em estoque");
-    return parts;
-  }, [searchTerm, selectedCategory, selectedSubcategory, onlyInStock]);
+  const hasFilters = !!searchTerm || !!selectedCategory || !!selectedSubcategory || onlyActivatable;
 
   return (
     <div className="space-y-6 pb-10">
@@ -581,11 +590,6 @@ export default function InternalProdutos() {
             <div className="flex items-center gap-2">
               <Switch checked={onlyActivatable} onCheckedChange={v => { setOnlyActivatable(v); setPage(1); }} className="scale-75 origin-left" />
               <span className="text-xs text-muted-foreground">Apenas produtos ativáveis</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Switch checked={onlyInStock} onCheckedChange={v => { setOnlyInStock(v); setPage(1); }} className="scale-75 origin-left" />
-              <span className="text-xs text-muted-foreground">Apenas produtos em estoque</span>
             </div>
           </div>
 
@@ -674,11 +678,36 @@ export default function InternalProdutos() {
           {/* Results context header — same pattern as Cadastros */}
           <div className="space-y-1.5 px-1">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="font-semibold text-foreground text-lg">{hasFilters ? "Resultado da Busca" : "Catálogo Completo"}</h2>
                 <span className="text-xs text-muted-foreground">
                   ({filtered.length} {filtered.length === 1 ? "produto encontrado" : "produtos encontrados"})
                 </span>
+                {/* Stock pills — clickable filters + counts */}
+                <button
+                  onClick={() => { if (showInStock && !showOutOfStock) return; setShowInStock(v => !v); setPage(1); }}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
+                    showInStock
+                      ? "bg-emerald-100 text-emerald-700 border-emerald-300 shadow-sm"
+                      : "bg-transparent text-emerald-600/70 border-transparent hover:bg-emerald-50 hover:border-emerald-200"
+                  )}
+                >
+                  <span className={cn("h-1.5 w-1.5 rounded-full", showInStock ? "bg-emerald-500" : "bg-emerald-400/50")} />
+                  {showInStock ? `${stockCounts.inStock} ` : ""}em estoque
+                </button>
+                <button
+                  onClick={() => { if (showOutOfStock && !showInStock) return; setShowOutOfStock(v => !v); setPage(1); }}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
+                    showOutOfStock
+                      ? "bg-red-100 text-red-700 border-red-300 shadow-sm"
+                      : "bg-transparent text-red-500/70 border-transparent hover:bg-red-50 hover:border-red-200"
+                  )}
+                >
+                  <span className={cn("h-1.5 w-1.5 rounded-full", showOutOfStock ? "bg-red-500" : "bg-red-400/50")} />
+                  {showOutOfStock ? `${stockCounts.outOfStock} ` : ""}sem estoque
+                </button>
               </div>
               {/* Sort */}
               <div className="flex items-center gap-0.5">
