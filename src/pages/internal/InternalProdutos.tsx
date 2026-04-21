@@ -678,11 +678,13 @@ export default function InternalProdutos() {
           {/* Results context header — same pattern as Cadastros */}
           <div className="space-y-1.5 px-1">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
                 <h2 className="font-semibold text-foreground text-lg">{hasFilters ? "Resultado da Busca" : "Catálogo Completo"}</h2>
                 <span className="text-xs text-muted-foreground">
                   ({filtered.length} {filtered.length === 1 ? "produto encontrado" : "produtos encontrados"})
                 </span>
+              </div>
+              <div className="flex items-center gap-2">
                 {/* Stock pills — clickable filters + counts */}
                 <button
                   onClick={() => { if (showInStock && !showOutOfStock) return; setShowInStock(v => !v); setPage(1); }}
@@ -708,33 +710,34 @@ export default function InternalProdutos() {
                   <span className={cn("h-1.5 w-1.5 rounded-full", showOutOfStock ? "bg-red-500" : "bg-red-400/50")} />
                   {showOutOfStock ? `${stockCounts.outOfStock} ` : ""}sem estoque
                 </button>
-              </div>
-              {/* Sort */}
-              <div className="flex items-center gap-0.5">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 w-8 p-0 border-dashed rounded-r-none"
-                  onClick={() => setSortDir(d => d === "neutral" ? "asc" : d === "asc" ? "desc" : "asc")}
-                  title={sortDir === "neutral" ? "Ordenação padrão" : sortDir === "asc" ? "Ascendente" : "Descendente"}
-                >
-                  {sortDir === "neutral"
-                    ? <ArrowUpDown className="h-3.5 w-3.5" />
-                    : sortDir === "asc"
-                      ? <ArrowUp className="h-3.5 w-3.5" />
-                      : <ArrowDown className="h-3.5 w-3.5" />
-                  }
-                </Button>
-                <Select value={sortBy} onValueChange={v => setSortBy(v)}>
-                  <SelectTrigger className="h-8 text-xs w-auto min-w-[130px] border-dashed rounded-l-none">
-                    <span>Classificar</span>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="name">Nome</SelectItem>
-                    <SelectItem value="price">Valor</SelectItem>
-                    <SelectItem value="sku">SKU</SelectItem>
-                  </SelectContent>
-                </Select>
+                {/* Sort */}
+                <div className="flex items-center gap-0.5 ml-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 p-0 border-dashed rounded-r-none"
+                    onClick={() => setSortDir(d => d === "neutral" ? "asc" : d === "asc" ? "desc" : "asc")}
+                    title={sortDir === "neutral" ? "Ordenação padrão" : sortDir === "asc" ? "Ascendente" : "Descendente"}
+                  >
+                    {sortDir === "neutral"
+                      ? <ArrowUpDown className="h-3.5 w-3.5" />
+                      : sortDir === "asc"
+                        ? <ArrowUp className="h-3.5 w-3.5" />
+                        : <ArrowDown className="h-3.5 w-3.5" />
+                    }
+                  </Button>
+                  <Select value={sortBy} onValueChange={v => setSortBy(v)}>
+                    <SelectTrigger className="h-8 text-xs w-auto min-w-[130px] border-dashed rounded-l-none">
+                      <span>Classificar</span>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="name">Nome</SelectItem>
+                      <SelectItem value="price">Valor</SelectItem>
+                      <SelectItem value="sku">SKU</SelectItem>
+                      <SelectItem value="availability">Disponibilidade</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           </div>
