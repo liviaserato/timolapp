@@ -468,7 +468,8 @@ export default function InternalProdutos() {
   const [selectedCategory, setSelectedCategory] = useState<string | "">("");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | "">("");
   const [onlyActivatable, setOnlyActivatable] = useState(false);
-  const [onlyInStock, setOnlyInStock] = useState(false);
+  const [showInStock, setShowInStock] = useState(true);
+  const [showOutOfStock, setShowOutOfStock] = useState(true);
   const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [sortBy, setSortBy] = useState<string>("name");
