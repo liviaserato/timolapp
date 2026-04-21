@@ -5,9 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   BarChart3, Package, ChevronRight, ChevronLeft, Info,
-  Trophy, Users, AlertTriangle, RotateCcw, PackageX,
-  TrendingUp, Layers,
+  Sparkles, Users, AlertTriangle, PackageX,
+  Layers,
 } from "lucide-react";
+
+/* ════════════════════════════════════════
+   Sylocimol — flagship product line.
+   In production, this list will be provided by the user/backend.
+   ════════════════════════════════════════ */
+const SYLOCIMOL_PRODUCT_IDS = new Set<string>(["p1", "p2"]);
 import { products as mockProducts, categories } from "@/data/mock-products";
 
 /* ════════════════════════════════════════
