@@ -197,16 +197,13 @@ export default function ProductReportsTab() {
 
   const topCategory = salesByCategory[0]?.label ?? "—";
 
-  /* Best growth product (vs prev period) */
-  const bestGrowth = useMemo(() => {
-    const ranked = salesInPeriod
-      .map(s => {
-        const p = mockProducts.find(p => p.id === s.productId);
-        const growthPct = s.prevPeriodUnits > 0 ? Math.round(((s.unitsSold - s.prevPeriodUnits) / s.prevPeriodUnits) * 100) : 0;
-        return { name: p?.name ?? "—", growthPct };
-      })
-      .sort((a, b) => b.growthPct - a.growthPct);
-    return ranked[0];
+  /* Sylocimol — flagship product family stats */
+  const sylocimolStats = useMemo(() => {
+    const matching = salesInPeriod.filter(s => SYLOCIMOL_PRODUCT_IDS.has(s.productId));
+    const current = matching.reduce((sum, s) => sum + s.unitsSold, 0);
+    const previous = matching.reduce((sum, s) => sum + s.prevPeriodUnits, 0);
+    const growthPct = previous > 0 ? Math.round(((current - previous) / previous) * 100) : (current > 0 ? 100 : 0);
+    return { current, previous, growthPct };
   }, [salesInPeriod]);
 
   /* Stale product — longest without selling */
