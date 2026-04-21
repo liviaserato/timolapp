@@ -678,11 +678,36 @@ export default function InternalProdutos() {
           {/* Results context header — same pattern as Cadastros */}
           <div className="space-y-1.5 px-1">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="font-semibold text-foreground text-lg">{hasFilters ? "Resultado da Busca" : "Catálogo Completo"}</h2>
                 <span className="text-xs text-muted-foreground">
                   ({filtered.length} {filtered.length === 1 ? "produto encontrado" : "produtos encontrados"})
                 </span>
+                {/* Stock pills — clickable filters + counts */}
+                <button
+                  onClick={() => { if (showInStock && !showOutOfStock) return; setShowInStock(v => !v); setPage(1); }}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
+                    showInStock
+                      ? "bg-emerald-100 text-emerald-700 border-emerald-300 shadow-sm"
+                      : "bg-transparent text-emerald-600/70 border-transparent hover:bg-emerald-50 hover:border-emerald-200"
+                  )}
+                >
+                  <span className={cn("h-1.5 w-1.5 rounded-full", showInStock ? "bg-emerald-500" : "bg-emerald-400/50")} />
+                  {showInStock ? `${stockCounts.inStock} ` : ""}em estoque
+                </button>
+                <button
+                  onClick={() => { if (showOutOfStock && !showInStock) return; setShowOutOfStock(v => !v); setPage(1); }}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
+                    showOutOfStock
+                      ? "bg-red-100 text-red-700 border-red-300 shadow-sm"
+                      : "bg-transparent text-red-500/70 border-transparent hover:bg-red-50 hover:border-red-200"
+                  )}
+                >
+                  <span className={cn("h-1.5 w-1.5 rounded-full", showOutOfStock ? "bg-red-500" : "bg-red-400/50")} />
+                  {showOutOfStock ? `${stockCounts.outOfStock} ` : ""}sem estoque
+                </button>
               </div>
               {/* Sort */}
               <div className="flex items-center gap-0.5">
