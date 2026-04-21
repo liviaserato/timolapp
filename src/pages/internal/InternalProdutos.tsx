@@ -490,7 +490,9 @@ export default function InternalProdutos() {
       if (selectedCategory && p.category !== selectedCategory) return false;
       if (selectedSubcategory && p.subcategory !== selectedSubcategory) return false;
       if (onlyActivatable && !p.activatable) return false;
-      if (onlyInStock && !p.inStock) return false;
+      // Stock filter: at least one of the two pills must be on (UI guarantees that)
+      if (p.inStock && !showInStock) return false;
+      if (!p.inStock && !showOutOfStock) return false;
       return true;
     });
 
@@ -503,34 +505,40 @@ export default function InternalProdutos() {
       return sortDir === "asc" ? cmp : -cmp;
     });
     return sorted;
-  }, [searchTerm, selectedCategory, selectedSubcategory, onlyActivatable, onlyInStock, sortBy, sortDir]);
+  }, [searchTerm, selectedCategory, selectedSubcategory, onlyActivatable, showInStock, showOutOfStock, sortBy, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
+  /* Stock counts (respect search/category filters but ignore the pills themselves) */
+  const stockCounts = useMemo(() => {
+    const base = mockProducts.filter(p => {
+      if (searchTerm) {
+        const q = norm(searchTerm);
+        if (!norm(p.name).includes(q) && !norm(p.id).includes(q)) return false;
+      }
+      if (selectedCategory && p.category !== selectedCategory) return false;
+      if (selectedSubcategory && p.subcategory !== selectedSubcategory) return false;
+      if (onlyActivatable && !p.activatable) return false;
+      return true;
+    });
+    return {
+      inStock: base.filter(p => p.inStock).length,
+      outOfStock: base.filter(p => !p.inStock).length,
+    };
+  }, [searchTerm, selectedCategory, selectedSubcategory, onlyActivatable]);
 
   const clearFilters = () => {
     setSearchTerm("");
     setSelectedCategory("");
     setSelectedSubcategory("");
     setOnlyActivatable(false);
-    setOnlyInStock(false);
+    setShowInStock(true);
+    setShowOutOfStock(true);
     setPage(1);
   };
 
-  const hasFilters = !!searchTerm || !!selectedCategory || !!selectedSubcategory || onlyActivatable || onlyInStock;
-
-  /** Build dynamic filter description (excluding "apenas ativáveis") */
-  const filterDescription = useMemo(() => {
-    const parts: string[] = [];
-    if (searchTerm.trim()) parts.push(`Busca: "${searchTerm.trim()}"`);
-    if (selectedCategory) {
-      const cat = categories.find(c => c.id === selectedCategory);
-      if (cat) parts.push(`Categoria: ${cat.name}`);
-    }
-    if (selectedSubcategory) parts.push(`Subcategoria: ${selectedSubcategory}`);
-    if (onlyInStock) parts.push("Apenas em estoque");
-    return parts;
-  }, [searchTerm, selectedCategory, selectedSubcategory, onlyInStock]);
+  const hasFilters = !!searchTerm || !!selectedCategory || !!selectedSubcategory || onlyActivatable;
 
   return (
     <div className="space-y-6 pb-10">
