@@ -5,9 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   BarChart3, Package, ChevronRight, ChevronLeft, Info,
-  Trophy, Users, AlertTriangle, RotateCcw, PackageX,
-  TrendingUp, Layers,
+  Sparkles, Users, AlertTriangle, PackageX,
+  Layers,
 } from "lucide-react";
+
+/* ════════════════════════════════════════
+   Sylocimol — flagship product line.
+   In production, this list will be provided by the user/backend.
+   ════════════════════════════════════════ */
+const SYLOCIMOL_PRODUCT_IDS = new Set<string>(["p1", "p2"]);
 import { products as mockProducts, categories } from "@/data/mock-products";
 
 /* ════════════════════════════════════════
@@ -191,16 +197,13 @@ export default function ProductReportsTab() {
 
   const topCategory = salesByCategory[0]?.label ?? "—";
 
-  /* Best growth product (vs prev period) */
-  const bestGrowth = useMemo(() => {
-    const ranked = salesInPeriod
-      .map(s => {
-        const p = mockProducts.find(p => p.id === s.productId);
-        const growthPct = s.prevPeriodUnits > 0 ? Math.round(((s.unitsSold - s.prevPeriodUnits) / s.prevPeriodUnits) * 100) : 0;
-        return { name: p?.name ?? "—", growthPct };
-      })
-      .sort((a, b) => b.growthPct - a.growthPct);
-    return ranked[0];
+  /* Sylocimol — flagship product family stats */
+  const sylocimolStats = useMemo(() => {
+    const matching = salesInPeriod.filter(s => SYLOCIMOL_PRODUCT_IDS.has(s.productId));
+    const current = matching.reduce((sum, s) => sum + s.unitsSold, 0);
+    const previous = matching.reduce((sum, s) => sum + s.prevPeriodUnits, 0);
+    const growthPct = previous > 0 ? Math.round(((current - previous) / previous) * 100) : (current > 0 ? 100 : 0);
+    return { current, previous, growthPct };
   }, [salesInPeriod]);
 
   /* Stale product — longest without selling */
@@ -272,9 +275,9 @@ export default function ProductReportsTab() {
 
             {/* Column 1: Produtos Vendidos */}
             <div className="flex flex-col gap-3">
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-start">
                 <div className="flex items-center justify-center gap-1.5 mb-2">
-                  <Package className="h-4 w-4 text-primary" />
+                  <Package className="h-4 w-4 text-primary shrink-0" />
                   <span className="text-xs font-semibold text-foreground">Produtos Vendidos</span>
                   <Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>
@@ -285,16 +288,18 @@ export default function ProductReportsTab() {
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <div className="flex items-center justify-center gap-4">
-                  <span className="text-3xl font-bold text-foreground">{totalSold}</span>
-                  <div className="flex flex-col items-center">
-                    <span className="text-[10px] text-primary/70 leading-tight">vs período anterior</span>
-                    <span className={`text-sm font-semibold leading-tight ${growth >= 0 ? "text-emerald-600" : "text-red-500"}`}>
-                      {growth >= 0 ? "+" : ""}{growth}%
-                    </span>
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="flex items-center justify-center gap-4">
+                    <span className="text-3xl font-bold text-foreground">{totalSold}</span>
+                    <div className="flex flex-col items-center">
+                      <span className="text-[10px] text-primary/70 leading-tight">vs período anterior</span>
+                      <span className={`text-sm font-semibold leading-tight ${growth >= 0 ? "text-emerald-600" : "text-red-500"}`}>
+                        {growth >= 0 ? "+" : ""}{growth}%
+                      </span>
+                    </div>
                   </div>
+                  <p className="text-[11px] text-muted-foreground mt-1 text-center">unidades comercializadas</p>
                 </div>
-                <p className="text-[11px] text-muted-foreground mt-1 text-center">unidades comercializadas</p>
               </div>
               <div className="space-y-1.5 px-2">
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
@@ -309,24 +314,32 @@ export default function ProductReportsTab() {
               </div>
             </div>
 
-            {/* Column 2: Top 5 Produtos */}
+            {/* Column 2: Sylocimol (linha campeã) */}
             <div className="flex flex-col gap-3">
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1">
-                      <Trophy className="h-4 w-4 text-primary shrink-0" />
-                      <span>Categoria Líder</span>
-                      <Info className="h-3 w-3 text-muted-foreground shrink-0" />
-                    </h3>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="max-w-[240px] text-xs">
-                    Categoria com maior número de unidades vendidas no período.
-                  </TooltipContent>
-                </Tooltip>
-                <div className="flex flex-col items-center justify-center">
-                  <span className="text-base font-bold text-foreground text-center">{topCategory}</span>
-                  <span className="text-[10px] text-muted-foreground mt-0.5">{salesByCategory[0]?.count ?? 0} unidades</span>
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-start">
+                <div className="flex items-center justify-center gap-1.5 mb-2">
+                  <Sparkles className="h-4 w-4 text-primary shrink-0" />
+                  <span className="text-xs font-semibold text-foreground">Sylocimol Vendidos</span>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-[240px] text-xs">
+                      Total de unidades vendidas da linha Sylocimol (produto chefe) no período, comparado ao período anterior.
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="flex items-center justify-center gap-4">
+                    <span className="text-3xl font-bold text-foreground">{sylocimolStats.current}</span>
+                    <div className="flex flex-col items-center">
+                      <span className="text-[10px] text-primary/70 leading-tight">vs período anterior</span>
+                      <span className={`text-sm font-semibold leading-tight ${sylocimolStats.growthPct >= 0 ? "text-emerald-600" : "text-red-500"}`}>
+                        {sylocimolStats.growthPct >= 0 ? "+" : ""}{sylocimolStats.growthPct}%
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-1 text-center">{sylocimolStats.previous} no período anterior</p>
                 </div>
               </div>
               <div className="space-y-1.5 px-2">
@@ -341,22 +354,24 @@ export default function ProductReportsTab() {
 
             {/* Column 3: Top 5 Franqueados */}
             <div className="flex flex-col gap-3">
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <h3 className="text-xs font-semibold text-foreground text-center mb-2 cursor-help flex items-center justify-center gap-1">
-                      <Users className="h-4 w-4 text-primary shrink-0" />
-                      <span>Franqueados Vendendo</span>
-                      <Info className="h-3 w-3 text-muted-foreground shrink-0" />
-                    </h3>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="max-w-[240px] text-xs">
-                    Quantidade de franqueados que efetuaram ao menos uma venda no período.
-                  </TooltipContent>
-                </Tooltip>
-                <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-3xl font-bold text-foreground">{topFranchisees.length > 0 ? new Set(topFranchisees.map(f => f.id)).size : 0}</span>
-                  <span className="text-xs text-muted-foreground">franqueados</span>
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-start">
+                <div className="flex items-center justify-center gap-1.5 mb-2">
+                  <Users className="h-4 w-4 text-primary shrink-0" />
+                  <span className="text-xs font-semibold text-foreground">Franqueados Vendendo</span>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-[240px] text-xs">
+                      Quantidade de franqueados que efetuaram ao menos uma venda no período.
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-3xl font-bold text-foreground">{topFranchisees.length > 0 ? new Set(topFranchisees.map(f => f.id)).size : 0}</span>
+                    <span className="text-xs text-muted-foreground">franqueados</span>
+                  </div>
                 </div>
               </div>
               <div className="space-y-1.5 px-2">
@@ -371,9 +386,9 @@ export default function ProductReportsTab() {
 
             {/* Column 4: Saúde do Catálogo */}
             <div className="flex flex-col gap-3">
-              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-center">
+              <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-start">
                 <div className="flex items-center justify-center gap-1.5 mb-2">
-                  <AlertTriangle className="h-4 w-4 text-primary" />
+                  <AlertTriangle className="h-4 w-4 text-primary shrink-0" />
                   <span className="text-xs font-semibold text-foreground">Atenção no Catálogo</span>
                   <Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>
@@ -384,14 +399,16 @@ export default function ProductReportsTab() {
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <div className="flex items-center justify-center gap-4">
-                  <div className="text-center">
-                    <span className="text-3xl font-bold text-red-500">{outOfStockCount}</span>
-                    <p className="text-[11px] text-muted-foreground">sem estoque</p>
-                  </div>
-                  <div className="text-center">
-                    <span className="text-3xl font-bold text-amber-500">{lowStockCount}</span>
-                    <p className="text-[11px] text-muted-foreground">estoque baixo</p>
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="flex items-center justify-center gap-4">
+                    <div className="text-center">
+                      <span className="text-3xl font-bold text-destructive">{outOfStockCount}</span>
+                      <p className="text-[11px] text-muted-foreground">sem estoque</p>
+                    </div>
+                    <div className="text-center">
+                      <span className="text-3xl font-bold text-amber-500">{lowStockCount}</span>
+                      <p className="text-[11px] text-muted-foreground">estoque baixo</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -411,13 +428,14 @@ export default function ProductReportsTab() {
           </div>
 
           {/* Footer insights */}
-          {staleProduct && (
-            <p className="text-[11px] text-muted-foreground/70 pt-2 border-t border-app-card-border">
-              <strong className="text-muted-foreground">Produto encalhado:</strong> {staleProduct.name} — última venda em{" "}
-              {new Date(staleProduct.lastSoldAt).toLocaleDateString(dateLocale)}.{" "}
-              <strong className="text-muted-foreground">Maior crescimento:</strong> {bestGrowth?.name} (+{bestGrowth?.growthPct}%).
-            </p>
-          )}
+          <p className="text-[11px] text-muted-foreground/70 pt-2 border-t border-app-card-border">
+            No período selecionado, {totalReturned} {totalReturned === 1 ? "item foi devolvido" : "itens foram devolvidos"}
+            {totalSold > 0 && <> ({returnRate}% do total vendido)</>}.
+            {staleProduct && (
+              <> {" "}<strong className="text-muted-foreground">Produto encalhado:</strong> {staleProduct.name} — última venda em{" "}
+              {new Date(staleProduct.lastSoldAt).toLocaleDateString(dateLocale)}.</>
+            )}
+          </p>
         </div>
       </DashboardCard>
     </div>
