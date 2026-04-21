@@ -582,11 +582,6 @@ export default function InternalProdutos() {
               <Switch checked={onlyActivatable} onCheckedChange={v => { setOnlyActivatable(v); setPage(1); }} className="scale-75 origin-left" />
               <span className="text-xs text-muted-foreground">Apenas produtos ativáveis</span>
             </div>
-
-            <div className="flex items-center gap-2">
-              <Switch checked={onlyInStock} onCheckedChange={v => { setOnlyInStock(v); setPage(1); }} className="scale-75 origin-left" />
-              <span className="text-xs text-muted-foreground">Apenas produtos em estoque</span>
-            </div>
           </div>
 
           {/* Right column: categories + subcategories */}
