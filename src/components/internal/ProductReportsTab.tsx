@@ -442,7 +442,7 @@ export default function ProductReportsTab() {
                     <span className="text-3xl font-bold text-foreground">{topFranchisees.length > 0 ? new Set(topFranchisees.map(f => f.id)).size : 0}</span>
                     <span className="text-xs text-muted-foreground">/ {TOTAL_ACTIVE_FRANCHISEES} ativos</span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground mt-1 text-center">franqueados com vendas no período</p>
+                  
                 </div>
               </div>
               <div className="space-y-1.5 px-2">
