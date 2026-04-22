@@ -251,7 +251,8 @@ export function UnilevelTab({ searchQuery }: Props) {
       if (e.key === "Escape") {
         e.preventDefault();
         setSearchId("");
-        setSortMode("");
+        setSortField("");
+        setSortDir("neutral");
         if (document.activeElement instanceof HTMLElement) {
           document.activeElement.blur();
         }
@@ -421,19 +422,16 @@ export function UnilevelTab({ searchQuery }: Props) {
 
           {/* Sort + View toggle */}
           <div className="flex items-center gap-2 shrink-0">
-            <Select value={sortMode || undefined} onValueChange={(v) => setSortMode(v as SortMode)}>
-              <SelectTrigger className="h-8 text-[11px] w-[140px]">
-                <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
-                <SelectValue placeholder="Classificar" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="default" className="text-xs">Ativos primeiro</SelectItem>
-                <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
-                <SelectItem value="qualification" className="text-xs">Maior qualificação</SelectItem>
-                <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
-                <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
-              </SelectContent>
-            </Select>
+            <SortControl
+              field={sortField}
+              dir={sortDir}
+              onFieldChange={(f) => {
+                setSortField(f);
+                if (sortDir === "neutral") setSortDir("desc");
+              }}
+              onDirChange={setSortDir}
+              width="w-[140px]"
+            />
 
             <div className="flex rounded-md border border-input overflow-hidden h-8">
               <button
@@ -495,19 +493,16 @@ export function UnilevelTab({ searchQuery }: Props) {
           </div>
 
           <div className="flex items-center gap-2">
-            <Select value={sortMode || undefined} onValueChange={(v) => setSortMode(v as SortMode)}>
-              <SelectTrigger className="h-8 text-[11px] w-[130px]">
-                <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
-                <SelectValue placeholder="Classificar" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="default" className="text-xs">Ativos primeiro</SelectItem>
-                <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
-                <SelectItem value="qualification" className="text-xs">Maior qualificação</SelectItem>
-                <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
-                <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
-              </SelectContent>
-            </Select>
+            <SortControl
+              field={sortField}
+              dir={sortDir}
+              onFieldChange={(f) => {
+                setSortField(f);
+                if (sortDir === "neutral") setSortDir("desc");
+              }}
+              onDirChange={setSortDir}
+              width="w-[130px]"
+            />
 
             <div className="flex rounded-md border border-input overflow-hidden h-8">
               <button
