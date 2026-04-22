@@ -22,7 +22,18 @@ const CONN_COLOR = "hsl(var(--border))";
 const CONN_W = 1.5;
 
 /* ── Sort ── */
-type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status" | "qualification";
+type SortMode =
+  | "default"
+  | "points"
+  | "points_asc"
+  | "date_newest"
+  | "date_oldest"
+  | "status"
+  | "status_inactive_first"
+  | "qualification"
+  | "qualification_asc"
+  | "name_asc"
+  | "name_desc";
 
 const QUALIFICATION_ORDER: Record<string, number> = {
   consultor: 0, distribuidor: 1, lider: 2, rubi: 3, esmeralda: 4,
@@ -32,7 +43,8 @@ const QUALIFICATION_ORDER: Record<string, number> = {
 
 function sortNodes(nodes: UnilevelNode[], mode: SortMode): UnilevelNode[] {
   const sorted = [...nodes];
-  // Always push inactive to the end, then apply the chosen sort within each group
+  // For "status_inactive_first", invert the active grouping
+  const inactiveFirst = mode === "status_inactive_first";
   const activeNodes = sorted.filter(n => n.active);
   const inactiveNodes = sorted.filter(n => !n.active);
 
@@ -40,20 +52,31 @@ function sortNodes(nodes: UnilevelNode[], mode: SortMode): UnilevelNode[] {
     switch (mode) {
       case "points":
         return arr.sort((a, b) => b.volume - a.volume);
+      case "points_asc":
+        return arr.sort((a, b) => a.volume - b.volume);
       case "date_newest":
         return arr.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
       case "date_oldest":
         return arr.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
       case "qualification":
         return arr.sort((a, b) => (QUALIFICATION_ORDER[b.qualification] ?? 0) - (QUALIFICATION_ORDER[a.qualification] ?? 0));
+      case "qualification_asc":
+        return arr.sort((a, b) => (QUALIFICATION_ORDER[a.qualification] ?? 0) - (QUALIFICATION_ORDER[b.qualification] ?? 0));
+      case "name_asc":
+        return arr.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+      case "name_desc":
+        return arr.sort((a, b) => b.name.localeCompare(a.name, "pt-BR"));
       case "status":
+      case "status_inactive_first":
       case "default":
       default:
         return arr.sort((a, b) => b.volume - a.volume);
     }
   };
 
-  return [...applySortWithin(activeNodes), ...applySortWithin(inactiveNodes)];
+  return inactiveFirst
+    ? [...applySortWithin(inactiveNodes), ...applySortWithin(activeNodes)]
+    : [...applySortWithin(activeNodes), ...applySortWithin(inactiveNodes)];
 }
 
 /* ── Tree helpers ── */
