@@ -3,11 +3,19 @@ import { DashboardCard } from "@/components/app/DashboardCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import {
   BarChart3, Package, ChevronRight, ChevronLeft, Info,
   Sparkles, Users, AlertTriangle, PackageX,
-  Layers,
+  Layers, Download,
 } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
+/* Mock — total active franchisees in the period.
+   In production, comes from the backend. */
+const TOTAL_ACTIVE_FRANCHISEES = 47;
 
 /* ════════════════════════════════════════
    Sylocimol — flagship product line.
@@ -217,6 +225,59 @@ export default function ProductReportsTab() {
     return p ? { name: p.name, lastSoldAt: stale.lastSoldAt } : null;
   }, [salesInPeriod]);
 
+  /* All sold products in the period — sorted desc */
+  const allSoldProducts = useMemo(() => {
+    return salesInPeriod
+      .slice()
+      .sort((a, b) => b.unitsSold - a.unitsSold)
+      .map(s => {
+        const p = mockProducts.find(p => p.id === s.productId);
+        return { id: s.productId, name: p?.name ?? "—", units: s.unitsSold, returned: s.unitsReturned };
+      });
+  }, [salesInPeriod]);
+
+  /* Products without any sales in the period */
+  const productsWithoutSales = useMemo(() => {
+    const soldIds = new Set(salesInPeriod.map(s => s.productId));
+    return mockProducts.filter(p => !soldIds.has(p.id));
+  }, [salesInPeriod]);
+
+  /* Period label for popup subtitle / PDF */
+  const periodLabel = useMemo(() => {
+    if (dateFilterMode === "month") return getMonthLabel(monthRef, dateLocale);
+    if (dateFilterMode === "custom") {
+      const f = dateFrom ? new Date(dateFrom + "T00:00:00").toLocaleDateString(dateLocale) : "—";
+      const t = dateTo ? new Date(dateTo + "T00:00:00").toLocaleDateString(dateLocale) : "—";
+      return `${f} até ${t}`;
+    }
+    return "Todos os períodos";
+  }, [dateFilterMode, monthRef, dateFrom, dateTo]);
+
+  /* Dialog states */
+  const [showAllSoldDialog, setShowAllSoldDialog] = useState(false);
+  const [showWithoutSalesDialog, setShowWithoutSalesDialog] = useState(false);
+
+  /* PDF download — A4 portrait, all columns fit on the same page */
+  function downloadPdf(opts: { title: string; head: string[]; body: (string | number)[][]; }) {
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    doc.setFontSize(14);
+    doc.text(opts.title, 14, 16);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Período: ${periodLabel}`, 14, 22);
+    autoTable(doc, {
+      head: [opts.head],
+      body: opts.body,
+      startY: 28,
+      styles: { fontSize: 9, cellPadding: 2, overflow: "linebreak" },
+      headStyles: { fillColor: [0, 56, 133], textColor: 255 },
+      tableWidth: "auto",
+      margin: { left: 10, right: 10 },
+    });
+    const safeName = opts.title.toLowerCase().replace(/[^\w]+/g, "-").replace(/^-|-$/g, "");
+    doc.save(`${safeName}-${new Date().toISOString().slice(0, 10)}.pdf`);
+  }
+
   return (
     <div className="space-y-4">
       <DashboardCard icon={BarChart3} title="Indicadores de Produtos">
@@ -352,6 +413,15 @@ export default function ProductReportsTab() {
                   barColorClass="bg-primary/50"
                   labelWidth="w-[120px]"
                 />
+                {allSoldProducts.length > 5 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllSoldDialog(true)}
+                    className="text-[11px] text-muted-foreground hover:text-primary underline underline-offset-2 transition-colors"
+                  >
+                    Ver Todos ({allSoldProducts.length})
+                  </button>
+                )}
               </div>
             </div>
 
@@ -366,15 +436,16 @@ export default function ProductReportsTab() {
                       <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
                     </TooltipTrigger>
                     <TooltipContent side="bottom" className="max-w-[240px] text-xs">
-                      Quantidade de franqueados que efetuaram ao menos uma venda no período.
+                      Quantidade de franqueados que efetuaram ao menos uma venda no período, em relação ao total de franqueados ativos no mesmo período.
                     </TooltipContent>
                   </Tooltip>
                 </div>
                 <div className="flex-1 flex flex-col justify-center">
                   <div className="flex items-baseline justify-center gap-1">
                     <span className="text-3xl font-bold text-foreground">{topFranchisees.length > 0 ? new Set(topFranchisees.map(f => f.id)).size : 0}</span>
-                    <span className="text-xs text-muted-foreground">franqueados</span>
+                    <span className="text-xs text-muted-foreground">/ {TOTAL_ACTIVE_FRANCHISEES} ativos</span>
                   </div>
+                  <p className="text-[11px] text-muted-foreground mt-1 text-center">franqueados com vendas no período</p>
                 </div>
               </div>
               <div className="space-y-1.5 px-2">
@@ -416,15 +487,29 @@ export default function ProductReportsTab() {
                 </div>
               </div>
               <div className="space-y-1.5 px-2">
-                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Indicadores Operacionais</h4>
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between py-1 px-2 rounded bg-muted/40">
-                    <div className="flex items-center gap-1.5">
-                      <PackageX className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">Sem venda no período</span>
+                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Produtos sem venda no período</h4>
+                <div className="space-y-1">
+                  {productsWithoutSales.slice(0, 5).map(p => (
+                    <div key={p.id} className="flex items-center justify-between py-1 px-2 rounded bg-muted/40">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <PackageX className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        <span className="text-xs text-muted-foreground truncate" title={p.name}>{p.name}</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-muted-foreground/70 shrink-0 ml-2">{p.id.toUpperCase()}</span>
                     </div>
-                    <span className="text-xs font-semibold tabular-nums">{inactiveCount} <span className="text-muted-foreground/70 font-normal">/ {totalCatalog}</span></span>
-                  </div>
+                  ))}
+                  {productsWithoutSales.length === 0 && (
+                    <p className="text-[11px] text-muted-foreground italic px-2">Todos os produtos tiveram vendas.</p>
+                  )}
+                  {productsWithoutSales.length > 5 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowWithoutSalesDialog(true)}
+                      className="text-[11px] text-muted-foreground hover:text-primary underline underline-offset-2 transition-colors px-2"
+                    >
+                      Ver Todos ({productsWithoutSales.length})
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -441,6 +526,114 @@ export default function ProductReportsTab() {
           </p>
         </div>
       </DashboardCard>
+
+      {/* Dialog: Todos os produtos vendidos no período */}
+      <Dialog open={showAllSoldDialog} onOpenChange={setShowAllSoldDialog}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader className="pr-10">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <DialogTitle>Produtos vendidos no período</DialogTitle>
+                <p className="text-xs text-muted-foreground mt-1">{periodLabel}</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="absolute right-12 top-4 h-8 gap-1.5"
+                onClick={() => downloadPdf({
+                  title: "Produtos vendidos no período",
+                  head: ["Código", "Produto", "Vendidos", "Devolvidos"],
+                  body: allSoldProducts.map(p => [p.id.toUpperCase(), p.name, p.units, p.returned]),
+                })}
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span className="text-xs">PDF</span>
+              </Button>
+            </div>
+          </DialogHeader>
+          <div className="overflow-auto -mx-6 px-6">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="h-9 text-xs">Código</TableHead>
+                  <TableHead className="h-9 text-xs">Produto</TableHead>
+                  <TableHead className="h-9 text-xs text-right">Vendidos</TableHead>
+                  <TableHead className="h-9 text-xs text-right">Devolvidos</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {allSoldProducts.map(p => (
+                  <TableRow key={p.id}>
+                    <TableCell className="py-2 text-xs font-mono">{p.id.toUpperCase()}</TableCell>
+                    <TableCell className="py-2 text-xs">{p.name}</TableCell>
+                    <TableCell className="py-2 text-xs text-right tabular-nums">{p.units}</TableCell>
+                    <TableCell className="py-2 text-xs text-right tabular-nums">{p.returned}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: Produtos sem venda no período */}
+      <Dialog open={showWithoutSalesDialog} onOpenChange={setShowWithoutSalesDialog}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader className="pr-10">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <DialogTitle>Produtos sem venda no período</DialogTitle>
+                <p className="text-xs text-muted-foreground mt-1">{periodLabel}</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="absolute right-12 top-4 h-8 gap-1.5"
+                onClick={() => downloadPdf({
+                  title: "Produtos sem venda no período",
+                  head: ["Código", "Produto", "Categoria", "Estoque"],
+                  body: productsWithoutSales.map(p => {
+                    const cat = categories.find(c => c.id === p.category);
+                    return [p.id.toUpperCase(), p.name, cat?.name ?? "—", p.inStock ? "Em estoque" : "Sem estoque"];
+                  }),
+                })}
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span className="text-xs">PDF</span>
+              </Button>
+            </div>
+          </DialogHeader>
+          <div className="overflow-auto -mx-6 px-6">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="h-9 text-xs">Código</TableHead>
+                  <TableHead className="h-9 text-xs">Produto</TableHead>
+                  <TableHead className="h-9 text-xs">Categoria</TableHead>
+                  <TableHead className="h-9 text-xs">Estoque</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {productsWithoutSales.map(p => {
+                  const cat = categories.find(c => c.id === p.category);
+                  return (
+                    <TableRow key={p.id}>
+                      <TableCell className="py-2 text-xs font-mono">{p.id.toUpperCase()}</TableCell>
+                      <TableCell className="py-2 text-xs">{p.name}</TableCell>
+                      <TableCell className="py-2 text-xs text-muted-foreground">{cat?.name ?? "—"}</TableCell>
+                      <TableCell className="py-2 text-xs">
+                        <span className={p.inStock ? "text-emerald-600" : "text-destructive"}>
+                          {p.inStock ? "Em estoque" : "Sem estoque"}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
