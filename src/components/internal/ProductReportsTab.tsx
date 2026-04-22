@@ -487,15 +487,29 @@ export default function ProductReportsTab() {
                 </div>
               </div>
               <div className="space-y-1.5 px-2">
-                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Indicadores Operacionais</h4>
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between py-1 px-2 rounded bg-muted/40">
-                    <div className="flex items-center gap-1.5">
-                      <PackageX className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">Sem venda no período</span>
+                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Produtos sem venda no período</h4>
+                <div className="space-y-1">
+                  {productsWithoutSales.slice(0, 5).map(p => (
+                    <div key={p.id} className="flex items-center justify-between py-1 px-2 rounded bg-muted/40">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <PackageX className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        <span className="text-xs text-muted-foreground truncate" title={p.name}>{p.name}</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-muted-foreground/70 shrink-0 ml-2">{p.id.toUpperCase()}</span>
                     </div>
-                    <span className="text-xs font-semibold tabular-nums">{inactiveCount} <span className="text-muted-foreground/70 font-normal">/ {totalCatalog}</span></span>
-                  </div>
+                  ))}
+                  {productsWithoutSales.length === 0 && (
+                    <p className="text-[11px] text-muted-foreground italic px-2">Todos os produtos tiveram vendas.</p>
+                  )}
+                  {productsWithoutSales.length > 5 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowWithoutSalesDialog(true)}
+                      className="text-[11px] text-muted-foreground hover:text-primary underline underline-offset-2 transition-colors px-2"
+                    >
+                      Ver Todos ({productsWithoutSales.length})
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
