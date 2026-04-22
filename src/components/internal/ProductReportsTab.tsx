@@ -413,6 +413,15 @@ export default function ProductReportsTab() {
                   barColorClass="bg-primary/50"
                   labelWidth="w-[120px]"
                 />
+                {allSoldProducts.length > 5 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllSoldDialog(true)}
+                    className="text-[11px] text-muted-foreground hover:text-primary underline underline-offset-2 transition-colors"
+                  >
+                    Ver Todos ({allSoldProducts.length})
+                  </button>
+                )}
               </div>
             </div>
 
