@@ -92,34 +92,31 @@ function getMonthRange(date: Date): { from: string; to: string } {
   return { from: new Date(y, m, 1).toISOString().slice(0, 10), to: new Date(y, m + 1, 0).toISOString().slice(0, 10) };
 }
 
-/* ── Horizontal bar chart (same pattern used in RegistrationReportsTab) ── */
+/* ── Compact list (label + count, no bars) ── */
 function HBarChart({
   items,
-  barColorClass = "bg-primary/60",
   labelWidth = "w-14",
 }: {
   items: { label: string; count: number; extra?: string; tooltip?: string }[];
   barColorClass?: string;
   labelWidth?: string;
 }) {
-  const max = Math.max(...items.map(i => i.count), 1);
   return (
-    <div className="space-y-1.5">
-      {items.map(({ label, count, extra, tooltip }) => {
-        const pct = Math.round((count / max) * 100);
-        return (
-          <div key={label} className="flex items-center gap-2" title={tooltip} aria-label={tooltip}>
-            <span className={`text-xs ${labelWidth} shrink-0 text-muted-foreground truncate`}>
-              {extra && <span className="mr-1 font-mono text-[10px] text-muted-foreground/80">{extra}</span>}
-              {label}
-            </span>
-            <div className="flex-1 h-4 bg-muted rounded overflow-hidden">
-              <div className={`h-full rounded ${barColorClass} transition-all`} style={{ width: `${Math.max(pct, count > 0 ? 6 : 0)}%` }} />
-            </div>
-            <span className="text-xs font-semibold w-10 text-right tabular-nums">{count}</span>
-          </div>
-        );
-      })}
+    <div className="space-y-1">
+      {items.map(({ label, count, extra, tooltip }) => (
+        <div
+          key={label}
+          className="flex items-center justify-between gap-2 py-1 px-2 rounded bg-muted/40"
+          title={tooltip}
+          aria-label={tooltip}
+        >
+          <span className={`text-xs ${labelWidth} flex-1 min-w-0 text-muted-foreground truncate`}>
+            {extra && <span className="mr-1 font-mono text-[10px] text-muted-foreground/80">{extra}</span>}
+            {label}
+          </span>
+          <span className="text-xs font-semibold tabular-nums shrink-0">{count}</span>
+        </div>
+      ))}
       {items.length === 0 && <p className="text-xs text-muted-foreground italic">—</p>}
     </div>
   );
