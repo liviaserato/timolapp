@@ -91,7 +91,9 @@ export function UnilevelTab({ searchQuery }: Props) {
   const [selectedMember, setSelectedMember] = useState<NetworkMember | null>(null);
   const [bonusModalOpen, setBonusModalOpen] = useState(false);
   const [searchId, setSearchId] = useState("");
-  const [sortMode, setSortMode] = useState<SortMode | "">("");
+  const [sortField, setSortField] = useState<SortField | "">("");
+  const [sortDir, setSortDir] = useState<SortDir>("neutral");
+  const sortMode: LegacySortMode = toLegacySortMode(sortField, sortDir);
   const [filterMode, setFilterMode] = useState<FilterMode>("month");
   const [monthRef, setMonthRef] = useState(() => new Date(2026, 2, 1));
   const [periodStart, setPeriodStart] = useState("");
@@ -126,7 +128,7 @@ export function UnilevelTab({ searchQuery }: Props) {
         (m) => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q)
       );
     }
-    return sortMembers(result, (sortMode || "default") as SortMode);
+    return sortMembers(result, sortMode);
   }, [allMembers, searchId, searchQuery, sortMode]);
 
   // List mode: by_level or by_direct
@@ -184,7 +186,7 @@ export function UnilevelTab({ searchQuery }: Props) {
         (m) => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q)
       );
     }
-    return sortMembers(filtered, (sortMode || "default") as SortMode);
+    return sortMembers(filtered, sortMode);
   }, [listMode, selectedDirectId, maxLevel, searchId, searchQuery, sortMode]);
 
   // Group by level for "by_direct" mode
