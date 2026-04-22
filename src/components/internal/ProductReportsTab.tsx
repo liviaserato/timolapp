@@ -484,7 +484,7 @@ export default function ProductReportsTab() {
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">PRODUTOS SEM VENDA</h4>
                 <div className="space-y-1">
                   {productsWithoutSales.slice(0, 5).map(p => (
-                    <div key={p.id} className="flex items-center justify-between gap-2 py-1 px-2 rounded bg-muted/40">
+                    <div key={p.id} className="flex items-center justify-between gap-2 h-7 px-2 rounded bg-muted/40">
                       <div className="flex items-center gap-1.5 min-w-0 flex-1">
                         <PackageX className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="text-xs text-muted-foreground truncate" title={p.name}>{p.name}</span>
