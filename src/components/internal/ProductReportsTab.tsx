@@ -440,9 +440,9 @@ export default function ProductReportsTab() {
                 <div className="flex-1 flex flex-col justify-center">
                   <div className="flex items-baseline justify-center gap-1">
                     <span className="text-3xl font-bold text-foreground">{topFranchisees.length > 0 ? new Set(topFranchisees.map(f => f.id)).size : 0}</span>
-                    <span className="text-xs text-muted-foreground">/ {TOTAL_ACTIVE_FRANCHISEES} ativos</span>
+                    <span className="text-xs text-muted-foreground">/ {TOTAL_ACTIVE_FRANCHISEES}</span>
                   </div>
-                  
+                  <p className="text-[11px] text-muted-foreground mt-1 text-center">ativos no período</p>
                 </div>
               </div>
               <div className="space-y-1.5 px-2">
