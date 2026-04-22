@@ -383,10 +383,7 @@ export default function ProductReportsTab() {
                       <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
                     </TooltipTrigger>
                     <TooltipContent side="bottom" className="max-w-[240px] text-xs">
-                      <div className="space-y-1">
-                        <p>Total de unidades vendidas da linha Sylocimol no período, comparado ao período anterior.</p>
-                        <p>Total de unidades vendidas da linha Sylocimol (produto chefe) no período, comparado ao período anterior.</p>
-                      </div>
+                      <p>Total de unidades vendidas da linha Sylocimol no período, comparado ao período anterior.</p>
                     </TooltipContent>
                   </Tooltip>
                 </div>
