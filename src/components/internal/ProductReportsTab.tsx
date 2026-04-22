@@ -427,7 +427,7 @@ export default function ProductReportsTab() {
               <div className="rounded-lg border border-app-card-border bg-muted/30 p-3 min-h-[120px] flex flex-col justify-start">
                 <div className="flex items-center justify-center gap-1.5 mb-2">
                   <Users className="h-4 w-4 text-primary shrink-0" />
-                  <span className="text-xs font-semibold text-foreground">Franqueados Vendendo</span>
+                  <span className="text-xs font-semibold text-foreground">Franqueados Comprando</span>
                   <Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>
                       <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
