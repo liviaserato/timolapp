@@ -436,15 +436,16 @@ export default function ProductReportsTab() {
                       <button type="button" className="inline-flex cursor-help"><Info className="h-3 w-3 text-muted-foreground" /></button>
                     </TooltipTrigger>
                     <TooltipContent side="bottom" className="max-w-[240px] text-xs">
-                      Quantidade de franqueados que efetuaram ao menos uma venda no período.
+                      Quantidade de franqueados que efetuaram ao menos uma venda no período, em relação ao total de franqueados ativos no mesmo período.
                     </TooltipContent>
                   </Tooltip>
                 </div>
                 <div className="flex-1 flex flex-col justify-center">
                   <div className="flex items-baseline justify-center gap-1">
                     <span className="text-3xl font-bold text-foreground">{topFranchisees.length > 0 ? new Set(topFranchisees.map(f => f.id)).size : 0}</span>
-                    <span className="text-xs text-muted-foreground">franqueados</span>
+                    <span className="text-xs text-muted-foreground">/ {TOTAL_ACTIVE_FRANCHISEES} ativos</span>
                   </div>
+                  <p className="text-[11px] text-muted-foreground mt-1 text-center">franqueados com vendas no período</p>
                 </div>
               </div>
               <div className="space-y-1.5 px-2">
