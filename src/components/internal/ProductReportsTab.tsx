@@ -526,6 +526,114 @@ export default function ProductReportsTab() {
           </p>
         </div>
       </DashboardCard>
+
+      {/* Dialog: Todos os produtos vendidos no período */}
+      <Dialog open={showAllSoldDialog} onOpenChange={setShowAllSoldDialog}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader className="pr-10">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <DialogTitle>Produtos vendidos no período</DialogTitle>
+                <p className="text-xs text-muted-foreground mt-1">{periodLabel}</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="absolute right-12 top-4 h-8 gap-1.5"
+                onClick={() => downloadPdf({
+                  title: "Produtos vendidos no período",
+                  head: ["Código", "Produto", "Vendidos", "Devolvidos"],
+                  body: allSoldProducts.map(p => [p.id.toUpperCase(), p.name, p.units, p.returned]),
+                })}
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span className="text-xs">PDF</span>
+              </Button>
+            </div>
+          </DialogHeader>
+          <div className="overflow-auto -mx-6 px-6">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="h-9 text-xs">Código</TableHead>
+                  <TableHead className="h-9 text-xs">Produto</TableHead>
+                  <TableHead className="h-9 text-xs text-right">Vendidos</TableHead>
+                  <TableHead className="h-9 text-xs text-right">Devolvidos</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {allSoldProducts.map(p => (
+                  <TableRow key={p.id}>
+                    <TableCell className="py-2 text-xs font-mono">{p.id.toUpperCase()}</TableCell>
+                    <TableCell className="py-2 text-xs">{p.name}</TableCell>
+                    <TableCell className="py-2 text-xs text-right tabular-nums">{p.units}</TableCell>
+                    <TableCell className="py-2 text-xs text-right tabular-nums">{p.returned}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: Produtos sem venda no período */}
+      <Dialog open={showWithoutSalesDialog} onOpenChange={setShowWithoutSalesDialog}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader className="pr-10">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <DialogTitle>Produtos sem venda no período</DialogTitle>
+                <p className="text-xs text-muted-foreground mt-1">{periodLabel}</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="absolute right-12 top-4 h-8 gap-1.5"
+                onClick={() => downloadPdf({
+                  title: "Produtos sem venda no período",
+                  head: ["Código", "Produto", "Categoria", "Estoque"],
+                  body: productsWithoutSales.map(p => {
+                    const cat = categories.find(c => c.id === p.category);
+                    return [p.id.toUpperCase(), p.name, cat?.name ?? "—", p.inStock ? "Em estoque" : "Sem estoque"];
+                  }),
+                })}
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span className="text-xs">PDF</span>
+              </Button>
+            </div>
+          </DialogHeader>
+          <div className="overflow-auto -mx-6 px-6">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="h-9 text-xs">Código</TableHead>
+                  <TableHead className="h-9 text-xs">Produto</TableHead>
+                  <TableHead className="h-9 text-xs">Categoria</TableHead>
+                  <TableHead className="h-9 text-xs">Estoque</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {productsWithoutSales.map(p => {
+                  const cat = categories.find(c => c.id === p.category);
+                  return (
+                    <TableRow key={p.id}>
+                      <TableCell className="py-2 text-xs font-mono">{p.id.toUpperCase()}</TableCell>
+                      <TableCell className="py-2 text-xs">{p.name}</TableCell>
+                      <TableCell className="py-2 text-xs text-muted-foreground">{cat?.name ?? "—"}</TableCell>
+                      <TableCell className="py-2 text-xs">
+                        <span className={p.inStock ? "text-emerald-600" : "text-destructive"}>
+                          {p.inStock ? "Em estoque" : "Sem estoque"}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
