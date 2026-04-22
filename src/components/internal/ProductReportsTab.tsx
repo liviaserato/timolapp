@@ -106,7 +106,7 @@ function HBarChart({
       {items.map(({ label, count, extra, tooltip }) => (
         <div
           key={label}
-          className="flex items-center justify-between gap-2 py-1 px-2 rounded bg-muted/40"
+          className="flex items-center justify-between gap-2 h-7 px-2 rounded bg-muted/40"
           title={tooltip}
           aria-label={tooltip}
         >
