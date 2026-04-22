@@ -29,25 +29,36 @@ function findNodeById(node: NetworkMember | null | undefined, id: string): Netwo
   return findNodeById(node.left, id) || findNodeById(node.right, id);
 }
 
-type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status" | "qualification";
+import { SortControl, SortField, SortDir, toLegacySortMode, LegacySortMode } from "./SortControl";
 
 const qualificationRank: Record<string, number> = {
   consultor: 0, distribuidor: 1, lider: 2, rubi: 3, esmeralda: 4, diamante: 5,
 };
 
-function sortMembers(members: NetworkMember[], mode: SortMode): NetworkMember[] {
+function sortMembers(members: NetworkMember[], mode: LegacySortMode): NetworkMember[] {
   const sorted = [...members];
   switch (mode) {
     case "points":
       return sorted.sort((a, b) => b.volume - a.volume);
+    case "points_asc":
+      return sorted.sort((a, b) => a.volume - b.volume);
     case "date_newest":
       return sorted.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
     case "date_oldest":
       return sorted.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
+    case "name_asc":
+      return sorted.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+    case "name_desc":
+      return sorted.sort((a, b) => b.name.localeCompare(a.name, "pt-BR"));
     case "status":
       return sorted.sort((a, b) => {
         if (a.active === b.active) return b.volume - a.volume;
         return a.active ? -1 : 1;
+      });
+    case "status_inactive_first":
+      return sorted.sort((a, b) => {
+        if (a.active === b.active) return b.volume - a.volume;
+        return a.active ? 1 : -1;
       });
     case "qualification":
       return sorted.sort((a, b) => {
@@ -55,6 +66,13 @@ function sortMembers(members: NetworkMember[], mode: SortMode): NetworkMember[] 
         const rB = qualificationRank[b.qualification] ?? 0;
         if (rB !== rA) return rB - rA;
         return b.volume - a.volume;
+      });
+    case "qualification_asc":
+      return sorted.sort((a, b) => {
+        const rA = qualificationRank[a.qualification] ?? 0;
+        const rB = qualificationRank[b.qualification] ?? 0;
+        if (rA !== rB) return rA - rB;
+        return a.volume - b.volume;
       });
     default:
       return sorted.sort((a, b) => {
