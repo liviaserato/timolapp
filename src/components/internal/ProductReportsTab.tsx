@@ -487,12 +487,12 @@ export default function ProductReportsTab() {
                 <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Produtos sem venda no período</h4>
                 <div className="space-y-1">
                   {productsWithoutSales.slice(0, 5).map(p => (
-                    <div key={p.id} className="flex items-center justify-between gap-2 py-1 px-2 rounded bg-muted/40">
-                      <span className="text-xs text-muted-foreground flex-1 min-w-0 truncate" title={p.name}>
-                        <span className="mr-1 font-mono text-[10px] text-muted-foreground/80">{p.id.toUpperCase()}</span>
-                        {p.name}
-                      </span>
-                      <PackageX className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                    <div key={p.id} className="flex items-center justify-between py-1 px-2 rounded bg-muted/40">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <PackageX className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        <span className="text-xs text-muted-foreground truncate" title={p.name}>{p.name}</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-muted-foreground/70 shrink-0 ml-2">{p.id.toUpperCase()}</span>
                     </div>
                   ))}
                   {productsWithoutSales.length === 0 && (
