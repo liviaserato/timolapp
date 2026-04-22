@@ -3,11 +3,19 @@ import { DashboardCard } from "@/components/app/DashboardCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import {
   BarChart3, Package, ChevronRight, ChevronLeft, Info,
   Sparkles, Users, AlertTriangle, PackageX,
-  Layers,
+  Layers, Download,
 } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
+/* Mock — total active franchisees in the period.
+   In production, comes from the backend. */
+const TOTAL_ACTIVE_FRANCHISEES = 47;
 
 /* ════════════════════════════════════════
    Sylocimol — flagship product line.
