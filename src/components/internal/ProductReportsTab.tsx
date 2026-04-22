@@ -484,7 +484,7 @@ export default function ProductReportsTab() {
                 </div>
               </div>
               <div className="space-y-1.5 px-2">
-                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Produtos sem venda no período</h4>
+                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">PRODUTOS SEM VENDA</h4>
                 <div className="space-y-1">
                   {productsWithoutSales.slice(0, 5).map(p => (
                     <div key={p.id} className="flex items-center justify-between gap-2 py-1 px-2 rounded bg-muted/40">
