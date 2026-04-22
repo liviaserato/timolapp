@@ -678,14 +678,14 @@ export default function InternalProdutos() {
         <>
           {/* Results context header — same pattern as Cadastros */}
           <div className="space-y-1.5 px-1">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2">
                 <h2 className="font-semibold text-foreground text-lg">{hasFilters ? "Resultado da Busca" : "Catálogo Completo"}</h2>
                 <span className="text-xs text-muted-foreground">
                   ({filtered.length} {filtered.length === 1 ? "produto encontrado" : "produtos encontrados"})
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 {/* Stock pills — clickable filters + counts */}
                 <button
                   onClick={() => { if (showInStock && !showOutOfStock) return; setShowInStock(v => !v); setPage(1); }}
