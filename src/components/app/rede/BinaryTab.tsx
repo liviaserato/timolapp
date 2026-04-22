@@ -145,7 +145,8 @@ export function BinaryTab() {
     setNavHistory([]);
     setRootId(mockBinaryTree.id);
     setSearchId("");
-    setSortMode("");
+    setSortField("");
+    setSortDir("neutral");
   }
 
   // ESC key resets to logged-in franchise
@@ -253,7 +254,16 @@ export function BinaryTab() {
                 </button>
               )}
             </div>
-            <SortSelector value={sortMode} onChange={setSortMode} />
+            <SortControl
+              field={sortField}
+              dir={sortDir}
+              onFieldChange={(f) => {
+                setSortField(f);
+                if (sortDir === "neutral") setSortDir("desc");
+              }}
+              onDirChange={setSortDir}
+              width="w-full"
+            />
           </div>
 
           {/* Tables — stacked on mobile, side by side on sm+ */}
@@ -354,23 +364,6 @@ function SearchInput({ value, onChange, onKeyDown, inputRef }: { value: string; 
   );
 }
 
-function SortSelector({ value, onChange }: { value: SortMode | ""; onChange: (v: SortMode) => void }) {
-  return (
-    <Select value={value || undefined} onValueChange={(v) => onChange(v as SortMode)}>
-      <SelectTrigger className="h-8 text-[11px] w-full">
-        <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
-        <SelectValue placeholder="Classificar" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
-        <SelectItem value="status" className="text-xs">Ativos primeiro</SelectItem>
-        <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
-        <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
-        <SelectItem value="qualification" className="text-xs">Maior qualificação</SelectItem>
-      </SelectContent>
-    </Select>
-  );
-}
 
 function LegTable({ title, members, onNavigate }: { title: string; members: NetworkMember[]; onNavigate: (id: string) => void }) {
   return (
