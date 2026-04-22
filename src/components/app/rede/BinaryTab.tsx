@@ -90,7 +90,9 @@ export function BinaryTab() {
   const [navHistory, setNavHistory] = useState<string[]>([]);
   const [bonusModalOpen, setBonusModalOpen] = useState(false);
   const [searchId, setSearchId] = useState("");
-  const [sortMode, setSortMode] = useState<SortMode | "">("");
+  const [sortField, setSortField] = useState<SortField | "">("");
+  const [sortDir, setSortDir] = useState<SortDir>("neutral");
+  const sortMode: LegacySortMode = toLegacySortMode(sortField, sortDir);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const currentRoot = findNodeById(mockBinaryTree, rootId) ?? mockBinaryTree;
