@@ -29,25 +29,36 @@ function findNodeById(node: NetworkMember | null | undefined, id: string): Netwo
   return findNodeById(node.left, id) || findNodeById(node.right, id);
 }
 
-type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status" | "qualification";
+import { SortControl, SortField, SortDir, toLegacySortMode, LegacySortMode } from "./SortControl";
 
 const qualificationRank: Record<string, number> = {
   consultor: 0, distribuidor: 1, lider: 2, rubi: 3, esmeralda: 4, diamante: 5,
 };
 
-function sortMembers(members: NetworkMember[], mode: SortMode): NetworkMember[] {
+function sortMembers(members: NetworkMember[], mode: LegacySortMode): NetworkMember[] {
   const sorted = [...members];
   switch (mode) {
     case "points":
       return sorted.sort((a, b) => b.volume - a.volume);
+    case "points_asc":
+      return sorted.sort((a, b) => a.volume - b.volume);
     case "date_newest":
       return sorted.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
     case "date_oldest":
       return sorted.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
+    case "name_asc":
+      return sorted.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+    case "name_desc":
+      return sorted.sort((a, b) => b.name.localeCompare(a.name, "pt-BR"));
     case "status":
       return sorted.sort((a, b) => {
         if (a.active === b.active) return b.volume - a.volume;
         return a.active ? -1 : 1;
+      });
+    case "status_inactive_first":
+      return sorted.sort((a, b) => {
+        if (a.active === b.active) return b.volume - a.volume;
+        return a.active ? 1 : -1;
       });
     case "qualification":
       return sorted.sort((a, b) => {
@@ -55,6 +66,13 @@ function sortMembers(members: NetworkMember[], mode: SortMode): NetworkMember[] 
         const rB = qualificationRank[b.qualification] ?? 0;
         if (rB !== rA) return rB - rA;
         return b.volume - a.volume;
+      });
+    case "qualification_asc":
+      return sorted.sort((a, b) => {
+        const rA = qualificationRank[a.qualification] ?? 0;
+        const rB = qualificationRank[b.qualification] ?? 0;
+        if (rA !== rB) return rA - rB;
+        return a.volume - b.volume;
       });
     default:
       return sorted.sort((a, b) => {
@@ -72,7 +90,9 @@ export function BinaryTab() {
   const [navHistory, setNavHistory] = useState<string[]>([]);
   const [bonusModalOpen, setBonusModalOpen] = useState(false);
   const [searchId, setSearchId] = useState("");
-  const [sortMode, setSortMode] = useState<SortMode | "">("");
+  const [sortField, setSortField] = useState<SortField | "">("");
+  const [sortDir, setSortDir] = useState<SortDir>("neutral");
+  const sortMode: LegacySortMode = toLegacySortMode(sortField, sortDir);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const currentRoot = findNodeById(mockBinaryTree, rootId) ?? mockBinaryTree;
@@ -125,7 +145,8 @@ export function BinaryTab() {
     setNavHistory([]);
     setRootId(mockBinaryTree.id);
     setSearchId("");
-    setSortMode("");
+    setSortField("");
+    setSortDir("neutral");
   }
 
   // ESC key resets to logged-in franchise
@@ -233,7 +254,16 @@ export function BinaryTab() {
                 </button>
               )}
             </div>
-            <SortSelector value={sortMode} onChange={setSortMode} />
+            <SortControl
+              field={sortField}
+              dir={sortDir}
+              onFieldChange={(f) => {
+                setSortField(f);
+                if (sortDir === "neutral") setSortDir("desc");
+              }}
+              onDirChange={setSortDir}
+              width="w-full"
+            />
           </div>
 
           {/* Tables — stacked on mobile, side by side on sm+ */}
@@ -334,23 +364,6 @@ function SearchInput({ value, onChange, onKeyDown, inputRef }: { value: string; 
   );
 }
 
-function SortSelector({ value, onChange }: { value: SortMode | ""; onChange: (v: SortMode) => void }) {
-  return (
-    <Select value={value || undefined} onValueChange={(v) => onChange(v as SortMode)}>
-      <SelectTrigger className="h-8 text-[11px] w-full">
-        <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
-        <SelectValue placeholder="Classificar" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
-        <SelectItem value="status" className="text-xs">Ativos primeiro</SelectItem>
-        <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
-        <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
-        <SelectItem value="qualification" className="text-xs">Maior qualificação</SelectItem>
-      </SelectContent>
-    </Select>
-  );
-}
 
 function LegTable({ title, members, onNavigate }: { title: string; members: NetworkMember[]; onNavigate: (id: string) => void }) {
   return (

@@ -25,25 +25,41 @@ import { BonusRedeCard } from "./BonusRedeCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 /* ── Sort ── */
-type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status" | "qualification";
+import { SortControl, SortField, SortDir, toLegacySortMode, LegacySortMode } from "./SortControl";
+
 type ListMode = "by_level" | "by_direct";
 
 const qualificationRank: Record<string, number> = {
   consultor: 0, distribuidor: 1, lider: 2, rubi: 3, esmeralda: 4, diamante: 5,
 };
 
-function sortMembers(members: FlatUnilevelMember[], mode: SortMode): FlatUnilevelMember[] {
+function sortMembers(members: FlatUnilevelMember[], mode: LegacySortMode): FlatUnilevelMember[] {
   const sorted = [...members];
   switch (mode) {
     case "points":
       return sorted.sort((a, b) => b.volume - a.volume);
+    case "points_asc":
+      return sorted.sort((a, b) => a.volume - b.volume);
     case "date_newest":
       return sorted.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
     case "date_oldest":
       return sorted.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
     case "qualification":
       return sorted.sort((a, b) => (qualificationRank[b.qualification] ?? 0) - (qualificationRank[a.qualification] ?? 0));
+    case "qualification_asc":
+      return sorted.sort((a, b) => (qualificationRank[a.qualification] ?? 0) - (qualificationRank[b.qualification] ?? 0));
+    case "name_asc":
+      return sorted.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+    case "name_desc":
+      return sorted.sort((a, b) => b.name.localeCompare(a.name, "pt-BR"));
+    case "status_inactive_first":
+      return sorted.sort((a, b) => {
+        if (a.active !== b.active) return a.active ? 1 : -1;
+        if (b.volume !== a.volume) return b.volume - a.volume;
+        return (qualificationRank[b.qualification] ?? 0) - (qualificationRank[a.qualification] ?? 0);
+      });
     case "status":
+    case "default":
     default:
       return sorted.sort((a, b) => {
         // Active first
@@ -75,7 +91,9 @@ export function UnilevelTab({ searchQuery }: Props) {
   const [selectedMember, setSelectedMember] = useState<NetworkMember | null>(null);
   const [bonusModalOpen, setBonusModalOpen] = useState(false);
   const [searchId, setSearchId] = useState("");
-  const [sortMode, setSortMode] = useState<SortMode | "">("");
+  const [sortField, setSortField] = useState<SortField | "">("");
+  const [sortDir, setSortDir] = useState<SortDir>("neutral");
+  const sortMode: LegacySortMode = toLegacySortMode(sortField, sortDir);
   const [filterMode, setFilterMode] = useState<FilterMode>("month");
   const [monthRef, setMonthRef] = useState(() => new Date(2026, 2, 1));
   const [periodStart, setPeriodStart] = useState("");
@@ -110,7 +128,7 @@ export function UnilevelTab({ searchQuery }: Props) {
         (m) => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q)
       );
     }
-    return sortMembers(result, (sortMode || "default") as SortMode);
+    return sortMembers(result, sortMode);
   }, [allMembers, searchId, searchQuery, sortMode]);
 
   // List mode: by_level or by_direct
@@ -168,7 +186,7 @@ export function UnilevelTab({ searchQuery }: Props) {
         (m) => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q)
       );
     }
-    return sortMembers(filtered, (sortMode || "default") as SortMode);
+    return sortMembers(filtered, sortMode);
   }, [listMode, selectedDirectId, maxLevel, searchId, searchQuery, sortMode]);
 
   // Group by level for "by_direct" mode
@@ -233,7 +251,8 @@ export function UnilevelTab({ searchQuery }: Props) {
       if (e.key === "Escape") {
         e.preventDefault();
         setSearchId("");
-        setSortMode("");
+        setSortField("");
+        setSortDir("neutral");
         if (document.activeElement instanceof HTMLElement) {
           document.activeElement.blur();
         }
@@ -403,19 +422,16 @@ export function UnilevelTab({ searchQuery }: Props) {
 
           {/* Sort + View toggle */}
           <div className="flex items-center gap-2 shrink-0">
-            <Select value={sortMode || undefined} onValueChange={(v) => setSortMode(v as SortMode)}>
-              <SelectTrigger className="h-8 text-[11px] w-[140px]">
-                <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
-                <SelectValue placeholder="Classificar" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="default" className="text-xs">Ativos primeiro</SelectItem>
-                <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
-                <SelectItem value="qualification" className="text-xs">Maior qualificação</SelectItem>
-                <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
-                <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
-              </SelectContent>
-            </Select>
+            <SortControl
+              field={sortField}
+              dir={sortDir}
+              onFieldChange={(f) => {
+                setSortField(f);
+                if (sortDir === "neutral") setSortDir("desc");
+              }}
+              onDirChange={setSortDir}
+              width="w-[140px]"
+            />
 
             <div className="flex rounded-md border border-input overflow-hidden h-8">
               <button
@@ -477,19 +493,16 @@ export function UnilevelTab({ searchQuery }: Props) {
           </div>
 
           <div className="flex items-center gap-2">
-            <Select value={sortMode || undefined} onValueChange={(v) => setSortMode(v as SortMode)}>
-              <SelectTrigger className="h-8 text-[11px] w-[130px]">
-                <ArrowUpDown className="h-3 w-3 mr-1 text-muted-foreground" />
-                <SelectValue placeholder="Classificar" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="default" className="text-xs">Ativos primeiro</SelectItem>
-                <SelectItem value="points" className="text-xs">Maior pontuação</SelectItem>
-                <SelectItem value="qualification" className="text-xs">Maior qualificação</SelectItem>
-                <SelectItem value="date_newest" className="text-xs">Mais recentes</SelectItem>
-                <SelectItem value="date_oldest" className="text-xs">Mais antigos</SelectItem>
-              </SelectContent>
-            </Select>
+            <SortControl
+              field={sortField}
+              dir={sortDir}
+              onFieldChange={(f) => {
+                setSortField(f);
+                if (sortDir === "neutral") setSortDir("desc");
+              }}
+              onDirChange={setSortDir}
+              width="w-[130px]"
+            />
 
             <div className="flex rounded-md border border-input overflow-hidden h-8">
               <button
