@@ -225,6 +225,59 @@ export default function ProductReportsTab() {
     return p ? { name: p.name, lastSoldAt: stale.lastSoldAt } : null;
   }, [salesInPeriod]);
 
+  /* All sold products in the period — sorted desc */
+  const allSoldProducts = useMemo(() => {
+    return salesInPeriod
+      .slice()
+      .sort((a, b) => b.unitsSold - a.unitsSold)
+      .map(s => {
+        const p = mockProducts.find(p => p.id === s.productId);
+        return { id: s.productId, name: p?.name ?? "—", units: s.unitsSold, returned: s.unitsReturned };
+      });
+  }, [salesInPeriod]);
+
+  /* Products without any sales in the period */
+  const productsWithoutSales = useMemo(() => {
+    const soldIds = new Set(salesInPeriod.map(s => s.productId));
+    return mockProducts.filter(p => !soldIds.has(p.id));
+  }, [salesInPeriod]);
+
+  /* Period label for popup subtitle / PDF */
+  const periodLabel = useMemo(() => {
+    if (dateFilterMode === "month") return getMonthLabel(monthRef, dateLocale);
+    if (dateFilterMode === "custom") {
+      const f = dateFrom ? new Date(dateFrom + "T00:00:00").toLocaleDateString(dateLocale) : "—";
+      const t = dateTo ? new Date(dateTo + "T00:00:00").toLocaleDateString(dateLocale) : "—";
+      return `${f} até ${t}`;
+    }
+    return "Todos os períodos";
+  }, [dateFilterMode, monthRef, dateFrom, dateTo]);
+
+  /* Dialog states */
+  const [showAllSoldDialog, setShowAllSoldDialog] = useState(false);
+  const [showWithoutSalesDialog, setShowWithoutSalesDialog] = useState(false);
+
+  /* PDF download — A4 portrait, all columns fit on the same page */
+  function downloadPdf(opts: { title: string; head: string[]; body: (string | number)[][]; }) {
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    doc.setFontSize(14);
+    doc.text(opts.title, 14, 16);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Período: ${periodLabel}`, 14, 22);
+    autoTable(doc, {
+      head: [opts.head],
+      body: opts.body,
+      startY: 28,
+      styles: { fontSize: 9, cellPadding: 2, overflow: "linebreak" },
+      headStyles: { fillColor: [0, 56, 133], textColor: 255 },
+      tableWidth: "auto",
+      margin: { left: 10, right: 10 },
+    });
+    const safeName = opts.title.toLowerCase().replace(/[^\w]+/g, "-").replace(/^-|-$/g, "");
+    doc.save(`${safeName}-${new Date().toISOString().slice(0, 10)}.pdf`);
+  }
+
   return (
     <div className="space-y-4">
       <DashboardCard icon={BarChart3} title="Indicadores de Produtos">
