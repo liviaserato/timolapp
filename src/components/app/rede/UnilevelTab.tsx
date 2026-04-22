@@ -25,25 +25,41 @@ import { BonusRedeCard } from "./BonusRedeCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 /* ── Sort ── */
-type SortMode = "default" | "points" | "date_newest" | "date_oldest" | "status" | "qualification";
+import { SortControl, SortField, SortDir, toLegacySortMode, LegacySortMode } from "./SortControl";
+
 type ListMode = "by_level" | "by_direct";
 
 const qualificationRank: Record<string, number> = {
   consultor: 0, distribuidor: 1, lider: 2, rubi: 3, esmeralda: 4, diamante: 5,
 };
 
-function sortMembers(members: FlatUnilevelMember[], mode: SortMode): FlatUnilevelMember[] {
+function sortMembers(members: FlatUnilevelMember[], mode: LegacySortMode): FlatUnilevelMember[] {
   const sorted = [...members];
   switch (mode) {
     case "points":
       return sorted.sort((a, b) => b.volume - a.volume);
+    case "points_asc":
+      return sorted.sort((a, b) => a.volume - b.volume);
     case "date_newest":
       return sorted.sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
     case "date_oldest":
       return sorted.sort((a, b) => new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime());
     case "qualification":
       return sorted.sort((a, b) => (qualificationRank[b.qualification] ?? 0) - (qualificationRank[a.qualification] ?? 0));
+    case "qualification_asc":
+      return sorted.sort((a, b) => (qualificationRank[a.qualification] ?? 0) - (qualificationRank[b.qualification] ?? 0));
+    case "name_asc":
+      return sorted.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+    case "name_desc":
+      return sorted.sort((a, b) => b.name.localeCompare(a.name, "pt-BR"));
+    case "status_inactive_first":
+      return sorted.sort((a, b) => {
+        if (a.active !== b.active) return a.active ? 1 : -1;
+        if (b.volume !== a.volume) return b.volume - a.volume;
+        return (qualificationRank[b.qualification] ?? 0) - (qualificationRank[a.qualification] ?? 0);
+      });
     case "status":
+    case "default":
     default:
       return sorted.sort((a, b) => {
         // Active first
