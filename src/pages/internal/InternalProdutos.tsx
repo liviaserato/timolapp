@@ -914,7 +914,7 @@ export default function InternalProdutos() {
                 <table className="w-full text-sm table-fixed">
                   <thead className="bg-muted/50 text-muted-foreground">
                     <tr className="text-left">
-                      <th className="px-1.5 lg:px-3 py-2 font-medium whitespace-nowrap text-xs lg:text-sm w-px">Código</th>
+                      <th className="px-1.5 lg:px-3 py-2 font-medium whitespace-nowrap text-xs lg:text-sm w-1">Código</th>
                       <th className="px-1.5 lg:px-3 py-2 font-medium text-xs lg:text-sm">Produto</th>
                       <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[56px] lg:w-[70px] hidden lg:table-cell">Pontos</th>
                       <th className="pl-1 lg:pl-3 pr-8 lg:pr-12 py-2 font-medium text-right whitespace-nowrap text-xs lg:text-sm w-[110px] lg:w-[140px] hidden lg:table-cell" colSpan={2}>Valor</th>
@@ -941,7 +941,7 @@ export default function InternalProdutos() {
                       const price = splitCurrency(p.price);
                       return (
                         <tr key={p.id} className="group border-t border-border hover:bg-primary/10 transition-colors">
-                          <td className="px-1.5 lg:px-3 py-2 font-mono text-[11px] lg:text-xs text-muted-foreground whitespace-nowrap">
+                          <td className="px-1.5 lg:px-3 py-2 font-mono text-[11px] lg:text-xs text-muted-foreground whitespace-nowrap w-1">
                             <span className="inline-flex items-center gap-1.5 lg:gap-2">
                               <span
                                 className={cn("h-2 w-2 rounded-full shrink-0", statusColor)}
