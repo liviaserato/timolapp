@@ -1002,6 +1002,7 @@ export default function InternalProdutos() {
               <Button
                 variant="outline"
                 size="sm"
+                className="h-8"
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
               >
@@ -1013,6 +1014,7 @@ export default function InternalProdutos() {
               <Button
                 variant="outline"
                 size="sm"
+                className="h-8"
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
               >
