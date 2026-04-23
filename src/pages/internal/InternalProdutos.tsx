@@ -941,7 +941,7 @@ export default function InternalProdutos() {
                       const price = splitCurrency(p.price);
                       return (
                         <tr key={p.id} className="group border-t border-border hover:bg-primary/10 transition-colors">
-                          <td className="px-1.5 lg:px-3 py-2 font-mono text-[11px] lg:text-xs text-muted-foreground whitespace-nowrap">
+                          <td className="px-1.5 lg:px-3 py-2 font-mono text-[11px] lg:text-xs text-muted-foreground whitespace-nowrap w-1">
                             <span className="inline-flex items-center gap-1.5 lg:gap-2">
                               <span
                                 className={cn("h-2 w-2 rounded-full shrink-0", statusColor)}
