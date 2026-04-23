@@ -712,31 +712,37 @@ export default function InternalProdutos() {
 
               {/* Right cluster: stock pills + sort. On mobile, takes full width with each item flex-1 */}
               <div className="flex flex-nowrap items-center justify-end gap-1 sm:gap-2 ml-auto min-w-0 w-full sm:w-auto">
-                {/* Stock pills */}
-                <div className="flex items-center gap-1 sm:gap-2 flex-1 sm:flex-initial sm:shrink-0">
+                {/* Stock pills — mobile: only dot + count; sm+: full label */}
+                <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                   <button
                     onClick={() => { if (showInStock && !showOutOfStock) return; setShowInStock(v => !v); setPage(1); }}
+                    title={showInStock ? `${stockCounts.inStock} em estoque` : "Mostrar em estoque"}
+                    aria-label={showInStock ? `${stockCounts.inStock} em estoque` : "Mostrar em estoque"}
                     className={cn(
-                      "inline-flex items-center justify-center gap-1 rounded-full px-1.5 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all border whitespace-nowrap flex-1 sm:flex-initial",
+                      "inline-flex items-center justify-center gap-1 rounded-full px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all border whitespace-nowrap",
                       showInStock
                         ? "bg-emerald-100 text-emerald-700 border-emerald-300 shadow-sm"
                         : "bg-transparent text-emerald-600/70 border-transparent hover:bg-emerald-50 hover:border-emerald-200"
                     )}
                   >
                     <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", showInStock ? "bg-emerald-500" : "bg-emerald-400/50")} />
-                    {showInStock ? `${stockCounts.inStock} ` : ""}em estoque
+                    {showInStock ? `${stockCounts.inStock}` : ""}
+                    <span className="hidden sm:inline">{showInStock ? " em estoque" : "em estoque"}</span>
                   </button>
                   <button
                     onClick={() => { if (showOutOfStock && !showInStock) return; setShowOutOfStock(v => !v); setPage(1); }}
+                    title={showOutOfStock ? `${stockCounts.outOfStock} sem estoque` : "Mostrar sem estoque"}
+                    aria-label={showOutOfStock ? `${stockCounts.outOfStock} sem estoque` : "Mostrar sem estoque"}
                     className={cn(
-                      "inline-flex items-center justify-center gap-1 rounded-full px-1.5 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all border whitespace-nowrap flex-1 sm:flex-initial",
+                      "inline-flex items-center justify-center gap-1 rounded-full px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all border whitespace-nowrap",
                       showOutOfStock
                         ? "bg-red-100 text-red-700 border-red-300 shadow-sm"
                         : "bg-transparent text-red-500/70 border-transparent hover:bg-red-50 hover:border-red-200"
                     )}
                   >
                     <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", showOutOfStock ? "bg-red-500" : "bg-red-400/50")} />
-                    {showOutOfStock ? `${stockCounts.outOfStock} ` : ""}sem estoque
+                    {showOutOfStock ? `${stockCounts.outOfStock}` : ""}
+                    <span className="hidden sm:inline">{showOutOfStock ? " sem estoque" : "sem estoque"}</span>
                   </button>
                 </div>
 
