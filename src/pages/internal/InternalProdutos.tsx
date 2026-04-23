@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect, useLayoutEffect } from "react";
 import { cn } from "@/lib/utils";
 
 import { Input } from "@/components/ui/input";
@@ -58,20 +58,104 @@ const LANGUAGES = [
   { id: "es", label: "Español", flag: "🇪🇸" },
 ];
 
+// Field labels translated per language (pt = base, en/es shown on the right column)
+const FIELD_LABELS: Record<string, Record<string, string>> = {
+  pt: {
+    name: "Nome do produto",
+    description: "Descrição",
+    benefits: "Benefícios",
+    instructions: "Instruções de uso",
+    warranty: "Garantia",
+    composition: "Composição",
+    manufacturer: "Fabricante",
+  },
+  en: {
+    name: "Product name",
+    description: "Description",
+    benefits: "Benefits",
+    instructions: "Instructions for use",
+    warranty: "Warranty",
+    composition: "Composition",
+    manufacturer: "Manufacturer",
+  },
+  es: {
+    name: "Nombre del producto",
+    description: "Descripción",
+    benefits: "Beneficios",
+    instructions: "Instrucciones de uso",
+    warranty: "Garantía",
+    composition: "Composición",
+    manufacturer: "Fabricante",
+  },
+};
+
 const ALWAYS_VISIBLE_FIELDS = [
-  { key: "name", label: "Nome do produto", type: "input" as const },
-  { key: "description", label: "Descrição", type: "textarea" as const },
+  { key: "name", type: "input" as const },
+  { key: "description", type: "textarea" as const },
 ];
 
 const COLLAPSIBLE_FIELDS = [
-  { key: "benefits", label: "Benefícios", type: "textarea" as const },
-  { key: "instructions", label: "Instruções de uso", type: "textarea" as const },
-  { key: "warranty", label: "Garantia", type: "textarea" as const },
-  { key: "composition", label: "Composição", type: "textarea" as const },
-  { key: "manufacturer", label: "Fabricante", type: "textarea" as const },
+  { key: "benefits", type: "textarea" as const },
+  { key: "instructions", type: "textarea" as const },
+  { key: "warranty", type: "textarea" as const },
+  { key: "composition", type: "textarea" as const },
+  { key: "manufacturer", type: "textarea" as const },
 ];
 
 const ALL_ML_FIELDS = [...ALWAYS_VISIBLE_FIELDS, ...COLLAPSIBLE_FIELDS];
+
+/* ── Synced-height textarea pair ──
+ * Renders two textareas side-by-side and keeps both at the same height
+ * (the max of their natural content heights). */
+function SyncedTextareaPair({
+  leftValue, rightValue,
+  onLeftChange, onRightChange,
+  leftPlaceholder, rightPlaceholder,
+  minRows = 3,
+}: {
+  leftValue: string;
+  rightValue: string;
+  onLeftChange: (v: string) => void;
+  onRightChange: (v: string) => void;
+  leftPlaceholder?: string;
+  rightPlaceholder?: string;
+  minRows?: number;
+}) {
+  const leftRef = useRef<HTMLTextAreaElement>(null);
+  const rightRef = useRef<HTMLTextAreaElement>(null);
+
+  useLayoutEffect(() => {
+    const l = leftRef.current;
+    const r = rightRef.current;
+    if (!l || !r) return;
+    l.style.height = "auto";
+    r.style.height = "auto";
+    const max = Math.max(l.scrollHeight, r.scrollHeight);
+    l.style.height = `${max}px`;
+    r.style.height = `${max}px`;
+  }, [leftValue, rightValue]);
+
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      <Textarea
+        ref={leftRef}
+        rows={minRows}
+        value={leftValue}
+        onChange={e => onLeftChange(e.target.value)}
+        placeholder={leftPlaceholder}
+        className="resize-none overflow-hidden"
+      />
+      <Textarea
+        ref={rightRef}
+        rows={minRows}
+        value={rightValue}
+        onChange={e => onRightChange(e.target.value)}
+        placeholder={rightPlaceholder}
+        className="resize-none overflow-hidden"
+      />
+    </div>
+  );
+}
 
 /* ── Helpers ── */
 function norm(s: string) { return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
