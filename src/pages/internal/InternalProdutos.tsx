@@ -1567,7 +1567,7 @@ export default function InternalProdutos() {
                               variant="ghost"
                               size="sm"
                               className="h-7 px-1.5 lg:px-2 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
-                              onClick={() => toast.info(`Editar ${p.name}`)}
+                              onClick={() => { setEditingProduct(p); setDialogOpen(true); }}
                               title={`Editar ${p.name}`}
                               aria-label={`Editar ${p.name}`}
                             >
