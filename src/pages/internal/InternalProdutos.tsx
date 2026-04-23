@@ -138,7 +138,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
     });
     return init;
   });
-  const [priceCurrencyTab, setPriceCurrencyTab] = useState("BRL");
+  
 
   const [activatable, setActivatable] = useState(false);
   const [activationDays, setActivationDays] = useState("30");
@@ -439,7 +439,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
               <Label className="text-sm font-semibold">Produto Ativável</Label>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <Switch checked={activatable} onCheckedChange={setActivatable} />
+                  <Switch checked={activatable} onCheckedChange={setActivatable} className="scale-75" />
                   <span className="text-sm text-muted-foreground">{activatable ? "Sim" : "Não"}</span>
                 </div>
                 {activatable && (
@@ -517,12 +517,32 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             {/* ── Actions ── */}
             <div className="flex justify-end gap-3 pt-2 border-t">
               <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-              <Button onClick={handleSave}>Salvar Produto</Button>
+              <Button onClick={handleSave}>Salvar</Button>
             </div>
           </div>
         </ScrollArea>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog open={confirmCloseOpen} onOpenChange={setConfirmCloseOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Alterações não salvas</AlertDialogTitle>
+          <AlertDialogDescription>
+            Você fez alterações que ainda não foram salvas. Deseja realmente sair? As alterações serão perdidas.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Continuar editando</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => { setConfirmCloseOpen(false); onOpenChange(false); }}
+          >
+            Sair sem salvar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
 
