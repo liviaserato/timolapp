@@ -523,18 +523,25 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                         </div>
                       </div>
                       {f.type === "input" ? (
-                        <div className="grid grid-cols-2 gap-3">
-                          <Input
-                            value={multilingualData.pt[f.key]}
-                            onChange={e => updateML("pt", f.key, e.target.value)}
-                            placeholder={ptLabel}
-                          />
-                          <Input
-                            value={multilingualData[secondaryLang][f.key]}
-                            onChange={e => updateML(secondaryLang, f.key, e.target.value)}
-                            placeholder={secLabel}
-                          />
-                        </div>
+                        <>
+                          <div className="grid grid-cols-2 gap-3">
+                            <Input
+                              value={multilingualData.pt[f.key]}
+                              onChange={e => { updateML("pt", f.key, e.target.value); if (f.key === "name") clearError("name"); }}
+                              placeholder={ptLabel}
+                              className={f.key === "name" && errors.name ? "border-destructive focus-visible:ring-destructive" : undefined}
+                              aria-invalid={f.key === "name" && !!errors.name}
+                            />
+                            <Input
+                              value={multilingualData[secondaryLang][f.key]}
+                              onChange={e => updateML(secondaryLang, f.key, e.target.value)}
+                              placeholder={secLabel}
+                            />
+                          </div>
+                          {f.key === "name" && errors.name && (
+                            <p className="text-xs text-destructive">{errors.name}</p>
+                          )}
+                        </>
                       ) : (
                         <SyncedTextareaPair
                           leftValue={multilingualData.pt[f.key]}
