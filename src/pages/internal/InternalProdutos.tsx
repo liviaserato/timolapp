@@ -734,7 +734,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                           {c.options.map((opt, idx) => {
                             const suffixErr = errors[`suffix:${c.id}:${idx}`];
                             return (
-                              <div key={idx} className="space-y-1">
+                              <div key={idx} className="space-y-1" data-error-key={`suffix:${c.id}:${idx}`}>
                                 <div className="flex items-center gap-2">
                                   <Input
                                     value={opt.value}
