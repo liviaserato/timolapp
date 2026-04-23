@@ -1165,7 +1165,7 @@ export default function InternalProdutos() {
           <h1 className="text-2xl font-bold text-primary">Produtos</h1>
           <p className="text-sm text-muted-foreground">Gerencie o catálogo de produtos</p>
         </div>
-        <Button onClick={() => setDialogOpen(true)} className="gap-2">
+        <Button onClick={() => { setEditingProduct(null); setDialogOpen(true); }} className="gap-2">
           <Plus className="h-4 w-4" /> Novo Produto
         </Button>
       </div>
