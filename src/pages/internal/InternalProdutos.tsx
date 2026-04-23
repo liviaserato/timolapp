@@ -365,7 +365,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             </div>
 
             {/* ── Activatable (under SKU) ── */}
-            <div className="flex items-center gap-4 flex-wrap">
+            <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Label className="text-sm">Produto ativável</Label>
                 <Switch checked={activatable} onCheckedChange={setActivatable} className="scale-75" />
