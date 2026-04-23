@@ -91,10 +91,10 @@ const FIELD_LABELS: Record<string, Record<string, string>> = {
 
 const ALWAYS_VISIBLE_FIELDS = [
   { key: "name", type: "input" as const },
-  { key: "description", type: "textarea" as const },
 ];
 
 const COLLAPSIBLE_FIELDS = [
+  { key: "description", type: "textarea" as const },
   { key: "benefits", type: "textarea" as const },
   { key: "instructions", type: "textarea" as const },
   { key: "warranty", type: "textarea" as const },
@@ -170,6 +170,53 @@ function splitCurrency(v: number) {
   const match = formatted.match(/^(\D+)\s*(.+)$/);
   if (match) return { symbol: match[1].trim(), amount: match[2] };
   return { symbol: "R$", amount: formatted };
+}
+
+/** Format a price input value for display per currency. USD uses 1,234.56; BRL/EUR use 1.234,56. Limits to 2 decimals. */
+function formatPriceInput(raw: string, currency: string): string {
+  if (!raw) return "";
+  // Keep only digits, comma, dot, minus sign
+  const cleaned = raw.replace(/[^\d.,-]/g, "");
+  if (!cleaned) return "";
+
+  const useDotDecimal = currency === "USD"; // USD: comma=thousands, dot=decimal. BRL/EUR: opposite.
+  const decimalSep = useDotDecimal ? "." : ",";
+  const thousandSep = useDotDecimal ? "," : ".";
+
+  // Determine the decimal separator present in the input: prefer the last occurrence of either , or .
+  const lastComma = cleaned.lastIndexOf(",");
+  const lastDot = cleaned.lastIndexOf(".");
+  let intPart = cleaned;
+  let decPart = "";
+  if (lastComma >= 0 || lastDot >= 0) {
+    const decIdx = Math.max(lastComma, lastDot);
+    intPart = cleaned.slice(0, decIdx);
+    decPart = cleaned.slice(decIdx + 1);
+  }
+  // Strip any separators from int part
+  intPart = intPart.replace(/[.,]/g, "");
+  // Strip non-digits from dec part and limit to 2
+  decPart = decPart.replace(/\D/g, "").slice(0, 2);
+
+  const intNum = intPart.replace(/^0+(?=\d)/, "") || "0";
+  const intFormatted = intNum.replace(/\B(?=(\d{3})+(?!\d))/g, thousandSep);
+
+  return decPart.length > 0 ? `${intFormatted}${decimalSep}${decPart}` : intFormatted;
+}
+
+/** On blur: ensure value has exactly 2 decimal places. */
+function finalizePriceInput(raw: string, currency: string): string {
+  if (!raw) return "";
+  const formatted = formatPriceInput(raw, currency);
+  if (!formatted) return "";
+  const useDotDecimal = currency === "USD";
+  const decimalSep = useDotDecimal ? "." : ",";
+  const idx = formatted.lastIndexOf(decimalSep);
+  if (idx < 0) return `${formatted}${decimalSep}00`;
+  const decLen = formatted.length - idx - 1;
+  if (decLen === 0) return `${formatted}00`;
+  if (decLen === 1) return `${formatted}0`;
+  return formatted;
 }
 
 /** Deterministic stock info derived from product id (mock data has no real stock fields) */
@@ -531,12 +578,13 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                             <div className="relative">
                               <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{c.symbol}</span>
                               <Input
-                                type="number"
-                                step="0.01"
+                                type="text"
+                                inputMode="decimal"
                                 className="pl-9 h-8 text-sm"
                                 value={prices[c.id][p.id]}
-                                onChange={e => updatePrice(c.id, p.id, e.target.value)}
-                                placeholder="0,00"
+                                onChange={e => updatePrice(c.id, p.id, formatPriceInput(e.target.value, c.id))}
+                                onBlur={e => updatePrice(c.id, p.id, finalizePriceInput(e.target.value, c.id))}
+                                placeholder={c.id === "USD" ? "0.00" : "0,00"}
                               />
                             </div>
                           </td>
