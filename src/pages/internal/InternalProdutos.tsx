@@ -770,15 +770,38 @@ export default function InternalProdutos() {
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {paginated.map(p => (
-              <ProductCardUnified key={p.id} product={p} mode="staff" />
-            ))}
-          </div>
+                {/* View mode toggle (Cards / List) */}
+                <div className="flex rounded-md border border-input overflow-hidden h-7 sm:h-8 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("cards")}
+                    className={cn(
+                      "px-2 transition-colors",
+                      viewMode === "cards"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-background text-muted-foreground hover:bg-accent"
+                    )}
+                    title="Visualização em cards"
+                    aria-label="Visualização em cards"
+                  >
+                    <LayoutGrid className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("list")}
+                    className={cn(
+                      "px-2 transition-colors",
+                      viewMode === "list"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-background text-muted-foreground hover:bg-accent"
+                    )}
+                    title="Visualização em lista"
+                    aria-label="Visualização em lista"
+                  >
+                    <List className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  </button>
+                </div>
 
           {/* Pagination */}
           {totalPages > 1 && (
