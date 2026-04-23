@@ -290,6 +290,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
     if (pkgHeight || pkgWidth || pkgLength || pkgDiameter || pkgWeight) return true;
     if (mediaFiles.length > 0) return true;
     if (visibleCountries.length !== 1 || visibleCountries[0] !== "BR") return true;
+    if (characteristics.length > 0) return true;
     for (const lang of Object.keys(multilingualData)) {
       for (const k of Object.keys(multilingualData[lang])) {
         if (multilingualData[lang][k].trim()) return true;
@@ -301,7 +302,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
       }
     }
     return false;
-  }, [sku, category, subcategory, points, activatable, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices]);
+  }, [sku, category, subcategory, points, activatable, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices, characteristics]);
 
   const handleOpenChange = (next: boolean) => {
     if (!next && isDirty) {
