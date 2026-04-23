@@ -549,16 +549,16 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             </div>
 
             {/* ── Points + Country Visibility ── */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
                 <Label className="text-sm font-semibold">Pontuação</Label>
-                <div className="space-y-1">
+                <div className="space-y-1 w-1/5 min-w-[80px]">
                   <Label className="text-xs text-muted-foreground">Pontos por produto</Label>
                   <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" />
-                  <p className="text-[10px] text-muted-foreground">1 ponto = 1 ponto Unilevel = 1 ponto Binário</p>
                 </div>
+                <p className="text-[10px] text-muted-foreground">1 ponto = 1 ponto Unilevel = 1 ponto Binário</p>
               </div>
-              <div className="space-y-3 md:col-span-4">
+              <div className="space-y-3">
                 <Label className="text-sm font-semibold">Visibilidade por País</Label>
                 <div className="flex flex-wrap gap-x-4 gap-y-2">
                   {COUNTRIES.map(c => (
