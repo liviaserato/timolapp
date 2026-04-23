@@ -680,9 +680,9 @@ export default function InternalProdutos() {
           <div className="space-y-1.5 px-1">
             <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
               {/* Title + count (wraps internally on very narrow screens) */}
-              <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2 min-w-0">
-                <h2 className="font-semibold text-foreground text-lg">{hasFilters ? "Resultado da Busca" : "Catálogo Completo"}</h2>
-                <span className="text-xs text-muted-foreground">
+              <div className="flex items-center gap-2 min-w-0">
+                <h2 className="font-semibold text-foreground text-lg whitespace-nowrap">{hasFilters ? "Resultado da Busca" : "Catálogo Completo"}</h2>
+                <span className="text-xs text-muted-foreground whitespace-nowrap">
                   ({filtered.length} {filtered.length === 1 ? "produto encontrado" : "produtos encontrados"})
                 </span>
               </div>
