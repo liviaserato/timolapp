@@ -555,48 +555,6 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
               </div>
             </div>
 
-            {/* ── Prices ── */}
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Preços</Label>
-              <div className="overflow-hidden rounded-md border border-border">
-                <table className="w-full text-sm">
-                  <thead className="bg-muted/50">
-                    <tr>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Preço</th>
-                      {CURRENCIES.map(c => (
-                        <th key={c.id} className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">
-                          {c.label.split(" ")[0]}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {PRICE_TYPES.map((p, idx) => (
-                      <tr key={p.id} className={cn(idx > 0 && "border-t border-border")}>
-                        <td className="px-3 py-2 text-xs font-medium text-foreground whitespace-nowrap">{p.label}</td>
-                        {CURRENCIES.map(c => (
-                          <td key={c.id} className="px-2 py-1.5">
-                            <div className="relative">
-                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{c.symbol}</span>
-                              <Input
-                                type="text"
-                                inputMode="decimal"
-                                className="pl-9 h-8 text-sm"
-                                value={prices[c.id][p.id]}
-                                onChange={e => updatePrice(c.id, p.id, formatPriceInput(e.target.value))}
-                                onBlur={e => updatePrice(c.id, p.id, finalizePriceInput(e.target.value))}
-                                placeholder="0,00"
-                              />
-                            </div>
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
             {/* ── Características ── */}
             <div className="space-y-3">
               <div className="flex items-center justify-between flex-wrap gap-2">
@@ -615,7 +573,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
               {characteristics.length === 0 ? (
                 <p className="text-xs text-muted-foreground">
-                  Nenhuma característica adicionada. Ex.: Cor, Voltagem, Tamanho, Volume.
+                  Nenhuma característica adicionada. Ex.: Cor, Tamanho.
                 </p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -624,6 +582,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                     if (!c) {
                       return <div key={`empty-${colIdx}`} className="hidden md:block" aria-hidden="true" />;
                     }
+                    const lastOptionEmpty = c.options.length > 0 && !c.options[c.options.length - 1].trim();
                     return (
                       <div key={c.id} className="rounded-md border border-border p-3 space-y-3">
                         <div className="flex items-center gap-2">
@@ -633,7 +592,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                               <Input
                                 value={c.name}
                                 onChange={(e) => updateCharacteristicName(c.id, e.target.value)}
-                                placeholder="Ex.: Cor, Voltagem, Tamanho"
+                                placeholder="Ex.: Cor, Tamanho"
                                 list={`char-suggestions-${c.id}`}
                                 className={c.name ? "pr-8" : undefined}
                               />
@@ -696,8 +655,19 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                             type="button"
                             variant="ghost"
                             size="sm"
-                            className="h-7 gap-1 text-xs text-muted-foreground hover:text-primary"
-                            onClick={() => addOption(c.id)}
+                            className={cn(
+                              "h-7 gap-1 text-xs",
+                              lastOptionEmpty
+                                ? "text-muted-foreground/60 hover:text-muted-foreground/60"
+                                : "text-muted-foreground hover:text-primary"
+                            )}
+                            onClick={() => {
+                              if (lastOptionEmpty) {
+                                toast.info("Preencha a opção anterior antes de adicionar outra.");
+                                return;
+                              }
+                              addOption(c.id);
+                            }}
                           >
                             <Plus className="h-3 w-3" />
                             Opção
@@ -708,6 +678,48 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                   })}
                 </div>
               )}
+            </div>
+
+            {/* ── Prices ── */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Preços</Label>
+              <div className="overflow-hidden rounded-md border border-border">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Preço</th>
+                      {CURRENCIES.map(c => (
+                        <th key={c.id} className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">
+                          {c.label.split(" ")[0]}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {PRICE_TYPES.map((p, idx) => (
+                      <tr key={p.id} className={cn(idx > 0 && "border-t border-border")}>
+                        <td className="px-3 py-2 text-xs font-medium text-foreground whitespace-nowrap">{p.label}</td>
+                        {CURRENCIES.map(c => (
+                          <td key={c.id} className="px-2 py-1.5">
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{c.symbol}</span>
+                              <Input
+                                type="text"
+                                inputMode="decimal"
+                                className="pl-9 h-8 text-sm"
+                                value={prices[c.id][p.id]}
+                                onChange={e => updatePrice(c.id, p.id, formatPriceInput(e.target.value))}
+                                onBlur={e => updatePrice(c.id, p.id, finalizePriceInput(e.target.value))}
+                                placeholder="0,00"
+                              />
+                            </div>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {/* ── Points + Country Visibility ── */}
