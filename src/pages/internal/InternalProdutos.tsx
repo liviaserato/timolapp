@@ -17,6 +17,7 @@ import {
   Search, X, Plus, Package, ChevronLeft, ChevronRight,
   Upload, Trash2, Eye, Pencil, Copy,
   ChevronDown, Languages, ArrowUpDown, ArrowUp, ArrowDown,
+  LayoutGrid, List,
 } from "lucide-react";
 import { categories, products as mockProducts, type Product, type Category } from "@/data/mock-products";
 import { toast } from "sonner";
@@ -72,6 +73,20 @@ function norm(s: string) { return s.normalize("NFD").replace(/[\u0300-\u036f]/g,
 
 function formatCurrency(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+/** Deterministic stock info derived from product id (mock data has no real stock fields) */
+function getStockInfo(p: Product) {
+  // Hash the id for a stable pseudo-random number
+  let h = 0;
+  for (let i = 0; i < p.id.length; i++) h = (h * 31 + p.id.charCodeAt(i)) >>> 0;
+  const min = 5 + (h % 11);          // 5..15
+  const max = 60 + ((h >> 4) % 81);   // 60..140
+  const qty = p.inStock
+    ? min + ((h >> 8) % Math.max(1, max - min + 1))
+    : 0;
+  const lowStock = p.inStock && qty <= min;
+  return { qty, min, max, lowStock };
 }
 
 /* ── New Product Dialog ── */
@@ -474,6 +489,7 @@ export default function InternalProdutos() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [sortBy, setSortBy] = useState<string>("name");
   const [sortDir, setSortDir] = useState<"neutral" | "asc" | "desc">("neutral");
+  const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
 
   const categoryObj = categories.find(c => c.id === selectedCategory);
   const subcategories = categoryObj?.subcategories ?? [];
