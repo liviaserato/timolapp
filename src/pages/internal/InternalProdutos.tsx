@@ -825,17 +825,36 @@ export default function InternalProdutos() {
                       <th className="px-3 py-2 font-medium text-center whitespace-nowrap">Estoque</th>
                       <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden sm:table-cell">Mínimo</th>
                       <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden sm:table-cell">Máximo</th>
+                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden md:table-cell">Vendas 30d</th>
                       <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden lg:table-cell">Pontos</th>
                       <th className="px-3 py-2 font-medium text-right whitespace-nowrap hidden md:table-cell">Valor</th>
-                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap">Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {paginated.map((p) => {
                       const stock = getStockInfo(p);
+                      const statusColor = !p.inStock
+                        ? "bg-red-500"
+                        : stock.lowStock
+                        ? "bg-amber-500"
+                        : "bg-emerald-500";
+                      const statusLabel = !p.inStock
+                        ? "Sem estoque"
+                        : stock.lowStock
+                        ? "Estoque baixo"
+                        : "Em estoque";
                       return (
                         <tr key={p.id} className="border-t border-border hover:bg-muted/30 transition-colors">
-                          <td className="px-3 py-2 font-mono text-xs text-muted-foreground whitespace-nowrap">{p.id.toUpperCase()}</td>
+                          <td className="px-3 py-2 font-mono text-xs text-muted-foreground whitespace-nowrap">
+                            <span className="inline-flex items-center gap-2">
+                              <span
+                                className={cn("h-2 w-2 rounded-full shrink-0", statusColor)}
+                                title={statusLabel}
+                                aria-label={statusLabel}
+                              />
+                              {p.id.toUpperCase()}
+                            </span>
+                          </td>
                           <td className="px-3 py-2">
                             <div className="font-medium text-foreground">{p.name}</div>
                           </td>
@@ -848,28 +867,11 @@ export default function InternalProdutos() {
                           </td>
                           <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden sm:table-cell">{stock.min}</td>
                           <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden sm:table-cell">{stock.max}</td>
+                          <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden md:table-cell">{stock.sales30d}</td>
                           <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden lg:table-cell">
                             {p.pointsUnilevel ?? "—"}
                           </td>
                           <td className="px-3 py-2 text-right tabular-nums whitespace-nowrap hidden md:table-cell">{formatCurrency(p.price)}</td>
-                          <td className="px-3 py-2 text-center whitespace-nowrap">
-                            {p.inStock ? (
-                              <span className={cn(
-                                "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium border",
-                                stock.lowStock
-                                  ? "bg-amber-100 text-amber-700 border-amber-300"
-                                  : "bg-emerald-100 text-emerald-700 border-emerald-300"
-                              )}>
-                                <span className={cn("h-1.5 w-1.5 rounded-full", stock.lowStock ? "bg-amber-500" : "bg-emerald-500")} />
-                                {stock.lowStock ? "estoque baixo" : "em estoque"}
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium border bg-red-100 text-red-700 border-red-300">
-                                <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
-                                sem estoque
-                              </span>
-                            )}
-                          </td>
                         </tr>
                       );
                     })}
