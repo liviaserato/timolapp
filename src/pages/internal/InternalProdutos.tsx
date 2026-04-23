@@ -389,21 +389,36 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
   const handleSave = () => {
     const next: Record<string, string> = {};
-    if (!sku.trim()) next.sku = "Informe o SKU do produto";
-    if (!category) next.category = "Selecione uma categoria";
-    if (!multilingualData.pt.name.trim()) next.name = "Informe o nome do produto em Português";
+    const order: string[] = [];
+    const addErr = (key: string, msg: string) => { next[key] = msg; order.push(key); };
+
+    if (!sku.trim()) addErr("sku", "Informe o SKU do produto");
+    if (!category) addErr("category", "Selecione uma categoria");
+    if (!multilingualData.pt.name.trim()) addErr("name", "Informe o nome do produto em Português");
 
     // When a characteristic has options with a value, the SKU suffix becomes required for each filled option
     characteristics.forEach(c => {
       c.options.forEach((opt, idx) => {
         if (opt.value.trim() && !opt.suffix.trim()) {
-          next[`suffix:${c.id}:${idx}`] = "Sufixo obrigatório";
+          addErr(`suffix:${c.id}:${idx}`, "Sufixo obrigatório");
         }
       });
     });
 
     setErrors(next);
-    if (Object.keys(next).length > 0) return;
+    if (order.length > 0) {
+      // Scroll to the first invalid field so the user notices it
+      requestAnimationFrame(() => {
+        const el = document.querySelector<HTMLElement>(`[data-error-key="${order[0]}"]`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          // Try to focus an input/select trigger inside
+          const focusable = el.querySelector<HTMLElement>("input, [role='combobox'], button, textarea") ?? el;
+          focusable.focus?.();
+        }
+      });
+      return;
+    }
 
     toast.success("Produto criado com sucesso");
     onOpenChange(false);
