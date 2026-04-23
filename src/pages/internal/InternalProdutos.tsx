@@ -86,7 +86,9 @@ function getStockInfo(p: Product) {
     ? min + ((h >> 8) % Math.max(1, max - min + 1))
     : 0;
   const lowStock = p.inStock && qty <= min;
-  return { qty, min, max, lowStock };
+  // Sales last 30 days: 0 if out of stock, else pseudo-random 0..120
+  const sales30d = p.inStock ? ((h >> 12) % 121) : 0;
+  return { qty, min, max, lowStock, sales30d };
 }
 
 /* ── New Product Dialog ── */
