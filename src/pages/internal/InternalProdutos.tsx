@@ -218,9 +218,10 @@ function getStockInfo(p: Product) {
 interface NewProductDialogProps {
   open: boolean;
   onOpenChange: (o: boolean) => void;
+  editingProduct?: Product | null;
 }
 
-function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
+function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDialogProps) {
   const [sku, setSku] = useState("");
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
@@ -294,6 +295,103 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
   };
 
   const [confirmCloseOpen, setConfirmCloseOpen] = useState(false);
+
+  // Reset everything to a clean slate (used both for "new" and before populating "edit")
+  const resetAll = () => {
+    setSku("");
+    setCategory("");
+    setSubcategory("");
+    setPoints("");
+    setActivatable(false);
+    setActivationDays("30");
+    setPkgHeight(""); setPkgWidth(""); setPkgLength(""); setPkgDiameter(""); setPkgWeight("");
+    setMediaFiles([]);
+    setCharacteristics([]);
+    setOptionHint({});
+    setCharNameOpen({});
+    setCollapsibleOpen({});
+    setVisibleCountries(["BR"]);
+    setErrors({});
+    setMultilingualData(() => {
+      const init: Record<string, Record<string, string>> = {};
+      LANGUAGES.forEach(l => {
+        init[l.id] = {};
+        ALL_ML_FIELDS.forEach(f => { init[l.id][f.key] = ""; });
+      });
+      return init;
+    });
+    setPrices(() => {
+      const init: Record<string, Record<string, string>> = {};
+      CURRENCIES.forEach(c => {
+        init[c.id] = {};
+        PRICE_TYPES.forEach(p => { init[c.id][p.id] = ""; });
+      });
+      return init;
+    });
+  };
+
+  // Sync state when the dialog opens (either for a new product or to edit an existing one)
+  useEffect(() => {
+    if (!open) return;
+    resetAll();
+    if (!editingProduct) return;
+
+    const p = editingProduct;
+    setSku(p.id);
+    setCategory(p.category);
+    setSubcategory(p.subcategory ?? "");
+    setActivatable(!!p.activatable);
+    if (p.pointsUnilevel != null) setPoints(String(p.pointsUnilevel));
+    if (p.packageHeight != null) setPkgHeight(String(p.packageHeight));
+    if (p.packageWidth != null) setPkgWidth(String(p.packageWidth));
+    if (p.packageLength != null) setPkgLength(String(p.packageLength));
+    if (p.packageDiameter != null) setPkgDiameter(String(p.packageDiameter));
+    if (p.packageWeight != null) setPkgWeight(String(p.packageWeight));
+
+    // Multilingual content (PT base — secondary languages stay empty until translated)
+    setMultilingualData(prev => {
+      const next = { ...prev };
+      next.pt = {
+        ...next.pt,
+        name: p.name ?? "",
+        description: p.description ?? "",
+        benefits: p.benefits ?? "",
+        instructions: p.instructions ?? "",
+        warranty: p.warranty ?? "",
+        composition: p.composition ?? "",
+        manufacturer: p.manufacturer ?? "",
+      };
+      return next;
+    });
+
+    // Default price into BRL "venda" slot if available
+    if (p.price != null) {
+      setPrices(prev => {
+        const next = { ...prev };
+        if (next.BRL) {
+          next.BRL = { ...next.BRL };
+          const saleKey = PRICE_TYPES[0]?.id;
+          if (saleKey) next.BRL[saleKey] = String(p.price);
+        }
+        return next;
+      });
+    }
+
+    // Variations → characteristics (suffix left blank for the user to fill)
+    if (p.variations && p.variations.length > 0) {
+      setCharacteristics(p.variations.map(v => ({
+        id: crypto.randomUUID(),
+        name: v.label,
+        options: v.options.map(o => ({ value: o, suffix: "" })),
+      })));
+    }
+
+    // Existing image as a media item (preview-only)
+    if (p.image) {
+      setMediaFiles([{ name: p.image.split("/").pop() ?? "imagem", url: p.image }]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, editingProduct]);
 
   // Dirty check — any user-touched field
   const isDirty = useMemo(() => {
@@ -420,7 +518,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
       return;
     }
 
-    toast.success("Produto criado com sucesso");
+    toast.success(editingProduct ? "Produto atualizado com sucesso" : "Produto criado com sucesso");
     onOpenChange(false);
   };
 
@@ -429,7 +527,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] p-0">
         <DialogHeader className="p-6 pb-0">
-          <DialogTitle className="text-lg font-bold text-primary">Novo Produto</DialogTitle>
+          <DialogTitle className="text-lg font-bold text-primary">{editingProduct ? "Editar Produto" : "Novo Produto"}</DialogTitle>
         </DialogHeader>
 
         <ScrollArea className="max-h-[calc(90vh-120px)]">
@@ -943,7 +1041,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             {/* ── Actions ── */}
             <div className="flex justify-end gap-3 pt-2">
               <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-              <Button onClick={handleSave}>Salvar</Button>
+              <Button onClick={handleSave}>{editingProduct ? "Salvar alterações" : "Salvar"}</Button>
             </div>
           </div>
         </ScrollArea>
@@ -988,6 +1086,7 @@ export default function InternalProdutos() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [sortBy, setSortBy] = useState<string>("name");
   const [sortDir, setSortDir] = useState<"neutral" | "asc" | "desc">("neutral");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
@@ -1066,7 +1165,7 @@ export default function InternalProdutos() {
           <h1 className="text-2xl font-bold text-primary">Produtos</h1>
           <p className="text-sm text-muted-foreground">Gerencie o catálogo de produtos</p>
         </div>
-        <Button onClick={() => setDialogOpen(true)} className="gap-2">
+        <Button onClick={() => { setEditingProduct(null); setDialogOpen(true); }} className="gap-2">
           <Plus className="h-4 w-4" /> Novo Produto
         </Button>
       </div>
@@ -1386,7 +1485,7 @@ export default function InternalProdutos() {
                       {/* Edit (icon-only) */}
                       <button
                         type="button"
-                        onClick={() => toast.info(`Editar ${p.name}`)}
+                        onClick={() => { setEditingProduct(p); setDialogOpen(true); }}
                         title={`Editar ${p.name}`}
                         aria-label={`Editar ${p.name}`}
                         className="absolute top-2 right-2 inline-flex items-center justify-center h-7 w-7 rounded-md text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 hover:bg-accent transition-opacity"
@@ -1468,7 +1567,7 @@ export default function InternalProdutos() {
                               variant="ghost"
                               size="sm"
                               className="h-7 px-1.5 lg:px-2 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
-                              onClick={() => toast.info(`Editar ${p.name}`)}
+                              onClick={() => { setEditingProduct(p); setDialogOpen(true); }}
                               title={`Editar ${p.name}`}
                               aria-label={`Editar ${p.name}`}
                             >
@@ -1533,7 +1632,11 @@ export default function InternalProdutos() {
         </>
       )}
 
-      <NewProductDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+      <NewProductDialog
+        open={dialogOpen}
+        onOpenChange={(o) => { setDialogOpen(o); if (!o) setEditingProduct(null); }}
+        editingProduct={editingProduct}
+      />
     </div>
   );
 }
