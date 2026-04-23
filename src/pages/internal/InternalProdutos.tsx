@@ -549,7 +549,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             </div>
 
             {/* ── Points + Country Visibility ── */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
               <div className="space-y-3">
                 <Label className="text-sm font-semibold">Pontuação</Label>
                 <div className="space-y-1">
