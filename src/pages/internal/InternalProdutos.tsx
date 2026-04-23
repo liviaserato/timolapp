@@ -588,32 +588,31 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             {/* ── Media Upload ── */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Mídias</Label>
-              <div
-                className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-6 text-center cursor-pointer hover:border-primary/40 transition-colors"
-                onClick={handleMediaUpload}
-              >
-                <Upload className="h-8 w-8 mx-auto text-muted-foreground/40 mb-2" />
-                <p className="text-sm text-muted-foreground">Clique para fazer upload de imagens ou vídeos</p>
-                <p className="text-xs text-muted-foreground/60 mt-1">JPG, PNG, WebP, MP4 — máx. 20MB cada</p>
-              </div>
-              {mediaFiles.length > 0 && (
-                <div className="grid grid-cols-4 gap-3 mt-3">
-                  {mediaFiles.map((file, i) => (
-                    <div key={i} className="relative group rounded-lg overflow-hidden border border-border">
-                      <img src={file.url} alt={file.name} className="w-full h-20 object-cover" />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button
-                          onClick={(e) => { e.stopPropagation(); removeMedia(i); }}
-                          className="p-1 bg-destructive rounded-full"
-                        >
-                          <Trash2 className="h-3.5 w-3.5 text-destructive-foreground" />
-                        </button>
-                      </div>
-                      <p className="text-[10px] text-muted-foreground truncate px-1 py-0.5">{file.name}</p>
+              <div className="grid grid-cols-5 gap-3">
+                {mediaFiles.map((file, i) => (
+                  <div key={i} className="relative group rounded-lg overflow-hidden border border-border aspect-square">
+                    <img src={file.url} alt={file.name} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); removeMedia(i); }}
+                        className="p-1 bg-destructive rounded-full"
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-destructive-foreground" />
+                      </button>
                     </div>
-                  ))}
+                    <p className="absolute bottom-0 inset-x-0 text-[10px] text-white bg-black/50 truncate px-1 py-0.5">{file.name}</p>
+                  </div>
+                ))}
+                <div
+                  className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-3 text-center cursor-pointer hover:border-primary/40 transition-colors aspect-square flex flex-col items-center justify-center"
+                  onClick={handleMediaUpload}
+                  title="JPG, PNG, WebP, MP4 — máx. 20MB cada"
+                >
+                  <Upload className="h-6 w-6 text-muted-foreground/40 mb-1" />
+                  <p className="text-[11px] text-muted-foreground leading-tight">Adicionar mídia</p>
                 </div>
-              )}
+              </div>
+              <p className="text-xs text-muted-foreground/60">JPG, PNG, WebP, MP4 — máx. 20MB cada</p>
             </div>
 
             {/* ── Country Visibility (last) ── */}
