@@ -688,53 +688,53 @@ export default function InternalProdutos() {
               </div>
 
               {/* Right cluster: stock pills + sort. Always anchored right; wraps as a group if needed */}
-              <div className="flex flex-wrap items-center justify-end gap-2 ml-auto">
+              <div className="flex flex-nowrap items-center justify-end gap-1 sm:gap-2 ml-auto min-w-0">
                 {/* Stock pills */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                   <button
                     onClick={() => { if (showInStock && !showOutOfStock) return; setShowInStock(v => !v); setPage(1); }}
                     className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
+                      "inline-flex items-center gap-1 rounded-full px-1.5 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all border whitespace-nowrap",
                       showInStock
                         ? "bg-emerald-100 text-emerald-700 border-emerald-300 shadow-sm"
                         : "bg-transparent text-emerald-600/70 border-transparent hover:bg-emerald-50 hover:border-emerald-200"
                     )}
                   >
-                    <span className={cn("h-1.5 w-1.5 rounded-full", showInStock ? "bg-emerald-500" : "bg-emerald-400/50")} />
+                    <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", showInStock ? "bg-emerald-500" : "bg-emerald-400/50")} />
                     {showInStock ? `${stockCounts.inStock} ` : ""}em estoque
                   </button>
                   <button
                     onClick={() => { if (showOutOfStock && !showInStock) return; setShowOutOfStock(v => !v); setPage(1); }}
                     className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
+                      "inline-flex items-center gap-1 rounded-full px-1.5 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all border whitespace-nowrap",
                       showOutOfStock
                         ? "bg-red-100 text-red-700 border-red-300 shadow-sm"
                         : "bg-transparent text-red-500/70 border-transparent hover:bg-red-50 hover:border-red-200"
                     )}
                   >
-                    <span className={cn("h-1.5 w-1.5 rounded-full", showOutOfStock ? "bg-red-500" : "bg-red-400/50")} />
+                    <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", showOutOfStock ? "bg-red-500" : "bg-red-400/50")} />
                     {showOutOfStock ? `${stockCounts.outOfStock} ` : ""}sem estoque
                   </button>
                 </div>
 
                 {/* Sort */}
-                <div className="flex items-center gap-0.5">
+                <div className="flex items-center gap-0.5 shrink-0">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 w-8 p-0 border-dashed rounded-r-none"
+                    className="h-7 w-7 sm:h-8 sm:w-8 p-0 border-dashed rounded-r-none"
                     onClick={() => setSortDir(d => d === "neutral" ? "asc" : d === "asc" ? "desc" : "asc")}
                     title={sortDir === "neutral" ? "Ordenação padrão" : sortDir === "asc" ? "Ascendente" : "Descendente"}
                   >
                     {sortDir === "neutral"
-                      ? <ArrowUpDown className="h-3.5 w-3.5" />
+                      ? <ArrowUpDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       : sortDir === "asc"
-                        ? <ArrowUp className="h-3.5 w-3.5" />
-                        : <ArrowDown className="h-3.5 w-3.5" />
+                        ? <ArrowUp className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                        : <ArrowDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     }
                   </Button>
                   <Select value={sortBy} onValueChange={v => setSortBy(v)}>
-                    <SelectTrigger className="h-8 text-xs w-auto min-w-[130px] border-dashed rounded-l-none">
+                    <SelectTrigger className="h-7 sm:h-8 text-[11px] sm:text-xs w-auto min-w-0 sm:min-w-[130px] px-2 border-dashed rounded-l-none">
                       <span>Classificar</span>
                     </SelectTrigger>
                     <SelectContent>
