@@ -1632,7 +1632,11 @@ export default function InternalProdutos() {
         </>
       )}
 
-      <NewProductDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+      <NewProductDialog
+        open={dialogOpen}
+        onOpenChange={(o) => { setDialogOpen(o); if (!o) setEditingProduct(null); }}
+        editingProduct={editingProduct}
+      />
     </div>
   );
 }
