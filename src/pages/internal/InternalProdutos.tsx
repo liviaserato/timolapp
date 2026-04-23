@@ -548,11 +548,24 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
               </div>
             </div>
 
+            {/* ── Points ── */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Pontuação</Label>
+              <div className="max-w-xs space-y-1">
+                <Label className="text-xs text-muted-foreground">Pontos por produto</Label>
+                <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" />
+                <p className="text-[10px] text-muted-foreground">1 ponto = 1 ponto Unilevel = 1 ponto Binário</p>
+              </div>
+            </div>
 
             {/* ── Package Dimensions ── */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Dimensões da Embalagem</Label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Peso (g)</Label>
+                  <Input type="number" step="1" value={pkgWeight} onChange={e => setPkgWeight(e.target.value)} placeholder="0" />
+                </div>
                 <div className="space-y-1">
                   <Label className="text-xs text-muted-foreground">Altura (cm)</Label>
                   <Input type="number" step="0.1" value={pkgHeight} onChange={e => setPkgHeight(e.target.value)} placeholder="0" />
@@ -568,10 +581,6 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                 <div className="space-y-1">
                   <Label className="text-xs text-muted-foreground">Diâmetro (cm)</Label>
                   <Input type="number" step="0.1" value={pkgDiameter} onChange={e => setPkgDiameter(e.target.value)} placeholder="0" />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Peso (g)</Label>
-                  <Input type="number" step="1" value={pkgWeight} onChange={e => setPkgWeight(e.target.value)} placeholder="0" />
                 </div>
               </div>
             </div>
