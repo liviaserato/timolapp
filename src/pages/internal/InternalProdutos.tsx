@@ -260,6 +260,28 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
   const [mediaFiles, setMediaFiles] = useState<{ name: string; url: string }[]>([]);
 
+  // Características (e.g. Cor, Voltagem) — each has a name and a list of options
+  const [characteristics, setCharacteristics] = useState<{ id: string; name: string; options: string[] }[]>([]);
+
+  const addCharacteristic = () => {
+    setCharacteristics(prev => [...prev, { id: crypto.randomUUID(), name: "", options: [""] }]);
+  };
+  const removeCharacteristic = (id: string) => {
+    setCharacteristics(prev => prev.filter(c => c.id !== id));
+  };
+  const updateCharacteristicName = (id: string, name: string) => {
+    setCharacteristics(prev => prev.map(c => c.id === id ? { ...c, name } : c));
+  };
+  const addOption = (id: string) => {
+    setCharacteristics(prev => prev.map(c => c.id === id ? { ...c, options: [...c.options, ""] } : c));
+  };
+  const removeOption = (id: string, idx: number) => {
+    setCharacteristics(prev => prev.map(c => c.id === id ? { ...c, options: c.options.filter((_, i) => i !== idx) } : c));
+  };
+  const updateOption = (id: string, idx: number, value: string) => {
+    setCharacteristics(prev => prev.map(c => c.id === id ? { ...c, options: c.options.map((o, i) => i === idx ? value : o) } : c));
+  };
+
   const [confirmCloseOpen, setConfirmCloseOpen] = useState(false);
 
   // Dirty check — any user-touched field
@@ -268,6 +290,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
     if (pkgHeight || pkgWidth || pkgLength || pkgDiameter || pkgWeight) return true;
     if (mediaFiles.length > 0) return true;
     if (visibleCountries.length !== 1 || visibleCountries[0] !== "BR") return true;
+    if (characteristics.length > 0) return true;
     for (const lang of Object.keys(multilingualData)) {
       for (const k of Object.keys(multilingualData[lang])) {
         if (multilingualData[lang][k].trim()) return true;
@@ -279,7 +302,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
       }
     }
     return false;
-  }, [sku, category, subcategory, points, activatable, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices]);
+  }, [sku, category, subcategory, points, activatable, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices, characteristics]);
 
   const handleOpenChange = (next: boolean) => {
     if (!next && isDirty) {
@@ -572,6 +595,100 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                   </tbody>
                 </table>
               </div>
+            </div>
+
+            {/* ── Características ── */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <Label className="text-sm font-semibold">Características</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 gap-1"
+                  onClick={addCharacteristic}
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Adicionar característica
+                </Button>
+              </div>
+
+              {characteristics.length === 0 ? (
+                <p className="text-xs text-muted-foreground">
+                  Nenhuma característica adicionada. Ex.: Cor, Voltagem, Tamanho, Volume.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {characteristics.map((c) => (
+                    <div key={c.id} className="rounded-md border border-border p-3 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 space-y-1">
+                          <Label className="text-xs text-muted-foreground">Nome da característica</Label>
+                          <Input
+                            value={c.name}
+                            onChange={(e) => updateCharacteristicName(c.id, e.target.value)}
+                            placeholder="Ex.: Cor, Voltagem, Tamanho"
+                            list={`char-suggestions-${c.id}`}
+                          />
+                          <datalist id={`char-suggestions-${c.id}`}>
+                            <option value="Cor" />
+                            <option value="Voltagem" />
+                            <option value="Tamanho" />
+                            <option value="Volume" />
+                            <option value="Sabor" />
+                            <option value="Material" />
+                            <option value="Modelo" />
+                          </datalist>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 self-end text-muted-foreground hover:text-destructive"
+                          onClick={() => removeCharacteristic(c.id)}
+                          aria-label="Remover característica"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-xs text-muted-foreground">Opções</Label>
+                        {c.options.map((opt, idx) => (
+                          <div key={idx} className="flex items-center gap-2">
+                            <Input
+                              value={opt}
+                              onChange={(e) => updateOption(c.id, idx, e.target.value)}
+                              placeholder={`Opção ${idx + 1}`}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                              onClick={() => removeOption(c.id, idx)}
+                              disabled={c.options.length === 1}
+                              aria-label="Remover opção"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 gap-1 text-xs text-muted-foreground hover:text-primary"
+                          onClick={() => addOption(c.id)}
+                        >
+                          <Plus className="h-3 w-3" />
+                          + opção
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* ── Points + Country Visibility ── */}
