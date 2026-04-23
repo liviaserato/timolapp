@@ -926,7 +926,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             </div>
 
             {/* ── Actions ── */}
-            <div className="flex justify-end gap-3 pt-2 border-t">
+            <div className="flex justify-end gap-3 pt-2">
               <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
               <Button onClick={handleSave}>Salvar</Button>
             </div>
