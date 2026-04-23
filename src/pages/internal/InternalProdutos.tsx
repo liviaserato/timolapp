@@ -858,6 +858,10 @@ export default function InternalProdutos() {
                           <td className="px-3 py-2">
                             <div className="font-medium text-foreground">{p.name}</div>
                           </td>
+                          <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden lg:table-cell">
+                            {p.pointsUnilevel ?? "—"}
+                          </td>
+                          <td className="px-3 py-2 text-right tabular-nums whitespace-nowrap hidden md:table-cell border-r border-border">{formatCurrency(p.price)}</td>
                           <td className={cn(
                             "px-3 py-2 text-center font-medium tabular-nums whitespace-nowrap",
                             !p.inStock && "text-red-600",
@@ -868,10 +872,6 @@ export default function InternalProdutos() {
                           <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden sm:table-cell">{stock.min}</td>
                           <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden sm:table-cell">{stock.max}</td>
                           <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden md:table-cell">{stock.sales30d}</td>
-                          <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden lg:table-cell">
-                            {p.pointsUnilevel ?? "—"}
-                          </td>
-                          <td className="px-3 py-2 text-right tabular-nums whitespace-nowrap hidden md:table-cell">{formatCurrency(p.price)}</td>
                         </tr>
                       );
                     })}
