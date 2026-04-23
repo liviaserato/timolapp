@@ -802,6 +802,84 @@ export default function InternalProdutos() {
                     <List className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {viewMode === "cards" ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {paginated.map(p => (
+                <ProductCardUnified key={p.id} product={p} mode="staff" />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-md border border-border overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50 text-muted-foreground">
+                    <tr className="text-left">
+                      <th className="px-3 py-2 font-medium whitespace-nowrap">Código</th>
+                      <th className="px-3 py-2 font-medium">Produto</th>
+                      <th className="px-3 py-2 font-medium whitespace-nowrap hidden md:table-cell">Categoria</th>
+                      <th className="px-3 py-2 font-medium text-right whitespace-nowrap">Estoque</th>
+                      <th className="px-3 py-2 font-medium text-right whitespace-nowrap hidden sm:table-cell">Mínimo</th>
+                      <th className="px-3 py-2 font-medium text-right whitespace-nowrap hidden sm:table-cell">Máximo</th>
+                      <th className="px-3 py-2 font-medium text-right whitespace-nowrap hidden lg:table-cell">Pontos</th>
+                      <th className="px-3 py-2 font-medium text-right whitespace-nowrap hidden md:table-cell">Valor</th>
+                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginated.map((p) => {
+                      const stock = getStockInfo(p);
+                      const cat = categories.find(c => c.id === p.category)?.name ?? p.category;
+                      return (
+                        <tr key={p.id} className="border-t border-border hover:bg-muted/30 transition-colors">
+                          <td className="px-3 py-2 font-mono text-xs text-muted-foreground whitespace-nowrap">{p.id.toUpperCase()}</td>
+                          <td className="px-3 py-2">
+                            <div className="font-medium text-foreground">{p.name}</div>
+                            <div className="text-xs text-muted-foreground md:hidden">{cat}</div>
+                          </td>
+                          <td className="px-3 py-2 text-muted-foreground hidden md:table-cell">{cat}</td>
+                          <td className={cn(
+                            "px-3 py-2 text-right font-medium tabular-nums whitespace-nowrap",
+                            !p.inStock && "text-red-600",
+                            stock.lowStock && "text-amber-600",
+                          )}>
+                            {stock.qty}
+                          </td>
+                          <td className="px-3 py-2 text-right tabular-nums text-muted-foreground hidden sm:table-cell">{stock.min}</td>
+                          <td className="px-3 py-2 text-right tabular-nums text-muted-foreground hidden sm:table-cell">{stock.max}</td>
+                          <td className="px-3 py-2 text-right tabular-nums text-muted-foreground hidden lg:table-cell">
+                            {p.pointsUnilevel ?? "—"}
+                          </td>
+                          <td className="px-3 py-2 text-right tabular-nums whitespace-nowrap hidden md:table-cell">{formatCurrency(p.price)}</td>
+                          <td className="px-3 py-2 text-center whitespace-nowrap">
+                            {p.inStock ? (
+                              <span className={cn(
+                                "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium border",
+                                stock.lowStock
+                                  ? "bg-amber-100 text-amber-700 border-amber-300"
+                                  : "bg-emerald-100 text-emerald-700 border-emerald-300"
+                              )}>
+                                <span className={cn("h-1.5 w-1.5 rounded-full", stock.lowStock ? "bg-amber-500" : "bg-emerald-500")} />
+                                {stock.lowStock ? "estoque baixo" : "em estoque"}
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium border bg-red-100 text-red-700 border-red-300">
+                                <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                                sem estoque
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* Pagination */}
           {totalPages > 1 && (
