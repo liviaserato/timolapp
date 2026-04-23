@@ -365,7 +365,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             </div>
 
             {/* ── Activatable (under SKU) ── */}
-            <div className="flex items-center gap-4 flex-wrap">
+            <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Label className="text-sm">Produto ativável</Label>
                 <Switch checked={activatable} onCheckedChange={setActivatable} className="scale-75" />
@@ -423,7 +423,8 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                             className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
                             onClick={() => translateField(secondaryLang, f.key)}
                           >
-                            <Languages className="h-3 w-3" /> Traduzir do português
+                            <Languages className="h-3 w-3" />
+                            <span className="hidden sm:inline">Traduzir do português</span>
                           </Button>
                         </div>
                       </div>
@@ -483,7 +484,8 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                                 className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
                                 onClick={() => translateField(secondaryLang, f.key)}
                               >
-                                <Languages className="h-3 w-3" /> Traduzir do português
+                                <Languages className="h-3 w-3" />
+                                <span className="hidden sm:inline">Traduzir do português</span>
                               </Button>
                             </>
                           )}
@@ -502,32 +504,6 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                     </Collapsible>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* ── Points ── */}
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Pontuação</Label>
-              <div className="max-w-xs space-y-1">
-                <Label className="text-xs text-muted-foreground">Pontos por produto</Label>
-                <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" />
-                <p className="text-[10px] text-muted-foreground">1 ponto = 1 ponto Unilevel = 1 ponto Binário</p>
-              </div>
-            </div>
-
-            {/* ── Country Visibility ── */}
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Visibilidade por País</Label>
-              <div className="flex flex-wrap gap-4">
-                {COUNTRIES.map(c => (
-                  <label key={c.id} className="flex items-center gap-2 cursor-pointer">
-                    <Checkbox
-                      checked={visibleCountries.includes(c.id)}
-                      onCheckedChange={() => toggleCountry(c.id)}
-                    />
-                    <span className="text-sm">{c.flag} {c.label}</span>
-                  </label>
-                ))}
               </div>
             </div>
 
@@ -572,11 +548,24 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
               </div>
             </div>
 
+            {/* ── Points ── */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Pontuação</Label>
+              <div className="max-w-xs space-y-1">
+                <Label className="text-xs text-muted-foreground">Pontos por produto</Label>
+                <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" />
+                <p className="text-[10px] text-muted-foreground">1 ponto = 1 ponto Unilevel = 1 ponto Binário</p>
+              </div>
+            </div>
 
             {/* ── Package Dimensions ── */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Dimensões da Embalagem</Label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Peso (g)</Label>
+                  <Input type="number" step="1" value={pkgWeight} onChange={e => setPkgWeight(e.target.value)} placeholder="0" />
+                </div>
                 <div className="space-y-1">
                   <Label className="text-xs text-muted-foreground">Altura (cm)</Label>
                   <Input type="number" step="0.1" value={pkgHeight} onChange={e => setPkgHeight(e.target.value)} placeholder="0" />
@@ -592,10 +581,6 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                 <div className="space-y-1">
                   <Label className="text-xs text-muted-foreground">Diâmetro (cm)</Label>
                   <Input type="number" step="0.1" value={pkgDiameter} onChange={e => setPkgDiameter(e.target.value)} placeholder="0" />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Peso (g)</Label>
-                  <Input type="number" step="1" value={pkgWeight} onChange={e => setPkgWeight(e.target.value)} placeholder="0" />
                 </div>
               </div>
             </div>
@@ -629,6 +614,22 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* ── Country Visibility (last) ── */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Visibilidade por País</Label>
+              <div className="flex flex-wrap gap-4">
+                {COUNTRIES.map(c => (
+                  <label key={c.id} className="flex items-center gap-2 cursor-pointer">
+                    <Checkbox
+                      checked={visibleCountries.includes(c.id)}
+                      onCheckedChange={() => toggleCountry(c.id)}
+                    />
+                    <span className="text-sm">{c.flag} {c.label}</span>
+                  </label>
+                ))}
+              </div>
             </div>
 
             {/* ── Actions ── */}
