@@ -423,7 +423,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                             className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
                             onClick={() => translateField(secondaryLang, f.key)}
                           >
-                            <Languages className="h-3 w-3" /> Traduzir do PT
+                            <Languages className="h-3 w-3" /> Traduzir do português
                           </Button>
                         </div>
                       </div>
@@ -467,25 +467,29 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                       open={isOpen}
                       onOpenChange={() => toggleCollapsible(f.key)}
                     >
-                      <CollapsibleTrigger className="flex items-center gap-2 w-full py-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                        <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isOpen && "rotate-180")} />
-                        {ptLabel}
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="space-y-1 pt-1">
-                        <div className="grid grid-cols-2 gap-3">
-                          <div />
-                          <div className="flex justify-end">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
-                              onClick={() => translateField(secondaryLang, f.key)}
-                            >
-                              <Languages className="h-3 w-3" /> Traduzir do PT
-                            </Button>
-                          </div>
+                      <div className="grid grid-cols-2 gap-3 items-center">
+                        <CollapsibleTrigger className="flex items-center gap-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors text-left">
+                          <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isOpen && "rotate-180")} />
+                          {ptLabel}
+                        </CollapsibleTrigger>
+                        <div className="flex items-center justify-between gap-2 min-h-[24px]">
+                          {isOpen && (
+                            <>
+                              <Label className="text-xs text-muted-foreground">{secLabel}</Label>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
+                                onClick={() => translateField(secondaryLang, f.key)}
+                              >
+                                <Languages className="h-3 w-3" /> Traduzir do português
+                              </Button>
+                            </>
+                          )}
                         </div>
+                      </div>
+                      <CollapsibleContent className="space-y-1 pt-1">
                         <SyncedTextareaPair
                           leftValue={multilingualData.pt[f.key]}
                           rightValue={multilingualData[secondaryLang][f.key]}
