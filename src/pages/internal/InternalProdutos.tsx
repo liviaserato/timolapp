@@ -558,9 +558,9 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                                 inputMode="decimal"
                                 className="pl-9 h-8 text-sm"
                                 value={prices[c.id][p.id]}
-                                onChange={e => updatePrice(c.id, p.id, formatPriceInput(e.target.value, c.id))}
-                                onBlur={e => updatePrice(c.id, p.id, finalizePriceInput(e.target.value, c.id))}
-                                placeholder={c.id === "USD" ? "0.00" : "0,00"}
+                                onChange={e => updatePrice(c.id, p.id, formatPriceInput(e.target.value))}
+                                onBlur={e => updatePrice(c.id, p.id, finalizePriceInput(e.target.value))}
+                                placeholder="0,00"
                               />
                             </div>
                           </td>
