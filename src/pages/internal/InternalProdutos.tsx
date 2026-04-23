@@ -352,11 +352,13 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
     );
   };
 
+  const ACCEPTED_MEDIA = ".pdf,.docx,.xlsx,.pptx,.jpg,.jpeg,.png,.svg,.mp4,.mp3";
+
   const handleMediaUpload = () => {
     const input = document.createElement("input");
     input.type = "file";
     input.multiple = true;
-    input.accept = "image/*,video/*";
+    input.accept = ACCEPTED_MEDIA;
     input.onchange = (e) => {
       const files = (e.target as HTMLInputElement).files;
       if (files) {
