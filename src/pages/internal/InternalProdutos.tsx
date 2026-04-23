@@ -820,11 +820,10 @@ export default function InternalProdutos() {
                     <tr className="text-left">
                       <th className="px-3 py-2 font-medium whitespace-nowrap">Código</th>
                       <th className="px-3 py-2 font-medium">Produto</th>
-                      <th className="px-3 py-2 font-medium whitespace-nowrap hidden md:table-cell">Categoria</th>
-                      <th className="px-3 py-2 font-medium text-right whitespace-nowrap">Estoque</th>
-                      <th className="px-3 py-2 font-medium text-right whitespace-nowrap hidden sm:table-cell">Mínimo</th>
-                      <th className="px-3 py-2 font-medium text-right whitespace-nowrap hidden sm:table-cell">Máximo</th>
-                      <th className="px-3 py-2 font-medium text-right whitespace-nowrap hidden lg:table-cell">Pontos</th>
+                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap">Estoque</th>
+                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden sm:table-cell">Mínimo</th>
+                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden sm:table-cell">Máximo</th>
+                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden lg:table-cell">Pontos</th>
                       <th className="px-3 py-2 font-medium text-right whitespace-nowrap hidden md:table-cell">Valor</th>
                       <th className="px-3 py-2 font-medium text-center whitespace-nowrap">Status</th>
                     </tr>
@@ -832,25 +831,22 @@ export default function InternalProdutos() {
                   <tbody>
                     {paginated.map((p) => {
                       const stock = getStockInfo(p);
-                      const cat = categories.find(c => c.id === p.category)?.name ?? p.category;
                       return (
                         <tr key={p.id} className="border-t border-border hover:bg-muted/30 transition-colors">
                           <td className="px-3 py-2 font-mono text-xs text-muted-foreground whitespace-nowrap">{p.id.toUpperCase()}</td>
                           <td className="px-3 py-2">
                             <div className="font-medium text-foreground">{p.name}</div>
-                            <div className="text-xs text-muted-foreground md:hidden">{cat}</div>
                           </td>
-                          <td className="px-3 py-2 text-muted-foreground hidden md:table-cell">{cat}</td>
                           <td className={cn(
-                            "px-3 py-2 text-right font-medium tabular-nums whitespace-nowrap",
+                            "px-3 py-2 text-center font-medium tabular-nums whitespace-nowrap",
                             !p.inStock && "text-red-600",
                             stock.lowStock && "text-amber-600",
                           )}>
                             {stock.qty}
                           </td>
-                          <td className="px-3 py-2 text-right tabular-nums text-muted-foreground hidden sm:table-cell">{stock.min}</td>
-                          <td className="px-3 py-2 text-right tabular-nums text-muted-foreground hidden sm:table-cell">{stock.max}</td>
-                          <td className="px-3 py-2 text-right tabular-nums text-muted-foreground hidden lg:table-cell">
+                          <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden sm:table-cell">{stock.min}</td>
+                          <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden sm:table-cell">{stock.max}</td>
+                          <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden lg:table-cell">
                             {p.pointsUnilevel ?? "—"}
                           </td>
                           <td className="px-3 py-2 text-right tabular-nums whitespace-nowrap hidden md:table-cell">{formatCurrency(p.price)}</td>
