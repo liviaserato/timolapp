@@ -914,15 +914,15 @@ export default function InternalProdutos() {
                 <table className="w-full text-sm table-fixed">
                   <thead className="bg-muted/50 text-muted-foreground">
                     <tr className="text-left">
-                      <th className="px-3 py-2 font-medium whitespace-nowrap w-[110px]">Código</th>
-                      <th className="px-3 py-2 font-medium">Produto</th>
-                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden lg:table-cell w-[70px]">Pontos</th>
-                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden md:table-cell w-[140px]" colSpan={2}>Valor</th>
-                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap w-[80px]">Estoque</th>
-                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap w-[70px]">Mínimo</th>
-                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap w-[70px]">Máximo</th>
-                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden md:table-cell w-[90px]">Vendas 30d</th>
-                      <th className="px-2 py-2 font-medium whitespace-nowrap w-[44px] lg:w-[90px]" aria-label="Ações" />
+                      <th className="px-1.5 lg:px-3 py-2 font-medium whitespace-nowrap text-xs lg:text-sm w-[96px] lg:w-[110px]">Código</th>
+                      <th className="px-1.5 lg:px-3 py-2 font-medium text-xs lg:text-sm">Produto</th>
+                      <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[56px] lg:w-[70px]">Pontos</th>
+                      <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[110px] lg:w-[140px]" colSpan={2}>Valor</th>
+                      <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[64px] lg:w-[80px]">Estoque</th>
+                      <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[56px] lg:w-[70px]">Mínimo</th>
+                      <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[56px] lg:w-[70px]">Máximo</th>
+                      <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm hidden lg:table-cell w-[90px]">Vendas 30d</th>
+                      <th className="px-1 lg:px-2 py-2 font-medium whitespace-nowrap w-[36px] lg:w-[90px]" aria-label="Ações" />
                     </tr>
                   </thead>
                   <tbody>
@@ -941,8 +941,8 @@ export default function InternalProdutos() {
                       const price = splitCurrency(p.price);
                       return (
                         <tr key={p.id} className="group border-t border-border hover:bg-primary/10 transition-colors">
-                          <td className="px-3 py-2 font-mono text-xs text-muted-foreground whitespace-nowrap">
-                            <span className="inline-flex items-center gap-2">
+                          <td className="px-1.5 lg:px-3 py-2 font-mono text-[11px] lg:text-xs text-muted-foreground whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1.5 lg:gap-2">
                               <span
                                 className={cn("h-2 w-2 rounded-full shrink-0", statusColor)}
                                 title={statusLabel}
@@ -951,29 +951,34 @@ export default function InternalProdutos() {
                               {p.id.toUpperCase()}
                             </span>
                           </td>
-                          <td className="px-3 py-2">
-                            <div className="font-medium text-foreground truncate">{p.name}</div>
+                          <td className="px-1.5 lg:px-3 py-2 min-w-0">
+                            <div
+                              className="font-medium text-foreground truncate text-xs lg:text-sm"
+                              title={p.name}
+                            >
+                              {p.name}
+                            </div>
                           </td>
-                          <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden lg:table-cell">
+                          <td className="px-1 lg:px-3 py-2 text-center tabular-nums text-muted-foreground text-xs lg:text-sm">
                             {p.pointsUnilevel ?? "—"}
                           </td>
-                          <td className="pl-3 pr-1 py-2 text-right whitespace-nowrap hidden md:table-cell">{price.symbol}</td>
-                          <td className="pl-1 pr-8 py-2 text-right tabular-nums whitespace-nowrap hidden md:table-cell">{price.amount}</td>
+                          <td className="pl-1 lg:pl-3 pr-0.5 lg:pr-1 py-2 text-right whitespace-nowrap text-xs lg:text-sm">{price.symbol}</td>
+                          <td className="pl-0.5 lg:pl-1 pr-2 lg:pr-8 py-2 text-right tabular-nums whitespace-nowrap text-xs lg:text-sm">{price.amount}</td>
                           <td className={cn(
-                            "px-3 py-2 text-center font-medium tabular-nums whitespace-nowrap",
+                            "px-1 lg:px-3 py-2 text-center font-medium tabular-nums whitespace-nowrap text-xs lg:text-sm",
                             !p.inStock && "text-red-600",
                             stock.lowStock && "text-amber-600",
                           )}>
                             {stock.qty}
                           </td>
-                          <td className="px-3 py-2 text-center tabular-nums text-muted-foreground">{stock.min}</td>
-                          <td className="px-3 py-2 text-center tabular-nums text-muted-foreground">{stock.max}</td>
-                          <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden md:table-cell">{stock.sales30d}</td>
-                          <td className="px-2 py-1 text-right whitespace-nowrap">
+                          <td className="px-1 lg:px-3 py-2 text-center tabular-nums text-muted-foreground text-xs lg:text-sm">{stock.min}</td>
+                          <td className="px-1 lg:px-3 py-2 text-center tabular-nums text-muted-foreground text-xs lg:text-sm">{stock.max}</td>
+                          <td className="px-1 lg:px-3 py-2 text-center tabular-nums text-muted-foreground text-xs lg:text-sm hidden lg:table-cell">{stock.sales30d}</td>
+                          <td className="px-1 lg:px-2 py-1 text-right whitespace-nowrap">
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-7 px-2 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
+                              className="h-7 px-1.5 lg:px-2 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
                               onClick={() => toast.info(`Editar ${p.name}`)}
                               title={`Editar ${p.name}`}
                               aria-label={`Editar ${p.name}`}
