@@ -5,6 +5,7 @@ import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader"
 import { Construction } from "lucide-react";
 
 const RegistrationReportsTab = lazy(() => import("@/components/internal/RegistrationReportsTab"));
+const ProductReportsTab = lazy(() => import("@/components/internal/ProductReportsTab"));
 
 const LazyFallback = () => (
   <FullScreenTimolLoader mode="page" title="Carregando..." className="min-h-[200px] bg-background" />
