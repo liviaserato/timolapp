@@ -854,7 +854,7 @@ export default function InternalProdutos() {
                         : "Em estoque";
                       const price = splitCurrency(p.price);
                       return (
-                        <tr key={p.id} className="group border-t border-border hover:bg-muted/50 transition-colors">
+                        <tr key={p.id} className="group border-t border-border hover:bg-primary/10 transition-colors">
                           <td className="px-3 py-2 font-mono text-xs text-muted-foreground whitespace-nowrap">
                             <span className="inline-flex items-center gap-2">
                               <span
