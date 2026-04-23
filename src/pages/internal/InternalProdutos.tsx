@@ -862,18 +862,18 @@ export default function InternalProdutos() {
                         </span>
                       </div>
                       {/* Line 2: pontos + valor */}
-                      <div className="mt-1 flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                      <div className="mt-1 flex items-center gap-4 text-xs text-muted-foreground">
                         <span>
                           <span className="opacity-70">Pontos:</span>{" "}
                           <span className="tabular-nums text-foreground">{p.pointsUnilevel ?? "—"}</span>
                         </span>
-                        <span className="text-right">
+                        <span>
                           <span className="opacity-70">Valor:</span>{" "}
                           <span className="tabular-nums text-foreground">{price.symbol} {price.amount}</span>
                         </span>
                       </div>
                       {/* Line 3: estoque + mínimo + máximo */}
-                      <div className="mt-1 flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                      <div className="mt-1 flex items-center gap-4 text-xs text-muted-foreground">
                         <span>
                           <span className="opacity-70">Estoque:</span>{" "}
                           <span className={cn(
@@ -883,11 +883,11 @@ export default function InternalProdutos() {
                             p.inStock && !stock.lowStock && "text-foreground",
                           )}>{stock.qty}</span>
                         </span>
-                        <span className="text-center">
+                        <span>
                           <span className="opacity-70">Mín:</span>{" "}
                           <span className="tabular-nums text-foreground">{stock.min}</span>
                         </span>
-                        <span className="text-right">
+                        <span>
                           <span className="opacity-70">Máx:</span>{" "}
                           <span className="tabular-nums text-foreground">{stock.max}</span>
                         </span>
