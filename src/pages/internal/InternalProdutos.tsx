@@ -741,7 +741,10 @@ export default function InternalProdutos() {
                     }}
                   >
                     <SelectTrigger className="h-7 sm:h-8 text-[11px] sm:text-xs w-full sm:w-auto sm:min-w-[130px] px-2 border-dashed rounded-l-none">
-                      <SelectValue placeholder="Classificar" />
+                      {sortDir === "neutral"
+                        ? <span className="text-muted-foreground">Classificar</span>
+                        : <SelectValue placeholder="Classificar" />
+                      }
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="name">Nome</SelectItem>
