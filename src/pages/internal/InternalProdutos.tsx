@@ -266,6 +266,8 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
   const [characteristics, setCharacteristics] = useState<{ id: string; name: string; options: CharOption[] }[]>([]);
   // Inline hint shown below the "+ Opção" button when the user tries to add while last option is blank
   const [optionHint, setOptionHint] = useState<Record<string, boolean>>({});
+  // Controls which characteristic name suggestion popover is open
+  const [charNameOpen, setCharNameOpen] = useState<Record<string, boolean>>({});
 
   const addCharacteristic = () => {
     setCharacteristics(prev => [...prev, { id: crypto.randomUUID(), name: "", options: [{ value: "", suffix: "" }] }]);
