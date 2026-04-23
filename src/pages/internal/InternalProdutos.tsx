@@ -393,25 +393,33 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, editingProduct]);
 
-  // Dirty check — any user-touched field
-  const isDirty = useMemo(() => {
-    if (sku.trim() || category || subcategory || points.trim() || activatable) return true;
-    if (pkgHeight || pkgWidth || pkgLength || pkgDiameter || pkgWeight) return true;
-    if (mediaFiles.length > 0) return true;
-    if (visibleCountries.length !== 1 || visibleCountries[0] !== "BR") return true;
-    if (characteristics.length > 0) return true;
-    for (const lang of Object.keys(multilingualData)) {
-      for (const k of Object.keys(multilingualData[lang])) {
-        if (multilingualData[lang][k].trim()) return true;
-      }
+  // Snapshot of the form right after open/populate, used to detect real changes
+  const [baselineSnapshot, setBaselineSnapshot] = useState<string>("");
+  const baselineCapturedForRef = useRef<string | null>(null);
+
+  const currentSnapshot = useMemo(() => JSON.stringify({
+    sku, category, subcategory, points, activatable, activationDays,
+    pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight,
+    mediaFiles, visibleCountries, multilingualData, prices,
+    characteristics: characteristics.map(c => ({ name: c.name, options: c.options })),
+  }), [sku, category, subcategory, points, activatable, activationDays, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices, characteristics]);
+
+  // Capture baseline once per open (after the populate effect has run)
+  useEffect(() => {
+    if (!open) {
+      baselineCapturedForRef.current = null;
+      setBaselineSnapshot("");
+      return;
     }
-    for (const cur of Object.keys(prices)) {
-      for (const pt of Object.keys(prices[cur])) {
-        if (prices[cur][pt].trim()) return true;
-      }
+    const key = editingProduct?.id ?? "__new__";
+    if (baselineCapturedForRef.current !== key) {
+      baselineCapturedForRef.current = key;
+      setBaselineSnapshot(currentSnapshot);
     }
-    return false;
-  }, [sku, category, subcategory, points, activatable, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices, characteristics]);
+  }, [open, editingProduct, currentSnapshot]);
+
+  // Dirty = current state differs from the baseline captured when the dialog opened
+  const isDirty = baselineSnapshot !== "" && currentSnapshot !== baselineSnapshot;
 
   const handleOpenChange = (next: boolean) => {
     if (!next && isDirty) {
