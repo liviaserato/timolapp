@@ -172,51 +172,27 @@ function splitCurrency(v: number) {
   return { symbol: "R$", amount: formatted };
 }
 
-/** Format a price input value for display per currency. USD uses 1,234.56; BRL/EUR use 1.234,56.
- *  Decimals are only considered when the user explicitly types the decimal separator. */
-function formatPriceInput(raw: string, currency: string): string {
+/** Keep raw price typing: only digits and a single comma. Decimals only exist when the user types the comma. */
+function formatPriceInput(raw: string): string {
   if (!raw) return "";
-  const useDotDecimal = currency === "USD"; // USD: dot=decimal, comma=thousands. BRL/EUR: opposite.
-  const decimalSep = useDotDecimal ? "." : ",";
-  const thousandSep = useDotDecimal ? "," : ".";
+  const cleaned = raw.replace(/[^\d,]/g, "");
+  const firstCommaIdx = cleaned.indexOf(",");
+  if (firstCommaIdx < 0) return cleaned;
 
-  // Strip thousand separators (they are display-only). Keep only digits and the decimal separator.
-  const stripped = raw.split(thousandSep).join("");
-  // Keep only digits and the decimal separator
-  const allowed = stripped.replace(new RegExp(`[^\\d${decimalSep === "." ? "\\." : ","}]`, "g"), "");
-  if (!allowed) return "";
-
-  // Split on first decimal separator only (subsequent ones are ignored)
-  const firstSepIdx = allowed.indexOf(decimalSep);
-  let intPart = allowed;
-  let decPart = "";
-  let hasDecimal = false;
-  if (firstSepIdx >= 0) {
-    hasDecimal = true;
-    intPart = allowed.slice(0, firstSepIdx);
-    decPart = allowed.slice(firstSepIdx + 1).replace(new RegExp(decimalSep === "." ? "\\." : ",", "g"), "").slice(0, 2);
-  }
-
-  const intNum = intPart.replace(/^0+(?=\d)/, "") || "0";
-  const intFormatted = intNum.replace(/\B(?=(\d{3})+(?!\d))/g, thousandSep);
-
-  if (!hasDecimal) return intFormatted;
-  return `${intFormatted}${decimalSep}${decPart}`;
+  const intPart = cleaned.slice(0, firstCommaIdx).replace(/,/g, "");
+  const decPart = cleaned.slice(firstCommaIdx + 1).replace(/,/g, "").slice(0, 2);
+  return `${intPart},${decPart}`;
 }
 
-/** On blur: if the user typed a decimal separator, pad to 2 decimals. Otherwise leave the integer untouched. */
-function finalizePriceInput(raw: string, currency: string): string {
+/** On blur: only pad decimals when the user explicitly typed a comma. */
+function finalizePriceInput(raw: string): string {
   if (!raw) return "";
-  const formatted = formatPriceInput(raw, currency);
-  if (!formatted) return "";
-  const useDotDecimal = currency === "USD";
-  const decimalSep = useDotDecimal ? "." : ",";
-  const idx = formatted.lastIndexOf(decimalSep);
-  if (idx < 0) return formatted; // no decimal typed → keep integer as-is
-  const decLen = formatted.length - idx - 1;
-  if (decLen === 0) return `${formatted}00`;
-  if (decLen === 1) return `${formatted}0`;
-  return formatted;
+  const formatted = formatPriceInput(raw);
+  if (!formatted.includes(",")) return formatted;
+  const [intPart, decPart = ""] = formatted.split(",");
+  if (decPart.length === 0) return `${intPart},00`;
+  if (decPart.length === 1) return `${intPart},0`;
+  return `${intPart},${decPart.slice(0, 2)}`;
 }
 
 /** Deterministic stock info derived from product id (mock data has no real stock fields) */
@@ -582,9 +558,9 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                                 inputMode="decimal"
                                 className="pl-9 h-8 text-sm"
                                 value={prices[c.id][p.id]}
-                                onChange={e => updatePrice(c.id, p.id, formatPriceInput(e.target.value, c.id))}
-                                onBlur={e => updatePrice(c.id, p.id, finalizePriceInput(e.target.value, c.id))}
-                                placeholder={c.id === "USD" ? "0.00" : "0,00"}
+                                onChange={e => updatePrice(c.id, p.id, formatPriceInput(e.target.value))}
+                                onBlur={e => updatePrice(c.id, p.id, finalizePriceInput(e.target.value))}
+                                placeholder="0,00"
                               />
                             </div>
                           </td>
