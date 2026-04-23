@@ -536,8 +536,8 @@ export default function InternalProdutos() {
     return sorted;
   }, [searchTerm, selectedCategory, selectedSubcategory, onlyActivatable, showInStock, showOutOfStock, sortBy, sortDir]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
-  const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   /* Stock counts (respect search/category filters but ignore the pills themselves) */
   const stockCounts = useMemo(() => {
