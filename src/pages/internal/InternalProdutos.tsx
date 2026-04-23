@@ -374,10 +374,35 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
     setMediaFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  // Validation errors — keys: 'sku' | 'category' | 'name' | `suffix:<charId>:<idx>`
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const clearError = (key: string) => {
+    setErrors(prev => {
+      if (!prev[key]) return prev;
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
+  };
+
   const handleSave = () => {
-    if (!sku.trim()) { toast.error("SKU é obrigatório"); return; }
-    if (!category) { toast.error("Categoria é obrigatória"); return; }
-    if (!multilingualData.pt.name.trim()) { toast.error("Nome em Português é obrigatório"); return; }
+    const next: Record<string, string> = {};
+    if (!sku.trim()) next.sku = "Informe o SKU do produto";
+    if (!category) next.category = "Selecione uma categoria";
+    if (!multilingualData.pt.name.trim()) next.name = "Informe o nome do produto em Português";
+
+    // When a characteristic has options with a value, the SKU suffix becomes required for each filled option
+    characteristics.forEach(c => {
+      c.options.forEach((opt, idx) => {
+        if (opt.value.trim() && !opt.suffix.trim()) {
+          next[`suffix:${c.id}:${idx}`] = "Sufixo obrigatório";
+        }
+      });
+    });
+
+    setErrors(next);
+    if (Object.keys(next).length > 0) return;
+
     toast.success("Produto criado com sucesso");
     onOpenChange(false);
   };
@@ -395,22 +420,32 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
             {/* ── SKU + Category + Subcategory ── */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label>SKU *</Label>
-                <Input value={sku} onChange={e => setSku(e.target.value)} placeholder="EX: PRD-001" />
+                <Input
+                  value={sku}
+                  onChange={e => { setSku(e.target.value); clearError("sku"); }}
+                  placeholder="EX: PRD-001"
+                  className={errors.sku ? "border-destructive focus-visible:ring-destructive" : undefined}
+                  aria-invalid={!!errors.sku}
+                />
+                {errors.sku && <p className="text-xs text-destructive">{errors.sku}</p>}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label>Categoria *</Label>
-                <Select value={category} onValueChange={v => { setCategory(v); setSubcategory(""); }}>
-                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <Select value={category} onValueChange={v => { setCategory(v); setSubcategory(""); clearError("category"); }}>
+                  <SelectTrigger className={errors.category ? "border-destructive focus-visible:ring-destructive" : undefined} aria-invalid={!!errors.category}>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
                   <SelectContent>
                     {categories.map(c => (
                       <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {errors.category && <p className="text-xs text-destructive">{errors.category}</p>}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label>Subcategoria</Label>
                 <Select value={subcategory} onValueChange={setSubcategory} disabled={!category}>
                   <SelectTrigger><SelectValue placeholder="Opcional" /></SelectTrigger>
@@ -488,18 +523,25 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                         </div>
                       </div>
                       {f.type === "input" ? (
-                        <div className="grid grid-cols-2 gap-3">
-                          <Input
-                            value={multilingualData.pt[f.key]}
-                            onChange={e => updateML("pt", f.key, e.target.value)}
-                            placeholder={ptLabel}
-                          />
-                          <Input
-                            value={multilingualData[secondaryLang][f.key]}
-                            onChange={e => updateML(secondaryLang, f.key, e.target.value)}
-                            placeholder={secLabel}
-                          />
-                        </div>
+                        <>
+                          <div className="grid grid-cols-2 gap-3">
+                            <Input
+                              value={multilingualData.pt[f.key]}
+                              onChange={e => { updateML("pt", f.key, e.target.value); if (f.key === "name") clearError("name"); }}
+                              placeholder={ptLabel}
+                              className={f.key === "name" && errors.name ? "border-destructive focus-visible:ring-destructive" : undefined}
+                              aria-invalid={f.key === "name" && !!errors.name}
+                            />
+                            <Input
+                              value={multilingualData[secondaryLang][f.key]}
+                              onChange={e => updateML(secondaryLang, f.key, e.target.value)}
+                              placeholder={secLabel}
+                            />
+                          </div>
+                          {f.key === "name" && errors.name && (
+                            <p className="text-xs text-destructive">{errors.name}</p>
+                          )}
+                        </>
                       ) : (
                         <SyncedTextareaPair
                           leftValue={multilingualData.pt[f.key]}
@@ -672,33 +714,40 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
                         <div className="space-y-2">
                           <Label className="text-xs text-muted-foreground">Opções</Label>
-                          {c.options.map((opt, idx) => (
-                            <div key={idx} className="flex items-center gap-2">
-                              <Input
-                                value={opt.value}
-                                onChange={(e) => updateOption(c.id, idx, e.target.value)}
-                                placeholder={`Opção ${idx + 1}`}
-                                className="flex-1"
-                              />
-                              <Input
-                                value={opt.suffix}
-                                onChange={(e) => updateOptionSuffix(c.id, idx, e.target.value)}
-                                placeholder="Sufixo SKU"
-                                className="w-24"
-                              />
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                                onClick={() => removeOption(c.id, idx)}
-                                disabled={c.options.length === 1}
-                                aria-label="Remover opção"
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
+                          {c.options.map((opt, idx) => {
+                            const suffixErr = errors[`suffix:${c.id}:${idx}`];
+                            return (
+                              <div key={idx} className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <Input
+                                    value={opt.value}
+                                    onChange={(e) => updateOption(c.id, idx, e.target.value)}
+                                    placeholder={`Opção ${idx + 1}`}
+                                    className="flex-1"
+                                  />
+                                  <Input
+                                    value={opt.suffix}
+                                    onChange={(e) => { updateOptionSuffix(c.id, idx, e.target.value); clearError(`suffix:${c.id}:${idx}`); }}
+                                    placeholder="Sufixo SKU"
+                                    className={cn("w-24", suffixErr && "border-destructive focus-visible:ring-destructive")}
+                                    aria-invalid={!!suffixErr}
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                    onClick={() => removeOption(c.id, idx)}
+                                    disabled={c.options.length === 1}
+                                    aria-label="Remover opção"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                                {suffixErr && <p className="text-xs text-destructive">{suffixErr}</p>}
+                              </div>
+                            );
+                          })}
                           <div>
                             <Button
                               type="button"
