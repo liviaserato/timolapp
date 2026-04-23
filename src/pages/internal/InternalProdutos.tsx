@@ -172,39 +172,39 @@ function splitCurrency(v: number) {
   return { symbol: "R$", amount: formatted };
 }
 
-/** Format a price input value for display per currency. USD uses 1,234.56; BRL/EUR use 1.234,56. Limits to 2 decimals. */
+/** Format a price input value for display per currency. USD uses 1,234.56; BRL/EUR use 1.234,56.
+ *  Decimals are only considered when the user explicitly types the decimal separator. */
 function formatPriceInput(raw: string, currency: string): string {
   if (!raw) return "";
-  // Keep only digits, comma, dot, minus sign
-  const cleaned = raw.replace(/[^\d.,-]/g, "");
-  if (!cleaned) return "";
-
-  const useDotDecimal = currency === "USD"; // USD: comma=thousands, dot=decimal. BRL/EUR: opposite.
+  const useDotDecimal = currency === "USD"; // USD: dot=decimal, comma=thousands. BRL/EUR: opposite.
   const decimalSep = useDotDecimal ? "." : ",";
   const thousandSep = useDotDecimal ? "," : ".";
 
-  // Determine the decimal separator present in the input: prefer the last occurrence of either , or .
-  const lastComma = cleaned.lastIndexOf(",");
-  const lastDot = cleaned.lastIndexOf(".");
-  let intPart = cleaned;
+  // Strip thousand separators (they are display-only). Keep only digits and the decimal separator.
+  const stripped = raw.split(thousandSep).join("");
+  // Keep only digits and the decimal separator
+  const allowed = stripped.replace(new RegExp(`[^\\d${decimalSep === "." ? "\\." : ","}]`, "g"), "");
+  if (!allowed) return "";
+
+  // Split on first decimal separator only (subsequent ones are ignored)
+  const firstSepIdx = allowed.indexOf(decimalSep);
+  let intPart = allowed;
   let decPart = "";
-  if (lastComma >= 0 || lastDot >= 0) {
-    const decIdx = Math.max(lastComma, lastDot);
-    intPart = cleaned.slice(0, decIdx);
-    decPart = cleaned.slice(decIdx + 1);
+  let hasDecimal = false;
+  if (firstSepIdx >= 0) {
+    hasDecimal = true;
+    intPart = allowed.slice(0, firstSepIdx);
+    decPart = allowed.slice(firstSepIdx + 1).replace(new RegExp(decimalSep === "." ? "\\." : ",", "g"), "").slice(0, 2);
   }
-  // Strip any separators from int part
-  intPart = intPart.replace(/[.,]/g, "");
-  // Strip non-digits from dec part and limit to 2
-  decPart = decPart.replace(/\D/g, "").slice(0, 2);
 
   const intNum = intPart.replace(/^0+(?=\d)/, "") || "0";
   const intFormatted = intNum.replace(/\B(?=(\d{3})+(?!\d))/g, thousandSep);
 
-  return decPart.length > 0 ? `${intFormatted}${decimalSep}${decPart}` : intFormatted;
+  if (!hasDecimal) return intFormatted;
+  return `${intFormatted}${decimalSep}${decPart}`;
 }
 
-/** On blur: ensure value has exactly 2 decimal places. */
+/** On blur: if the user typed a decimal separator, pad to 2 decimals. Otherwise leave the integer untouched. */
 function finalizePriceInput(raw: string, currency: string): string {
   if (!raw) return "";
   const formatted = formatPriceInput(raw, currency);
@@ -212,7 +212,7 @@ function finalizePriceInput(raw: string, currency: string): string {
   const useDotDecimal = currency === "USD";
   const decimalSep = useDotDecimal ? "." : ",";
   const idx = formatted.lastIndexOf(decimalSep);
-  if (idx < 0) return `${formatted}${decimalSep}00`;
+  if (idx < 0) return formatted; // no decimal typed → keep integer as-is
   const decLen = formatted.length - idx - 1;
   if (decLen === 0) return `${formatted}00`;
   if (decLen === 1) return `${formatted}0`;
