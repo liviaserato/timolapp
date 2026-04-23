@@ -687,14 +687,14 @@ export default function InternalProdutos() {
                 </span>
               </div>
 
-              {/* Right cluster: stock pills + sort. Always anchored right; wraps as a group if needed */}
-              <div className="flex flex-nowrap items-center justify-end gap-1 sm:gap-2 ml-auto min-w-0">
+              {/* Right cluster: stock pills + sort. On mobile, takes full width with each item flex-1 */}
+              <div className="flex flex-nowrap items-center justify-end gap-1 sm:gap-2 ml-auto min-w-0 w-full sm:w-auto">
                 {/* Stock pills */}
-                <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                <div className="flex items-center gap-1 sm:gap-2 flex-1 sm:flex-initial sm:shrink-0">
                   <button
                     onClick={() => { if (showInStock && !showOutOfStock) return; setShowInStock(v => !v); setPage(1); }}
                     className={cn(
-                      "inline-flex items-center gap-1 rounded-full px-1.5 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all border whitespace-nowrap",
+                      "inline-flex items-center justify-center gap-1 rounded-full px-1.5 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all border whitespace-nowrap flex-1 sm:flex-initial",
                       showInStock
                         ? "bg-emerald-100 text-emerald-700 border-emerald-300 shadow-sm"
                         : "bg-transparent text-emerald-600/70 border-transparent hover:bg-emerald-50 hover:border-emerald-200"
@@ -706,7 +706,7 @@ export default function InternalProdutos() {
                   <button
                     onClick={() => { if (showOutOfStock && !showInStock) return; setShowOutOfStock(v => !v); setPage(1); }}
                     className={cn(
-                      "inline-flex items-center gap-1 rounded-full px-1.5 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all border whitespace-nowrap",
+                      "inline-flex items-center justify-center gap-1 rounded-full px-1.5 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all border whitespace-nowrap flex-1 sm:flex-initial",
                       showOutOfStock
                         ? "bg-red-100 text-red-700 border-red-300 shadow-sm"
                         : "bg-transparent text-red-500/70 border-transparent hover:bg-red-50 hover:border-red-200"
@@ -718,11 +718,11 @@ export default function InternalProdutos() {
                 </div>
 
                 {/* Sort */}
-                <div className="flex items-center gap-0.5 shrink-0">
+                <div className="flex items-center gap-0.5 flex-1 sm:flex-initial sm:shrink-0">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-7 w-7 sm:h-8 sm:w-8 p-0 border-dashed rounded-r-none"
+                    className="h-7 w-7 sm:h-8 sm:w-8 p-0 border-dashed rounded-r-none shrink-0"
                     onClick={() => setSortDir(d => d === "neutral" ? "asc" : d === "asc" ? "desc" : "asc")}
                     title={sortDir === "neutral" ? "Ordenação padrão" : sortDir === "asc" ? "Ascendente" : "Descendente"}
                   >
@@ -734,7 +734,7 @@ export default function InternalProdutos() {
                     }
                   </Button>
                   <Select value={sortBy} onValueChange={v => setSortBy(v)}>
-                    <SelectTrigger className="h-7 sm:h-8 text-[11px] sm:text-xs w-auto min-w-0 sm:min-w-[130px] px-2 border-dashed rounded-l-none">
+                    <SelectTrigger className="h-7 sm:h-8 text-[11px] sm:text-xs w-full sm:w-auto sm:min-w-[130px] px-2 border-dashed rounded-l-none">
                       <span>Classificar</span>
                     </SelectTrigger>
                     <SelectContent>
