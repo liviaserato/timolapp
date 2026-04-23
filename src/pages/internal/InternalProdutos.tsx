@@ -973,7 +973,7 @@ export default function InternalProdutos() {
                           </td>
                           <td className="px-1 lg:px-3 py-2 text-center tabular-nums text-muted-foreground text-xs lg:text-sm">{stock.min}</td>
                           <td className="px-1 lg:px-3 py-2 text-center tabular-nums text-muted-foreground text-xs lg:text-sm">{stock.max}</td>
-                          <td className="px-1 lg:px-3 py-2 text-center tabular-nums text-muted-foreground text-xs lg:text-sm hidden lg:table-cell">{stock.sales30d}</td>
+                          <td className="px-1 lg:px-3 py-2 text-center tabular-nums text-muted-foreground text-xs lg:text-sm">{stock.sales30d}</td>
                           <td className="px-1 lg:px-2 py-1 text-right whitespace-nowrap">
                             <Button
                               variant="ghost"
