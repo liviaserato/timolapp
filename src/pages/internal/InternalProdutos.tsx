@@ -25,7 +25,8 @@ import { ProductCardUnified } from "@/components/app/pedidos/store/ProductCardUn
 
 
 /* ── Constants ── */
-const ITEMS_PER_PAGE = 12;
+const PAGE_SIZE_OPTIONS = [20, 50, 100];
+const DEFAULT_PAGE_SIZE = 20;
 
 const COUNTRIES = [
   { id: "BR", label: "Brasil", flag: "🇧🇷" },
