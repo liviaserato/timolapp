@@ -916,8 +916,8 @@ export default function InternalProdutos() {
                     <tr className="text-left">
                       <th className="px-1.5 lg:px-3 py-2 font-medium whitespace-nowrap text-xs lg:text-sm w-[96px] lg:w-[110px]">Código</th>
                       <th className="px-1.5 lg:px-3 py-2 font-medium text-xs lg:text-sm">Produto</th>
-                      <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[56px] lg:w-[70px]">Pontos</th>
-                      <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[110px] lg:w-[140px]" colSpan={2}>Valor</th>
+                      <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[56px] lg:w-[70px] hidden lg:table-cell">Pontos</th>
+                      <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[110px] lg:w-[140px] hidden lg:table-cell" colSpan={2}>Valor</th>
                       <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[64px] lg:w-[80px]">Estoque</th>
                       <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[56px] lg:w-[70px]">Mínimo</th>
                       <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[56px] lg:w-[70px]">Máximo</th>
