@@ -527,7 +527,7 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] p-0">
         <DialogHeader className="p-6 pb-0">
-          <DialogTitle className="text-lg font-bold text-primary">Novo Produto</DialogTitle>
+          <DialogTitle className="text-lg font-bold text-primary">{editingProduct ? "Editar Produto" : "Novo Produto"}</DialogTitle>
         </DialogHeader>
 
         <ScrollArea className="max-h-[calc(90vh-120px)]">
