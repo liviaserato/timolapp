@@ -1485,7 +1485,7 @@ export default function InternalProdutos() {
                       {/* Edit (icon-only) */}
                       <button
                         type="button"
-                        onClick={() => toast.info(`Editar ${p.name}`)}
+                        onClick={() => { setEditingProduct(p); setDialogOpen(true); }}
                         title={`Editar ${p.name}`}
                         aria-label={`Editar ${p.name}`}
                         className="absolute top-2 right-2 inline-flex items-center justify-center h-7 w-7 rounded-md text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 hover:bg-accent transition-opacity"
