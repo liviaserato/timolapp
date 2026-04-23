@@ -5,6 +5,7 @@ import { FullScreenTimolLoader } from "@/components/ui/full-screen-timol-loader"
 import { Construction } from "lucide-react";
 
 const RegistrationReportsTab = lazy(() => import("@/components/internal/RegistrationReportsTab"));
+const ProductReportsTab = lazy(() => import("@/components/internal/ProductReportsTab"));
 
 const LazyFallback = () => (
   <FullScreenTimolLoader mode="page" title="Carregando..." className="min-h-[200px] bg-background" />
@@ -57,7 +58,13 @@ export default function InternalRelatorios() {
           </Suspense>
         </TabsContent>
 
-        {tabs.filter(t => t.value !== "cadastro").map(tab => (
+        <TabsContent value="produtos" className="mt-4">
+          <Suspense fallback={<LazyFallback />}>
+            <ProductReportsTab />
+          </Suspense>
+        </TabsContent>
+
+        {tabs.filter(t => t.value !== "cadastro" && t.value !== "produtos").map(tab => (
           <TabsContent key={tab.value} value={tab.value} className="mt-4">
             <PlaceholderTab label={t(tab.labelKey)} />
           </TabsContent>
