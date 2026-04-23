@@ -389,21 +389,36 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
   const handleSave = () => {
     const next: Record<string, string> = {};
-    if (!sku.trim()) next.sku = "Informe o SKU do produto";
-    if (!category) next.category = "Selecione uma categoria";
-    if (!multilingualData.pt.name.trim()) next.name = "Informe o nome do produto em Português";
+    const order: string[] = [];
+    const addErr = (key: string, msg: string) => { next[key] = msg; order.push(key); };
+
+    if (!sku.trim()) addErr("sku", "Informe o SKU do produto");
+    if (!category) addErr("category", "Selecione uma categoria");
+    if (!multilingualData.pt.name.trim()) addErr("name", "Informe o nome do produto em Português");
 
     // When a characteristic has options with a value, the SKU suffix becomes required for each filled option
     characteristics.forEach(c => {
       c.options.forEach((opt, idx) => {
         if (opt.value.trim() && !opt.suffix.trim()) {
-          next[`suffix:${c.id}:${idx}`] = "Sufixo obrigatório";
+          addErr(`suffix:${c.id}:${idx}`, "Sufixo obrigatório");
         }
       });
     });
 
     setErrors(next);
-    if (Object.keys(next).length > 0) return;
+    if (order.length > 0) {
+      // Scroll to the first invalid field so the user notices it
+      requestAnimationFrame(() => {
+        const el = document.querySelector<HTMLElement>(`[data-error-key="${order[0]}"]`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          // Try to focus an input/select trigger inside
+          const focusable = el.querySelector<HTMLElement>("input, [role='combobox'], button, textarea") ?? el;
+          focusable.focus?.();
+        }
+      });
+      return;
+    }
 
     toast.success("Produto criado com sucesso");
     onOpenChange(false);
@@ -422,7 +437,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
             {/* ── SKU + Category + Subcategory ── */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="space-y-1">
+              <div className="space-y-1" data-error-key="sku">
                 <Label>SKU *</Label>
                 <Input
                   value={sku}
@@ -433,7 +448,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                 />
                 {errors.sku && <p className="text-xs text-destructive">{errors.sku}</p>}
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1" data-error-key="category">
                 <Label>Categoria *</Label>
                 <Select value={category} onValueChange={v => { setCategory(v); setSubcategory(""); clearError("category"); }}>
                   <SelectTrigger className={errors.category ? "border-destructive focus-visible:ring-destructive" : undefined} aria-invalid={!!errors.category}>
@@ -505,7 +520,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                   const ptLabel = FIELD_LABELS.pt[f.key];
                   const secLabel = FIELD_LABELS[secondaryLang][f.key];
                   return (
-                    <div key={f.key} className="space-y-1">
+                    <div key={f.key} className="space-y-1" data-error-key={f.key === "name" ? "name" : undefined}>
                       <div className="grid grid-cols-2 gap-3">
                         <Label className="text-xs text-muted-foreground">
                           {ptLabel} {f.key === "name" && "*"}
@@ -719,7 +734,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                           {c.options.map((opt, idx) => {
                             const suffixErr = errors[`suffix:${c.id}:${idx}`];
                             return (
-                              <div key={idx} className="space-y-1">
+                              <div key={idx} className="space-y-1" data-error-key={`suffix:${c.id}:${idx}`}>
                                 <div className="flex items-center gap-2">
                                   <Input
                                     value={opt.value}
