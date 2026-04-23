@@ -437,7 +437,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
             {/* ── SKU + Category + Subcategory ── */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="space-y-1">
+              <div className="space-y-1" data-error-key="sku">
                 <Label>SKU *</Label>
                 <Input
                   value={sku}
@@ -448,7 +448,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                 />
                 {errors.sku && <p className="text-xs text-destructive">{errors.sku}</p>}
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1" data-error-key="category">
                 <Label>Categoria *</Label>
                 <Select value={category} onValueChange={v => { setCategory(v); setSubcategory(""); clearError("category"); }}>
                   <SelectTrigger className={errors.category ? "border-destructive focus-visible:ring-destructive" : undefined} aria-invalid={!!errors.category}>
