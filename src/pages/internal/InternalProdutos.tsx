@@ -1019,22 +1019,24 @@ export default function InternalProdutos() {
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Itens por página</span>
-              <Select
-                value={String(pageSize)}
-                onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}
-              >
-                <SelectTrigger className="h-8 w-[80px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PAGE_SIZE_OPTIONS.map(opt => (
-                    <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {filtered.length > 20 && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">Itens por página</span>
+                <Select
+                  value={String(pageSize)}
+                  onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}
+                >
+                  <SelectTrigger className="h-8 w-[80px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PAGE_SIZE_OPTIONS.map(opt => (
+                      <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
         </>
