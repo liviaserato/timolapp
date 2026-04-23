@@ -733,9 +733,15 @@ export default function InternalProdutos() {
                         : <ArrowDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     }
                   </Button>
-                  <Select value={sortBy} onValueChange={v => setSortBy(v)}>
+                  <Select
+                    value={sortBy}
+                    onValueChange={v => {
+                      setSortBy(v);
+                      if (sortDir === "neutral") setSortDir("asc");
+                    }}
+                  >
                     <SelectTrigger className="h-7 sm:h-8 text-[11px] sm:text-xs w-full sm:w-auto sm:min-w-[130px] px-2 border-dashed rounded-l-none">
-                      <span>Classificar</span>
+                      <SelectValue placeholder="Classificar" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="name">Nome</SelectItem>
