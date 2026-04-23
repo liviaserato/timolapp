@@ -1086,6 +1086,7 @@ export default function InternalProdutos() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [sortBy, setSortBy] = useState<string>("name");
   const [sortDir, setSortDir] = useState<"neutral" | "asc" | "desc">("neutral");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
