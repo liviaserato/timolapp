@@ -423,7 +423,8 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                             className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
                             onClick={() => translateField(secondaryLang, f.key)}
                           >
-                            <Languages className="h-3 w-3" /> Traduzir do português
+                            <Languages className="h-3 w-3" />
+                            <span className="hidden sm:inline">Traduzir do português</span>
                           </Button>
                         </div>
                       </div>
