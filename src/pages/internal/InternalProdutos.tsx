@@ -326,7 +326,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
   return (
     <>
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] p-0">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] p-0">
         <DialogHeader className="p-6 pb-0">
           <DialogTitle className="text-lg font-bold text-primary">Novo Produto</DialogTitle>
         </DialogHeader>
