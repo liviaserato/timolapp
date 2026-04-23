@@ -557,7 +557,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                   <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-muted-foreground">pontos</span>
                 </div>
               </div>
-              <div className="space-y-3 md:col-span-4">
+              <div className="space-y-3 md:col-span-3 md:col-start-3">
                 <Label className="text-sm font-semibold">Visibilidade por País</Label>
                 <div className="flex flex-wrap gap-x-4 gap-y-2">
                   {COUNTRIES.map(c => (
