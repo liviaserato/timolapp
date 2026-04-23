@@ -91,10 +91,10 @@ const FIELD_LABELS: Record<string, Record<string, string>> = {
 
 const ALWAYS_VISIBLE_FIELDS = [
   { key: "name", type: "input" as const },
-  { key: "description", type: "textarea" as const },
 ];
 
 const COLLAPSIBLE_FIELDS = [
+  { key: "description", type: "textarea" as const },
   { key: "benefits", type: "textarea" as const },
   { key: "instructions", type: "textarea" as const },
   { key: "warranty", type: "textarea" as const },
