@@ -75,6 +75,14 @@ function formatCurrency(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+/** Splits a BRL formatted currency into symbol and amount, e.g. "R$ 1.234,56" → { symbol: "R$", amount: "1.234,56" } */
+function splitCurrency(v: number) {
+  const formatted = v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const match = formatted.match(/^(\D+)\s*(.+)$/);
+  if (match) return { symbol: match[1].trim(), amount: match[2] };
+  return { symbol: "R$", amount: formatted };
+}
+
 /** Deterministic stock info derived from product id (mock data has no real stock fields) */
 function getStockInfo(p: Product) {
   // Hash the id for a stable pseudo-random number
