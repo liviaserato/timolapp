@@ -180,13 +180,6 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
     onOpenChange(next);
   };
 
-  const [pkgHeight, setPkgHeight] = useState("");
-  const [pkgWidth, setPkgWidth] = useState("");
-  const [pkgLength, setPkgLength] = useState("");
-  const [pkgDiameter, setPkgDiameter] = useState("");
-  const [pkgWeight, setPkgWeight] = useState("");
-
-  const [mediaFiles, setMediaFiles] = useState<{ name: string; url: string }[]>([]);
 
   const selectedCategory = categories.find(c => c.id === category);
 
