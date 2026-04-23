@@ -553,7 +553,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
               <div className="space-y-3 md:col-span-1">
                 <Label className="text-sm font-semibold">Pontuação</Label>
                 <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" />
-                <p className="text-muted-foreground text-sm mx-0 my-[3px] text-left">pontos por produto</p>
+                <p className="text-muted-foreground text-sm mx-0 my-[3px] text-center">pontos por produto</p>
               </div>
               <div className="space-y-3 md:col-span-4">
                 <Label className="text-sm font-semibold">Visibilidade por País</Label>
