@@ -714,33 +714,40 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
                         <div className="space-y-2">
                           <Label className="text-xs text-muted-foreground">Opções</Label>
-                          {c.options.map((opt, idx) => (
-                            <div key={idx} className="flex items-center gap-2">
-                              <Input
-                                value={opt.value}
-                                onChange={(e) => updateOption(c.id, idx, e.target.value)}
-                                placeholder={`Opção ${idx + 1}`}
-                                className="flex-1"
-                              />
-                              <Input
-                                value={opt.suffix}
-                                onChange={(e) => updateOptionSuffix(c.id, idx, e.target.value)}
-                                placeholder="Sufixo SKU"
-                                className="w-24"
-                              />
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                                onClick={() => removeOption(c.id, idx)}
-                                disabled={c.options.length === 1}
-                                aria-label="Remover opção"
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
+                          {c.options.map((opt, idx) => {
+                            const suffixErr = errors[`suffix:${c.id}:${idx}`];
+                            return (
+                              <div key={idx} className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <Input
+                                    value={opt.value}
+                                    onChange={(e) => updateOption(c.id, idx, e.target.value)}
+                                    placeholder={`Opção ${idx + 1}`}
+                                    className="flex-1"
+                                  />
+                                  <Input
+                                    value={opt.suffix}
+                                    onChange={(e) => { updateOptionSuffix(c.id, idx, e.target.value); clearError(`suffix:${c.id}:${idx}`); }}
+                                    placeholder="Sufixo SKU"
+                                    className={cn("w-24", suffixErr && "border-destructive focus-visible:ring-destructive")}
+                                    aria-invalid={!!suffixErr}
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                    onClick={() => removeOption(c.id, idx)}
+                                    disabled={c.options.length === 1}
+                                    aria-label="Remover opção"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                                {suffixErr && <p className="text-xs text-destructive">{suffixErr}</p>}
+                              </div>
+                            );
+                          })}
                           <div>
                             <Button
                               type="button"
