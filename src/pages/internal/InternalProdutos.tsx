@@ -530,7 +530,9 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
         <AlertDialogHeader>
           <AlertDialogTitle>Alterações não salvas</AlertDialogTitle>
           <AlertDialogDescription>
-            Você fez alterações que ainda não foram salvas. Deseja realmente sair? As alterações serão perdidas.
+            Você fez alterações que ainda não foram salvas.
+            <br />
+            Deseja realmente sair? As alterações serão perdidas.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
