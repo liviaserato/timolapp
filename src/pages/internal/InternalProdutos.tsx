@@ -829,7 +829,7 @@ export default function InternalProdutos() {
                       <th className="px-3 py-2 font-medium">Produto</th>
                       <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden lg:table-cell">Pontos</th>
                       <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden md:table-cell" colSpan={2}>Valor</th>
-                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap border-l border-border">Estoque</th>
+                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap">Estoque</th>
                       <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden sm:table-cell">Mínimo</th>
                       <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden sm:table-cell">Máximo</th>
                       <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden md:table-cell">Vendas 30d</th>
