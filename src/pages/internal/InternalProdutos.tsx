@@ -260,26 +260,34 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
   const [mediaFiles, setMediaFiles] = useState<{ name: string; url: string }[]>([]);
 
-  // Características (e.g. Cor, Voltagem) — each has a name and a list of options
-  const [characteristics, setCharacteristics] = useState<{ id: string; name: string; options: string[] }[]>([]);
+  // Características (e.g. Cor, Voltagem) — each has a name and a list of options with a SKU suffix
+  type CharOption = { value: string; suffix: string };
+  const [characteristics, setCharacteristics] = useState<{ id: string; name: string; options: CharOption[] }[]>([]);
+  // Inline hint shown below the "+ Opção" button when the user tries to add while last option is blank
+  const [optionHint, setOptionHint] = useState<Record<string, boolean>>({});
 
   const addCharacteristic = () => {
-    setCharacteristics(prev => [...prev, { id: crypto.randomUUID(), name: "", options: [""] }]);
+    setCharacteristics(prev => [...prev, { id: crypto.randomUUID(), name: "", options: [{ value: "", suffix: "" }] }]);
   };
   const removeCharacteristic = (id: string) => {
     setCharacteristics(prev => prev.filter(c => c.id !== id));
+    setOptionHint(prev => { const { [id]: _, ...rest } = prev; return rest; });
   };
   const updateCharacteristicName = (id: string, name: string) => {
     setCharacteristics(prev => prev.map(c => c.id === id ? { ...c, name } : c));
   };
   const addOption = (id: string) => {
-    setCharacteristics(prev => prev.map(c => c.id === id ? { ...c, options: [...c.options, ""] } : c));
+    setCharacteristics(prev => prev.map(c => c.id === id ? { ...c, options: [...c.options, { value: "", suffix: "" }] } : c));
   };
   const removeOption = (id: string, idx: number) => {
     setCharacteristics(prev => prev.map(c => c.id === id ? { ...c, options: c.options.filter((_, i) => i !== idx) } : c));
   };
   const updateOption = (id: string, idx: number, value: string) => {
-    setCharacteristics(prev => prev.map(c => c.id === id ? { ...c, options: c.options.map((o, i) => i === idx ? value : o) } : c));
+    setCharacteristics(prev => prev.map(c => c.id === id ? { ...c, options: c.options.map((o, i) => i === idx ? { ...o, value } : o) } : c));
+    if (value.trim()) setOptionHint(prev => ({ ...prev, [id]: false }));
+  };
+  const updateOptionSuffix = (id: string, idx: number, suffix: string) => {
+    setCharacteristics(prev => prev.map(c => c.id === id ? { ...c, options: c.options.map((o, i) => i === idx ? { ...o, suffix } : o) } : c));
   };
 
   const [confirmCloseOpen, setConfirmCloseOpen] = useState(false);
