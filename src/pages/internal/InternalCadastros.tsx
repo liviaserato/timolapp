@@ -585,65 +585,74 @@ export default function InternalCadastros() {
           </p>
         ) : (
           <>
-            {/* Results context header */}
+            {/* Results context header — same responsive pattern as InternalProdutos */}
             <div className="space-y-1.5 px-1">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <h2 className="font-semibold text-foreground text-lg">
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+                {/* Title + count */}
+                <div className="flex items-center gap-2 min-w-0">
+                  <h2 className="font-semibold text-foreground text-lg whitespace-nowrap">
                     {registrationStatus === "pendente" ? "Cadastros Pendentes" : registrationStatus === "cancelado" ? "Cadastros Cancelados" : "Resultado da Busca"}
                   </h2>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">
                     ({filtered.length} {filtered.length === 1 ? "registro encontrado" : "registros encontrados"})
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  {/* Status pills — clickable filters + counts */}
+
+                {/* Right cluster: status pills + sort. Full width on mobile */}
+                <div className="flex flex-nowrap items-center justify-end gap-1 sm:gap-2 ml-auto min-w-0 w-full sm:w-auto">
+                  {/* Status pills — mobile: only dot + count; sm+: full label */}
                   {(registrationStatus === "all" || registrationStatus === "concluido") && (
-                    <>
+                    <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                       <button
                         onClick={() => { if (showActive && !showInactive) return; setShowActive(v => !v); }}
+                        title={showActive ? `${activeCount} ${activeCount === 1 ? "ativo" : "ativos"}` : "Mostrar ativos"}
+                        aria-label={showActive ? `${activeCount} ${activeCount === 1 ? "ativo" : "ativos"}` : "Mostrar ativos"}
                         className={cn(
-                          "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
+                          "inline-flex items-center justify-center gap-1 rounded-full px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all border whitespace-nowrap",
                           showActive
                             ? "bg-emerald-100 text-emerald-700 border-emerald-300 shadow-sm"
                             : "bg-transparent text-emerald-600/70 border-transparent hover:bg-emerald-50 hover:border-emerald-200"
                         )}
                       >
-                        <span className={cn("h-1.5 w-1.5 rounded-full", showActive ? "bg-emerald-500" : "bg-emerald-400/50")} />
-                        {showActive ? `${activeCount} ` : ""}{activeCount === 1 ? "ativo" : "ativos"}
+                        <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", showActive ? "bg-emerald-500" : "bg-emerald-400/50")} />
+                        {showActive ? `${activeCount}` : ""}
+                        <span className="hidden sm:inline">{showActive ? ` ${activeCount === 1 ? "ativo" : "ativos"}` : (activeCount === 1 ? "ativo" : "ativos")}</span>
                       </button>
                       <button
                         onClick={() => { if (showInactive && !showActive) return; setShowInactive(v => !v); }}
+                        title={showInactive ? `${inactiveCount} ${inactiveCount === 1 ? "inativo" : "inativos"}` : "Mostrar inativos"}
+                        aria-label={showInactive ? `${inactiveCount} ${inactiveCount === 1 ? "inativo" : "inativos"}` : "Mostrar inativos"}
                         className={cn(
-                          "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
+                          "inline-flex items-center justify-center gap-1 rounded-full px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all border whitespace-nowrap",
                           showInactive
                             ? "bg-red-100 text-red-700 border-red-300 shadow-sm"
                             : "bg-transparent text-red-500/70 border-transparent hover:bg-red-50 hover:border-red-200"
                         )}
                       >
-                        <span className={cn("h-1.5 w-1.5 rounded-full", showInactive ? "bg-red-500" : "bg-red-400/50")} />
-                        {showInactive ? `${inactiveCount} ` : ""}{inactiveCount === 1 ? "inativo" : "inativos"}
+                        <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", showInactive ? "bg-red-500" : "bg-red-400/50")} />
+                        {showInactive ? `${inactiveCount}` : ""}
+                        <span className="hidden sm:inline">{showInactive ? ` ${inactiveCount === 1 ? "inativo" : "inativos"}` : (inactiveCount === 1 ? "inativo" : "inativos")}</span>
                       </button>
-                    </>
+                    </div>
                   )}
                   {/* Sort */}
-                  <div className="flex items-center gap-0.5 ml-1">
+                  <div className="flex items-center gap-0.5 flex-1 sm:flex-initial sm:shrink-0">
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-8 w-8 p-0 border-dashed rounded-r-none"
+                      className="h-7 w-7 sm:h-8 sm:w-8 p-0 border-dashed rounded-r-none shrink-0"
                       onClick={() => setSortDir(d => d === "neutral" ? "asc" : d === "asc" ? "desc" : "asc")}
                       title={sortDir === "neutral" ? "Ordenação padrão" : sortDir === "asc" ? "Ascendente" : "Descendente"}
                     >
                       {sortDir === "neutral"
-                        ? <ArrowUpDown className="h-3.5 w-3.5" />
+                        ? <ArrowUpDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                         : sortDir === "asc"
-                          ? <ArrowUp className="h-3.5 w-3.5" />
-                          : <ArrowDown className="h-3.5 w-3.5" />
+                          ? <ArrowUp className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                          : <ArrowDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       }
                     </Button>
                     <Select value={sortBy} onValueChange={v => setSortBy(v)}>
-                      <SelectTrigger className="h-8 text-xs w-auto min-w-[130px] border-dashed rounded-l-none">
+                      <SelectTrigger className="h-7 sm:h-8 text-[11px] sm:text-xs w-full sm:w-auto sm:min-w-[130px] px-2 border-dashed rounded-l-none">
                         <span>{t("internal.cadastros.classify")}</span>
                       </SelectTrigger>
                       <SelectContent>
