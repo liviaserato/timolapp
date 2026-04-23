@@ -395,6 +395,7 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
 
   // Snapshot of the form right after open/populate, used to detect real changes
   const [baselineSnapshot, setBaselineSnapshot] = useState<string>("");
+  const baselineCapturedForRef = useRef<string | null>(null);
 
   const currentSnapshot = useMemo(() => JSON.stringify({
     sku, category, subcategory, points, activatable, activationDays,
@@ -402,6 +403,20 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     mediaFiles, visibleCountries, multilingualData, prices,
     characteristics: characteristics.map(c => ({ name: c.name, options: c.options })),
   }), [sku, category, subcategory, points, activatable, activationDays, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices, characteristics]);
+
+  // Capture baseline once per open (after the populate effect has run)
+  useEffect(() => {
+    if (!open) {
+      baselineCapturedForRef.current = null;
+      setBaselineSnapshot("");
+      return;
+    }
+    const key = editingProduct?.id ?? "__new__";
+    if (baselineCapturedForRef.current !== key) {
+      baselineCapturedForRef.current = key;
+      setBaselineSnapshot(currentSnapshot);
+    }
+  }, [open, editingProduct, currentSnapshot]);
 
   // Dirty = current state differs from the baseline captured when the dialog opened
   const isDirty = baselineSnapshot !== "" && currentSnapshot !== baselineSnapshot;
