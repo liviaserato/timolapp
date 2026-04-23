@@ -280,6 +280,26 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
               </div>
             </div>
 
+            {/* ── Activatable (under SKU) ── */}
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Label className="text-sm">Produto ativável</Label>
+                <Switch checked={activatable} onCheckedChange={setActivatable} className="scale-75" />
+                <span className="text-sm text-muted-foreground">{activatable ? "Sim" : "Não"}</span>
+              </div>
+              {activatable && (
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs text-muted-foreground whitespace-nowrap">Por quantos dias?</Label>
+                  <Input
+                    type="number"
+                    className="w-20 h-8"
+                    value={activationDays}
+                    onChange={e => setActivationDays(e.target.value)}
+                  />
+                </div>
+              )}
+            </div>
+
             {/* ── Multilingual Fields ── */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Conteúdo Multilíngue</Label>
@@ -435,27 +455,6 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
               </div>
             </div>
 
-            {/* ── Activatable ── */}
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Produto Ativável</Label>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Switch checked={activatable} onCheckedChange={setActivatable} className="scale-75" />
-                  <span className="text-sm text-muted-foreground">{activatable ? "Sim" : "Não"}</span>
-                </div>
-                {activatable && (
-                  <div className="flex items-center gap-2">
-                    <Label className="text-xs text-muted-foreground whitespace-nowrap">Por quantos dias?</Label>
-                    <Input
-                      type="number"
-                      className="w-20"
-                      value={activationDays}
-                      onChange={e => setActivationDays(e.target.value)}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
 
             {/* ── Package Dimensions ── */}
             <div className="space-y-3">
