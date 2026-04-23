@@ -518,7 +518,7 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
       return;
     }
 
-    toast.success("Produto criado com sucesso");
+    toast.success(editingProduct ? "Produto atualizado com sucesso" : "Produto criado com sucesso");
     onOpenChange(false);
   };
 
