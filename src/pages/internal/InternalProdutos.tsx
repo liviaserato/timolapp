@@ -600,39 +600,54 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                         <div className="flex items-center gap-2">
                           <div className="flex-1 space-y-1">
                             <Label className="text-xs text-muted-foreground">Nome da característica</Label>
-                            <Popover>
-                              <div className="relative">
-                                <PopoverTrigger asChild>
+                            <Popover open={charNameOpen[c.id] ?? false} onOpenChange={(o) => setCharNameOpen(prev => ({ ...prev, [c.id]: o }))}>
+                              <PopoverAnchor asChild>
+                                <div className="relative">
                                   <Input
                                     value={c.name}
-                                    onChange={(e) => updateCharacteristicName(c.id, e.target.value)}
+                                    onChange={(e) => {
+                                      updateCharacteristicName(c.id, e.target.value);
+                                      setCharNameOpen(prev => ({ ...prev, [c.id]: true }));
+                                    }}
+                                    onFocus={() => setCharNameOpen(prev => ({ ...prev, [c.id]: true }))}
+                                    onBlur={() => setTimeout(() => setCharNameOpen(prev => ({ ...prev, [c.id]: false })), 150)}
                                     placeholder="Ex.: Cor, Tamanho"
-                                    className={c.name ? "pr-8" : undefined}
+                                    className={cn("text-left", c.name ? "pr-8" : undefined)}
                                   />
-                                </PopoverTrigger>
-                                {c.name && (
-                                  <button
-                                    type="button"
-                                    onClick={() => updateCharacteristicName(c.id, "")}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-10"
-                                    aria-label="Limpar nome"
-                                  >
-                                    <X className="h-3.5 w-3.5" />
-                                  </button>
-                                )}
-                              </div>
+                                  {c.name && (
+                                    <button
+                                      type="button"
+                                      onMouseDown={(e) => e.preventDefault()}
+                                      onClick={() => updateCharacteristicName(c.id, "")}
+                                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-10"
+                                      aria-label="Limpar nome"
+                                    >
+                                      <X className="h-3.5 w-3.5" />
+                                    </button>
+                                  )}
+                                </div>
+                              </PopoverAnchor>
                               {suggestions.length > 0 && (
                                 <PopoverContent
                                   align="start"
+                                  side="bottom"
+                                  sideOffset={4}
                                   className="p-1 w-[--radix-popover-trigger-width]"
                                   onOpenAutoFocus={(e) => e.preventDefault()}
+                                  onInteractOutside={(e) => {
+                                    // keep input focus behavior; close handled by blur
+                                  }}
                                 >
                                   {suggestions.map(s => (
                                     <button
                                       key={s}
                                       type="button"
-                                      onClick={() => updateCharacteristicName(c.id, s)}
-                                      className="w-full text-left px-2 py-1.5 text-sm rounded hover:bg-accent"
+                                      onMouseDown={(e) => e.preventDefault()}
+                                      onClick={() => {
+                                        updateCharacteristicName(c.id, s);
+                                        setCharNameOpen(prev => ({ ...prev, [c.id]: false }));
+                                      }}
+                                      className="w-full text-left justify-start px-2 py-1.5 text-sm rounded hover:bg-accent"
                                     >
                                       {s}
                                     </button>
