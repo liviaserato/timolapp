@@ -520,7 +520,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                   const ptLabel = FIELD_LABELS.pt[f.key];
                   const secLabel = FIELD_LABELS[secondaryLang][f.key];
                   return (
-                    <div key={f.key} className="space-y-1">
+                    <div key={f.key} className="space-y-1" data-error-key={f.key === "name" ? "name" : undefined}>
                       <div className="grid grid-cols-2 gap-3">
                         <Label className="text-xs text-muted-foreground">
                           {ptLabel} {f.key === "name" && "*"}
