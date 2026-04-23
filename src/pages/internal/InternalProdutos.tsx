@@ -420,22 +420,32 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
             {/* ── SKU + Category + Subcategory ── */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label>SKU *</Label>
-                <Input value={sku} onChange={e => setSku(e.target.value)} placeholder="EX: PRD-001" />
+                <Input
+                  value={sku}
+                  onChange={e => { setSku(e.target.value); clearError("sku"); }}
+                  placeholder="EX: PRD-001"
+                  className={errors.sku ? "border-destructive focus-visible:ring-destructive" : undefined}
+                  aria-invalid={!!errors.sku}
+                />
+                {errors.sku && <p className="text-xs text-destructive">{errors.sku}</p>}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label>Categoria *</Label>
-                <Select value={category} onValueChange={v => { setCategory(v); setSubcategory(""); }}>
-                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <Select value={category} onValueChange={v => { setCategory(v); setSubcategory(""); clearError("category"); }}>
+                  <SelectTrigger className={errors.category ? "border-destructive focus-visible:ring-destructive" : undefined} aria-invalid={!!errors.category}>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
                   <SelectContent>
                     {categories.map(c => (
                       <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {errors.category && <p className="text-xs text-destructive">{errors.category}</p>}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label>Subcategoria</Label>
                 <Select value={subcategory} onValueChange={setSubcategory} disabled={!category}>
                   <SelectTrigger><SelectValue placeholder="Opcional" /></SelectTrigger>
