@@ -683,11 +683,6 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                             </div>
                           ))}
                           <div>
-                            {showHint && lastOptionEmpty && (
-                              <p className="text-xs text-destructive mb-1">
-                                Preencha a opção anterior antes de adicionar outra.
-                              </p>
-                            )}
                             <Button
                               type="button"
                               variant="ghost"
@@ -710,6 +705,11 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                               <Plus className="h-3 w-3" />
                               Opção
                             </Button>
+                            {showHint && lastOptionEmpty && (
+                              <p className="text-xs text-destructive mt-1">
+                                Preencha a opção anterior antes de adicionar outra.
+                              </p>
+                            )}
                           </div>
                         </div>
                       </div>
