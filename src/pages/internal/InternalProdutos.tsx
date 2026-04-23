@@ -871,7 +871,7 @@ export default function InternalProdutos() {
                           <td className="pl-3 pr-1 py-2 text-right whitespace-nowrap hidden md:table-cell">{price.symbol}</td>
                           <td className="pl-1 pr-3 py-2 text-right tabular-nums whitespace-nowrap hidden md:table-cell">{price.amount}</td>
                           <td className={cn(
-                            "px-3 py-2 text-center font-medium tabular-nums whitespace-nowrap border-l border-border",
+                            "px-3 py-2 text-center font-medium tabular-nums whitespace-nowrap",
                             !p.inStock && "text-red-600",
                             stock.lowStock && "text-amber-600",
                           )}>
