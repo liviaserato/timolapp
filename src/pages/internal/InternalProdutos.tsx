@@ -22,7 +22,7 @@ import {
   Search, X, Plus, Package, ChevronLeft, ChevronRight,
   Upload, Trash2, Eye, Pencil, Copy,
   ChevronDown, Languages, ArrowUpDown, ArrowUp, ArrowDown,
-  LayoutGrid, List,
+  LayoutGrid, List, FileText,
 } from "lucide-react";
 import { categories, products as mockProducts, type Product, type Category } from "@/data/mock-products";
 import { toast } from "sonner";
@@ -352,11 +352,13 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
     );
   };
 
+  const ACCEPTED_MEDIA = ".pdf,.docx,.xlsx,.pptx,.jpg,.jpeg,.png,.svg,.mp4,.mp3";
+
   const handleMediaUpload = () => {
     const input = document.createElement("input");
     input.type = "file";
     input.multiple = true;
-    input.accept = "image/*,video/*";
+    input.accept = ACCEPTED_MEDIA;
     input.onchange = (e) => {
       const files = (e.target as HTMLInputElement).files;
       if (files) {
@@ -883,30 +885,44 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Mídias</Label>
               <div className="grid grid-cols-5 gap-3">
-                {mediaFiles.map((file, i) => (
-                  <div key={i} className="relative group rounded-lg overflow-hidden border border-border aspect-square">
-                    <img src={file.url} alt={file.name} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); removeMedia(i); }}
-                        className="p-1 bg-destructive rounded-full"
-                      >
-                        <Trash2 className="h-3.5 w-3.5 text-destructive-foreground" />
-                      </button>
+                {mediaFiles.map((file, i) => {
+                  const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+                  const isImage = ["jpg", "jpeg", "png", "svg", "webp", "gif"].includes(ext);
+                  const isVideo = ["mp4", "mov", "webm"].includes(ext);
+                  return (
+                    <div key={i} className="relative group rounded-lg overflow-hidden border border-border aspect-square">
+                      {isImage ? (
+                        <img src={file.url} alt={file.name} className="w-full h-full object-cover" />
+                      ) : isVideo ? (
+                        <video src={file.url} className="w-full h-full object-cover" muted />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-muted">
+                          <FileText className="h-8 w-8 text-muted-foreground/60" />
+                          <span className="mt-1 text-[10px] uppercase font-semibold text-muted-foreground">{ext}</span>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); removeMedia(i); }}
+                          className="p-1 bg-destructive rounded-full"
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-destructive-foreground" />
+                        </button>
+                      </div>
+                      <p className="absolute bottom-0 inset-x-0 text-[10px] text-white bg-black/50 truncate px-1 py-0.5">{file.name}</p>
                     </div>
-                    <p className="absolute bottom-0 inset-x-0 text-[10px] text-white bg-black/50 truncate px-1 py-0.5">{file.name}</p>
-                  </div>
-                ))}
+                  );
+                })}
                 <div
                   className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-3 text-center cursor-pointer hover:border-primary/40 transition-colors aspect-square flex flex-col items-center justify-center"
                   onClick={handleMediaUpload}
-                  title="JPG, PNG, WebP, MP4 — máx. 20MB cada"
+                  title="PDF, DOCX, XLSX, PPTX, JPG, PNG, SVG, MP4, MP3 — máx. 20MB cada"
                 >
                   <Upload className="h-6 w-6 text-muted-foreground/40 mb-1" />
                   <p className="text-[11px] text-muted-foreground leading-tight">Adicionar mídia</p>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground/60">JPG, PNG, WebP, MP4 — máx. 20MB cada</p>
+              <p className="text-xs text-muted-foreground/60">PDF, DOCX, XLSX, PPTX, JPG, PNG, SVG, MP4, MP3 — máx. 20MB cada</p>
             </div>
 
             {/* ── Actions ── */}
