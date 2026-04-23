@@ -555,7 +555,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                 <div className="grid grid-cols-5 gap-3">
                   <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" />
                 </div>
-                <p className="text-[10px] text-muted-foreground">1 ponto = 1 ponto Unilevel = 1 ponto Binário</p>
+                <p className="text-[10px] text-muted-foreground">pontos por produto</p>
               </div>
               <div className="space-y-3">
                 <Label className="text-sm font-semibold">Visibilidade por País</Label>
