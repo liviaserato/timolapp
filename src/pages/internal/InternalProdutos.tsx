@@ -963,7 +963,7 @@ export default function InternalProdutos() {
                             {p.pointsUnilevel ?? "—"}
                           </td>
                           <td className="pl-1 lg:pl-3 pr-0.5 lg:pr-1 py-2 text-right whitespace-nowrap text-xs lg:text-sm hidden lg:table-cell">{price.symbol}</td>
-                          <td className="pl-0.5 lg:pl-1 pr-2 lg:pr-8 py-2 text-right tabular-nums whitespace-nowrap text-xs lg:text-sm hidden lg:table-cell">{price.amount}</td>
+                          <td className="pl-0.5 lg:pl-1 pr-4 lg:pr-6 py-2 text-right tabular-nums whitespace-nowrap text-xs lg:text-sm hidden lg:table-cell">{price.amount}</td>
                           <td className={cn(
                             "px-1 lg:px-3 py-2 text-center font-medium tabular-nums whitespace-nowrap text-xs lg:text-sm",
                             !p.inStock && "text-red-600",
