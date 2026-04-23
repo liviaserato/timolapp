@@ -616,6 +616,22 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
               )}
             </div>
 
+            {/* ── Country Visibility (last) ── */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Visibilidade por País</Label>
+              <div className="flex flex-wrap gap-4">
+                {COUNTRIES.map(c => (
+                  <label key={c.id} className="flex items-center gap-2 cursor-pointer">
+                    <Checkbox
+                      checked={visibleCountries.includes(c.id)}
+                      onCheckedChange={() => toggleCountry(c.id)}
+                    />
+                    <span className="text-sm">{c.flag} {c.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
             {/* ── Actions ── */}
             <div className="flex justify-end gap-3 pt-2 border-t">
               <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
