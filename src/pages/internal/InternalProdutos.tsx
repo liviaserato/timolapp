@@ -374,10 +374,35 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
     setMediaFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  // Validation errors — keys: 'sku' | 'category' | 'name' | `suffix:<charId>:<idx>`
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const clearError = (key: string) => {
+    setErrors(prev => {
+      if (!prev[key]) return prev;
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
+  };
+
   const handleSave = () => {
-    if (!sku.trim()) { toast.error("SKU é obrigatório"); return; }
-    if (!category) { toast.error("Categoria é obrigatória"); return; }
-    if (!multilingualData.pt.name.trim()) { toast.error("Nome em Português é obrigatório"); return; }
+    const next: Record<string, string> = {};
+    if (!sku.trim()) next.sku = "Informe o SKU do produto";
+    if (!category) next.category = "Selecione uma categoria";
+    if (!multilingualData.pt.name.trim()) next.name = "Informe o nome do produto em Português";
+
+    // When a characteristic has options with a value, the SKU suffix becomes required for each filled option
+    characteristics.forEach(c => {
+      c.options.forEach((opt, idx) => {
+        if (opt.value.trim() && !opt.suffix.trim()) {
+          next[`suffix:${c.id}:${idx}`] = "Sufixo obrigatório";
+        }
+      });
+    });
+
+    setErrors(next);
+    if (Object.keys(next).length > 0) return;
+
     toast.success("Produto criado com sucesso");
     onOpenChange(false);
   };
