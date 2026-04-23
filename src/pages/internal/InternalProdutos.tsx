@@ -296,6 +296,103 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
 
   const [confirmCloseOpen, setConfirmCloseOpen] = useState(false);
 
+  // Reset everything to a clean slate (used both for "new" and before populating "edit")
+  const resetAll = () => {
+    setSku("");
+    setCategory("");
+    setSubcategory("");
+    setPoints("");
+    setActivatable(false);
+    setActivationDays("30");
+    setPkgHeight(""); setPkgWidth(""); setPkgLength(""); setPkgDiameter(""); setPkgWeight("");
+    setMediaFiles([]);
+    setCharacteristics([]);
+    setOptionHint({});
+    setCharNameOpen({});
+    setCollapsibleOpen({});
+    setVisibleCountries(["BR"]);
+    setErrors({});
+    setMultilingualData(() => {
+      const init: Record<string, Record<string, string>> = {};
+      LANGUAGES.forEach(l => {
+        init[l.id] = {};
+        ALL_ML_FIELDS.forEach(f => { init[l.id][f.key] = ""; });
+      });
+      return init;
+    });
+    setPrices(() => {
+      const init: Record<string, Record<string, string>> = {};
+      CURRENCIES.forEach(c => {
+        init[c.id] = {};
+        PRICE_TYPES.forEach(p => { init[c.id][p.id] = ""; });
+      });
+      return init;
+    });
+  };
+
+  // Sync state when the dialog opens (either for a new product or to edit an existing one)
+  useEffect(() => {
+    if (!open) return;
+    resetAll();
+    if (!editingProduct) return;
+
+    const p = editingProduct;
+    setSku(p.id);
+    setCategory(p.category);
+    setSubcategory(p.subcategory ?? "");
+    setActivatable(!!p.activatable);
+    if (p.pointsUnilevel != null) setPoints(String(p.pointsUnilevel));
+    if (p.packageHeight != null) setPkgHeight(String(p.packageHeight));
+    if (p.packageWidth != null) setPkgWidth(String(p.packageWidth));
+    if (p.packageLength != null) setPkgLength(String(p.packageLength));
+    if (p.packageDiameter != null) setPkgDiameter(String(p.packageDiameter));
+    if (p.packageWeight != null) setPkgWeight(String(p.packageWeight));
+
+    // Multilingual content (PT base — secondary languages stay empty until translated)
+    setMultilingualData(prev => {
+      const next = { ...prev };
+      next.pt = {
+        ...next.pt,
+        name: p.name ?? "",
+        description: p.description ?? "",
+        benefits: p.benefits ?? "",
+        instructions: p.instructions ?? "",
+        warranty: p.warranty ?? "",
+        composition: p.composition ?? "",
+        manufacturer: p.manufacturer ?? "",
+      };
+      return next;
+    });
+
+    // Default price into BRL "venda" slot if available
+    if (p.price != null) {
+      setPrices(prev => {
+        const next = { ...prev };
+        if (next.BRL) {
+          next.BRL = { ...next.BRL };
+          const saleKey = PRICE_TYPES[0]?.id;
+          if (saleKey) next.BRL[saleKey] = String(p.price);
+        }
+        return next;
+      });
+    }
+
+    // Variations → characteristics (suffix left blank for the user to fill)
+    if (p.variations && p.variations.length > 0) {
+      setCharacteristics(p.variations.map(v => ({
+        id: crypto.randomUUID(),
+        name: v.label,
+        options: v.options.map(o => ({ value: o, suffix: "" })),
+      })));
+    }
+
+    // Existing image as a media item (preview-only)
+    if (p.image) {
+      setMediaFiles([{ name: p.image.split("/").pop() ?? "imagem", url: p.image }]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, editingProduct]);
+
   // Dirty check — any user-touched field
   const isDirty = useMemo(() => {
     if (sku.trim() || category || subcategory || points.trim() || activatable) return true;
