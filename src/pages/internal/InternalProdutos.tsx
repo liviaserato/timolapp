@@ -507,32 +507,6 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
               </div>
             </div>
 
-            {/* ── Points ── */}
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Pontuação</Label>
-              <div className="max-w-xs space-y-1">
-                <Label className="text-xs text-muted-foreground">Pontos por produto</Label>
-                <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" />
-                <p className="text-[10px] text-muted-foreground">1 ponto = 1 ponto Unilevel = 1 ponto Binário</p>
-              </div>
-            </div>
-
-            {/* ── Country Visibility ── */}
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Visibilidade por País</Label>
-              <div className="flex flex-wrap gap-4">
-                {COUNTRIES.map(c => (
-                  <label key={c.id} className="flex items-center gap-2 cursor-pointer">
-                    <Checkbox
-                      checked={visibleCountries.includes(c.id)}
-                      onCheckedChange={() => toggleCountry(c.id)}
-                    />
-                    <span className="text-sm">{c.flag} {c.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
             {/* ── Prices ── */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Preços</Label>
