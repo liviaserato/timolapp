@@ -218,9 +218,10 @@ function getStockInfo(p: Product) {
 interface NewProductDialogProps {
   open: boolean;
   onOpenChange: (o: boolean) => void;
+  editingProduct?: Product | null;
 }
 
-function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
+function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDialogProps) {
   const [sku, setSku] = useState("");
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
