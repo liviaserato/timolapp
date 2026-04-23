@@ -687,61 +687,64 @@ export default function InternalProdutos() {
                 </span>
               </div>
 
-              {/* Sort — always anchored to the right, regardless of which line it lands on */}
-              <div className="flex items-center gap-0.5 order-2 sm:order-3 ml-auto">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 w-8 p-0 border-dashed rounded-r-none"
-                  onClick={() => setSortDir(d => d === "neutral" ? "asc" : d === "asc" ? "desc" : "asc")}
-                  title={sortDir === "neutral" ? "Ordenação padrão" : sortDir === "asc" ? "Ascendente" : "Descendente"}
-                >
-                  {sortDir === "neutral"
-                    ? <ArrowUpDown className="h-3.5 w-3.5" />
-                    : sortDir === "asc"
-                      ? <ArrowUp className="h-3.5 w-3.5" />
-                      : <ArrowDown className="h-3.5 w-3.5" />
-                  }
-                </Button>
-                <Select value={sortBy} onValueChange={v => setSortBy(v)}>
-                  <SelectTrigger className="h-8 text-xs w-auto min-w-[130px] border-dashed rounded-l-none">
-                    <span>Classificar</span>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="name">Nome</SelectItem>
-                    <SelectItem value="price">Valor</SelectItem>
-                    <SelectItem value="sku">SKU</SelectItem>
-                    <SelectItem value="availability">Disponibilidade</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Right cluster: stock pills + sort. Always anchored right; wraps as a group if needed */}
+              <div className="flex flex-wrap items-center justify-end gap-2 ml-auto">
+                {/* Stock pills */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => { if (showInStock && !showOutOfStock) return; setShowInStock(v => !v); setPage(1); }}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
+                      showInStock
+                        ? "bg-emerald-100 text-emerald-700 border-emerald-300 shadow-sm"
+                        : "bg-transparent text-emerald-600/70 border-transparent hover:bg-emerald-50 hover:border-emerald-200"
+                    )}
+                  >
+                    <span className={cn("h-1.5 w-1.5 rounded-full", showInStock ? "bg-emerald-500" : "bg-emerald-400/50")} />
+                    {showInStock ? `${stockCounts.inStock} ` : ""}em estoque
+                  </button>
+                  <button
+                    onClick={() => { if (showOutOfStock && !showInStock) return; setShowOutOfStock(v => !v); setPage(1); }}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
+                      showOutOfStock
+                        ? "bg-red-100 text-red-700 border-red-300 shadow-sm"
+                        : "bg-transparent text-red-500/70 border-transparent hover:bg-red-50 hover:border-red-200"
+                    )}
+                  >
+                    <span className={cn("h-1.5 w-1.5 rounded-full", showOutOfStock ? "bg-red-500" : "bg-red-400/50")} />
+                    {showOutOfStock ? `${stockCounts.outOfStock} ` : ""}sem estoque
+                  </button>
+                </div>
 
-              {/* Stock pills — wrap to a new line under the title when needed */}
-              <div className="flex flex-wrap items-center gap-2 order-3 sm:order-2 basis-full sm:basis-auto">
-                <button
-                  onClick={() => { if (showInStock && !showOutOfStock) return; setShowInStock(v => !v); setPage(1); }}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
-                    showInStock
-                      ? "bg-emerald-100 text-emerald-700 border-emerald-300 shadow-sm"
-                      : "bg-transparent text-emerald-600/70 border-transparent hover:bg-emerald-50 hover:border-emerald-200"
-                  )}
-                >
-                  <span className={cn("h-1.5 w-1.5 rounded-full", showInStock ? "bg-emerald-500" : "bg-emerald-400/50")} />
-                  {showInStock ? `${stockCounts.inStock} ` : ""}em estoque
-                </button>
-                <button
-                  onClick={() => { if (showOutOfStock && !showInStock) return; setShowOutOfStock(v => !v); setPage(1); }}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all border",
-                    showOutOfStock
-                      ? "bg-red-100 text-red-700 border-red-300 shadow-sm"
-                      : "bg-transparent text-red-500/70 border-transparent hover:bg-red-50 hover:border-red-200"
-                  )}
-                >
-                  <span className={cn("h-1.5 w-1.5 rounded-full", showOutOfStock ? "bg-red-500" : "bg-red-400/50")} />
-                  {showOutOfStock ? `${stockCounts.outOfStock} ` : ""}sem estoque
-                </button>
+                {/* Sort */}
+                <div className="flex items-center gap-0.5">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 p-0 border-dashed rounded-r-none"
+                    onClick={() => setSortDir(d => d === "neutral" ? "asc" : d === "asc" ? "desc" : "asc")}
+                    title={sortDir === "neutral" ? "Ordenação padrão" : sortDir === "asc" ? "Ascendente" : "Descendente"}
+                  >
+                    {sortDir === "neutral"
+                      ? <ArrowUpDown className="h-3.5 w-3.5" />
+                      : sortDir === "asc"
+                        ? <ArrowUp className="h-3.5 w-3.5" />
+                        : <ArrowDown className="h-3.5 w-3.5" />
+                    }
+                  </Button>
+                  <Select value={sortBy} onValueChange={v => setSortBy(v)}>
+                    <SelectTrigger className="h-8 text-xs w-auto min-w-[130px] border-dashed rounded-l-none">
+                      <span>Classificar</span>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="name">Nome</SelectItem>
+                      <SelectItem value="price">Valor</SelectItem>
+                      <SelectItem value="sku">SKU</SelectItem>
+                      <SelectItem value="availability">Disponibilidade</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           </div>
