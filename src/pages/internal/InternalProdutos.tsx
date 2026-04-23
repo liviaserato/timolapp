@@ -1040,7 +1040,7 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
 
             {/* ── Actions ── */}
             <div className="flex justify-end gap-3 pt-2">
-              <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+              <Button variant="outline" onClick={() => handleOpenChange(false)}>Cancelar</Button>
               <Button onClick={handleSave}>{editingProduct ? "Salvar alterações" : "Salvar"}</Button>
             </div>
           </div>
