@@ -917,7 +917,7 @@ export default function InternalProdutos() {
                       <th className="px-1.5 lg:px-3 py-2 font-medium whitespace-nowrap text-xs lg:text-sm w-[96px] lg:w-[110px]">Código</th>
                       <th className="px-1.5 lg:px-3 py-2 font-medium text-xs lg:text-sm">Produto</th>
                       <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[56px] lg:w-[70px] hidden lg:table-cell">Pontos</th>
-                      <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[110px] lg:w-[140px] hidden lg:table-cell" colSpan={2}>Valor</th>
+                      <th className="pl-1 lg:pl-3 pr-4 lg:pr-6 py-2 font-medium text-right whitespace-nowrap text-xs lg:text-sm w-[110px] lg:w-[140px] hidden lg:table-cell" colSpan={2}>Valor</th>
                       <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[64px] lg:w-[80px]">Estoque</th>
                       <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[56px] lg:w-[70px]">Mínimo</th>
                       <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[56px] lg:w-[70px]">Máximo</th>
@@ -963,7 +963,7 @@ export default function InternalProdutos() {
                             {p.pointsUnilevel ?? "—"}
                           </td>
                           <td className="pl-1 lg:pl-3 pr-0.5 lg:pr-1 py-2 text-right whitespace-nowrap text-xs lg:text-sm hidden lg:table-cell">{price.symbol}</td>
-                          <td className="pl-0.5 lg:pl-1 pr-2 lg:pr-8 py-2 text-right tabular-nums whitespace-nowrap text-xs lg:text-sm hidden lg:table-cell">{price.amount}</td>
+                          <td className="pl-0.5 lg:pl-1 pr-4 lg:pr-6 py-2 text-right tabular-nums whitespace-nowrap text-xs lg:text-sm hidden lg:table-cell">{price.amount}</td>
                           <td className={cn(
                             "px-1 lg:px-3 py-2 text-center font-medium tabular-nums whitespace-nowrap text-xs lg:text-sm",
                             !p.inStock && "text-red-600",
