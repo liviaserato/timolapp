@@ -172,10 +172,12 @@ function splitCurrency(v: number) {
   return { symbol: "R$", amount: formatted };
 }
 
-/** Keep raw price typing: only digits and a single comma. Decimals only exist when the user types the comma. */
+/** Keep raw price typing: only digits and a single decimal separator (comma or dot — both accepted, normalized to comma). */
 function formatPriceInput(raw: string): string {
   if (!raw) return "";
-  const cleaned = raw.replace(/[^\d,]/g, "");
+  // Normalize any dot to comma so either separator triggers cents
+  const normalized = raw.replace(/\./g, ",");
+  const cleaned = normalized.replace(/[^\d,]/g, "");
   const firstCommaIdx = cleaned.indexOf(",");
   if (firstCommaIdx < 0) return cleaned;
 
@@ -184,7 +186,7 @@ function formatPriceInput(raw: string): string {
   return `${intPart},${decPart}`;
 }
 
-/** On blur: only pad decimals when the user explicitly typed a comma. */
+/** On blur: only pad decimals when the user explicitly typed a decimal separator. */
 function finalizePriceInput(raw: string): string {
   if (!raw) return "";
   const formatted = formatPriceInput(raw);
