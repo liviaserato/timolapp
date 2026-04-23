@@ -827,19 +827,100 @@ export default function InternalProdutos() {
             </div>
           ) : (
             <div className="rounded-md border border-border overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+              {/* ── Mobile (< sm): stacked rows, no horizontal scroll ── */}
+              <div className="sm:hidden divide-y divide-border">
+                {paginated.map((p) => {
+                  const stock = getStockInfo(p);
+                  const statusColor = !p.inStock
+                    ? "bg-red-500"
+                    : stock.lowStock
+                    ? "bg-amber-500"
+                    : "bg-emerald-500";
+                  const statusLabel = !p.inStock
+                    ? "Sem estoque"
+                    : stock.lowStock
+                    ? "Estoque baixo"
+                    : "Em estoque";
+                  const price = splitCurrency(p.price);
+                  return (
+                    <div
+                      key={p.id}
+                      className="group relative px-3 py-2.5 hover:bg-primary/10 transition-colors"
+                    >
+                      {/* Line 1: status dot + code + name */}
+                      <div className="flex items-center gap-2 pr-9">
+                        <span
+                          className={cn("h-2 w-2 rounded-full shrink-0", statusColor)}
+                          title={statusLabel}
+                          aria-label={statusLabel}
+                        />
+                        <span className="font-mono text-xs text-muted-foreground shrink-0">
+                          {p.id.toUpperCase()}
+                        </span>
+                        <span className="font-medium text-foreground text-sm truncate">
+                          {p.name}
+                        </span>
+                      </div>
+                      {/* Line 2: pontos + valor */}
+                      <div className="mt-1 flex items-center gap-4 text-xs text-muted-foreground">
+                        <span>
+                          <span className="opacity-70">Pontos:</span>{" "}
+                          <span className="tabular-nums text-foreground">{p.pointsUnilevel ?? "—"}</span>
+                        </span>
+                        <span>
+                          <span className="opacity-70">Valor:</span>{" "}
+                          <span className="tabular-nums text-foreground">{price.symbol} {price.amount}</span>
+                        </span>
+                      </div>
+                      {/* Line 3: estoque + mínimo + máximo */}
+                      <div className="mt-1 flex items-center gap-4 text-xs text-muted-foreground">
+                        <span>
+                          <span className="opacity-70">Estoque:</span>{" "}
+                          <span className={cn(
+                            "tabular-nums font-medium",
+                            !p.inStock && "text-red-600",
+                            stock.lowStock && "text-amber-600",
+                            p.inStock && !stock.lowStock && "text-foreground",
+                          )}>{stock.qty}</span>
+                        </span>
+                        <span>
+                          <span className="opacity-70">Mín:</span>{" "}
+                          <span className="tabular-nums text-foreground">{stock.min}</span>
+                        </span>
+                        <span>
+                          <span className="opacity-70">Máx:</span>{" "}
+                          <span className="tabular-nums text-foreground">{stock.max}</span>
+                        </span>
+                      </div>
+                      {/* Edit (icon-only) */}
+                      <button
+                        type="button"
+                        onClick={() => toast.info(`Editar ${p.name}`)}
+                        title={`Editar ${p.name}`}
+                        aria-label={`Editar ${p.name}`}
+                        className="absolute top-2 right-2 inline-flex items-center justify-center h-7 w-7 rounded-md text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 hover:bg-accent transition-opacity"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* ── sm and above: table layout, no horizontal scroll ── */}
+              <div className="hidden sm:block">
+                <table className="w-full text-sm table-fixed">
                   <thead className="bg-muted/50 text-muted-foreground">
                     <tr className="text-left">
-                      <th className="px-3 py-2 font-medium whitespace-nowrap">Código</th>
+                      <th className="px-3 py-2 font-medium whitespace-nowrap w-[110px]">Código</th>
                       <th className="px-3 py-2 font-medium">Produto</th>
-                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden lg:table-cell">Pontos</th>
-                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden md:table-cell" colSpan={2}>Valor</th>
-                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap">Estoque</th>
-                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden sm:table-cell">Mínimo</th>
-                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden sm:table-cell">Máximo</th>
-                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden md:table-cell">Vendas 30d</th>
-                      <th className="px-3 py-2 font-medium whitespace-nowrap w-0" aria-label="Ações" />
+                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden lg:table-cell w-[70px]">Pontos</th>
+                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden md:table-cell w-[140px]" colSpan={2}>Valor</th>
+                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap w-[80px]">Estoque</th>
+                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap w-[70px]">Mínimo</th>
+                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap w-[70px]">Máximo</th>
+                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden md:table-cell w-[90px]">Vendas 30d</th>
+                      <th className="px-2 py-2 font-medium whitespace-nowrap w-[44px] lg:w-[90px]" aria-label="Ações" />
                     </tr>
                   </thead>
                   <tbody>
@@ -869,7 +950,7 @@ export default function InternalProdutos() {
                             </span>
                           </td>
                           <td className="px-3 py-2">
-                            <div className="font-medium text-foreground">{p.name}</div>
+                            <div className="font-medium text-foreground truncate">{p.name}</div>
                           </td>
                           <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden lg:table-cell">
                             {p.pointsUnilevel ?? "—"}
@@ -883,18 +964,20 @@ export default function InternalProdutos() {
                           )}>
                             {stock.qty}
                           </td>
-                          <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden sm:table-cell">{stock.min}</td>
-                          <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden sm:table-cell">{stock.max}</td>
+                          <td className="px-3 py-2 text-center tabular-nums text-muted-foreground">{stock.min}</td>
+                          <td className="px-3 py-2 text-center tabular-nums text-muted-foreground">{stock.max}</td>
                           <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden md:table-cell">{stock.sales30d}</td>
-                          <td className="px-2 py-1 text-right whitespace-nowrap w-0">
+                          <td className="px-2 py-1 text-right whitespace-nowrap">
                             <Button
                               variant="ghost"
                               size="sm"
                               className="h-7 px-2 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
                               onClick={() => toast.info(`Editar ${p.name}`)}
+                              title={`Editar ${p.name}`}
+                              aria-label={`Editar ${p.name}`}
                             >
-                              <Pencil className="h-3.5 w-3.5 mr-1" />
-                              Editar
+                              <Pencil className="h-3.5 w-3.5 lg:mr-1" />
+                              <span className="hidden lg:inline">Editar</span>
                             </Button>
                           </td>
                         </tr>
