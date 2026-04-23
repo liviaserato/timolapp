@@ -916,13 +916,13 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                 <div
                   className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-3 text-center cursor-pointer hover:border-primary/40 transition-colors aspect-square flex flex-col items-center justify-center"
                   onClick={handleMediaUpload}
-                  title="PDF, DOCX, XLSX, PPTX, JPG, PNG, SVG, MP4, MP3 — máx. 20MB cada"
+                  title="Imagens, vídeos, áudios e documentos — máx. 20MB cada"
                 >
                   <Upload className="h-6 w-6 text-muted-foreground/40 mb-1" />
                   <p className="text-[11px] text-muted-foreground leading-tight">Adicionar mídia</p>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground/60">PDF, DOCX, XLSX, PPTX, JPG, PNG, SVG, MP4, MP3 — máx. 20MB cada</p>
+              <p className="text-xs text-muted-foreground/60">Imagens, vídeos, áudios e documentos — máx. 20MB cada</p>
             </div>
 
             {/* ── Actions ── */}
