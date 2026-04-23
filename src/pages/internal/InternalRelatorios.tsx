@@ -58,7 +58,13 @@ export default function InternalRelatorios() {
           </Suspense>
         </TabsContent>
 
-        {tabs.filter(t => t.value !== "cadastro").map(tab => (
+        <TabsContent value="produtos" className="mt-4">
+          <Suspense fallback={<LazyFallback />}>
+            <ProductReportsTab />
+          </Suspense>
+        </TabsContent>
+
+        {tabs.filter(t => t.value !== "cadastro" && t.value !== "produtos").map(tab => (
           <TabsContent key={tab.value} value={tab.value} className="mt-4">
             <PlaceholderTab label={t(tab.labelKey)} />
           </TabsContent>
