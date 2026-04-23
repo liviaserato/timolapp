@@ -10,6 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -134,7 +138,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
     });
     return init;
   });
-  const [priceCurrencyTab, setPriceCurrencyTab] = useState("BRL");
+  
 
   const [activatable, setActivatable] = useState(false);
   const [activationDays, setActivationDays] = useState("30");
@@ -146,6 +150,36 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
   const [pkgWeight, setPkgWeight] = useState("");
 
   const [mediaFiles, setMediaFiles] = useState<{ name: string; url: string }[]>([]);
+
+  const [confirmCloseOpen, setConfirmCloseOpen] = useState(false);
+
+  // Dirty check — any user-touched field
+  const isDirty = useMemo(() => {
+    if (sku.trim() || category || subcategory || points.trim() || activatable) return true;
+    if (pkgHeight || pkgWidth || pkgLength || pkgDiameter || pkgWeight) return true;
+    if (mediaFiles.length > 0) return true;
+    if (visibleCountries.length !== 1 || visibleCountries[0] !== "BR") return true;
+    for (const lang of Object.keys(multilingualData)) {
+      for (const k of Object.keys(multilingualData[lang])) {
+        if (multilingualData[lang][k].trim()) return true;
+      }
+    }
+    for (const cur of Object.keys(prices)) {
+      for (const pt of Object.keys(prices[cur])) {
+        if (prices[cur][pt].trim()) return true;
+      }
+    }
+    return false;
+  }, [sku, category, subcategory, points, activatable, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices]);
+
+  const handleOpenChange = (next: boolean) => {
+    if (!next && isDirty) {
+      setConfirmCloseOpen(true);
+      return;
+    }
+    onOpenChange(next);
+  };
+
 
   const selectedCategory = categories.find(c => c.id === category);
 
@@ -206,7 +240,8 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] p-0">
         <DialogHeader className="p-6 pb-0">
           <DialogTitle className="text-lg font-bold text-primary">Novo Produto</DialogTitle>
@@ -362,35 +397,42 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             {/* ── Prices ── */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Preços</Label>
-              <Tabs value={priceCurrencyTab} onValueChange={setPriceCurrencyTab}>
-                <TabsList className="h-8">
-                  {CURRENCIES.map(c => (
-                    <TabsTrigger key={c.id} value={c.id} className="text-xs">{c.label}</TabsTrigger>
-                  ))}
-                </TabsList>
-                {CURRENCIES.map(c => (
-                  <TabsContent key={c.id} value={c.id} className="mt-3">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      {PRICE_TYPES.map(p => (
-                        <div key={p.id} className="space-y-1">
-                          <Label className="text-xs text-muted-foreground">{p.label}</Label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{c.symbol}</span>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              className="pl-10"
-                              value={prices[c.id][p.id]}
-                              onChange={e => updatePrice(c.id, p.id, e.target.value)}
-                              placeholder="0,00"
-                            />
-                          </div>
-                        </div>
+              <div className="overflow-hidden rounded-md border border-border">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Preço</th>
+                      {CURRENCIES.map(c => (
+                        <th key={c.id} className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">
+                          {c.label.split(" ")[0]}
+                        </th>
                       ))}
-                    </div>
-                  </TabsContent>
-                ))}
-              </Tabs>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {PRICE_TYPES.map((p, idx) => (
+                      <tr key={p.id} className={cn(idx > 0 && "border-t border-border")}>
+                        <td className="px-3 py-2 text-xs font-medium text-foreground whitespace-nowrap">{p.label}</td>
+                        {CURRENCIES.map(c => (
+                          <td key={c.id} className="px-2 py-1.5">
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{c.symbol}</span>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                className="pl-9 h-8 text-sm"
+                                value={prices[c.id][p.id]}
+                                onChange={e => updatePrice(c.id, p.id, e.target.value)}
+                                placeholder="0,00"
+                              />
+                            </div>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {/* ── Activatable ── */}
@@ -398,7 +440,7 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
               <Label className="text-sm font-semibold">Produto Ativável</Label>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <Switch checked={activatable} onCheckedChange={setActivatable} />
+                  <Switch checked={activatable} onCheckedChange={setActivatable} className="scale-75" />
                   <span className="text-sm text-muted-foreground">{activatable ? "Sim" : "Não"}</span>
                 </div>
                 {activatable && (
@@ -476,12 +518,32 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             {/* ── Actions ── */}
             <div className="flex justify-end gap-3 pt-2 border-t">
               <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-              <Button onClick={handleSave}>Salvar Produto</Button>
+              <Button onClick={handleSave}>Salvar</Button>
             </div>
           </div>
         </ScrollArea>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog open={confirmCloseOpen} onOpenChange={setConfirmCloseOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Alterações não salvas</AlertDialogTitle>
+          <AlertDialogDescription>
+            Você fez alterações que ainda não foram salvas. Deseja realmente sair? As alterações serão perdidas.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Continuar editando</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => { setConfirmCloseOpen(false); onOpenChange(false); }}
+          >
+            Sair sem salvar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
 
