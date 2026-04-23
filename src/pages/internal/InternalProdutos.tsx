@@ -552,8 +552,10 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
               <div className="space-y-3 md:col-span-1">
                 <Label className="text-sm font-semibold">Pontuação</Label>
-                <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" />
-                <p className="text-muted-foreground text-sm mx-0 my-[3px] text-center">pontos por produto</p>
+                <div className="relative">
+                  <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" className="pr-14" />
+                  <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-muted-foreground">pontos</span>
+                </div>
               </div>
               <div className="space-y-3 md:col-span-4">
                 <Label className="text-sm font-semibold">Visibilidade por País</Label>
