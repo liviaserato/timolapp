@@ -831,7 +831,7 @@ export default function InternalProdutos() {
                       <th className="px-3 py-2 font-medium whitespace-nowrap">Código</th>
                       <th className="px-3 py-2 font-medium">Produto</th>
                       <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden lg:table-cell">Pontos</th>
-                      <th className="pl-3 pr-0 py-2 font-medium text-right whitespace-nowrap hidden md:table-cell" colSpan={2}>Valor</th>
+                      <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden md:table-cell" colSpan={2}>Valor</th>
                       <th className="px-3 py-2 font-medium text-center whitespace-nowrap border-l border-border">Estoque</th>
                       <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden sm:table-cell">Mínimo</th>
                       <th className="px-3 py-2 font-medium text-center whitespace-nowrap hidden sm:table-cell">Máximo</th>
@@ -854,7 +854,7 @@ export default function InternalProdutos() {
                         : "Em estoque";
                       const price = splitCurrency(p.price);
                       return (
-                        <tr key={p.id} className="group border-t border-border hover:bg-muted/50 transition-colors">
+                        <tr key={p.id} className="group border-t border-border hover:bg-primary/10 transition-colors">
                           <td className="px-3 py-2 font-mono text-xs text-muted-foreground whitespace-nowrap">
                             <span className="inline-flex items-center gap-2">
                               <span
@@ -871,7 +871,7 @@ export default function InternalProdutos() {
                           <td className="px-3 py-2 text-center tabular-nums text-muted-foreground hidden lg:table-cell">
                             {p.pointsUnilevel ?? "—"}
                           </td>
-                          <td className="pl-3 pr-1 py-2 text-right text-muted-foreground whitespace-nowrap hidden md:table-cell">{price.symbol}</td>
+                          <td className="pl-3 pr-1 py-2 text-right whitespace-nowrap hidden md:table-cell">{price.symbol}</td>
                           <td className="pl-1 pr-3 py-2 text-right tabular-nums whitespace-nowrap hidden md:table-cell">{price.amount}</td>
                           <td className={cn(
                             "px-3 py-2 text-center font-medium tabular-nums whitespace-nowrap border-l border-border",
