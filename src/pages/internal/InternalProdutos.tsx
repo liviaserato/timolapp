@@ -921,7 +921,7 @@ export default function InternalProdutos() {
                       <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[64px] lg:w-[80px]">Estoque</th>
                       <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[56px] lg:w-[70px]">Mínimo</th>
                       <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[56px] lg:w-[70px]">Máximo</th>
-                      <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm hidden lg:table-cell w-[90px]">Vendas 30d</th>
+                      <th className="px-1 lg:px-3 py-2 font-medium text-center whitespace-nowrap text-xs lg:text-sm w-[64px] lg:w-[90px]">Vendas 30d</th>
                       <th className="px-1 lg:px-2 py-2 font-medium whitespace-nowrap w-[36px] lg:w-[90px]" aria-label="Ações" />
                     </tr>
                   </thead>
@@ -973,7 +973,7 @@ export default function InternalProdutos() {
                           </td>
                           <td className="px-1 lg:px-3 py-2 text-center tabular-nums text-muted-foreground text-xs lg:text-sm">{stock.min}</td>
                           <td className="px-1 lg:px-3 py-2 text-center tabular-nums text-muted-foreground text-xs lg:text-sm">{stock.max}</td>
-                          <td className="px-1 lg:px-3 py-2 text-center tabular-nums text-muted-foreground text-xs lg:text-sm hidden lg:table-cell">{stock.sales30d}</td>
+                          <td className="px-1 lg:px-3 py-2 text-center tabular-nums text-muted-foreground text-xs lg:text-sm">{stock.sales30d}</td>
                           <td className="px-1 lg:px-2 py-1 text-right whitespace-nowrap">
                             <Button
                               variant="ghost"
