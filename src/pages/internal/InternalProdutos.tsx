@@ -597,6 +597,100 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
               </div>
             </div>
 
+            {/* ── Características ── */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <Label className="text-sm font-semibold">Características</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 gap-1"
+                  onClick={addCharacteristic}
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Adicionar característica
+                </Button>
+              </div>
+
+              {characteristics.length === 0 ? (
+                <p className="text-xs text-muted-foreground">
+                  Nenhuma característica adicionada. Ex.: Cor, Voltagem, Tamanho, Volume.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {characteristics.map((c) => (
+                    <div key={c.id} className="rounded-md border border-border p-3 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 space-y-1">
+                          <Label className="text-xs text-muted-foreground">Nome da característica</Label>
+                          <Input
+                            value={c.name}
+                            onChange={(e) => updateCharacteristicName(c.id, e.target.value)}
+                            placeholder="Ex.: Cor, Voltagem, Tamanho"
+                            list={`char-suggestions-${c.id}`}
+                          />
+                          <datalist id={`char-suggestions-${c.id}`}>
+                            <option value="Cor" />
+                            <option value="Voltagem" />
+                            <option value="Tamanho" />
+                            <option value="Volume" />
+                            <option value="Sabor" />
+                            <option value="Material" />
+                            <option value="Modelo" />
+                          </datalist>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 self-end text-muted-foreground hover:text-destructive"
+                          onClick={() => removeCharacteristic(c.id)}
+                          aria-label="Remover característica"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-xs text-muted-foreground">Opções</Label>
+                        {c.options.map((opt, idx) => (
+                          <div key={idx} className="flex items-center gap-2">
+                            <Input
+                              value={opt}
+                              onChange={(e) => updateOption(c.id, idx, e.target.value)}
+                              placeholder={`Opção ${idx + 1}`}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                              onClick={() => removeOption(c.id, idx)}
+                              disabled={c.options.length === 1}
+                              aria-label="Remover opção"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 gap-1 text-xs text-muted-foreground hover:text-primary"
+                          onClick={() => addOption(c.id)}
+                        >
+                          <Plus className="h-3 w-3" />
+                          + opção
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* ── Points + Country Visibility ── */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
               <div className="space-y-3 md:col-span-1">
