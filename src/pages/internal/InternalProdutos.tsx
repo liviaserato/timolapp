@@ -585,46 +585,61 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                   Nenhuma característica adicionada. Ex.: Cor, Tamanho.
                 </p>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {Array.from({ length: Math.max(3, characteristics.length) }).map((_, colIdx) => {
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {Array.from({ length: Math.max(2, characteristics.length) }).map((_, colIdx) => {
                     const c = characteristics[colIdx];
                     if (!c) {
                       return <div key={`empty-${colIdx}`} className="hidden md:block" aria-hidden="true" />;
                     }
-                    const lastOptionEmpty = c.options.length > 0 && !c.options[c.options.length - 1].trim();
+                    const lastOptionEmpty = c.options.length > 0 && !c.options[c.options.length - 1].value.trim();
+                    const showHint = optionHint[c.id];
+                    const suggestions = ["Cor", "Voltagem", "Tamanho", "Volume", "Sabor", "Material", "Modelo"]
+                      .filter(s => !c.name || s.toLowerCase().includes(c.name.toLowerCase()));
                     return (
                       <div key={c.id} className="rounded-md border border-border p-3 space-y-3">
                         <div className="flex items-center gap-2">
                           <div className="flex-1 space-y-1">
                             <Label className="text-xs text-muted-foreground">Nome da característica</Label>
-                            <div className="relative">
-                              <Input
-                                value={c.name}
-                                onChange={(e) => updateCharacteristicName(c.id, e.target.value)}
-                                placeholder="Ex.: Cor, Tamanho"
-                                list={`char-suggestions-${c.id}`}
-                                className={c.name ? "pr-8" : undefined}
-                              />
-                              {c.name && (
-                                <button
-                                  type="button"
-                                  onClick={() => updateCharacteristicName(c.id, "")}
-                                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                  aria-label="Limpar nome"
+                            <Popover>
+                              <div className="relative">
+                                <PopoverTrigger asChild>
+                                  <Input
+                                    value={c.name}
+                                    onChange={(e) => updateCharacteristicName(c.id, e.target.value)}
+                                    placeholder="Ex.: Cor, Tamanho"
+                                    className={c.name ? "pr-8" : undefined}
+                                  />
+                                </PopoverTrigger>
+                                {c.name && (
+                                  <button
+                                    type="button"
+                                    onClick={() => updateCharacteristicName(c.id, "")}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-10"
+                                    aria-label="Limpar nome"
+                                  >
+                                    <X className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                              </div>
+                              {suggestions.length > 0 && (
+                                <PopoverContent
+                                  align="start"
+                                  className="p-1 w-[--radix-popover-trigger-width]"
+                                  onOpenAutoFocus={(e) => e.preventDefault()}
                                 >
-                                  <X className="h-3.5 w-3.5" />
-                                </button>
+                                  {suggestions.map(s => (
+                                    <button
+                                      key={s}
+                                      type="button"
+                                      onClick={() => updateCharacteristicName(c.id, s)}
+                                      className="w-full text-left px-2 py-1.5 text-sm rounded hover:bg-accent"
+                                    >
+                                      {s}
+                                    </button>
+                                  ))}
+                                </PopoverContent>
                               )}
-                              <datalist id={`char-suggestions-${c.id}`}>
-                                <option value="Cor" />
-                                <option value="Voltagem" />
-                                <option value="Tamanho" />
-                                <option value="Volume" />
-                                <option value="Sabor" />
-                                <option value="Material" />
-                                <option value="Modelo" />
-                              </datalist>
-                            </div>
+                            </Popover>
                           </div>
                           <Button
                             type="button"
@@ -643,9 +658,16 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                           {c.options.map((opt, idx) => (
                             <div key={idx} className="flex items-center gap-2">
                               <Input
-                                value={opt}
+                                value={opt.value}
                                 onChange={(e) => updateOption(c.id, idx, e.target.value)}
                                 placeholder={`Opção ${idx + 1}`}
+                                className="flex-1"
+                              />
+                              <Input
+                                value={opt.suffix}
+                                onChange={(e) => updateOptionSuffix(c.id, idx, e.target.value)}
+                                placeholder="Sufixo SKU"
+                                className="w-24"
                               />
                               <Button
                                 type="button"
@@ -660,27 +682,35 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
                               </Button>
                             </div>
                           ))}
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className={cn(
-                              "h-7 gap-1 text-xs",
-                              lastOptionEmpty
-                                ? "text-muted-foreground/60 hover:text-muted-foreground/60"
-                                : "text-muted-foreground hover:text-primary"
+                          <div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className={cn(
+                                "h-7 gap-1 text-xs",
+                                lastOptionEmpty
+                                  ? "text-muted-foreground/60 hover:text-muted-foreground/60"
+                                  : "text-muted-foreground hover:text-primary"
+                              )}
+                              onClick={() => {
+                                if (lastOptionEmpty) {
+                                  setOptionHint(prev => ({ ...prev, [c.id]: true }));
+                                  return;
+                                }
+                                setOptionHint(prev => ({ ...prev, [c.id]: false }));
+                                addOption(c.id);
+                              }}
+                            >
+                              <Plus className="h-3 w-3" />
+                              Opção
+                            </Button>
+                            {showHint && lastOptionEmpty && (
+                              <p className="text-xs text-destructive mt-1">
+                                Preencha a opção anterior antes de adicionar outra.
+                              </p>
                             )}
-                            onClick={() => {
-                              if (lastOptionEmpty) {
-                                toast.info("Preencha a opção anterior antes de adicionar outra.");
-                                return;
-                              }
-                              addOption(c.id);
-                            }}
-                          >
-                            <Plus className="h-3 w-3" />
-                            Opção
-                          </Button>
+                          </div>
                         </div>
                       </div>
                     );
