@@ -549,15 +549,13 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
             </div>
 
             {/* ── Points + Country Visibility ── */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+              <div className="space-y-3 md:col-span-1">
                 <Label className="text-sm font-semibold">Pontuação</Label>
-                <div className="grid grid-cols-5 gap-3">
-                  <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" />
-                </div>
+                <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" />
                 <p className="text-[10px] text-muted-foreground">pontos por produto</p>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-3 md:col-span-4">
                 <Label className="text-sm font-semibold">Visibilidade por País</Label>
                 <div className="flex flex-wrap gap-x-4 gap-y-2">
                   {COUNTRIES.map(c => (
