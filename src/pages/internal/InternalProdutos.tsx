@@ -151,6 +151,43 @@ function NewProductDialog({ open, onOpenChange }: NewProductDialogProps) {
 
   const [mediaFiles, setMediaFiles] = useState<{ name: string; url: string }[]>([]);
 
+  const [confirmCloseOpen, setConfirmCloseOpen] = useState(false);
+
+  // Dirty check — any user-touched field
+  const isDirty = useMemo(() => {
+    if (sku.trim() || category || subcategory || points.trim() || activatable) return true;
+    if (pkgHeight || pkgWidth || pkgLength || pkgDiameter || pkgWeight) return true;
+    if (mediaFiles.length > 0) return true;
+    if (visibleCountries.length !== 1 || visibleCountries[0] !== "BR") return true;
+    for (const lang of Object.keys(multilingualData)) {
+      for (const k of Object.keys(multilingualData[lang])) {
+        if (multilingualData[lang][k].trim()) return true;
+      }
+    }
+    for (const cur of Object.keys(prices)) {
+      for (const pt of Object.keys(prices[cur])) {
+        if (prices[cur][pt].trim()) return true;
+      }
+    }
+    return false;
+  }, [sku, category, subcategory, points, activatable, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices]);
+
+  const handleOpenChange = (next: boolean) => {
+    if (!next && isDirty) {
+      setConfirmCloseOpen(true);
+      return;
+    }
+    onOpenChange(next);
+  };
+
+  const [pkgHeight, setPkgHeight] = useState("");
+  const [pkgWidth, setPkgWidth] = useState("");
+  const [pkgLength, setPkgLength] = useState("");
+  const [pkgDiameter, setPkgDiameter] = useState("");
+  const [pkgWeight, setPkgWeight] = useState("");
+
+  const [mediaFiles, setMediaFiles] = useState<{ name: string; url: string }[]>([]);
+
   const selectedCategory = categories.find(c => c.id === category);
 
   const updateML = (lang: string, field: string, value: string) => {
