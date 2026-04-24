@@ -53,6 +53,12 @@ const PRICE_TYPES = [
   { id: "cliente_final", label: "Cliente Final" },
 ];
 
+// Tipos de pontuação que o produto gera ao ser vendido (futuramente outros tipos podem ser adicionados)
+const POINT_TYPES = [
+  { id: "binario", label: "Binário" },
+  { id: "unilevel", label: "Unilevel" },
+];
+
 const LANGUAGES = [
   { id: "pt", label: "Português", flag: "🇧🇷" },
   { id: "en", label: "English", flag: "🇺🇸" },
