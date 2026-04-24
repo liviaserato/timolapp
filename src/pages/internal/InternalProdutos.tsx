@@ -53,6 +53,12 @@ const PRICE_TYPES = [
   { id: "cliente_final", label: "Cliente Final" },
 ];
 
+// Tipos de pontuação que o produto gera ao ser vendido (futuramente outros tipos podem ser adicionados)
+const POINT_TYPES = [
+  { id: "binario", label: "Binário" },
+  { id: "unilevel", label: "Unilevel" },
+];
+
 const LANGUAGES = [
   { id: "pt", label: "Português", flag: "🇧🇷" },
   { id: "en", label: "English", flag: "🇺🇸" },
@@ -235,7 +241,22 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     return init;
   });
 
-  const [points, setPoints] = useState("");
+  // Pontuação por tipo (Binário, Unilevel, ...)
+  const [pointsByType, setPointsByType] = useState<Record<string, string>>(() => {
+    const init: Record<string, string> = {};
+    POINT_TYPES.forEach(t => { init[t.id] = ""; });
+    return init;
+  });
+
+  // Conversão dos pontos por tipo × moeda — ex.: 1 ponto binário = X reais
+  const [pointConversion, setPointConversion] = useState<Record<string, Record<string, string>>>(() => {
+    const init: Record<string, Record<string, string>> = {};
+    POINT_TYPES.forEach(t => {
+      init[t.id] = {};
+      CURRENCIES.forEach(c => { init[t.id][c.id] = ""; });
+    });
+    return init;
+  });
 
   const [collapsibleOpen, setCollapsibleOpen] = useState<Record<string, boolean>>({});
   const [visibleCountries, setVisibleCountries] = useState<string[]>(["BR"]);
@@ -301,7 +322,19 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     setSku("");
     setCategory("");
     setSubcategory("");
-    setPoints("");
+    setPointsByType(() => {
+      const init: Record<string, string> = {};
+      POINT_TYPES.forEach(t => { init[t.id] = ""; });
+      return init;
+    });
+    setPointConversion(() => {
+      const init: Record<string, Record<string, string>> = {};
+      POINT_TYPES.forEach(t => {
+        init[t.id] = {};
+        CURRENCIES.forEach(c => { init[t.id][c.id] = ""; });
+      });
+      return init;
+    });
     setActivatable(false);
     setActivationDays("30");
     setPkgHeight(""); setPkgWidth(""); setPkgLength(""); setPkgDiameter(""); setPkgWeight("");
@@ -341,7 +374,9 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     setCategory(p.category);
     setSubcategory(p.subcategory ?? "");
     setActivatable(!!p.activatable);
-    if (p.pointsUnilevel != null) setPoints(String(p.pointsUnilevel));
+    if (p.pointsUnilevel != null) {
+      setPointsByType(prev => ({ ...prev, unilevel: String(p.pointsUnilevel) }));
+    }
     if (p.packageHeight != null) setPkgHeight(String(p.packageHeight));
     if (p.packageWidth != null) setPkgWidth(String(p.packageWidth));
     if (p.packageLength != null) setPkgLength(String(p.packageLength));
@@ -398,11 +433,11 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
   const baselineCapturedForRef = useRef<string | null>(null);
 
   const currentSnapshot = useMemo(() => JSON.stringify({
-    sku, category, subcategory, points, activatable, activationDays,
+    sku, category, subcategory, pointsByType, pointConversion, activatable, activationDays,
     pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight,
     mediaFiles, visibleCountries, multilingualData, prices,
     characteristics: characteristics.map(c => ({ name: c.name, options: c.options })),
-  }), [sku, category, subcategory, points, activatable, activationDays, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices, characteristics]);
+  }), [sku, category, subcategory, pointsByType, pointConversion, activatable, activationDays, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices, characteristics]);
 
   // Capture baseline once per open (after the populate effect has run)
   useEffect(() => {
@@ -950,28 +985,105 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
               </div>
             </div>
 
-            {/* ── Points + Country Visibility ── */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-              <div className="space-y-3 md:col-span-1">
-                <Label className="text-sm font-semibold">Pontuação</Label>
-                <div className="relative">
-                  <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" className="pr-14" />
-                  <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-muted-foreground">pontos</span>
-                </div>
+            {/* ── Pontuação ── */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Pontuação</Label>
+              <div className="overflow-hidden rounded-md border border-border">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Tipo</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Pontos gerados</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {POINT_TYPES.map((t, idx) => (
+                      <tr key={t.id} className={cn(idx > 0 && "border-t border-border")}>
+                        <td className="px-3 py-2 text-xs font-medium text-foreground whitespace-nowrap">{t.label}</td>
+                        <td className="px-2 py-1.5">
+                          <div className="relative">
+                            <Input
+                              type="number"
+                              min="0"
+                              className="pr-14 h-8 text-sm"
+                              value={pointsByType[t.id] ?? ""}
+                              onChange={e => setPointsByType(prev => ({ ...prev, [t.id]: e.target.value }))}
+                              placeholder="0"
+                            />
+                            <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">pontos</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-              <div className="space-y-3 md:col-span-3 md:col-start-3">
-                <Label className="text-sm font-semibold">Visibilidade por País</Label>
-                <div className="flex flex-wrap gap-x-4 gap-y-2">
-                  {COUNTRIES.map(c => (
-                    <label key={c.id} className="flex items-center gap-2 cursor-pointer">
-                      <Checkbox
-                        checked={visibleCountries.includes(c.id)}
-                        onCheckedChange={() => toggleCountry(c.id)}
-                      />
-                      <span className="text-sm">{c.flag} {c.label}</span>
-                    </label>
-                  ))}
-                </div>
+            </div>
+
+            {/* ── Conversão dos Pontos ── */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Conversão dos Pontos</Label>
+              <p className="text-xs text-muted-foreground">
+                Defina quanto vale 1 ponto de cada tipo em cada moeda (ex.: 1 ponto binário = R$ 0,50).
+              </p>
+              <div className="overflow-hidden rounded-md border border-border">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">1 ponto =</th>
+                      {CURRENCIES.map(c => (
+                        <th key={c.id} className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">
+                          {c.label.split(" ")[0]}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {POINT_TYPES.map((t, idx) => (
+                      <tr key={t.id} className={cn(idx > 0 && "border-t border-border")}>
+                        <td className="px-3 py-2 text-xs font-medium text-foreground whitespace-nowrap">{t.label}</td>
+                        {CURRENCIES.map(c => (
+                          <td key={c.id} className="px-2 py-1.5">
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{c.symbol}</span>
+                              <Input
+                                type="text"
+                                inputMode="decimal"
+                                className="pl-9 h-8 text-sm"
+                                value={pointConversion[t.id]?.[c.id] ?? ""}
+                                onChange={e => setPointConversion(prev => ({
+                                  ...prev,
+                                  [t.id]: { ...prev[t.id], [c.id]: formatPriceInput(e.target.value) },
+                                }))}
+                                onBlur={e => setPointConversion(prev => ({
+                                  ...prev,
+                                  [t.id]: { ...prev[t.id], [c.id]: finalizePriceInput(e.target.value) },
+                                }))}
+                                placeholder="0,00"
+                              />
+                            </div>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* ── Visibilidade por País ── */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Visibilidade por País</Label>
+              <div className="flex flex-wrap gap-x-4 gap-y-2">
+                {COUNTRIES.map(c => (
+                  <label key={c.id} className="flex items-center gap-2 cursor-pointer">
+                    <Checkbox
+                      checked={visibleCountries.includes(c.id)}
+                      onCheckedChange={() => toggleCountry(c.id)}
+                    />
+                    <span className="text-sm">{c.flag} {c.label}</span>
+                  </label>
+                ))}
               </div>
             </div>
 
