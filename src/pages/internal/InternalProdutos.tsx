@@ -985,15 +985,23 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
               </div>
             </div>
 
-            {/* ── Pontuação ── */}
+            {/* ── Pontuação e Conversão ── */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Pontuação</Label>
+              <p className="text-xs text-muted-foreground">
+                Informe os pontos gerados por tipo e quanto vale 1 ponto em cada moeda (ex.: 1 ponto binário = R$ 0,50).
+              </p>
               <div className="overflow-hidden rounded-md border border-border">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/50">
                     <tr>
                       <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Tipo</th>
                       <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Pontos gerados</th>
+                      {CURRENCIES.map(c => (
+                        <th key={c.id} className="px-3 py-2 text-left text-xs font-medium text-muted-foreground whitespace-nowrap">
+                          1 ponto = {c.label.split(" ")[0]}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
@@ -1013,35 +1021,6 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                             <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">pontos</span>
                           </div>
                         </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* ── Conversão dos Pontos ── */}
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Conversão dos Pontos</Label>
-              <p className="text-xs text-muted-foreground">
-                Defina quanto vale 1 ponto de cada tipo em cada moeda (ex.: 1 ponto binário = R$ 0,50).
-              </p>
-              <div className="overflow-hidden rounded-md border border-border">
-                <table className="w-full text-sm">
-                  <thead className="bg-muted/50">
-                    <tr>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">1 ponto =</th>
-                      {CURRENCIES.map(c => (
-                        <th key={c.id} className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">
-                          {c.label.split(" ")[0]}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {POINT_TYPES.map((t, idx) => (
-                      <tr key={t.id} className={cn(idx > 0 && "border-t border-border")}>
-                        <td className="px-3 py-2 text-xs font-medium text-foreground whitespace-nowrap">{t.label}</td>
                         {CURRENCIES.map(c => (
                           <td key={c.id} className="px-2 py-1.5">
                             <div className="relative">
