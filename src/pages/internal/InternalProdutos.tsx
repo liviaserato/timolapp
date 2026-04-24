@@ -241,7 +241,22 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     return init;
   });
 
-  const [points, setPoints] = useState("");
+  // Pontuação por tipo (Binário, Unilevel, ...)
+  const [pointsByType, setPointsByType] = useState<Record<string, string>>(() => {
+    const init: Record<string, string> = {};
+    POINT_TYPES.forEach(t => { init[t.id] = ""; });
+    return init;
+  });
+
+  // Conversão dos pontos por tipo × moeda — ex.: 1 ponto binário = X reais
+  const [pointConversion, setPointConversion] = useState<Record<string, Record<string, string>>>(() => {
+    const init: Record<string, Record<string, string>> = {};
+    POINT_TYPES.forEach(t => {
+      init[t.id] = {};
+      CURRENCIES.forEach(c => { init[t.id][c.id] = ""; });
+    });
+    return init;
+  });
 
   const [collapsibleOpen, setCollapsibleOpen] = useState<Record<string, boolean>>({});
   const [visibleCountries, setVisibleCountries] = useState<string[]>(["BR"]);
