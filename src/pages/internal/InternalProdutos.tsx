@@ -322,7 +322,19 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     setSku("");
     setCategory("");
     setSubcategory("");
-    setPoints("");
+    setPointsByType(() => {
+      const init: Record<string, string> = {};
+      POINT_TYPES.forEach(t => { init[t.id] = ""; });
+      return init;
+    });
+    setPointConversion(() => {
+      const init: Record<string, Record<string, string>> = {};
+      POINT_TYPES.forEach(t => {
+        init[t.id] = {};
+        CURRENCIES.forEach(c => { init[t.id][c.id] = ""; });
+      });
+      return init;
+    });
     setActivatable(false);
     setActivationDays("30");
     setPkgHeight(""); setPkgWidth(""); setPkgLength(""); setPkgDiameter(""); setPkgWeight("");
