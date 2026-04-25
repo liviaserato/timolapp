@@ -337,6 +337,11 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
       });
       return init;
     });
+    setPointConversion(() => {
+      const init: Record<string, string> = {};
+      CURRENCIES.forEach(c => { init[c.id] = ""; });
+      return init;
+    });
   };
 
   // Sync state when the dialog opens (either for a new product or to edit an existing one)
