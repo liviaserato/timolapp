@@ -250,6 +250,13 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     });
     return init;
   });
+
+  // Conversão: quanto vale 1 ponto em cada moeda
+  const [pointConversion, setPointConversion] = useState<Record<string, string>>(() => {
+    const init: Record<string, string> = {};
+    CURRENCIES.forEach(c => { init[c.id] = ""; });
+    return init;
+  });
   
 
   const [activatable, setActivatable] = useState(false);
