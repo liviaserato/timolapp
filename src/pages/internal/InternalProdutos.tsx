@@ -302,7 +302,8 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     setSku("");
     setCategory("");
     setSubcategory("");
-    setPoints("");
+    setPointsBinary("");
+    setPointsUnilevel("");
     setActivatable(false);
     setActivationDays("30");
     setPkgHeight(""); setPkgWidth(""); setPkgLength(""); setPkgDiameter(""); setPkgWeight("");
