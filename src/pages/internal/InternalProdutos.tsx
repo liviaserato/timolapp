@@ -923,6 +923,30 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
               )}
             </div>
 
+            {/* ── Pontuação ── */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+              <div className="space-y-3 md:col-span-2">
+                <Label className="text-sm font-semibold">Pontuação</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Binário</Label>
+                    <div className="relative">
+                      <Input type="number" value={pointsBinary} onChange={e => setPointsBinary(e.target.value)} placeholder="0" className="pr-12" />
+                      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">pts</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Unilevel</Label>
+                    <div className="relative">
+                      <Input type="number" value={pointsUnilevel} onChange={e => setPointsUnilevel(e.target.value)} placeholder="0" className="pr-12" />
+                      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">pts</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="md:col-span-3" aria-hidden="true" />
+            </div>
+
             {/* ── Prices ── */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Preços</Label>
@@ -963,30 +987,6 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                   </tbody>
                 </table>
               </div>
-            </div>
-
-            {/* ── Pontuação ── */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-              <div className="space-y-3 md:col-span-2">
-                <Label className="text-sm font-semibold">Pontuação</Label>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">Binário</Label>
-                    <div className="relative">
-                      <Input type="number" value={pointsBinary} onChange={e => setPointsBinary(e.target.value)} placeholder="0" className="pr-12" />
-                      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">pts</span>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">Unilevel</Label>
-                    <div className="relative">
-                      <Input type="number" value={pointsUnilevel} onChange={e => setPointsUnilevel(e.target.value)} placeholder="0" className="pr-12" />
-                      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">pts</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="md:col-span-3" aria-hidden="true" />
             </div>
 
             {/* ── Conversão Pontos por Moeda (largura cheia, igual à tabela de Preços) ── */}
