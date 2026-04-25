@@ -1057,6 +1057,22 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
               </div>
             </div>
 
+            {/* ── Visibilidade por País ── */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Visibilidade por País</Label>
+              <div className="flex flex-wrap gap-x-4 gap-y-2">
+                {COUNTRIES.map(c => (
+                  <label key={c.id} className="flex items-center gap-2 cursor-pointer">
+                    <Checkbox
+                      checked={visibleCountries.includes(c.id)}
+                      onCheckedChange={() => toggleCountry(c.id)}
+                    />
+                    <span className="text-sm">{c.flag} {c.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
             {/* ── Media Upload ── */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Mídias</Label>
