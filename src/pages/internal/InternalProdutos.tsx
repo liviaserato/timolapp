@@ -240,7 +240,7 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
   const [sku, setSku] = useState("");
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
-  const [secondaryLang, setSecondaryLang] = useState<"en" | "es">("en");
+  
   const [multilingualData, setMultilingualData] = useState<Record<string, Record<string, string>>>(() => {
     const init: Record<string, Record<string, string>> = {};
     LANGUAGES.forEach(l => {
