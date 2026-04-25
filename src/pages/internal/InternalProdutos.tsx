@@ -250,6 +250,13 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     });
     return init;
   });
+
+  // Conversão: quanto vale 1 ponto em cada moeda
+  const [pointConversion, setPointConversion] = useState<Record<string, string>>(() => {
+    const init: Record<string, string> = {};
+    CURRENCIES.forEach(c => { init[c.id] = ""; });
+    return init;
+  });
   
 
   const [activatable, setActivatable] = useState(false);
@@ -330,6 +337,11 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
       });
       return init;
     });
+    setPointConversion(() => {
+      const init: Record<string, string> = {};
+      CURRENCIES.forEach(c => { init[c.id] = ""; });
+      return init;
+    });
   };
 
   // Sync state when the dialog opens (either for a new product or to edit an existing one)
@@ -403,9 +415,9 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
   const currentSnapshot = useMemo(() => JSON.stringify({
     sku, category, subcategory, pointsBinary, pointsUnilevel, activatable, activationDays,
     pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight,
-    mediaFiles, visibleCountries, multilingualData, prices,
+    mediaFiles, visibleCountries, multilingualData, prices, pointConversion,
     characteristics: characteristics.map(c => ({ name: c.name, options: c.options })),
-  }), [sku, category, subcategory, pointsBinary, pointsUnilevel, activatable, activationDays, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices, characteristics]);
+  }), [sku, category, subcategory, pointsBinary, pointsUnilevel, activatable, activationDays, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices, pointConversion, characteristics]);
 
   // Capture baseline once per open (after the populate effect has run)
   useEffect(() => {
@@ -948,6 +960,46 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                         ))}
                       </tr>
                     ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* ── Conversão Pontos por Moeda ── */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Conversão Pontos por Moeda</Label>
+              <div className="overflow-hidden rounded-md border border-border">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Conversão</th>
+                      {CURRENCIES.map(c => (
+                        <th key={c.id} className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">
+                          {c.label.split(" ")[0]}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="px-3 py-2 text-xs font-medium text-foreground whitespace-nowrap">1 ponto</td>
+                      {CURRENCIES.map(c => (
+                        <td key={c.id} className="px-2 py-1.5">
+                          <div className="relative">
+                            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{c.symbol}</span>
+                            <Input
+                              type="text"
+                              inputMode="decimal"
+                              className="pl-9 h-8 text-sm"
+                              value={pointConversion[c.id]}
+                              onChange={e => setPointConversion(prev => ({ ...prev, [c.id]: formatPriceInput(e.target.value) }))}
+                              onBlur={e => setPointConversion(prev => ({ ...prev, [c.id]: finalizePriceInput(e.target.value) }))}
+                              placeholder="0,00"
+                            />
+                          </div>
+                        </td>
+                      ))}
+                    </tr>
                   </tbody>
                 </table>
               </div>
