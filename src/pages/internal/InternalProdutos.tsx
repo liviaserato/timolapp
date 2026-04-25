@@ -343,7 +343,8 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     setCategory(p.category);
     setSubcategory(p.subcategory ?? "");
     setActivatable(!!p.activatable);
-    if (p.pointsUnilevel != null) setPoints(String(p.pointsUnilevel));
+    if (p.pointsUnilevel != null) setPointsUnilevel(String(p.pointsUnilevel));
+    if (p.pointsBinary != null) setPointsBinary(String(p.pointsBinary));
     if (p.packageHeight != null) setPkgHeight(String(p.packageHeight));
     if (p.packageWidth != null) setPkgWidth(String(p.packageWidth));
     if (p.packageLength != null) setPkgLength(String(p.packageLength));
