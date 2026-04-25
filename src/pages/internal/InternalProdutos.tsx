@@ -965,6 +965,46 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
               </div>
             </div>
 
+            {/* ── Conversão Pontos por Moeda ── */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Conversão Pontos por Moeda</Label>
+              <div className="overflow-hidden rounded-md border border-border">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Conversão</th>
+                      {CURRENCIES.map(c => (
+                        <th key={c.id} className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">
+                          {c.label.split(" ")[0]}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="px-3 py-2 text-xs font-medium text-foreground whitespace-nowrap">1 ponto</td>
+                      {CURRENCIES.map(c => (
+                        <td key={c.id} className="px-2 py-1.5">
+                          <div className="relative">
+                            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{c.symbol}</span>
+                            <Input
+                              type="text"
+                              inputMode="decimal"
+                              className="pl-9 h-8 text-sm"
+                              value={pointConversion[c.id]}
+                              onChange={e => setPointConversion(prev => ({ ...prev, [c.id]: formatPriceInput(e.target.value) }))}
+                              onBlur={e => setPointConversion(prev => ({ ...prev, [c.id]: finalizePriceInput(e.target.value) }))}
+                              placeholder="0,00"
+                            />
+                          </div>
+                        </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
             {/* ── Points + Country Visibility ── */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
               <div className="space-y-3 md:col-span-2">
