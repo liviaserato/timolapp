@@ -235,7 +235,8 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     return init;
   });
 
-  const [points, setPoints] = useState("");
+  const [pointsBinary, setPointsBinary] = useState("");
+  const [pointsUnilevel, setPointsUnilevel] = useState("");
 
   const [collapsibleOpen, setCollapsibleOpen] = useState<Record<string, boolean>>({});
   const [visibleCountries, setVisibleCountries] = useState<string[]>(["BR"]);
