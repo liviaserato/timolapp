@@ -415,9 +415,9 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
   const currentSnapshot = useMemo(() => JSON.stringify({
     sku, category, subcategory, pointsBinary, pointsUnilevel, activatable, activationDays,
     pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight,
-    mediaFiles, visibleCountries, multilingualData, prices,
+    mediaFiles, visibleCountries, multilingualData, prices, pointConversion,
     characteristics: characteristics.map(c => ({ name: c.name, options: c.options })),
-  }), [sku, category, subcategory, pointsBinary, pointsUnilevel, activatable, activationDays, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices, characteristics]);
+  }), [sku, category, subcategory, pointsBinary, pointsUnilevel, activatable, activationDays, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices, pointConversion, characteristics]);
 
   // Capture baseline once per open (after the populate effect has run)
   useEffect(() => {
