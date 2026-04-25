@@ -105,53 +105,68 @@ const COLLAPSIBLE_FIELDS = [
 
 const ALL_ML_FIELDS = [...ALWAYS_VISIBLE_FIELDS, ...COLLAPSIBLE_FIELDS];
 
-/* ── Synced-height textarea pair ──
- * Renders two textareas side-by-side and keeps both at the same height
- * (the max of their natural content heights). */
-function SyncedTextareaPair({
-  leftValue, rightValue,
-  onLeftChange, onRightChange,
-  leftPlaceholder, rightPlaceholder,
+/* ── Synced-height textarea trio ──
+ * Renders three textareas side-by-side (PT / EN / ES) and keeps all three
+ * at the same height (the max of their natural content heights). */
+function SyncedTextareaTrio({
+  ptValue, enValue, esValue,
+  onPtChange, onEnChange, onEsChange,
+  ptPlaceholder, enPlaceholder, esPlaceholder,
   minRows = 3,
 }: {
-  leftValue: string;
-  rightValue: string;
-  onLeftChange: (v: string) => void;
-  onRightChange: (v: string) => void;
-  leftPlaceholder?: string;
-  rightPlaceholder?: string;
+  ptValue: string;
+  enValue: string;
+  esValue: string;
+  onPtChange: (v: string) => void;
+  onEnChange: (v: string) => void;
+  onEsChange: (v: string) => void;
+  ptPlaceholder?: string;
+  enPlaceholder?: string;
+  esPlaceholder?: string;
   minRows?: number;
 }) {
-  const leftRef = useRef<HTMLTextAreaElement>(null);
-  const rightRef = useRef<HTMLTextAreaElement>(null);
+  const ptRef = useRef<HTMLTextAreaElement>(null);
+  const enRef = useRef<HTMLTextAreaElement>(null);
+  const esRef = useRef<HTMLTextAreaElement>(null);
 
   useLayoutEffect(() => {
-    const l = leftRef.current;
-    const r = rightRef.current;
-    if (!l || !r) return;
-    l.style.height = "auto";
-    r.style.height = "auto";
-    const max = Math.max(l.scrollHeight, r.scrollHeight);
-    l.style.height = `${max}px`;
-    r.style.height = `${max}px`;
-  }, [leftValue, rightValue]);
+    const p = ptRef.current;
+    const e = enRef.current;
+    const s = esRef.current;
+    if (!p || !e || !s) return;
+    p.style.height = "auto";
+    e.style.height = "auto";
+    s.style.height = "auto";
+    const max = Math.max(p.scrollHeight, e.scrollHeight, s.scrollHeight);
+    p.style.height = `${max}px`;
+    e.style.height = `${max}px`;
+    s.style.height = `${max}px`;
+  }, [ptValue, enValue, esValue]);
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-3 gap-3">
       <Textarea
-        ref={leftRef}
+        ref={ptRef}
         rows={minRows}
-        value={leftValue}
-        onChange={e => onLeftChange(e.target.value)}
-        placeholder={leftPlaceholder}
+        value={ptValue}
+        onChange={e => onPtChange(e.target.value)}
+        placeholder={ptPlaceholder}
         className="resize-none overflow-hidden"
       />
       <Textarea
-        ref={rightRef}
+        ref={enRef}
         rows={minRows}
-        value={rightValue}
-        onChange={e => onRightChange(e.target.value)}
-        placeholder={rightPlaceholder}
+        value={enValue}
+        onChange={e => onEnChange(e.target.value)}
+        placeholder={enPlaceholder}
+        className="resize-none overflow-hidden"
+      />
+      <Textarea
+        ref={esRef}
+        rows={minRows}
+        value={esValue}
+        onChange={e => onEsChange(e.target.value)}
+        placeholder={esPlaceholder}
         className="resize-none overflow-hidden"
       />
     </div>
