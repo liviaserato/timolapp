@@ -235,7 +235,8 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     return init;
   });
 
-  const [points, setPoints] = useState("");
+  const [pointsBinary, setPointsBinary] = useState("");
+  const [pointsUnilevel, setPointsUnilevel] = useState("");
 
   const [collapsibleOpen, setCollapsibleOpen] = useState<Record<string, boolean>>({});
   const [visibleCountries, setVisibleCountries] = useState<string[]>(["BR"]);
@@ -301,7 +302,8 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     setSku("");
     setCategory("");
     setSubcategory("");
-    setPoints("");
+    setPointsBinary("");
+    setPointsUnilevel("");
     setActivatable(false);
     setActivationDays("30");
     setPkgHeight(""); setPkgWidth(""); setPkgLength(""); setPkgDiameter(""); setPkgWeight("");
@@ -341,7 +343,8 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
     setCategory(p.category);
     setSubcategory(p.subcategory ?? "");
     setActivatable(!!p.activatable);
-    if (p.pointsUnilevel != null) setPoints(String(p.pointsUnilevel));
+    if (p.pointsUnilevel != null) setPointsUnilevel(String(p.pointsUnilevel));
+    if (p.pointsBinary != null) setPointsBinary(String(p.pointsBinary));
     if (p.packageHeight != null) setPkgHeight(String(p.packageHeight));
     if (p.packageWidth != null) setPkgWidth(String(p.packageWidth));
     if (p.packageLength != null) setPkgLength(String(p.packageLength));
@@ -398,11 +401,11 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
   const baselineCapturedForRef = useRef<string | null>(null);
 
   const currentSnapshot = useMemo(() => JSON.stringify({
-    sku, category, subcategory, points, activatable, activationDays,
+    sku, category, subcategory, pointsBinary, pointsUnilevel, activatable, activationDays,
     pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight,
     mediaFiles, visibleCountries, multilingualData, prices,
     characteristics: characteristics.map(c => ({ name: c.name, options: c.options })),
-  }), [sku, category, subcategory, points, activatable, activationDays, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices, characteristics]);
+  }), [sku, category, subcategory, pointsBinary, pointsUnilevel, activatable, activationDays, pkgHeight, pkgWidth, pkgLength, pkgDiameter, pkgWeight, mediaFiles, visibleCountries, multilingualData, prices, characteristics]);
 
   // Capture baseline once per open (after the populate effect has run)
   useEffect(() => {
@@ -952,14 +955,26 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
 
             {/* ── Points + Country Visibility ── */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-              <div className="space-y-3 md:col-span-1">
+              <div className="space-y-3 md:col-span-2">
                 <Label className="text-sm font-semibold">Pontuação</Label>
-                <div className="relative">
-                  <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" className="pr-14" />
-                  <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-muted-foreground">pontos</span>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Binário</Label>
+                    <div className="relative">
+                      <Input type="number" value={pointsBinary} onChange={e => setPointsBinary(e.target.value)} placeholder="0" className="pr-12" />
+                      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">pts</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Unilevel</Label>
+                    <div className="relative">
+                      <Input type="number" value={pointsUnilevel} onChange={e => setPointsUnilevel(e.target.value)} placeholder="0" className="pr-12" />
+                      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">pts</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-3 md:col-span-3 md:col-start-3">
+              <div className="space-y-3 md:col-span-3">
                 <Label className="text-sm font-semibold">Visibilidade por País</Label>
                 <div className="flex flex-wrap gap-x-4 gap-y-2">
                   {COUNTRIES.map(c => (
