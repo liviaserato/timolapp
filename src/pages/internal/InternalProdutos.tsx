@@ -105,53 +105,68 @@ const COLLAPSIBLE_FIELDS = [
 
 const ALL_ML_FIELDS = [...ALWAYS_VISIBLE_FIELDS, ...COLLAPSIBLE_FIELDS];
 
-/* ── Synced-height textarea pair ──
- * Renders two textareas side-by-side and keeps both at the same height
- * (the max of their natural content heights). */
-function SyncedTextareaPair({
-  leftValue, rightValue,
-  onLeftChange, onRightChange,
-  leftPlaceholder, rightPlaceholder,
+/* ── Synced-height textarea trio ──
+ * Renders three textareas side-by-side (PT / EN / ES) and keeps all three
+ * at the same height (the max of their natural content heights). */
+function SyncedTextareaTrio({
+  ptValue, enValue, esValue,
+  onPtChange, onEnChange, onEsChange,
+  ptPlaceholder, enPlaceholder, esPlaceholder,
   minRows = 3,
 }: {
-  leftValue: string;
-  rightValue: string;
-  onLeftChange: (v: string) => void;
-  onRightChange: (v: string) => void;
-  leftPlaceholder?: string;
-  rightPlaceholder?: string;
+  ptValue: string;
+  enValue: string;
+  esValue: string;
+  onPtChange: (v: string) => void;
+  onEnChange: (v: string) => void;
+  onEsChange: (v: string) => void;
+  ptPlaceholder?: string;
+  enPlaceholder?: string;
+  esPlaceholder?: string;
   minRows?: number;
 }) {
-  const leftRef = useRef<HTMLTextAreaElement>(null);
-  const rightRef = useRef<HTMLTextAreaElement>(null);
+  const ptRef = useRef<HTMLTextAreaElement>(null);
+  const enRef = useRef<HTMLTextAreaElement>(null);
+  const esRef = useRef<HTMLTextAreaElement>(null);
 
   useLayoutEffect(() => {
-    const l = leftRef.current;
-    const r = rightRef.current;
-    if (!l || !r) return;
-    l.style.height = "auto";
-    r.style.height = "auto";
-    const max = Math.max(l.scrollHeight, r.scrollHeight);
-    l.style.height = `${max}px`;
-    r.style.height = `${max}px`;
-  }, [leftValue, rightValue]);
+    const p = ptRef.current;
+    const e = enRef.current;
+    const s = esRef.current;
+    if (!p || !e || !s) return;
+    p.style.height = "auto";
+    e.style.height = "auto";
+    s.style.height = "auto";
+    const max = Math.max(p.scrollHeight, e.scrollHeight, s.scrollHeight);
+    p.style.height = `${max}px`;
+    e.style.height = `${max}px`;
+    s.style.height = `${max}px`;
+  }, [ptValue, enValue, esValue]);
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-3 gap-3">
       <Textarea
-        ref={leftRef}
+        ref={ptRef}
         rows={minRows}
-        value={leftValue}
-        onChange={e => onLeftChange(e.target.value)}
-        placeholder={leftPlaceholder}
+        value={ptValue}
+        onChange={e => onPtChange(e.target.value)}
+        placeholder={ptPlaceholder}
         className="resize-none overflow-hidden"
       />
       <Textarea
-        ref={rightRef}
+        ref={enRef}
         rows={minRows}
-        value={rightValue}
-        onChange={e => onRightChange(e.target.value)}
-        placeholder={rightPlaceholder}
+        value={enValue}
+        onChange={e => onEnChange(e.target.value)}
+        placeholder={enPlaceholder}
+        className="resize-none overflow-hidden"
+      />
+      <Textarea
+        ref={esRef}
+        rows={minRows}
+        value={esValue}
+        onChange={e => onEsChange(e.target.value)}
+        placeholder={esPlaceholder}
         className="resize-none overflow-hidden"
       />
     </div>
@@ -225,7 +240,7 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
   const [sku, setSku] = useState("");
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
-  const [secondaryLang, setSecondaryLang] = useState<"en" | "es">("en");
+  
   const [multilingualData, setMultilingualData] = useState<Record<string, Record<string, string>>>(() => {
     const init: Record<string, Record<string, string>> = {};
     LANGUAGES.forEach(l => {
@@ -616,53 +631,65 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
               )}
             </div>
 
-            {/* ── Multilingual Fields (PT base + secondary lang side-by-side) ── */}
+            {/* ── Multilingual Fields (PT / EN / ES side-by-side) ── */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <Label className="text-sm font-semibold">Conteúdo Multilíngue</Label>
-                <ToggleGroup
-                  type="single"
-                  value={secondaryLang}
-                  onValueChange={(v) => v && setSecondaryLang(v as "en" | "es")}
-                  className="h-7"
-                >
-                  <ToggleGroupItem value="en" className="h-7 px-2 text-xs gap-1">
-                    <span>🇺🇸</span> English
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="es" className="h-7 px-2 text-xs gap-1">
-                    <span>🇪🇸</span> Español
-                  </ToggleGroupItem>
-                </ToggleGroup>
+              <Label className="text-sm font-semibold">Conteúdo Multilíngue</Label>
+
+              {/* Language column headers */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                  <span>🇧🇷</span> Português
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                  <span>🇺🇸</span> English
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                  <span>🇪🇸</span> Español
+                </div>
               </div>
 
               {/* Always visible fields */}
               <div className="space-y-3">
                 {ALWAYS_VISIBLE_FIELDS.map(f => {
                   const ptLabel = FIELD_LABELS.pt[f.key];
-                  const secLabel = FIELD_LABELS[secondaryLang][f.key];
+                  const enLabel = FIELD_LABELS.en[f.key];
+                  const esLabel = FIELD_LABELS.es[f.key];
                   return (
                     <div key={f.key} className="space-y-1" data-error-key={f.key === "name" ? "name" : undefined}>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-3 gap-3">
                         <Label className="text-xs text-muted-foreground">
                           {ptLabel} {f.key === "name" && "*"}
                         </Label>
                         <div className="flex items-center justify-between gap-2">
-                          <Label className="text-xs text-muted-foreground">{secLabel}</Label>
+                          <Label className="text-xs text-muted-foreground">{enLabel}</Label>
                           <Button
                             type="button"
                             variant="ghost"
                             size="sm"
                             className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
-                            onClick={() => translateField(secondaryLang, f.key)}
+                            onClick={() => translateField("en", f.key)}
                           >
                             <Languages className="h-3 w-3" />
-                            <span className="hidden sm:inline">Traduzir do português</span>
+                            <span className="hidden sm:inline">Traduzir</span>
+                          </Button>
+                        </div>
+                        <div className="flex items-center justify-between gap-2">
+                          <Label className="text-xs text-muted-foreground">{esLabel}</Label>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
+                            onClick={() => translateField("es", f.key)}
+                          >
+                            <Languages className="h-3 w-3" />
+                            <span className="hidden sm:inline">Traduzir</span>
                           </Button>
                         </div>
                       </div>
                       {f.type === "input" ? (
                         <>
-                          <div className="grid grid-cols-2 gap-3">
+                          <div className="grid grid-cols-3 gap-3">
                             <Input
                               value={multilingualData.pt[f.key]}
                               onChange={e => { updateML("pt", f.key, e.target.value); if (f.key === "name") clearError("name"); }}
@@ -671,9 +698,14 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                               aria-invalid={f.key === "name" && !!errors.name}
                             />
                             <Input
-                              value={multilingualData[secondaryLang][f.key]}
-                              onChange={e => updateML(secondaryLang, f.key, e.target.value)}
-                              placeholder={secLabel}
+                              value={multilingualData.en[f.key]}
+                              onChange={e => updateML("en", f.key, e.target.value)}
+                              placeholder={enLabel}
+                            />
+                            <Input
+                              value={multilingualData.es[f.key]}
+                              onChange={e => updateML("es", f.key, e.target.value)}
+                              placeholder={esLabel}
                             />
                           </div>
                           {f.key === "name" && errors.name && (
@@ -681,13 +713,16 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                           )}
                         </>
                       ) : (
-                        <SyncedTextareaPair
-                          leftValue={multilingualData.pt[f.key]}
-                          rightValue={multilingualData[secondaryLang][f.key]}
-                          onLeftChange={(v) => updateML("pt", f.key, v)}
-                          onRightChange={(v) => updateML(secondaryLang, f.key, v)}
-                          leftPlaceholder={ptLabel}
-                          rightPlaceholder={secLabel}
+                        <SyncedTextareaTrio
+                          ptValue={multilingualData.pt[f.key]}
+                          enValue={multilingualData.en[f.key]}
+                          esValue={multilingualData.es[f.key]}
+                          onPtChange={(v) => updateML("pt", f.key, v)}
+                          onEnChange={(v) => updateML("en", f.key, v)}
+                          onEsChange={(v) => updateML("es", f.key, v)}
+                          ptPlaceholder={ptLabel}
+                          enPlaceholder={enLabel}
+                          esPlaceholder={esLabel}
                         />
                       )}
                     </div>
@@ -699,7 +734,8 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
               <div className="space-y-1">
                 {COLLAPSIBLE_FIELDS.map(f => {
                   const ptLabel = FIELD_LABELS.pt[f.key];
-                  const secLabel = FIELD_LABELS[secondaryLang][f.key];
+                  const enLabel = FIELD_LABELS.en[f.key];
+                  const esLabel = FIELD_LABELS.es[f.key];
                   const isOpen = collapsibleOpen[f.key] ?? false;
                   return (
                     <Collapsible
@@ -707,7 +743,7 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                       open={isOpen}
                       onOpenChange={() => toggleCollapsible(f.key)}
                     >
-                      <div className="grid grid-cols-2 gap-3 items-center">
+                      <div className="grid grid-cols-3 gap-3 items-center">
                         <CollapsibleTrigger className="flex items-center gap-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors text-left">
                           <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isOpen && "rotate-180")} />
                           {ptLabel}
@@ -715,29 +751,49 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                         <div className="flex items-center justify-between gap-2 min-h-[24px]">
                           {isOpen && (
                             <>
-                              <Label className="text-xs text-muted-foreground">{secLabel}</Label>
+                              <Label className="text-xs text-muted-foreground">{enLabel}</Label>
                               <Button
                                 type="button"
                                 variant="ghost"
                                 size="sm"
                                 className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
-                                onClick={() => translateField(secondaryLang, f.key)}
+                                onClick={() => translateField("en", f.key)}
                               >
                                 <Languages className="h-3 w-3" />
-                                <span className="hidden sm:inline">Traduzir do português</span>
+                                <span className="hidden sm:inline">Traduzir</span>
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between gap-2 min-h-[24px]">
+                          {isOpen && (
+                            <>
+                              <Label className="text-xs text-muted-foreground">{esLabel}</Label>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
+                                onClick={() => translateField("es", f.key)}
+                              >
+                                <Languages className="h-3 w-3" />
+                                <span className="hidden sm:inline">Traduzir</span>
                               </Button>
                             </>
                           )}
                         </div>
                       </div>
                       <CollapsibleContent className="space-y-1 pt-1">
-                        <SyncedTextareaPair
-                          leftValue={multilingualData.pt[f.key]}
-                          rightValue={multilingualData[secondaryLang][f.key]}
-                          onLeftChange={(v) => updateML("pt", f.key, v)}
-                          onRightChange={(v) => updateML(secondaryLang, f.key, v)}
-                          leftPlaceholder={ptLabel}
-                          rightPlaceholder={secLabel}
+                        <SyncedTextareaTrio
+                          ptValue={multilingualData.pt[f.key]}
+                          enValue={multilingualData.en[f.key]}
+                          esValue={multilingualData.es[f.key]}
+                          onPtChange={(v) => updateML("pt", f.key, v)}
+                          onEnChange={(v) => updateML("en", f.key, v)}
+                          onEsChange={(v) => updateML("es", f.key, v)}
+                          ptPlaceholder={ptLabel}
+                          enPlaceholder={enLabel}
+                          esPlaceholder={esLabel}
                         />
                       </CollapsibleContent>
                     </Collapsible>
