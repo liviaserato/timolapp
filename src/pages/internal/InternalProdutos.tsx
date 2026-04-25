@@ -955,14 +955,26 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
 
             {/* ── Points + Country Visibility ── */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-              <div className="space-y-3 md:col-span-1">
+              <div className="space-y-3 md:col-span-2">
                 <Label className="text-sm font-semibold">Pontuação</Label>
-                <div className="relative">
-                  <Input type="number" value={points} onChange={e => setPoints(e.target.value)} placeholder="0" className="pr-14" />
-                  <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-muted-foreground">pontos</span>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Binário</Label>
+                    <div className="relative">
+                      <Input type="number" value={pointsBinary} onChange={e => setPointsBinary(e.target.value)} placeholder="0" className="pr-12" />
+                      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">pts</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Unilevel</Label>
+                    <div className="relative">
+                      <Input type="number" value={pointsUnilevel} onChange={e => setPointsUnilevel(e.target.value)} placeholder="0" className="pr-12" />
+                      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">pts</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-3 md:col-span-3 md:col-start-3">
+              <div className="space-y-3 md:col-span-3">
                 <Label className="text-sm font-semibold">Visibilidade por País</Label>
                 <div className="flex flex-wrap gap-x-4 gap-y-2">
                   {COUNTRIES.map(c => (
