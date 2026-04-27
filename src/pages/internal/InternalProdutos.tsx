@@ -571,6 +571,66 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
         <ScrollArea className="max-h-[calc(90vh-120px)]">
           <div className="space-y-6 pt-2 px-6 pb-6">
 
+            {/* ── Nome do Produto (multilíngue, acima do SKU) ── */}
+            <div className="space-y-3" data-error-key="name">
+              <Label className="text-sm font-semibold">Nome do Produto *</Label>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                  <span>🇧🇷</span> Português
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                    <span>🇺🇸</span> English
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
+                    onClick={() => translateField("en", "name")}
+                  >
+                    <Languages className="h-3 w-3" />
+                    <span className="hidden sm:inline">Traduzir</span>
+                  </Button>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                    <span>🇪🇸</span> Español
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
+                    onClick={() => translateField("es", "name")}
+                  >
+                    <Languages className="h-3 w-3" />
+                    <span className="hidden sm:inline">Traduzir</span>
+                  </Button>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <Input
+                  value={multilingualData.pt.name}
+                  onChange={e => { updateML("pt", "name", e.target.value); clearError("name"); }}
+                  placeholder={FIELD_LABELS.pt.name}
+                  className={errors.name ? "border-destructive focus-visible:ring-destructive" : undefined}
+                  aria-invalid={!!errors.name}
+                />
+                <Input
+                  value={multilingualData.en.name}
+                  onChange={e => updateML("en", "name", e.target.value)}
+                  placeholder={FIELD_LABELS.en.name}
+                />
+                <Input
+                  value={multilingualData.es.name}
+                  onChange={e => updateML("es", "name", e.target.value)}
+                  placeholder={FIELD_LABELS.es.name}
+                />
+              </div>
+              {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+            </div>
+
             {/* ── SKU + Category + Subcategory ── */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-1" data-error-key="sku">
