@@ -759,12 +759,22 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                       <div className="grid grid-cols-3 gap-3 items-center">
                         <CollapsibleTrigger className="flex items-center gap-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors text-left">
                           <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isOpen && "rotate-180")} />
-                          {ptLabel}
+                          <span className="flex items-center gap-1.5">
+                            {ptLabel}
+                            {multilingualData.pt[f.key]?.trim() && (
+                              <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                            )}
+                          </span>
                         </CollapsibleTrigger>
                         <div className="flex items-center justify-between gap-2 min-h-[24px]">
                           {isOpen && (
                             <>
-                              <Label className="text-xs text-muted-foreground">{enLabel}</Label>
+                              <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                {enLabel}
+                                {multilingualData.en[f.key]?.trim() && (
+                                  <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                                )}
+                              </Label>
                               <Button
                                 type="button"
                                 variant="ghost"
@@ -781,7 +791,12 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                         <div className="flex items-center justify-between gap-2 min-h-[24px]">
                           {isOpen && (
                             <>
-                              <Label className="text-xs text-muted-foreground">{esLabel}</Label>
+                              <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                {esLabel}
+                                {multilingualData.es[f.key]?.trim() && (
+                                  <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                                )}
+                              </Label>
                               <Button
                                 type="button"
                                 variant="ghost"
