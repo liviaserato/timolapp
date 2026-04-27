@@ -90,6 +90,37 @@ const FIELD_LABELS: Record<string, Record<string, string>> = {
   },
 };
 
+// Placeholders include the language hint (e.g., "Descrição em português")
+const FIELD_PLACEHOLDERS: Record<string, Record<string, string>> = {
+  pt: {
+    name: "Nome do produto em português",
+    description: "Descrição em português",
+    benefits: "Benefícios em português",
+    instructions: "Instruções de uso em português",
+    warranty: "Garantia em português",
+    composition: "Composição em português",
+    manufacturer: "Fabricante em português",
+  },
+  en: {
+    name: "Product name in english",
+    description: "Description in english",
+    benefits: "Benefits in english",
+    instructions: "Instructions for use in english",
+    warranty: "Warranty in english",
+    composition: "Composition in english",
+    manufacturer: "Manufacturer in english",
+  },
+  es: {
+    name: "Nombre del producto en español",
+    description: "Descripción en español",
+    benefits: "Beneficios en español",
+    instructions: "Instrucciones de uso en español",
+    warranty: "Garantía en español",
+    composition: "Composición en español",
+    manufacturer: "Fabricante en español",
+  },
+};
+
 const ALWAYS_VISIBLE_FIELDS = [
   { key: "name", type: "input" as const },
 ];
@@ -112,6 +143,7 @@ function SyncedTextareaTrio({
   ptValue, enValue, esValue,
   onPtChange, onEnChange, onEsChange,
   ptPlaceholder, enPlaceholder, esPlaceholder,
+  onTranslateEn, onTranslateEs,
   minRows = 3,
 }: {
   ptValue: string;
@@ -123,6 +155,8 @@ function SyncedTextareaTrio({
   ptPlaceholder?: string;
   enPlaceholder?: string;
   esPlaceholder?: string;
+  onTranslateEn?: () => void;
+  onTranslateEs?: () => void;
   minRows?: number;
 }) {
   const ptRef = useRef<HTMLTextAreaElement>(null);
@@ -153,22 +187,48 @@ function SyncedTextareaTrio({
         placeholder={ptPlaceholder}
         className="resize-none overflow-hidden"
       />
-      <Textarea
-        ref={enRef}
-        rows={minRows}
-        value={enValue}
-        onChange={e => onEnChange(e.target.value)}
-        placeholder={enPlaceholder}
-        className="resize-none overflow-hidden"
-      />
-      <Textarea
-        ref={esRef}
-        rows={minRows}
-        value={esValue}
-        onChange={e => onEsChange(e.target.value)}
-        placeholder={esPlaceholder}
-        className="resize-none overflow-hidden"
-      />
+      <div className="relative">
+        <Textarea
+          ref={enRef}
+          rows={minRows}
+          value={enValue}
+          onChange={e => onEnChange(e.target.value)}
+          placeholder={enPlaceholder}
+          className="resize-none overflow-hidden pr-9"
+        />
+        {onTranslateEn && (
+          <button
+            type="button"
+            onClick={onTranslateEn}
+            className="absolute top-1.5 right-1.5 p-1 rounded text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+            aria-label="Traduzir para inglês"
+            title="Traduzir do português"
+          >
+            <Languages className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
+      <div className="relative">
+        <Textarea
+          ref={esRef}
+          rows={minRows}
+          value={esValue}
+          onChange={e => onEsChange(e.target.value)}
+          placeholder={esPlaceholder}
+          className="resize-none overflow-hidden pr-9"
+        />
+        {onTranslateEs && (
+          <button
+            type="button"
+            onClick={onTranslateEs}
+            className="absolute top-1.5 right-1.5 p-1 rounded text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+            aria-label="Traduzir para espanhol"
+            title="Traduzir do português"
+          >
+            <Languages className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -572,61 +632,57 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
           <div className="space-y-6 pt-2 px-6 pb-6">
 
             {/* ── Nome do Produto (multilíngue, acima do SKU) ── */}
-            <div className="space-y-3" data-error-key="name">
-              <Label className="text-sm font-semibold">Nome do Produto *</Label>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                  <span>🇧🇷</span> Português
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                    <span>🇺🇸</span> English
-                  </span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
-                    onClick={() => translateField("en", "name")}
-                  >
-                    <Languages className="h-3 w-3" />
-                    <span className="hidden sm:inline">Traduzir</span>
-                  </Button>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                    <span>🇪🇸</span> Español
-                  </span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
-                    onClick={() => translateField("es", "name")}
-                  >
-                    <Languages className="h-3 w-3" />
-                    <span className="hidden sm:inline">Traduzir</span>
-                  </Button>
+            <div className="space-y-2" data-error-key="name">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <Label className="text-sm font-semibold">Nome do Produto *</Label>
+                <div className="flex items-center gap-3 text-xs font-semibold text-muted-foreground">
+                  <span className="flex items-center gap-1"><span>🇧🇷</span> BR</span>
+                  <span className="flex items-center gap-1"><span>🇺🇸</span> US</span>
+                  <span className="flex items-center gap-1"><span>🇪🇸</span> ES</span>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <Input
                   value={multilingualData.pt.name}
                   onChange={e => { updateML("pt", "name", e.target.value); clearError("name"); }}
-                  placeholder={FIELD_LABELS.pt.name}
+                  placeholder={FIELD_PLACEHOLDERS.pt.name}
                   className={errors.name ? "border-destructive focus-visible:ring-destructive" : undefined}
                   aria-invalid={!!errors.name}
                 />
-                <Input
-                  value={multilingualData.en.name}
-                  onChange={e => updateML("en", "name", e.target.value)}
-                  placeholder={FIELD_LABELS.en.name}
-                />
-                <Input
-                  value={multilingualData.es.name}
-                  onChange={e => updateML("es", "name", e.target.value)}
-                  placeholder={FIELD_LABELS.es.name}
-                />
+                <div className="relative">
+                  <Input
+                    value={multilingualData.en.name}
+                    onChange={e => updateML("en", "name", e.target.value)}
+                    placeholder={FIELD_PLACEHOLDERS.en.name}
+                    className="pr-9"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => translateField("en", "name")}
+                    className="absolute top-1/2 -translate-y-1/2 right-1.5 p-1 rounded text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+                    aria-label="Traduzir para inglês"
+                    title="Traduzir do português"
+                  >
+                    <Languages className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <div className="relative">
+                  <Input
+                    value={multilingualData.es.name}
+                    onChange={e => updateML("es", "name", e.target.value)}
+                    placeholder={FIELD_PLACEHOLDERS.es.name}
+                    className="pr-9"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => translateField("es", "name")}
+                    className="absolute top-1/2 -translate-y-1/2 right-1.5 p-1 rounded text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+                    aria-label="Traduzir para espanhol"
+                    title="Traduzir do português"
+                  >
+                    <Languages className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
               {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
             </div>
@@ -872,25 +928,10 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Informações do Produto</Label>
 
-              {/* Language column headers */}
-              <div className="grid grid-cols-3 gap-3">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                  <span>🇧🇷</span> Português
-                </div>
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                  <span>🇺🇸</span> English
-                </div>
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                  <span>🇪🇸</span> Español
-                </div>
-              </div>
-
               {/* Collapsible fields — shared open state per field key */}
               <div className="space-y-1">
                 {COLLAPSIBLE_FIELDS.map(f => {
                   const ptLabel = FIELD_LABELS.pt[f.key];
-                  const enLabel = FIELD_LABELS.en[f.key];
-                  const esLabel = FIELD_LABELS.es[f.key];
                   const isOpen = collapsibleOpen[f.key] ?? false;
                   return (
                     <Collapsible
@@ -898,8 +939,8 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                       open={isOpen}
                       onOpenChange={() => toggleCollapsible(f.key)}
                     >
-                      <div className="grid grid-cols-3 gap-3 items-center">
-                        <CollapsibleTrigger className="flex items-center gap-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors text-left">
+                      <div className="flex items-center justify-between gap-2 py-1">
+                        <CollapsibleTrigger className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors text-left">
                           <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isOpen && "rotate-180")} />
                           <span className="flex items-center gap-1.5">
                             {ptLabel}
@@ -908,50 +949,13 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                             )}
                           </span>
                         </CollapsibleTrigger>
-                        <div className="flex items-center justify-between gap-2 min-h-[24px]">
-                          {isOpen && (
-                            <>
-                              <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
-                                {enLabel}
-                                {multilingualData.en[f.key]?.trim() && (
-                                  <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
-                                )}
-                              </Label>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
-                                onClick={() => translateField("en", f.key)}
-                              >
-                                <Languages className="h-3 w-3" />
-                                <span className="hidden sm:inline">Traduzir</span>
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                        <div className="flex items-center justify-between gap-2 min-h-[24px]">
-                          {isOpen && (
-                            <>
-                              <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
-                                {esLabel}
-                                {multilingualData.es[f.key]?.trim() && (
-                                  <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
-                                )}
-                              </Label>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
-                                onClick={() => translateField("es", f.key)}
-                              >
-                                <Languages className="h-3 w-3" />
-                                <span className="hidden sm:inline">Traduzir</span>
-                              </Button>
-                            </>
-                          )}
-                        </div>
+                        {isOpen && (
+                          <div className="flex items-center gap-3 text-xs font-semibold text-muted-foreground">
+                            <span className="flex items-center gap-1"><span>🇧🇷</span> BR</span>
+                            <span className="flex items-center gap-1"><span>🇺🇸</span> US</span>
+                            <span className="flex items-center gap-1"><span>🇪🇸</span> ES</span>
+                          </div>
+                        )}
                       </div>
                       <CollapsibleContent className="space-y-1 pt-1">
                         <SyncedTextareaTrio
@@ -961,9 +965,11 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                           onPtChange={(v) => updateML("pt", f.key, v)}
                           onEnChange={(v) => updateML("en", f.key, v)}
                           onEsChange={(v) => updateML("es", f.key, v)}
-                          ptPlaceholder={ptLabel}
-                          enPlaceholder={enLabel}
-                          esPlaceholder={esLabel}
+                          ptPlaceholder={FIELD_PLACEHOLDERS.pt[f.key]}
+                          enPlaceholder={FIELD_PLACEHOLDERS.en[f.key]}
+                          esPlaceholder={FIELD_PLACEHOLDERS.es[f.key]}
+                          onTranslateEn={() => translateField("en", f.key)}
+                          onTranslateEs={() => translateField("es", f.key)}
                         />
                       </CollapsibleContent>
                     </Collapsible>
