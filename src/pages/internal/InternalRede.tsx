@@ -82,11 +82,39 @@ export default function InternalRede() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  function selectFranchise(entry: FranchiseDirectoryEntry) {
+  // Persist recent IDs
+  useEffect(() => {
+    try {
+      localStorage.setItem(RECENT_KEY, JSON.stringify(recentIds));
+    } catch {
+      /* ignore */
+    }
+  }, [recentIds]);
+
+  function pushRecent(id: string) {
+    setRecentIds((prev) => {
+      const next = [id, ...prev.filter((x) => x !== id)].slice(0, MAX_RECENT);
+      return next;
+    });
+  }
+
+  function selectFranchise(entry: FranchiseDirectoryEntry, keepView = false) {
     setSelected(entry);
     setQuery(`${entry.franchiseId} - ${entry.name}`);
     setShowDropdown(false);
-    setView("");
+    if (!keepView) setView("");
+    pushRecent(entry.franchiseId);
+  }
+
+  function selectRecent(id: string) {
+    const entry = FRANCHISE_DIRECTORY.find((f) => f.franchiseId === id);
+    if (!entry) return;
+    // Keep current toggle view when picking from recents
+    selectFranchise(entry, true);
+  }
+
+  function clearRecents() {
+    setRecentIds([]);
   }
 
   function clearSelection() {
