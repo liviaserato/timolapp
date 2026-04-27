@@ -22,7 +22,7 @@ import {
   Search, X, Plus, Package, ChevronLeft, ChevronRight,
   Upload, Trash2, Eye, Pencil, Copy,
   ChevronDown, Languages, ArrowUpDown, ArrowUp, ArrowDown,
-  LayoutGrid, List, FileText,
+  LayoutGrid, List, FileText, Check,
 } from "lucide-react";
 import { categories, products as mockProducts, type Product, type Category } from "@/data/mock-products";
 import { toast } from "sonner";
@@ -657,11 +657,19 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                   return (
                     <div key={f.key} className="space-y-1" data-error-key={f.key === "name" ? "name" : undefined}>
                       <div className="grid grid-cols-3 gap-3">
-                        <Label className="text-xs text-muted-foreground">
+                        <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
                           {ptLabel} {f.key === "name" && "*"}
+                          {f.key !== "name" && multilingualData.pt[f.key]?.trim() && (
+                            <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                          )}
                         </Label>
                         <div className="flex items-center justify-between gap-2">
-                          <Label className="text-xs text-muted-foreground">{enLabel}</Label>
+                          <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                            {enLabel}
+                            {f.key !== "name" && multilingualData.en[f.key]?.trim() && (
+                              <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                            )}
+                          </Label>
                           <Button
                             type="button"
                             variant="ghost"
@@ -674,7 +682,12 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                           </Button>
                         </div>
                         <div className="flex items-center justify-between gap-2">
-                          <Label className="text-xs text-muted-foreground">{esLabel}</Label>
+                          <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                            {esLabel}
+                            {f.key !== "name" && multilingualData.es[f.key]?.trim() && (
+                              <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                            )}
+                          </Label>
                           <Button
                             type="button"
                             variant="ghost"
@@ -746,12 +759,22 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                       <div className="grid grid-cols-3 gap-3 items-center">
                         <CollapsibleTrigger className="flex items-center gap-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors text-left">
                           <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isOpen && "rotate-180")} />
-                          {ptLabel}
+                          <span className="flex items-center gap-1.5">
+                            {ptLabel}
+                            {multilingualData.pt[f.key]?.trim() && (
+                              <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                            )}
+                          </span>
                         </CollapsibleTrigger>
                         <div className="flex items-center justify-between gap-2 min-h-[24px]">
                           {isOpen && (
                             <>
-                              <Label className="text-xs text-muted-foreground">{enLabel}</Label>
+                              <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                {enLabel}
+                                {multilingualData.en[f.key]?.trim() && (
+                                  <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                                )}
+                              </Label>
                               <Button
                                 type="button"
                                 variant="ghost"
@@ -768,7 +791,12 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                         <div className="flex items-center justify-between gap-2 min-h-[24px]">
                           {isOpen && (
                             <>
-                              <Label className="text-xs text-muted-foreground">{esLabel}</Label>
+                              <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                {esLabel}
+                                {multilingualData.es[f.key]?.trim() && (
+                                  <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                                )}
+                              </Label>
                               <Button
                                 type="button"
                                 variant="ghost"
