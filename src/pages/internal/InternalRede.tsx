@@ -208,6 +208,43 @@ export default function InternalRede() {
               )}
             </div>
           </div>
+
+          {/* Recent IDs */}
+          {recentIds.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-border">
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <History className="h-3.5 w-3.5" />
+                  <span>Pesquisas recentes</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={clearRecents}
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Eraser className="h-3.5 w-3.5" />
+                  <span>Limpar</span>
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {recentIds.map((id) => {
+                  const entry = FRANCHISE_DIRECTORY.find((f) => f.franchiseId === id);
+                  const label = entry ? `${entry.franchiseId} - ${entry.name}` : id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => selectRecent(id)}
+                      className="px-2 py-1 text-xs rounded-md border border-border bg-muted/40 hover:bg-accent transition-colors font-mono tabular-nums max-w-full truncate"
+                      title={label}
+                    >
+                      {id}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </fieldset>
 
         {/* Summary card */}
