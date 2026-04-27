@@ -46,6 +46,7 @@ export default function InternalRede() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [view, setView] = useState<RedeView>("");
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const results = useMemo(() => {
     const q = normalize(query);
