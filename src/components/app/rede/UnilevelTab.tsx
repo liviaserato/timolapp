@@ -84,9 +84,10 @@ function getMonthLabel(d: Date) {
 
 interface Props {
   searchQuery: string;
+  hideBonusCard?: boolean;
 }
 
-export function UnilevelTab({ searchQuery }: Props) {
+export function UnilevelTab({ searchQuery, hideBonusCard = false }: Props) {
   const isMobile = useIsMobile();
   const [selectedMember, setSelectedMember] = useState<NetworkMember | null>(null);
   const [bonusModalOpen, setBonusModalOpen] = useState(false);
@@ -833,7 +834,7 @@ export function UnilevelTab({ searchQuery }: Props) {
       {viewMode === "list" && <QualificationLegend />}
 
       {/* ═══ Bonus section ═══ */}
-      <BonusSection onOpen={() => setBonusModalOpen(true)} />
+      {!hideBonusCard && <BonusSection onOpen={() => setBonusModalOpen(true)} />}
       <BonusDialog open={bonusModalOpen} onOpenChange={setBonusModalOpen} />
 
       {/* Member detail */}
