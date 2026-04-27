@@ -962,24 +962,15 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                       open={isOpen}
                       onOpenChange={() => toggleCollapsible(f.key)}
                     >
-                      <div className="flex items-center justify-between gap-2 py-1">
-                        <CollapsibleTrigger className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors text-left">
-                          <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isOpen && "rotate-180")} />
-                          <span className="flex items-center gap-1.5">
-                            {ptLabel}
-                            {multilingualData.pt[f.key]?.trim() && (
-                              <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
-                            )}
-                          </span>
-                        </CollapsibleTrigger>
-                        {isOpen && (
-                          <div className="flex items-center gap-3 text-xs font-semibold text-muted-foreground">
-                            <span className="flex items-center gap-1"><span>🇧🇷</span> BR</span>
-                            <span className="flex items-center gap-1"><span>🇺🇸</span> US</span>
-                            <span className="flex items-center gap-1"><span>🇪🇸</span> ES</span>
-                          </div>
-                        )}
-                      </div>
+                      <CollapsibleTrigger className="flex items-center gap-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors text-left">
+                        <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isOpen && "rotate-180")} />
+                        <span className="flex items-center gap-1.5">
+                          {ptLabel}
+                          {multilingualData.pt[f.key]?.trim() && (
+                            <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                          )}
+                        </span>
+                      </CollapsibleTrigger>
                       <CollapsibleContent className="space-y-1 pt-1">
                         <SyncedTextareaTrio
                           ptValue={multilingualData.pt[f.key]}
