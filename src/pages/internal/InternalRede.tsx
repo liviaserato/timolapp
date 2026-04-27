@@ -1,12 +1,10 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Search, X, GitFork, Network, Building2, User, Award, Users } from "lucide-react";
+import { Search, X, GitFork, Network, Building2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { BinaryTab } from "@/components/app/rede/BinaryTab";
 import { UnilevelTab } from "@/components/app/rede/UnilevelTab";
-import { qualificationConfig } from "@/components/app/rede/mock-data";
-import { cn } from "@/lib/utils";
 
 /* ── Mock franchise directory (Staff search) ── */
 interface FranchiseDirectoryEntry {
