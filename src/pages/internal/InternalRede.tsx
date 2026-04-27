@@ -34,6 +34,11 @@ const FRANCHISE_DIRECTORY: FranchiseDirectoryEntry[] = [
   { franchiseId: "300142", name: "Lívia Serato", planLabel: "Bronze", qualification: "consultor", sponsorId: "200587", sponsorName: "Lívia Serato" },
 ];
 
+/** Normalize string for accent-insensitive search */
+function normalize(s: string): string {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+
 type RedeView = "binario" | "unilevel" | "";
 
 export default function InternalRede() {
@@ -44,12 +49,12 @@ export default function InternalRede() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = normalize(query);
     if (!q) return [];
     return FRANCHISE_DIRECTORY.filter(
       (f) =>
-        f.franchiseId.toLowerCase().includes(q) ||
-        f.name.toLowerCase().includes(q),
+        normalize(f.franchiseId).includes(q) ||
+        normalize(f.name).includes(q),
     ).slice(0, 12);
   }, [query]);
 
