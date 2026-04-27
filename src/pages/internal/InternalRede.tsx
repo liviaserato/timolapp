@@ -141,7 +141,7 @@ export default function InternalRede() {
         {/* Search card */}
         <fieldset className="relative rounded-[10px] border border-border bg-card p-4 shadow-sm">
           <legend className="flex items-center gap-2 px-1 text-base font-bold text-primary">
-            <Search className="h-5 w-5 shrink-0" />
+            <SearchCode className="h-5 w-5 shrink-0" />
             <span className="shrink-0">Busca</span>
           </legend>
 
