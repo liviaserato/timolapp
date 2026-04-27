@@ -179,55 +179,70 @@ function SyncedTextareaTrio({
 
   return (
     <div className="grid grid-cols-3 gap-3">
-      <Textarea
-        ref={ptRef}
-        rows={minRows}
-        value={ptValue}
-        onChange={e => onPtChange(e.target.value)}
-        placeholder={ptPlaceholder}
-        className="resize-none overflow-hidden"
-      />
-      <div className="relative">
+      <div className="space-y-1">
+        <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+          <span>🇧🇷</span> BR
+        </span>
         <Textarea
-          ref={enRef}
+          ref={ptRef}
           rows={minRows}
-          value={enValue}
-          onChange={e => onEnChange(e.target.value)}
-          placeholder={enPlaceholder}
-          className="resize-none overflow-hidden pr-9"
+          value={ptValue}
+          onChange={e => onPtChange(e.target.value)}
+          placeholder={ptPlaceholder}
+          className="resize-none overflow-hidden"
         />
-        {onTranslateEn && (
-          <button
-            type="button"
-            onClick={onTranslateEn}
-            className="absolute top-1.5 right-1.5 p-1 rounded text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
-            aria-label="Traduzir para inglês"
-            title="Traduzir do português"
-          >
-            <Languages className="h-3.5 w-3.5" />
-          </button>
-        )}
       </div>
-      <div className="relative">
-        <Textarea
-          ref={esRef}
-          rows={minRows}
-          value={esValue}
-          onChange={e => onEsChange(e.target.value)}
-          placeholder={esPlaceholder}
-          className="resize-none overflow-hidden pr-9"
-        />
-        {onTranslateEs && (
-          <button
-            type="button"
-            onClick={onTranslateEs}
-            className="absolute top-1.5 right-1.5 p-1 rounded text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
-            aria-label="Traduzir para espanhol"
-            title="Traduzir do português"
-          >
-            <Languages className="h-3.5 w-3.5" />
-          </button>
-        )}
+      <div className="space-y-1">
+        <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+          <span>🇺🇸</span> US
+        </span>
+        <div className="relative">
+          <Textarea
+            ref={enRef}
+            rows={minRows}
+            value={enValue}
+            onChange={e => onEnChange(e.target.value)}
+            placeholder={enPlaceholder}
+            className="resize-none overflow-hidden pr-9"
+          />
+          {onTranslateEn && (
+            <button
+              type="button"
+              onClick={onTranslateEn}
+              className="absolute top-1.5 right-1.5 p-1 rounded text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+              aria-label="Traduzir para inglês"
+              title="Traduzir do português"
+            >
+              <Languages className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
+      <div className="space-y-1">
+        <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+          <span>🇪🇸</span> ES
+        </span>
+        <div className="relative">
+          <Textarea
+            ref={esRef}
+            rows={minRows}
+            value={esValue}
+            onChange={e => onEsChange(e.target.value)}
+            placeholder={esPlaceholder}
+            className="resize-none overflow-hidden pr-9"
+          />
+          {onTranslateEs && (
+            <button
+              type="button"
+              onClick={onTranslateEs}
+              className="absolute top-1.5 right-1.5 p-1 rounded text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+              aria-label="Traduzir para espanhol"
+              title="Traduzir do português"
+            >
+              <Languages className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
