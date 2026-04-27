@@ -84,7 +84,11 @@ function sortMembers(members: NetworkMember[], mode: LegacySortMode): NetworkMem
 
 /* ── Main component ── */
 
-export function BinaryTab() {
+interface BinaryTabProps {
+  hideBonusCard?: boolean;
+}
+
+export function BinaryTab({ hideBonusCard = false }: BinaryTabProps = {}) {
   const isMobile = useIsMobile();
   const [rootId, setRootId] = useState(mockBinaryTree.id);
   const [navHistory, setNavHistory] = useState<string[]>([]);
@@ -278,7 +282,7 @@ export function BinaryTab() {
       </div>
 
       {/* ═══ Bottom: Bonus section ═══ */}
-      <BonusSection onOpen={() => setBonusModalOpen(true)} />
+      {!hideBonusCard && <BonusSection onOpen={() => setBonusModalOpen(true)} />}
       <BonusDialog open={bonusModalOpen} onOpenChange={setBonusModalOpen} />
     </div>
   );
