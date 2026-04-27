@@ -657,11 +657,19 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                   return (
                     <div key={f.key} className="space-y-1" data-error-key={f.key === "name" ? "name" : undefined}>
                       <div className="grid grid-cols-3 gap-3">
-                        <Label className="text-xs text-muted-foreground">
+                        <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
                           {ptLabel} {f.key === "name" && "*"}
+                          {f.key !== "name" && multilingualData.pt[f.key]?.trim() && (
+                            <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                          )}
                         </Label>
                         <div className="flex items-center justify-between gap-2">
-                          <Label className="text-xs text-muted-foreground">{enLabel}</Label>
+                          <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                            {enLabel}
+                            {f.key !== "name" && multilingualData.en[f.key]?.trim() && (
+                              <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                            )}
+                          </Label>
                           <Button
                             type="button"
                             variant="ghost"
@@ -674,7 +682,12 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                           </Button>
                         </div>
                         <div className="flex items-center justify-between gap-2">
-                          <Label className="text-xs text-muted-foreground">{esLabel}</Label>
+                          <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                            {esLabel}
+                            {f.key !== "name" && multilingualData.es[f.key]?.trim() && (
+                              <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                            )}
+                          </Label>
                           <Button
                             type="button"
                             variant="ghost"
