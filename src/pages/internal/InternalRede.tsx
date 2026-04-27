@@ -34,6 +34,11 @@ const FRANCHISE_DIRECTORY: FranchiseDirectoryEntry[] = [
   { franchiseId: "300142", name: "Lívia Serato", planLabel: "Bronze", qualification: "consultor", sponsorId: "200587", sponsorName: "Lívia Serato" },
 ];
 
+/** Normalize string for accent-insensitive search */
+function normalize(s: string): string {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+
 type RedeView = "binario" | "unilevel" | "";
 
 export default function InternalRede() {
