@@ -208,6 +208,7 @@ export default function InternalRede() {
 
 /* ── Franchise summary card ── */
 function FranchiseSummaryCard({ entry }: { entry: FranchiseDirectoryEntry }) {
+  const q = qualificationConfig[entry.qualification] ?? qualificationConfig.consultor;
   return (
     <fieldset className="relative rounded-[10px] border border-border bg-card p-4 shadow-sm">
       <legend className="flex items-center gap-2 px-1 text-base font-bold text-primary">
@@ -215,13 +216,29 @@ function FranchiseSummaryCard({ entry }: { entry: FranchiseDirectoryEntry }) {
         <span className="shrink-0">Rede da Franquia</span>
       </legend>
 
-      <div className="space-y-1.5">
-        <Label className="text-xs text-muted-foreground">Franquia</Label>
-        <p className="text-sm font-semibold text-foreground truncate">
-          <span className="font-mono tabular-nums">{entry.franchiseId}</span>
-          <span className="text-muted-foreground"> - </span>
-          <span>{entry.name}</span>
-        </p>
+      <div className="space-y-2">
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">Franquia</Label>
+          <p className="text-sm font-semibold text-foreground truncate">
+            <span className="font-mono tabular-nums">{entry.franchiseId}</span>
+            <span className="text-muted-foreground"> - </span>
+            <span>{entry.name}</span>
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs text-muted-foreground">Tipo da Franquia</Label>
+            <p className="text-sm font-semibold text-foreground truncate">{entry.planLabel}</p>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs text-muted-foreground">Qualificação Atual</Label>
+            <p className="text-sm font-semibold truncate flex items-center gap-1.5" style={{ color: q.color }}>
+              <span aria-hidden>{q.icon}</span>
+              <span className="truncate">{q.label}</span>
+            </p>
+          </div>
+        </div>
       </div>
     </fieldset>
   );
