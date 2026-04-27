@@ -633,55 +633,63 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
 
             {/* ── Nome do Produto (multilíngue, acima do SKU) ── */}
             <div className="space-y-2" data-error-key="name">
-              <div className="flex items-center justify-between gap-2 flex-wrap">
-                <Label className="text-sm font-semibold">Nome do Produto *</Label>
-                <div className="flex items-center gap-3 text-xs font-semibold text-muted-foreground">
-                  <span className="flex items-center gap-1"><span>🇧🇷</span> BR</span>
-                  <span className="flex items-center gap-1"><span>🇺🇸</span> US</span>
-                  <span className="flex items-center gap-1"><span>🇪🇸</span> ES</span>
-                </div>
-              </div>
+              <Label className="text-sm font-semibold">Nome do Produto *</Label>
               <div className="grid grid-cols-3 gap-3">
-                <Input
-                  value={multilingualData.pt.name}
-                  onChange={e => { updateML("pt", "name", e.target.value); clearError("name"); }}
-                  placeholder={FIELD_PLACEHOLDERS.pt.name}
-                  className={errors.name ? "border-destructive focus-visible:ring-destructive" : undefined}
-                  aria-invalid={!!errors.name}
-                />
-                <div className="relative">
+                <div className="space-y-1">
+                  <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+                    <span>🇧🇷</span> BR
+                  </span>
                   <Input
-                    value={multilingualData.en.name}
-                    onChange={e => updateML("en", "name", e.target.value)}
-                    placeholder={FIELD_PLACEHOLDERS.en.name}
-                    className="pr-9"
+                    value={multilingualData.pt.name}
+                    onChange={e => { updateML("pt", "name", e.target.value); clearError("name"); }}
+                    placeholder={FIELD_PLACEHOLDERS.pt.name}
+                    className={errors.name ? "border-destructive focus-visible:ring-destructive" : undefined}
+                    aria-invalid={!!errors.name}
                   />
-                  <button
-                    type="button"
-                    onClick={() => translateField("en", "name")}
-                    className="absolute top-1/2 -translate-y-1/2 right-1.5 p-1 rounded text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
-                    aria-label="Traduzir para inglês"
-                    title="Traduzir do português"
-                  >
-                    <Languages className="h-3.5 w-3.5" />
-                  </button>
                 </div>
-                <div className="relative">
-                  <Input
-                    value={multilingualData.es.name}
-                    onChange={e => updateML("es", "name", e.target.value)}
-                    placeholder={FIELD_PLACEHOLDERS.es.name}
-                    className="pr-9"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => translateField("es", "name")}
-                    className="absolute top-1/2 -translate-y-1/2 right-1.5 p-1 rounded text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
-                    aria-label="Traduzir para espanhol"
-                    title="Traduzir do português"
-                  >
-                    <Languages className="h-3.5 w-3.5" />
-                  </button>
+                <div className="space-y-1">
+                  <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+                    <span>🇺🇸</span> US
+                  </span>
+                  <div className="relative">
+                    <Input
+                      value={multilingualData.en.name}
+                      onChange={e => updateML("en", "name", e.target.value)}
+                      placeholder={FIELD_PLACEHOLDERS.en.name}
+                      className="pr-9"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => translateField("en", "name")}
+                      className="absolute top-1/2 -translate-y-1/2 right-1.5 p-1 rounded text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+                      aria-label="Traduzir para inglês"
+                      title="Traduzir do português"
+                    >
+                      <Languages className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+                    <span>🇪🇸</span> ES
+                  </span>
+                  <div className="relative">
+                    <Input
+                      value={multilingualData.es.name}
+                      onChange={e => updateML("es", "name", e.target.value)}
+                      placeholder={FIELD_PLACEHOLDERS.es.name}
+                      className="pr-9"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => translateField("es", "name")}
+                      className="absolute top-1/2 -translate-y-1/2 right-1.5 p-1 rounded text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+                      aria-label="Traduzir para espanhol"
+                      title="Traduzir do português"
+                    >
+                      <Languages className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
               {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
