@@ -93,71 +93,82 @@ export default function InternalRede() {
         </p>
       </div>
 
-      {/* Search card */}
-      <fieldset className="relative rounded-[10px] border border-border bg-card p-4 shadow-sm">
-        <legend className="flex items-center gap-2 px-1 text-base font-bold text-primary">
-          <Search className="h-5 w-5 shrink-0" />
-          <span className="shrink-0">Busca</span>
-        </legend>
+      {/* Search + Summary in two columns */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Search card */}
+        <fieldset className="relative rounded-[10px] border border-border bg-card p-4 shadow-sm">
+          <legend className="flex items-center gap-2 px-1 text-base font-bold text-primary">
+            <Search className="h-5 w-5 shrink-0" />
+            <span className="shrink-0">Busca</span>
+          </legend>
 
-        <div className="space-y-1.5" ref={containerRef}>
-          <Label className="text-xs text-muted-foreground">Franquia</Label>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setShowDropdown(true);
-                if (selected) setSelected(null);
-              }}
-              onFocus={() => setShowDropdown(true)}
-              placeholder="Buscar por ID ou nome da franquia"
-              className="pl-9 pr-9 h-9"
-              autoComplete="off"
-            />
-            {query && (
-              <button
-                type="button"
-                onClick={clearSelection}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
-              >
-                <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-              </button>
-            )}
+          <div className="space-y-1.5" ref={containerRef}>
+            <Label className="text-xs text-muted-foreground">Franquia</Label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={query}
+                readOnly={!!selected}
+                onChange={(e) => {
+                  if (selected) return;
+                  setQuery(e.target.value);
+                  setShowDropdown(true);
+                }}
+                onFocus={() => {
+                  if (!selected) setShowDropdown(true);
+                }}
+                onClick={(e) => {
+                  if (selected) {
+                    (e.target as HTMLInputElement).blur();
+                  }
+                }}
+                placeholder="Buscar por ID ou nome da franquia"
+                className="pl-9 pr-9 h-9"
+                autoComplete="off"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={clearSelection}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                </button>
+              )}
 
-            {/* Autocomplete dropdown */}
-            {showDropdown && results.length > 0 && (
-              <div className="absolute z-20 left-0 right-0 mt-1 max-h-72 overflow-y-auto rounded-md border border-border bg-popover shadow-md">
-                {results.map((entry) => (
-                  <button
-                    key={entry.franchiseId}
-                    type="button"
-                    onClick={() => selectFranchise(entry)}
-                    className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors flex items-center gap-2"
-                  >
-                    <span className="font-mono text-xs text-muted-foreground tabular-nums">
-                      {entry.franchiseId}
-                    </span>
-                    <span className="text-muted-foreground">-</span>
-                    <span className="font-medium truncate">{entry.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-            {showDropdown && query.trim() && results.length === 0 && (
-              <div className="absolute z-20 left-0 right-0 mt-1 rounded-md border border-border bg-popover shadow-md">
-                <p className="px-3 py-2 text-sm text-muted-foreground">
-                  Nenhuma franquia encontrada
-                </p>
-              </div>
-            )}
+              {/* Autocomplete dropdown */}
+              {!selected && showDropdown && results.length > 0 && (
+                <div className="absolute z-20 left-0 right-0 mt-1 max-h-72 overflow-y-auto rounded-md border border-border bg-popover shadow-md">
+                  {results.map((entry) => (
+                    <button
+                      key={entry.franchiseId}
+                      type="button"
+                      onClick={() => selectFranchise(entry)}
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors flex items-center gap-2"
+                    >
+                      <span className="font-mono text-xs text-muted-foreground tabular-nums">
+                        {entry.franchiseId}
+                      </span>
+                      <span className="text-muted-foreground">-</span>
+                      <span className="font-medium truncate">{entry.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {!selected && showDropdown && query.trim() && results.length === 0 && (
+                <div className="absolute z-20 left-0 right-0 mt-1 rounded-md border border-border bg-popover shadow-md">
+                  <p className="px-3 py-2 text-sm text-muted-foreground">
+                    Nenhuma franquia encontrada
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </fieldset>
+        </fieldset>
 
-      {/* Summary card */}
-      {selected && <FranchiseSummaryCard entry={selected} />}
+        {/* Summary card */}
+        {selected && <FranchiseSummaryCard entry={selected} />}
+      </div>
 
       {/* Toggle group + content */}
       {selected && (
