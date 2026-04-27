@@ -691,110 +691,6 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
               )}
             </div>
 
-            {/* ── Multilingual Fields (PT / EN / ES side-by-side) ── */}
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Informações do Produto</Label>
-
-              {/* Language column headers */}
-              <div className="grid grid-cols-3 gap-3">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                  <span>🇧🇷</span> Português
-                </div>
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                  <span>🇺🇸</span> English
-                </div>
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                  <span>🇪🇸</span> Español
-                </div>
-              </div>
-
-              {/* Collapsible fields — shared open state per field key */}
-              <div className="space-y-1">
-                {COLLAPSIBLE_FIELDS.map(f => {
-                  const ptLabel = FIELD_LABELS.pt[f.key];
-                  const enLabel = FIELD_LABELS.en[f.key];
-                  const esLabel = FIELD_LABELS.es[f.key];
-                  const isOpen = collapsibleOpen[f.key] ?? false;
-                  return (
-                    <Collapsible
-                      key={f.key}
-                      open={isOpen}
-                      onOpenChange={() => toggleCollapsible(f.key)}
-                    >
-                      <div className="grid grid-cols-3 gap-3 items-center">
-                        <CollapsibleTrigger className="flex items-center gap-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors text-left">
-                          <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isOpen && "rotate-180")} />
-                          <span className="flex items-center gap-1.5">
-                            {ptLabel}
-                            {multilingualData.pt[f.key]?.trim() && (
-                              <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
-                            )}
-                          </span>
-                        </CollapsibleTrigger>
-                        <div className="flex items-center justify-between gap-2 min-h-[24px]">
-                          {isOpen && (
-                            <>
-                              <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
-                                {enLabel}
-                                {multilingualData.en[f.key]?.trim() && (
-                                  <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
-                                )}
-                              </Label>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
-                                onClick={() => translateField("en", f.key)}
-                              >
-                                <Languages className="h-3 w-3" />
-                                <span className="hidden sm:inline">Traduzir</span>
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                        <div className="flex items-center justify-between gap-2 min-h-[24px]">
-                          {isOpen && (
-                            <>
-                              <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
-                                {esLabel}
-                                {multilingualData.es[f.key]?.trim() && (
-                                  <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
-                                )}
-                              </Label>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
-                                onClick={() => translateField("es", f.key)}
-                              >
-                                <Languages className="h-3 w-3" />
-                                <span className="hidden sm:inline">Traduzir</span>
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      <CollapsibleContent className="space-y-1 pt-1">
-                        <SyncedTextareaTrio
-                          ptValue={multilingualData.pt[f.key]}
-                          enValue={multilingualData.en[f.key]}
-                          esValue={multilingualData.es[f.key]}
-                          onPtChange={(v) => updateML("pt", f.key, v)}
-                          onEnChange={(v) => updateML("en", f.key, v)}
-                          onEsChange={(v) => updateML("es", f.key, v)}
-                          ptPlaceholder={ptLabel}
-                          enPlaceholder={enLabel}
-                          esPlaceholder={esLabel}
-                        />
-                      </CollapsibleContent>
-                    </Collapsible>
-                  );
-                })}
-              </div>
-            </div>
-
             {/* ── Características ── */}
             <div className="space-y-3">
               <div className="flex items-center justify-between flex-wrap gap-2">
@@ -970,6 +866,110 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                   })}
                 </div>
               )}
+            </div>
+
+            {/* ── Multilingual Fields (PT / EN / ES side-by-side) ── */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Informações do Produto</Label>
+
+              {/* Language column headers */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                  <span>🇧🇷</span> Português
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                  <span>🇺🇸</span> English
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                  <span>🇪🇸</span> Español
+                </div>
+              </div>
+
+              {/* Collapsible fields — shared open state per field key */}
+              <div className="space-y-1">
+                {COLLAPSIBLE_FIELDS.map(f => {
+                  const ptLabel = FIELD_LABELS.pt[f.key];
+                  const enLabel = FIELD_LABELS.en[f.key];
+                  const esLabel = FIELD_LABELS.es[f.key];
+                  const isOpen = collapsibleOpen[f.key] ?? false;
+                  return (
+                    <Collapsible
+                      key={f.key}
+                      open={isOpen}
+                      onOpenChange={() => toggleCollapsible(f.key)}
+                    >
+                      <div className="grid grid-cols-3 gap-3 items-center">
+                        <CollapsibleTrigger className="flex items-center gap-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors text-left">
+                          <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isOpen && "rotate-180")} />
+                          <span className="flex items-center gap-1.5">
+                            {ptLabel}
+                            {multilingualData.pt[f.key]?.trim() && (
+                              <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                            )}
+                          </span>
+                        </CollapsibleTrigger>
+                        <div className="flex items-center justify-between gap-2 min-h-[24px]">
+                          {isOpen && (
+                            <>
+                              <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                {enLabel}
+                                {multilingualData.en[f.key]?.trim() && (
+                                  <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                                )}
+                              </Label>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
+                                onClick={() => translateField("en", f.key)}
+                              >
+                                <Languages className="h-3 w-3" />
+                                <span className="hidden sm:inline">Traduzir</span>
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between gap-2 min-h-[24px]">
+                          {isOpen && (
+                            <>
+                              <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                {esLabel}
+                                {multilingualData.es[f.key]?.trim() && (
+                                  <Check className="h-3 w-3 text-emerald-600" aria-label="Preenchido" />
+                                )}
+                              </Label>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 text-[10px] text-muted-foreground hover:text-primary gap-1 px-2"
+                                onClick={() => translateField("es", f.key)}
+                              >
+                                <Languages className="h-3 w-3" />
+                                <span className="hidden sm:inline">Traduzir</span>
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <CollapsibleContent className="space-y-1 pt-1">
+                        <SyncedTextareaTrio
+                          ptValue={multilingualData.pt[f.key]}
+                          enValue={multilingualData.en[f.key]}
+                          esValue={multilingualData.es[f.key]}
+                          onPtChange={(v) => updateML("pt", f.key, v)}
+                          onEnChange={(v) => updateML("en", f.key, v)}
+                          onEsChange={(v) => updateML("es", f.key, v)}
+                          ptPlaceholder={ptLabel}
+                          enPlaceholder={enLabel}
+                          esPlaceholder={esLabel}
+                        />
+                      </CollapsibleContent>
+                    </Collapsible>
+                  );
+                })}
+              </div>
             </div>
 
             {/* ── Pontuação ── */}
