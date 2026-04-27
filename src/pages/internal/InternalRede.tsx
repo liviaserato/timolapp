@@ -81,6 +81,8 @@ export default function InternalRede() {
     setQuery("");
     setView("");
     setShowDropdown(false);
+    // Refocus input so user can start typing immediately
+    requestAnimationFrame(() => inputRef.current?.focus());
   }
 
   return (
