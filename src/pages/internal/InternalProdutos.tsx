@@ -90,6 +90,37 @@ const FIELD_LABELS: Record<string, Record<string, string>> = {
   },
 };
 
+// Placeholders include the language hint (e.g., "Descrição em português")
+const FIELD_PLACEHOLDERS: Record<string, Record<string, string>> = {
+  pt: {
+    name: "Nome do produto em português",
+    description: "Descrição em português",
+    benefits: "Benefícios em português",
+    instructions: "Instruções de uso em português",
+    warranty: "Garantia em português",
+    composition: "Composição em português",
+    manufacturer: "Fabricante em português",
+  },
+  en: {
+    name: "Product name in english",
+    description: "Description in english",
+    benefits: "Benefits in english",
+    instructions: "Instructions for use in english",
+    warranty: "Warranty in english",
+    composition: "Composition in english",
+    manufacturer: "Manufacturer in english",
+  },
+  es: {
+    name: "Nombre del producto en español",
+    description: "Descripción en español",
+    benefits: "Beneficios en español",
+    instructions: "Instrucciones de uso en español",
+    warranty: "Garantía en español",
+    composition: "Composición en español",
+    manufacturer: "Fabricante en español",
+  },
+};
+
 const ALWAYS_VISIBLE_FIELDS = [
   { key: "name", type: "input" as const },
 ];
