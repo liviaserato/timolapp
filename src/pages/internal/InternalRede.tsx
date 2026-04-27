@@ -205,53 +205,21 @@ export default function InternalRede() {
 
 /* ── Franchise summary card ── */
 function FranchiseSummaryCard({ entry }: { entry: FranchiseDirectoryEntry }) {
-  const q = qualificationConfig[entry.qualification] ?? qualificationConfig.consultor;
   return (
     <fieldset className="relative rounded-[10px] border border-border bg-card p-4 shadow-sm">
       <legend className="flex items-center gap-2 px-1 text-base font-bold text-primary">
         <Building2 className="h-5 w-5 shrink-0" />
-        <span className="shrink-0">Resumo da Franquia</span>
+        <span className="shrink-0">Rede da Franquia</span>
       </legend>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <SummaryItem icon={<Building2 className="h-4 w-4 text-primary" />} label="ID" value={entry.franchiseId} mono />
-        <SummaryItem icon={<User className="h-4 w-4 text-primary" />} label="Nome" value={entry.name} />
-        <SummaryItem icon={<Award className="h-4 w-4 text-primary" />} label="Tipo de franquia" value={entry.planLabel} />
-        <SummaryItem
-          icon={<span style={{ color: q.color }} className="text-base leading-none">{q.icon}</span>}
-          label="Qualificação"
-          value={q.label}
-        />
-        <SummaryItem
-          icon={<Users className="h-4 w-4 text-primary" />}
-          label="Patrocinador"
-          value={`${entry.sponsorId} - ${entry.sponsorName}`}
-        />
+      <div className="space-y-1.5">
+        <Label className="text-xs text-muted-foreground">Franquia</Label>
+        <p className="text-sm font-semibold text-foreground truncate">
+          <span className="font-mono tabular-nums">{entry.franchiseId}</span>
+          <span className="text-muted-foreground"> - </span>
+          <span>{entry.name}</span>
+        </p>
       </div>
     </fieldset>
-  );
-}
-
-function SummaryItem({
-  icon,
-  label,
-  value,
-  mono,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  mono?: boolean;
-}) {
-  return (
-    <div className="space-y-1 min-w-0">
-      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground uppercase tracking-wide">
-        {icon}
-        <span>{label}</span>
-      </div>
-      <p className={cn("text-sm font-semibold text-foreground truncate", mono && "font-mono tabular-nums")}>
-        {value}
-      </p>
-    </div>
   );
 }
