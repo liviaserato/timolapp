@@ -103,7 +103,6 @@ export default function InternalRede() {
     setQuery(`${entry.franchiseId} - ${entry.name}`);
     setShowDropdown(false);
     if (!keepView) setView("");
-    pushRecent(entry.franchiseId);
   }
 
   function selectRecent(id: string) {
@@ -118,6 +117,8 @@ export default function InternalRede() {
   }
 
   function clearSelection() {
+    // Save the cleared selection into recents (only on X click)
+    if (selected) pushRecent(selected.franchiseId);
     setSelected(null);
     setQuery("");
     setView("");
