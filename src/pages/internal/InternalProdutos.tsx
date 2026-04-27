@@ -662,7 +662,7 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
                   <span>🇪🇸</span> ES
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-3" style={{ marginLeft: 0 }}>
+              <div className="grid grid-cols-3 gap-3">
                 <Input
                   value={multilingualData.pt.name}
                   onChange={e => { updateML("pt", "name", e.target.value); clearError("name"); }}
