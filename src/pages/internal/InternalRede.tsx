@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Search, X, GitFork, Network, Building2 } from "lucide-react";
+import { Search, X, GitFork, Network, Building2, SearchCode, History, Eraser } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -40,11 +40,24 @@ function normalize(s: string): string {
 
 type RedeView = "binario" | "unilevel" | "";
 
+const RECENT_KEY = "internal-rede-recent-ids";
+const MAX_RECENT = 5;
+
 export default function InternalRede() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<FranchiseDirectoryEntry | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [view, setView] = useState<RedeView>("");
+  const [recentIds, setRecentIds] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem(RECENT_KEY);
+      if (!raw) return [];
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr.filter((x) => typeof x === "string").slice(0, MAX_RECENT) : [];
+    } catch {
+      return [];
+    }
+  });
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -69,11 +82,39 @@ export default function InternalRede() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  function selectFranchise(entry: FranchiseDirectoryEntry) {
+  // Persist recent IDs
+  useEffect(() => {
+    try {
+      localStorage.setItem(RECENT_KEY, JSON.stringify(recentIds));
+    } catch {
+      /* ignore */
+    }
+  }, [recentIds]);
+
+  function pushRecent(id: string) {
+    setRecentIds((prev) => {
+      const next = [id, ...prev.filter((x) => x !== id)].slice(0, MAX_RECENT);
+      return next;
+    });
+  }
+
+  function selectFranchise(entry: FranchiseDirectoryEntry, keepView = false) {
     setSelected(entry);
     setQuery(`${entry.franchiseId} - ${entry.name}`);
     setShowDropdown(false);
-    setView("");
+    if (!keepView) setView("");
+    pushRecent(entry.franchiseId);
+  }
+
+  function selectRecent(id: string) {
+    const entry = FRANCHISE_DIRECTORY.find((f) => f.franchiseId === id);
+    if (!entry) return;
+    // Keep current toggle view when picking from recents
+    selectFranchise(entry, true);
+  }
+
+  function clearRecents() {
+    setRecentIds([]);
   }
 
   function clearSelection() {
@@ -100,7 +141,7 @@ export default function InternalRede() {
         {/* Search card */}
         <fieldset className="relative rounded-[10px] border border-border bg-card p-4 shadow-sm">
           <legend className="flex items-center gap-2 px-1 text-base font-bold text-primary">
-            <Search className="h-5 w-5 shrink-0" />
+            <SearchCode className="h-5 w-5 shrink-0" />
             <span className="shrink-0">Busca</span>
           </legend>
 
@@ -167,6 +208,43 @@ export default function InternalRede() {
               )}
             </div>
           </div>
+
+          {/* Recent IDs */}
+          {recentIds.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-border">
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <History className="h-3.5 w-3.5" />
+                  <span>Pesquisas recentes</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={clearRecents}
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Eraser className="h-3.5 w-3.5" />
+                  <span>Limpar</span>
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {recentIds.map((id) => {
+                  const entry = FRANCHISE_DIRECTORY.find((f) => f.franchiseId === id);
+                  const label = entry ? `${entry.franchiseId} - ${entry.name}` : id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => selectRecent(id)}
+                      className="px-2 py-1 text-xs rounded-md border border-border bg-muted/40 hover:bg-accent transition-colors font-mono tabular-nums max-w-full truncate"
+                      title={label}
+                    >
+                      {id}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </fieldset>
 
         {/* Summary card */}
