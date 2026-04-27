@@ -143,6 +143,7 @@ function SyncedTextareaTrio({
   ptValue, enValue, esValue,
   onPtChange, onEnChange, onEsChange,
   ptPlaceholder, enPlaceholder, esPlaceholder,
+  onTranslateEn, onTranslateEs,
   minRows = 3,
 }: {
   ptValue: string;
@@ -154,6 +155,8 @@ function SyncedTextareaTrio({
   ptPlaceholder?: string;
   enPlaceholder?: string;
   esPlaceholder?: string;
+  onTranslateEn?: () => void;
+  onTranslateEs?: () => void;
   minRows?: number;
 }) {
   const ptRef = useRef<HTMLTextAreaElement>(null);
@@ -184,22 +187,48 @@ function SyncedTextareaTrio({
         placeholder={ptPlaceholder}
         className="resize-none overflow-hidden"
       />
-      <Textarea
-        ref={enRef}
-        rows={minRows}
-        value={enValue}
-        onChange={e => onEnChange(e.target.value)}
-        placeholder={enPlaceholder}
-        className="resize-none overflow-hidden"
-      />
-      <Textarea
-        ref={esRef}
-        rows={minRows}
-        value={esValue}
-        onChange={e => onEsChange(e.target.value)}
-        placeholder={esPlaceholder}
-        className="resize-none overflow-hidden"
-      />
+      <div className="relative">
+        <Textarea
+          ref={enRef}
+          rows={minRows}
+          value={enValue}
+          onChange={e => onEnChange(e.target.value)}
+          placeholder={enPlaceholder}
+          className="resize-none overflow-hidden pr-9"
+        />
+        {onTranslateEn && (
+          <button
+            type="button"
+            onClick={onTranslateEn}
+            className="absolute top-1.5 right-1.5 p-1 rounded text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+            aria-label="Traduzir para inglês"
+            title="Traduzir do português"
+          >
+            <Languages className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
+      <div className="relative">
+        <Textarea
+          ref={esRef}
+          rows={minRows}
+          value={esValue}
+          onChange={e => onEsChange(e.target.value)}
+          placeholder={esPlaceholder}
+          className="resize-none overflow-hidden pr-9"
+        />
+        {onTranslateEs && (
+          <button
+            type="button"
+            onClick={onTranslateEs}
+            className="absolute top-1.5 right-1.5 p-1 rounded text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+            aria-label="Traduzir para espanhol"
+            title="Traduzir do português"
+          >
+            <Languages className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }
