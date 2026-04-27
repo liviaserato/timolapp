@@ -40,11 +40,24 @@ function normalize(s: string): string {
 
 type RedeView = "binario" | "unilevel" | "";
 
+const RECENT_KEY = "internal-rede-recent-ids";
+const MAX_RECENT = 5;
+
 export default function InternalRede() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<FranchiseDirectoryEntry | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [view, setView] = useState<RedeView>("");
+  const [recentIds, setRecentIds] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem(RECENT_KEY);
+      if (!raw) return [];
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr.filter((x) => typeof x === "string").slice(0, MAX_RECENT) : [];
+    } catch {
+      return [];
+    }
+  });
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
