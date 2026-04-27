@@ -648,19 +648,19 @@ function NewProductDialog({ open, onOpenChange, editingProduct }: NewProductDial
 
             {/* ── Nome do Produto (multilíngue, acima do SKU) ── */}
             <div className="space-y-2" data-error-key="name">
-              <div className="flex items-end gap-3">
-                <Label className="text-sm font-semibold shrink-0">Nome do Produto *</Label>
-                <div className="grid grid-cols-3 gap-3 flex-1">
-                  <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground justify-self-end">
+              <div className="grid grid-cols-3 gap-3 items-center">
+                <div className="flex items-center justify-between gap-2">
+                  <Label className="text-sm font-semibold">Nome do Produto *</Label>
+                  <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
                     <span>🇧🇷</span> BR
                   </span>
-                  <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground justify-self-end">
-                    <span>🇺🇸</span> US
-                  </span>
-                  <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground justify-self-end">
-                    <span>🇪🇸</span> ES
-                  </span>
                 </div>
+                <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground justify-self-end">
+                  <span>🇺🇸</span> US
+                </span>
+                <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground justify-self-end">
+                  <span>🇪🇸</span> ES
+                </span>
               </div>
               <div className="grid grid-cols-3 gap-3" style={{ marginLeft: 0 }}>
                 <Input
