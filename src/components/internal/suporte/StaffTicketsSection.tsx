@@ -10,10 +10,12 @@ import {
   Inbox,
   TrendingUp,
   Hourglass,
+  Plus,
 } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -22,6 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import TicketDetailDialog, { type TicketDetail } from "@/components/app/suporte/TicketDetailDialog";
+import { toast } from "sonner";
 
 type StaffStatus = "aberto" | "em_andamento" | "respondido" | "concluido" | "expirado";
 type Departamento =
@@ -80,10 +84,54 @@ const DEPARTAMENTOS: ("todos" | Departamento)[] = [
   "Outro",
 ];
 
+function buildTicketDetail(t: StaffTicket): TicketDetail {
+  // Map staff status -> dialog status
+  const statusMap: Record<StaffStatus, TicketDetail["status"]> = {
+    aberto: "em_andamento",
+    em_andamento: "em_andamento",
+    respondido: "respondido",
+    concluido: "concluido",
+    expirado: "expirado",
+  };
+  return {
+    id: t.id,
+    numero: t.numero,
+    assunto: t.assunto,
+    categoria: t.departamento,
+    status: statusMap[t.status],
+    descricaoInicial: `Chamado aberto por ${t.franqueado} (ID ${t.franchiseId}) em ${t.dataAbertura}.`,
+    dataAbertura: t.dataAbertura,
+    ultimaAtualizacao: t.ultimaAtualizacao,
+    historico: [
+      {
+        id: `${t.id}-h1`,
+        autor: "usuario",
+        nomeAutor: t.franqueado,
+        mensagem: `Olá, gostaria de tratar sobre: ${t.assunto}.`,
+        dataHora: t.dataAbertura,
+      },
+      {
+        id: `${t.id}-h2`,
+        autor: "equipe",
+        nomeAutor: "Equipe Timol",
+        mensagem: "Recebemos seu chamado e estamos analisando. Em breve retornaremos com novidades.",
+        dataHora: t.ultimaAtualizacao,
+      },
+    ],
+  };
+}
+
 export default function StaffTicketsSection() {
   const [statusFilter, setStatusFilter] = useState<"todos" | StaffStatus>("todos");
   const [deptFilter, setDeptFilter] = useState<"todos" | Departamento>("todos");
   const [search, setSearch] = useState("");
+  const [selectedTicket, setSelectedTicket] = useState<TicketDetail | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  function openTicket(t: StaffTicket) {
+    setSelectedTicket(buildTicketDetail(t));
+    setDialogOpen(true);
+  }
 
   const indicadores = useMemo(() => {
     const total = mockTickets.length;
@@ -144,22 +192,33 @@ export default function StaffTicketsSection() {
         icon={Ticket}
         title="Chamados recebidos"
         headerRight={
-          <div className="relative w-full max-w-[280px]">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por número, assunto ou franqueado..."
-              className="h-8 pl-8 pr-8 text-xs rounded-full bg-card border-2 border-app-card-border focus-visible:ring-1"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            )}
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="relative w-full sm:w-[280px]">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por número, assunto ou franqueado..."
+                className="h-8 pl-8 pr-8 text-xs rounded-full bg-card border-2 border-app-card-border focus-visible:ring-1"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 gap-1.5 text-xs text-muted-foreground shrink-0"
+              onClick={() => toast.info("Abrir novo chamado (em breve)")}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Novo chamado
+            </Button>
           </div>
         }
       >
@@ -205,6 +264,7 @@ export default function StaffTicketsSection() {
                 return (
                   <button
                     key={t.id}
+                    onClick={() => openTicket(t)}
                     className="w-full flex items-center gap-3 py-3 px-1 text-left hover:bg-muted/50 rounded transition-colors"
                   >
                     <StIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -227,6 +287,12 @@ export default function StaffTicketsSection() {
           )}
         </div>
       </DashboardCard>
+
+      <TicketDetailDialog
+        ticket={selectedTicket}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </div>
   );
 }
