@@ -192,22 +192,33 @@ export default function StaffTicketsSection() {
         icon={Ticket}
         title="Chamados recebidos"
         headerRight={
-          <div className="relative w-full max-w-[280px]">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por número, assunto ou franqueado..."
-              className="h-8 pl-8 pr-8 text-xs rounded-full bg-card border-2 border-app-card-border focus-visible:ring-1"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            )}
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="relative w-full sm:w-[280px]">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por número, assunto ou franqueado..."
+                className="h-8 pl-8 pr-8 text-xs rounded-full bg-card border-2 border-app-card-border focus-visible:ring-1"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 gap-1.5 text-xs text-muted-foreground shrink-0"
+              onClick={() => toast.info("Abrir novo chamado (em breve)")}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Novo chamado
+            </Button>
           </div>
         }
       >
