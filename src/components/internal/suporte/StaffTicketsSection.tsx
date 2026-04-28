@@ -10,10 +10,12 @@ import {
   Inbox,
   TrendingUp,
   Hourglass,
+  Plus,
 } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -22,6 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import TicketDetailDialog, { type TicketDetail } from "@/components/app/suporte/TicketDetailDialog";
+import { toast } from "sonner";
 
 type StaffStatus = "aberto" | "em_andamento" | "respondido" | "concluido" | "expirado";
 type Departamento =
