@@ -84,10 +84,54 @@ const DEPARTAMENTOS: ("todos" | Departamento)[] = [
   "Outro",
 ];
 
+function buildTicketDetail(t: StaffTicket): TicketDetail {
+  // Map staff status -> dialog status
+  const statusMap: Record<StaffStatus, TicketDetail["status"]> = {
+    aberto: "em_andamento",
+    em_andamento: "em_andamento",
+    respondido: "respondido",
+    concluido: "concluido",
+    expirado: "expirado",
+  };
+  return {
+    id: t.id,
+    numero: t.numero,
+    assunto: t.assunto,
+    categoria: t.departamento,
+    status: statusMap[t.status],
+    descricaoInicial: `Chamado aberto por ${t.franqueado} (ID ${t.franchiseId}) em ${t.dataAbertura}.`,
+    dataAbertura: t.dataAbertura,
+    ultimaAtualizacao: t.ultimaAtualizacao,
+    historico: [
+      {
+        id: `${t.id}-h1`,
+        autor: "usuario",
+        nomeAutor: t.franqueado,
+        mensagem: `Olá, gostaria de tratar sobre: ${t.assunto}.`,
+        dataHora: t.dataAbertura,
+      },
+      {
+        id: `${t.id}-h2`,
+        autor: "equipe",
+        nomeAutor: "Equipe Timol",
+        mensagem: "Recebemos seu chamado e estamos analisando. Em breve retornaremos com novidades.",
+        dataHora: t.ultimaAtualizacao,
+      },
+    ],
+  };
+}
+
 export default function StaffTicketsSection() {
   const [statusFilter, setStatusFilter] = useState<"todos" | StaffStatus>("todos");
   const [deptFilter, setDeptFilter] = useState<"todos" | Departamento>("todos");
   const [search, setSearch] = useState("");
+  const [selectedTicket, setSelectedTicket] = useState<TicketDetail | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  function openTicket(t: StaffTicket) {
+    setSelectedTicket(buildTicketDetail(t));
+    setDialogOpen(true);
+  }
 
   const indicadores = useMemo(() => {
     const total = mockTickets.length;
