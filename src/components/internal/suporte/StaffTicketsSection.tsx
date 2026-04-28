@@ -264,6 +264,7 @@ export default function StaffTicketsSection() {
                 return (
                   <button
                     key={t.id}
+                    onClick={() => openTicket(t)}
                     className="w-full flex items-center gap-3 py-3 px-1 text-left hover:bg-muted/50 rounded transition-colors"
                   >
                     <StIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -286,6 +287,12 @@ export default function StaffTicketsSection() {
           )}
         </div>
       </DashboardCard>
+
+      <TicketDetailDialog
+        ticket={selectedTicket}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </div>
   );
 }
