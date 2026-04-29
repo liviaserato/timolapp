@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
@@ -8,6 +8,15 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  type CarouselApi,
+} from "@/components/ui/carousel";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
 
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -22,16 +31,32 @@ function formatCurrency(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+const mockBanners = [
+  { id: 1, title: "🔥 Combo Mega com 30% OFF", subtitle: "Válido até 31/03", bg: "from-primary/90 to-primary/60" },
+  { id: 2, title: "🚀 Lançamento Linha Premium", subtitle: "Novos produtos disponíveis", bg: "from-emerald-600/80 to-emerald-500/60" },
+  { id: 3, title: "🎁 Compre 3, Leve 4", subtitle: "Promoção exclusiva para franqueados", bg: "from-amber-600/80 to-amber-500/60" },
+];
+
 export default function RealizarPedido() {
   const navigate = useNavigate();
   const cart = useCart();
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
 
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("todos");
   const [searchTerm, setSearchTerm] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!carouselApi) return;
+    const interval = setInterval(() => {
+      carouselApi.scrollNext();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [carouselApi]);
 
   const layout = isMobile ? "list" : "grid";
 
@@ -78,6 +103,32 @@ export default function RealizarPedido() {
           </div>
         </div>
       </header>
+
+      {/* Banners de promoção */}
+      <div className="relative mb-3">
+        <Carousel className="w-full" opts={{ loop: true }} setApi={setCarouselApi}>
+          <CarouselContent>
+            {mockBanners.map((b) => (
+              <CarouselItem key={b.id}>
+                <div
+                  className={cn(
+                    "flex min-h-[140px] flex-col items-center justify-center rounded-lg bg-gradient-to-r text-primary-foreground px-6 py-8 text-center",
+                    b.bg,
+                  )}
+                >
+                  <p className="text-xl font-bold">{b.title}</p>
+                  <p className="text-sm mt-1 opacity-90">{b.subtitle}</p>
+                  <Button size="sm" variant="secondary" className="mt-3 text-xs font-semibold">
+                    {t("pedidos.seeOffer")}
+                  </Button>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-transparent text-white/50 hover:text-white drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
+          <CarouselNext className="right-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-transparent text-white/50 hover:text-white drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
+        </Carousel>
+      </div>
 
       {/* Search */}
       <div className="mb-3">

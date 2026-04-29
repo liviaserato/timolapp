@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
@@ -24,14 +24,6 @@ import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-  type CarouselApi,
-} from "@/components/ui/carousel";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -42,12 +34,6 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 /* ── Mock data ── */
-
-const mockBanners = [
-  { id: 1, title: "🔥 Combo Mega com 30% OFF", subtitle: "Válido até 31/03", bg: "from-primary/90 to-primary/60" },
-  { id: 2, title: "🚀 Lançamento Linha Premium", subtitle: "Novos produtos disponíveis", bg: "from-emerald-600/80 to-emerald-500/60" },
-  { id: 3, title: "🎁 Compre 3, Leve 4", subtitle: "Promoção exclusiva para franqueados", bg: "from-amber-600/80 to-amber-500/60" },
-];
 
 const mockOrders: Order[] = [
   {
@@ -245,19 +231,10 @@ export default function Pedidos() {
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [detailOrder, setDetailOrder] = useState<Order | null>(null);
   const [indicarOpen, setIndicarOpen] = useState(false);
-  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
 
   const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Auto-advance carousel every 5 seconds
-  useEffect(() => {
-    if (!carouselApi) return;
-    const interval = setInterval(() => {
-      carouselApi.scrollNext();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [carouselApi]);
 
   const filtered = mockOrders
     .filter((o) => {
@@ -309,33 +286,6 @@ export default function Pedidos() {
       </header>
 
       <section className="flex flex-col gap-2">
-
-        {/* Banners de promoção — sem card, direto na página */}
-        <div className="relative">
-          <Carousel className="w-full" opts={{ loop: true }} setApi={setCarouselApi}>
-            <CarouselContent>
-              {mockBanners.map((b) => (
-                <CarouselItem key={b.id}>
-                  <div
-                    className={cn(
-                      "flex min-h-[140px] flex-col items-center justify-center rounded-lg bg-gradient-to-r text-primary-foreground px-6 py-8 text-center",
-                      b.bg,
-                    )}
-                  >
-                    <p className="text-xl font-bold">{b.title}</p>
-                    <p className="text-sm mt-1 opacity-90">{b.subtitle}</p>
-                    <Button size="sm" variant="secondary" className="mt-3 text-xs font-semibold">
-                      {t("pedidos.seeOffer")}
-                    </Button>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="left-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-transparent text-white/50 hover:text-white drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
-            <CarouselNext className="right-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-transparent text-white/50 hover:text-white drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
-          </Carousel>
-        </div>
-
         {/* Realizar Pedido */}
         <DashboardCard icon={ShoppingCart} title={t("pedidos.newOrder")}>
           <div className="mt-2 flex flex-col gap-3">
