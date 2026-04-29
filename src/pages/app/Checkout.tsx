@@ -276,7 +276,7 @@ export default function Checkout() {
   };
 
   return (
-    <div className="flex flex-col h-full max-w-2xl mx-auto">
+    <div className="flex flex-col h-full max-w-5xl mx-auto">
       {/* Header */}
       <header className="mb-5">
         <div className="flex items-center gap-2">
