@@ -765,7 +765,7 @@ export default function Checkout() {
                   <p className="text-sm font-medium text-foreground">Cartão de Crédito</p>
                   <p className="text-[11px] text-muted-foreground">Até 12x sem juros</p>
                 </div>
-                <span className="text-sm font-bold text-foreground">{formatCurrency(grandTotal)}</span>
+                <span className="text-sm font-bold text-foreground">{formatCurrency(Math.max(0, grandTotal - walletApplied))}</span>
               </label>
             </RadioGroup>
           </CardContent>
