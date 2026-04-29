@@ -756,63 +756,6 @@ export default function Checkout() {
           open={addressDialogOpen}
           onOpenChange={setAddressDialogOpen}
         />
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-                <Wallet className="h-4 w-4" />
-                Saldo em carteira
-              </CardTitle>
-              <span className="text-xs text-muted-foreground">
-                Disponível: <span className="font-semibold text-foreground">{formatCurrency(walletBalance - walletApplied)}</span>
-              </span>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {walletApplied > 0 ? (
-              <div className="flex items-center justify-between bg-primary/5 rounded px-3 py-2">
-                <span className="text-xs text-foreground">
-                  Aplicado: <span className="font-bold text-primary">{formatCurrency(walletApplied)}</span>
-                </span>
-                <button onClick={handleRemoveWallet} className="text-[11px] text-destructive hover:underline">
-                  Remover
-                </button>
-              </div>
-            ) : (
-              <>
-                <form
-                  onSubmit={(e) => { e.preventDefault(); handleApplyWallet(); }}
-                  className="flex gap-1.5"
-                >
-                  <Input
-                    value={walletInput}
-                    onChange={(e) => {
-                      setWalletInput(formatWalletInput(e.target.value));
-                      setWalletError("");
-                    }}
-                    placeholder="R$ 0,00"
-                    inputMode="numeric"
-                    className="h-8 text-xs flex-1"
-                    disabled={walletBalance <= 0}
-                  />
-                  <Button
-                    type="submit"
-                    size="sm"
-                    variant="outline"
-                    className="h-8 text-xs px-3 w-20 shrink-0"
-                    disabled={!walletInput.trim() || walletBalance <= 0}
-                  >
-                    Confirmar
-                  </Button>
-                </form>
-                {walletError && (
-                  <p className="text-[11px] text-destructive mt-1">{walletError}</p>
-                )}
-              </>
-            )}
-          </CardContent>
-        </Card>
-
         {/* Payment method */}
         <Card>
           <CardHeader className="pb-2">
