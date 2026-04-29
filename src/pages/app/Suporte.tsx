@@ -172,10 +172,16 @@ export default function Suporte() {
           >
             <ChevronRight className="h-5 w-5 rotate-180" />
           </button>
-          <div>
+          <div className="flex-1 min-w-0">
             <h1 className="text-2xl font-bold text-primary">{currentItem?.title}</h1>
             <p className="text-sm text-muted-foreground mt-0.5">{currentItem?.desc}</p>
           </div>
+          {view === "chamados" && (
+            <Button size="sm" className="gap-1.5 shrink-0" onClick={() => setNewTicketOpen(true)}>
+              <Ticket className="h-4 w-4" />
+              {t("suporte.newTicket")}
+            </Button>
+          )}
         </div>
       )}
 
