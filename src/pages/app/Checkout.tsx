@@ -53,6 +53,7 @@ export default function Checkout() {
   const walletBalance = 250.00;
   const [walletInput, setWalletInput] = useState("");
   const [walletApplied, setWalletApplied] = useState(0);
+  const [walletError, setWalletError] = useState("");
 
   // Mock address from profile
   const [address, setAddress] = useState({
@@ -88,27 +89,42 @@ export default function Checkout() {
 
   const totalBeforeWallet = grandTotal - pixDiscount;
 
+  // Mask: digits only -> "R$ 0,00"
+  const formatWalletInput = (raw: string) => {
+    const digits = raw.replace(/\D/g, "");
+    if (!digits) return "";
+    const num = parseInt(digits, 10) / 100;
+    return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
+
+  const parseWalletInput = (masked: string): number => {
+    const digits = masked.replace(/\D/g, "");
+    if (!digits) return 0;
+    return parseInt(digits, 10) / 100;
+  };
+
   const handleApplyWallet = () => {
-    const value = parseFloat(walletInput.replace(",", "."));
-    if (isNaN(value) || value <= 0) {
-      toast.error("Informe um valor válido");
+    const value = parseWalletInput(walletInput);
+    if (value <= 0) {
+      setWalletError("Informe um valor válido");
       return;
     }
     if (value > walletBalance) {
-      toast.error("Valor maior que o saldo disponível");
+      setWalletError("Valor maior que o disponível");
       return;
     }
     if (value > totalBeforeWallet) {
-      toast.error("Valor maior que o total do pedido");
+      setWalletError("Valor maior que o total do pedido");
       return;
     }
+    setWalletError("");
     setWalletApplied(value);
-    toast.success("Saldo aplicado");
   };
 
   const handleRemoveWallet = () => {
     setWalletApplied(0);
     setWalletInput("");
+    setWalletError("");
   };
 
   const handleSaveAddress = () => {
@@ -210,7 +226,7 @@ export default function Checkout() {
               </div>
             )}
             {walletApplied > 0 && (
-              <div className="flex justify-between text-xs text-green-600">
+              <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Saldo carteira</span>
                 <span>-{formatCurrency(walletApplied)}</span>
               </div>
@@ -247,28 +263,36 @@ export default function Checkout() {
                 </button>
               </div>
             ) : (
-              <form
-                onSubmit={(e) => { e.preventDefault(); handleApplyWallet(); }}
-                className="flex gap-1.5"
-              >
-                <Input
-                  value={walletInput}
-                  onChange={(e) => setWalletInput(e.target.value.replace(/[^0-9.,]/g, ""))}
-                  placeholder="Quanto deseja usar?"
-                  inputMode="decimal"
-                  className="h-8 text-xs flex-1"
-                  disabled={walletBalance <= 0}
-                />
-                <Button
-                  type="submit"
-                  size="sm"
-                  variant="outline"
-                  className="h-8 text-xs px-3 w-20 shrink-0"
-                  disabled={!walletInput.trim() || walletBalance <= 0}
+              <>
+                <form
+                  onSubmit={(e) => { e.preventDefault(); handleApplyWallet(); }}
+                  className="flex gap-1.5"
                 >
-                  Confirmar
-                </Button>
-              </form>
+                  <Input
+                    value={walletInput}
+                    onChange={(e) => {
+                      setWalletInput(formatWalletInput(e.target.value));
+                      setWalletError("");
+                    }}
+                    placeholder="R$ 0,00"
+                    inputMode="numeric"
+                    className="h-8 text-xs flex-1"
+                    disabled={walletBalance <= 0}
+                  />
+                  <Button
+                    type="submit"
+                    size="sm"
+                    variant="outline"
+                    className="h-8 text-xs px-3 w-20 shrink-0"
+                    disabled={!walletInput.trim() || walletBalance <= 0}
+                  >
+                    Confirmar
+                  </Button>
+                </form>
+                {walletError && (
+                  <p className="text-[11px] text-destructive mt-1">{walletError}</p>
+                )}
+              </>
             )}
           </CardContent>
         </Card>
