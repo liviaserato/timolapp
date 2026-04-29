@@ -119,9 +119,9 @@ export function CartDrawer({
 
             {/* Totals + Actions - fixed at bottom */}
             <div className="shrink-0 border-t border-border px-6 py-4 space-y-2 bg-background">
-              <div className="flex justify-between text-sm">
-                <span className="font-semibold text-foreground">Total</span>
-                <span className="font-bold text-primary text-base">{formatCurrency(totalPrice)}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-semibold text-foreground">Total</span>
+                <span className="text-xl font-bold text-primary">{formatCurrency(totalPrice)}</span>
               </div>
               <Button className="w-full gap-2" size="lg" onClick={handleFinalize}>
                 <ShoppingBag className="h-4 w-4" />
