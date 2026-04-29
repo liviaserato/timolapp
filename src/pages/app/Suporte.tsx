@@ -225,24 +225,6 @@ export default function Suporte() {
 
       {view === "chamados" && (
         <>
-          {/* CTA Banner */}
-          <section className="rounded-[10px] overflow-hidden bg-gradient-to-r from-[hsl(var(--app-header))] to-[hsl(210,80%,45%)] p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-primary-foreground text-center sm:text-left">
-              <p className="font-bold text-base">{t("suporte.notFound")}</p>
-              <p className="text-xs opacity-90 mt-0.5">{t("suporte.notFoundSub")}</p>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <Button variant="outline" size="sm" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 border-0 gap-1.5 text-xs shrink-0" onClick={() => setNewTicketOpen(true)}>
-                <Ticket className="h-4 w-4" />
-                {t("suporte.openTicket")}
-              </Button>
-              <Button variant="outline" size="sm" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 border-0 gap-1.5 text-xs shrink-0" onClick={() => openWhatsAppLink("Olá! Preciso de ajuda.")}>
-                <img src={iconWhatsapp} alt="" className="h-4 w-4" />
-                {t("suporte.talkToAgent")}
-              </Button>
-            </div>
-          </section>
-
           <section>
             <DashboardCard icon={Ticket} title={t("suporte.myTickets")}>
               <div className="mt-2">
