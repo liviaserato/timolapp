@@ -520,13 +520,23 @@ export default function Checkout() {
                     )}
                   </span>
                   {appliedCoupon ? (
-                    <button
-                      type="button"
-                      onClick={handleRemoveCoupon}
-                      className="text-[11px] text-muted-foreground hover:text-destructive transition-colors"
-                    >
-                      Remover
-                    </button>
+                    <span className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleEditCoupon}
+                        className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        Editar
+                      </button>
+                      <span className="text-muted-foreground/40">·</span>
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="text-[11px] text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        Remover
+                      </button>
+                    </span>
                   ) : (
                     <button
                       type="button"
