@@ -328,11 +328,11 @@ export default function Suporte() {
               {t("suporte.describeIssue")}<br />{t("suporte.teamWillRespond")}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-4 mt-2">
-            <div className="space-y-1.5">
+          <div className="flex flex-col gap-4 mt-2 min-w-0 w-full">
+            <div className="space-y-1.5 min-w-0 w-full">
               <Label className="text-xs font-medium">{t("suporte.category")}</Label>
               <Select value={ticketCategory} onValueChange={(v) => { setTicketCategory(v); setFieldErrors((p) => ({ ...p, category: "" })); }}>
-                <SelectTrigger className={`text-sm ${fieldErrors.category ? "border-destructive" : ""}`}>
+                <SelectTrigger className={`text-sm w-full min-w-0 ${fieldErrors.category ? "border-destructive" : ""}`}>
                   <SelectValue placeholder={t("suporte.selectCategory")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -343,17 +343,17 @@ export default function Suporte() {
               </Select>
               {fieldErrors.category && <p className="text-xs text-destructive">{fieldErrors.category}</p>}
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 min-w-0 w-full">
               <Label className="text-xs font-medium">{t("suporte.subject")}</Label>
-              <Input placeholder={t("suporte.subjectPlaceholder")} className={`text-sm ${fieldErrors.subject ? "border-destructive" : ""}`} value={ticketSubject} onChange={(e) => { setTicketSubject(e.target.value); setFieldErrors((p) => ({ ...p, subject: "" })); }} />
+              <Input placeholder={t("suporte.subjectPlaceholder")} className={`text-sm w-full min-w-0 ${fieldErrors.subject ? "border-destructive" : ""}`} value={ticketSubject} onChange={(e) => { setTicketSubject(e.target.value); setFieldErrors((p) => ({ ...p, subject: "" })); }} />
               {fieldErrors.subject && <p className="text-xs text-destructive">{fieldErrors.subject}</p>}
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 min-w-0 w-full">
               <Label className="text-xs font-medium">{t("suporte.descriptionLabel")}</Label>
-              <Textarea placeholder={t("suporte.descriptionPlaceholder")} className={`text-sm min-h-[100px] resize-none ${fieldErrors.description ? "border-destructive" : ""}`} value={ticketDescription} onChange={(e) => { setTicketDescription(e.target.value); setFieldErrors((p) => ({ ...p, description: "" })); }} />
+              <Textarea placeholder={t("suporte.descriptionPlaceholder")} className={`text-sm min-h-[100px] resize-none w-full min-w-0 ${fieldErrors.description ? "border-destructive" : ""}`} value={ticketDescription} onChange={(e) => { setTicketDescription(e.target.value); setFieldErrors((p) => ({ ...p, description: "" })); }} />
               {fieldErrors.description && <p className="text-xs text-destructive">{fieldErrors.description}</p>}
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0 w-full">
               <Label className="text-xs font-medium">{t("suporte.attachments")}</Label>
               {attachedFiles.map((file, i) => (
                 <div key={i} className="flex items-center gap-2 border border-border rounded-md p-2.5 text-sm">
@@ -365,9 +365,9 @@ export default function Suporte() {
                 </div>
               ))}
               {attachedFiles.length < MAX_FILES ? (
-                <label className="flex items-center gap-2 cursor-pointer border border-dashed border-border rounded-md p-3 text-sm text-muted-foreground hover:border-primary/40 transition-colors">
-                  <Paperclip className="h-4 w-4" />
-                  <span>{t("suporte.clickToAttach")}</span>
+                <label className="flex items-center gap-2 cursor-pointer border border-dashed border-border rounded-md p-3 text-sm text-muted-foreground hover:border-primary/40 transition-colors w-full min-w-0">
+                  <Paperclip className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{t("suporte.clickToAttach")}</span>
                   <input type="file" className="hidden" onChange={handleFileAttach} />
                 </label>
               ) : (
