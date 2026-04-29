@@ -99,8 +99,6 @@ export default function Checkout() {
         subtotal,
         coupon,
         couponDiscount,
-        voucher,
-        voucherDiscount,
         shippingCost,
         shippingLabel,
         pickupUnit,
