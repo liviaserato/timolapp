@@ -84,7 +84,32 @@ export default function Checkout() {
   const isPickup = !!pickupUnit;
 
   const pixDiscount = paymentMethod === "pix" ? grandTotal * 0.05 : 0;
-  const finalTotal = grandTotal - pixDiscount;
+  const finalTotal = Math.max(0, grandTotal - pixDiscount - walletApplied);
+
+  const totalBeforeWallet = grandTotal - pixDiscount;
+
+  const handleApplyWallet = () => {
+    const value = parseFloat(walletInput.replace(",", "."));
+    if (isNaN(value) || value <= 0) {
+      toast.error("Informe um valor válido");
+      return;
+    }
+    if (value > walletBalance) {
+      toast.error("Valor maior que o saldo disponível");
+      return;
+    }
+    if (value > totalBeforeWallet) {
+      toast.error("Valor maior que o total do pedido");
+      return;
+    }
+    setWalletApplied(value);
+    toast.success("Saldo aplicado");
+  };
+
+  const handleRemoveWallet = () => {
+    setWalletApplied(0);
+    setWalletInput("");
+  };
 
   const handleSaveAddress = () => {
     // Validate required fields
