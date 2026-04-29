@@ -56,6 +56,8 @@ export default function Checkout() {
   const [walletApplied, setWalletApplied] = useState(0);
   const [walletError, setWalletError] = useState("");
 
+  const [showWallet, setShowWallet] = useState(false);
+
   // Cupom
   const [showCoupon, setShowCoupon] = useState(false);
   const [coupon, setCoupon] = useState("");
