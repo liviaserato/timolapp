@@ -343,17 +343,17 @@ export default function Suporte() {
               </Select>
               {fieldErrors.category && <p className="text-xs text-destructive">{fieldErrors.category}</p>}
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 min-w-0 w-full">
               <Label className="text-xs font-medium">{t("suporte.subject")}</Label>
-              <Input placeholder={t("suporte.subjectPlaceholder")} className={`text-sm ${fieldErrors.subject ? "border-destructive" : ""}`} value={ticketSubject} onChange={(e) => { setTicketSubject(e.target.value); setFieldErrors((p) => ({ ...p, subject: "" })); }} />
+              <Input placeholder={t("suporte.subjectPlaceholder")} className={`text-sm w-full min-w-0 ${fieldErrors.subject ? "border-destructive" : ""}`} value={ticketSubject} onChange={(e) => { setTicketSubject(e.target.value); setFieldErrors((p) => ({ ...p, subject: "" })); }} />
               {fieldErrors.subject && <p className="text-xs text-destructive">{fieldErrors.subject}</p>}
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 min-w-0 w-full">
               <Label className="text-xs font-medium">{t("suporte.descriptionLabel")}</Label>
-              <Textarea placeholder={t("suporte.descriptionPlaceholder")} className={`text-sm min-h-[100px] resize-none ${fieldErrors.description ? "border-destructive" : ""}`} value={ticketDescription} onChange={(e) => { setTicketDescription(e.target.value); setFieldErrors((p) => ({ ...p, description: "" })); }} />
+              <Textarea placeholder={t("suporte.descriptionPlaceholder")} className={`text-sm min-h-[100px] resize-none w-full min-w-0 ${fieldErrors.description ? "border-destructive" : ""}`} value={ticketDescription} onChange={(e) => { setTicketDescription(e.target.value); setFieldErrors((p) => ({ ...p, description: "" })); }} />
               {fieldErrors.description && <p className="text-xs text-destructive">{fieldErrors.description}</p>}
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0 w-full">
               <Label className="text-xs font-medium">{t("suporte.attachments")}</Label>
               {attachedFiles.map((file, i) => (
                 <div key={i} className="flex items-center gap-2 border border-border rounded-md p-2.5 text-sm">
