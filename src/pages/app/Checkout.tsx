@@ -97,9 +97,16 @@ export default function Checkout() {
     );
   }
 
-  const { items, subtotal, coupon, couponDiscount, shippingCost, shippingLabel, pickupUnit, grandTotal } = state;
+  const { items, subtotal } = state;
 
+  const shippingCost = shippingOptions.find(o => o.id === selectedShipping)?.cost ?? null;
+  const shippingLabel = selectedShipping === "retirada" && selectedPickupUnit
+    ? `Retirar na Timol - ${pickupUnits.find(u => u.id === selectedPickupUnit)?.name ?? ""}`
+    : shippingOptions.find(o => o.id === selectedShipping)?.label ?? "";
+  const pickupUnit = selectedPickupUnit ? pickupUnits.find(u => u.id === selectedPickupUnit)?.name ?? null : null;
   const isPickup = !!pickupUnit;
+
+  const grandTotal = Math.max(0, subtotal - couponDiscount + (shippingCost ?? 0));
 
   const pixDiscount = paymentMethod === "pix" ? grandTotal * 0.05 : 0;
   const finalTotal = Math.max(0, grandTotal - pixDiscount - walletApplied);
