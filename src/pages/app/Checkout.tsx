@@ -36,12 +36,6 @@ function formatCurrency(v: number) {
 interface CheckoutState {
   items: CartItem[];
   subtotal: number;
-  coupon: string | null;
-  couponDiscount: number;
-  shippingCost: number | null;
-  shippingLabel: string;
-  pickupUnit: string | null;
-  cep: string;
   grandTotal: number;
 }
 
