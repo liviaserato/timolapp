@@ -104,6 +104,32 @@ export default function RealizarPedido() {
         </div>
       </header>
 
+      {/* Banners de promoção */}
+      <div className="relative mb-3">
+        <Carousel className="w-full" opts={{ loop: true }} setApi={setCarouselApi}>
+          <CarouselContent>
+            {mockBanners.map((b) => (
+              <CarouselItem key={b.id}>
+                <div
+                  className={cn(
+                    "flex min-h-[140px] flex-col items-center justify-center rounded-lg bg-gradient-to-r text-primary-foreground px-6 py-8 text-center",
+                    b.bg,
+                  )}
+                >
+                  <p className="text-xl font-bold">{b.title}</p>
+                  <p className="text-sm mt-1 opacity-90">{b.subtitle}</p>
+                  <Button size="sm" variant="secondary" className="mt-3 text-xs font-semibold">
+                    {t("pedidos.seeOffer")}
+                  </Button>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-transparent text-white/50 hover:text-white drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
+          <CarouselNext className="right-0 h-full w-12 rounded-none bg-transparent border-0 shadow-none hover:bg-transparent text-white/50 hover:text-white drop-shadow-md [&>svg]:h-7 [&>svg]:w-7 transition-colors" />
+        </Carousel>
+      </div>
+
       {/* Search */}
       <div className="mb-3">
         <div className="relative">
