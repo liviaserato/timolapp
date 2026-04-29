@@ -49,6 +49,11 @@ export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState("pix");
   const [editingAddress, setEditingAddress] = useState(false);
 
+  // Mock wallet balance
+  const walletBalance = 250.00;
+  const [walletInput, setWalletInput] = useState("");
+  const [walletApplied, setWalletApplied] = useState(0);
+
   // Mock address from profile
   const [address, setAddress] = useState({
     street: "Rua das Palmeiras",
