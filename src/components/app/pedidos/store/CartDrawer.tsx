@@ -182,8 +182,6 @@ export function CartDrawer({
         subtotal: totalPrice,
         coupon: appliedCoupon,
         couponDiscount,
-        voucher: appliedVoucher,
-        voucherDiscount,
         shippingCost,
         shippingLabel,
         pickupUnit: selectedPickupUnit ? pickupUnits.find(u => u.id === selectedPickupUnit)?.name : null,
