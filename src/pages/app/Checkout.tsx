@@ -306,10 +306,15 @@ export default function Checkout() {
             {items.map((item, idx) => {
               const selStr = Object.values(item.selections).filter(Boolean).join(" · ");
               return (
-                <div key={idx} className="flex justify-between items-start text-sm">
+                 <div key={idx} className="flex justify-between items-start text-sm gap-3">
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-foreground">{item.qty}x {item.name}</p>
-                    {selStr && <p className="text-[11px] text-muted-foreground">{selStr}</p>}
+                    <p className="font-medium text-foreground">
+                      <span>{item.name}</span>
+                      {selStr && (
+                        <span className="text-[11px] text-muted-foreground font-normal"> {selStr}</span>
+                      )}
+                      <span className="text-muted-foreground font-normal"> x {item.qty}</span>
+                    </p>
                   </div>
                   <span className="font-semibold text-foreground ml-3 whitespace-nowrap">
                     {formatCurrency(item.price * item.qty)}
