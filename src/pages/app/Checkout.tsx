@@ -263,28 +263,36 @@ export default function Checkout() {
                 </button>
               </div>
             ) : (
-              <form
-                onSubmit={(e) => { e.preventDefault(); handleApplyWallet(); }}
-                className="flex gap-1.5"
-              >
-                <Input
-                  value={walletInput}
-                  onChange={(e) => setWalletInput(e.target.value.replace(/[^0-9.,]/g, ""))}
-                  placeholder="Quanto deseja usar?"
-                  inputMode="decimal"
-                  className="h-8 text-xs flex-1"
-                  disabled={walletBalance <= 0}
-                />
-                <Button
-                  type="submit"
-                  size="sm"
-                  variant="outline"
-                  className="h-8 text-xs px-3 w-20 shrink-0"
-                  disabled={!walletInput.trim() || walletBalance <= 0}
+              <>
+                <form
+                  onSubmit={(e) => { e.preventDefault(); handleApplyWallet(); }}
+                  className="flex gap-1.5"
                 >
-                  Confirmar
-                </Button>
-              </form>
+                  <Input
+                    value={walletInput}
+                    onChange={(e) => {
+                      setWalletInput(formatWalletInput(e.target.value));
+                      setWalletError("");
+                    }}
+                    placeholder="R$ 0,00"
+                    inputMode="numeric"
+                    className="h-8 text-xs flex-1"
+                    disabled={walletBalance <= 0}
+                  />
+                  <Button
+                    type="submit"
+                    size="sm"
+                    variant="outline"
+                    className="h-8 text-xs px-3 w-20 shrink-0"
+                    disabled={!walletInput.trim() || walletBalance <= 0}
+                  >
+                    Confirmar
+                  </Button>
+                </form>
+                {walletError && (
+                  <p className="text-[11px] text-destructive mt-1">{walletError}</p>
+                )}
+              </>
             )}
           </CardContent>
         </Card>
