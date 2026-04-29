@@ -749,7 +749,7 @@ export default function Checkout() {
                   <p className="text-sm font-medium text-foreground">Boleto Bancário</p>
                   <p className="text-[11px] text-muted-foreground">Vencimento em 3 dias</p>
                 </div>
-                <span className="text-sm font-bold text-foreground">{formatCurrency(grandTotal)}</span>
+                <span className="text-sm font-bold text-foreground">{formatCurrency(Math.max(0, grandTotal - walletApplied))}</span>
               </label>
 
               {/* Credit card */}
