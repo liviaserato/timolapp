@@ -325,15 +325,17 @@ export default function Checkout() {
           </CardContent>
         </Card>
 
+        {/* Frete + Endereço (2 colunas) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
         {/* Frete */}
-        <Card>
+        <Card className="flex flex-col">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
               <MapPin className="h-4 w-4" />
               Calcular frete
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1">
             <form onSubmit={(e) => { e.preventDefault(); handleCalcShipping(); }} className="flex gap-1.5">
               <div className="relative flex-1">
                 <Input
@@ -439,7 +441,7 @@ export default function Checkout() {
         </Card>
 
         {/* Address / Pickup */}
-        <Card>
+        <Card className="flex flex-col">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
@@ -455,15 +457,21 @@ export default function Checkout() {
                   </>
                 )}
               </CardTitle>
-              {!isPickup && !editingAddress && (
+              {!isPickup && !editingAddress && shippingOptions.length > 0 && (
                 <button onClick={() => { setEditAddress({ ...address }); setEditingAddress(true); }} className="text-primary hover:underline text-xs flex items-center gap-1">
                   <Edit2 className="h-3 w-3" /> Alterar
                 </button>
               )}
             </div>
           </CardHeader>
-          <CardContent>
-            {isPickup ? (
+          <CardContent className="flex-1 flex flex-col">
+            {shippingOptions.length === 0 ? (
+              <div className="flex-1 flex items-center justify-center text-center">
+                <p className="text-xs text-muted-foreground">
+                  Informe o CEP ao lado para escolher o endereço de entrega ou retirada.
+                </p>
+              </div>
+            ) : isPickup ? (
               <div className="text-sm text-foreground space-y-1.5">
                 <p className="font-medium flex items-center gap-1.5">
                   <Store className="h-3.5 w-3.5 text-primary" />
@@ -544,6 +552,7 @@ export default function Checkout() {
             )}
           </CardContent>
         </Card>
+        </div>
 
         {/* Cupom de desconto */}
         <Card>
