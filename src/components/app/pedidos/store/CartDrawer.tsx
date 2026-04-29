@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
-import { Minus, Plus, Trash2, ShoppingBag, Tag, Ticket, MapPin, Loader2, ChevronDown, ChevronUp, Package, Zap, Store, X, Check } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Tag, MapPin, Loader2, ChevronDown, ChevronUp, Package, Zap, Store, X, Check } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -47,12 +47,6 @@ export function CartDrawer({
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
 
-  const [showVoucher, setShowVoucher] = useState(false);
-  const [voucher, setVoucher] = useState("");
-  const [appliedVoucher, setAppliedVoucher] = useState<string | null>(null);
-  const [voucherDiscount, setVoucherDiscount] = useState(0);
-  const [voucherLoading, setVoucherLoading] = useState(false);
-  const [voucherError, setVoucherError] = useState("");
 
   const [cep, setCep] = useState("");
   const [shippingOptions, setShippingOptions] = useState<{ id: string; label: string; detail: string; cost: number; icon: React.ReactNode }[]>([]);
@@ -67,7 +61,7 @@ export function CartDrawer({
   const shippingLabel = selectedShipping === "retirada" && selectedPickupUnit
     ? `Retirar na Timol - ${pickupUnits.find(u => u.id === selectedPickupUnit)?.name ?? ""}`
     : shippingOptions.find(o => o.id === selectedShipping)?.label ?? "";
-  const totalDiscounts = couponDiscount + voucherDiscount;
+  const totalDiscounts = couponDiscount;
   const shipping = shippingCost ?? 0;
   const grandTotal = Math.max(0, totalPrice - totalDiscounts + shipping);
 
@@ -96,29 +90,6 @@ export function CartDrawer({
     setCouponError("");
   };
 
-  const handleApplyVoucher = () => {
-    if (!voucher.trim()) return;
-    setVoucherLoading(true);
-    setVoucherError("");
-    setTimeout(() => {
-      const code = voucher.trim().toUpperCase();
-      if (code === "VOUCHER50") {
-        setAppliedVoucher(code);
-        setVoucherDiscount(50);
-        setVoucherError("");
-      } else {
-        setVoucherError("Voucher inválido ou já utilizado");
-      }
-      setVoucherLoading(false);
-    }, 800);
-  };
-
-  const handleRemoveVoucher = () => {
-    setAppliedVoucher(null);
-    setVoucherDiscount(0);
-    setVoucher("");
-    setVoucherError("");
-  };
 
   const handleCalcShipping = async () => {
     const cleanCep = cep.replace(/\D/g, "");
@@ -211,8 +182,6 @@ export function CartDrawer({
         subtotal: totalPrice,
         coupon: appliedCoupon,
         couponDiscount,
-        voucher: appliedVoucher,
-        voucherDiscount,
         shippingCost,
         shippingLabel,
         pickupUnit: selectedPickupUnit ? pickupUnits.find(u => u.id === selectedPickupUnit)?.name : null,
@@ -324,46 +293,6 @@ export function CartDrawer({
                 {couponError && <p className="text-[11px] text-destructive mt-0.5">{couponError}</p>}
               </div>
 
-              {/* Voucher */}
-              <div>
-                {appliedVoucher ? (
-                  <div className="flex items-center justify-between bg-primary/5 rounded px-2.5 py-1.5">
-                    <span className="text-xs font-semibold text-primary flex items-center gap-1"><Ticket className="h-3 w-3" />{appliedVoucher}</span>
-                    <button onClick={handleRemoveVoucher} className="text-[11px] text-destructive hover:underline">Remover</button>
-                  </div>
-                ) : showVoucher ? (
-                  <>
-                    <button onClick={() => { setShowVoucher(false); setVoucherError(""); }} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors mb-1">
-                      <Ticket className="h-3 w-3" /> Voucher <ChevronUp className="h-3 w-3" />
-                    </button>
-                    <form onSubmit={(e) => { e.preventDefault(); handleApplyVoucher(); }} className="flex gap-1.5">
-                      <div className="relative flex-1">
-                        <Input
-                          value={voucher}
-                          onChange={(e) => { setVoucher(e.target.value.toUpperCase()); setVoucherError(""); }}
-                          placeholder="Código do voucher"
-                          className="h-8 text-xs pr-7"
-                          autoFocus
-                        />
-                        {voucher && (
-                          <button type="button" onClick={() => { setVoucher(""); setVoucherError(""); }} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                            <X className="h-3 w-3" />
-                          </button>
-                        )}
-                      </div>
-                      <Button type="submit" size="sm" variant="outline" className="h-8 text-xs px-3" disabled={voucherLoading || !voucher.trim()}>
-                        {voucherLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
-                      </Button>
-                    </form>
-                  </>
-                ) : (
-                  <button onClick={() => setShowVoucher(true)} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    <Ticket className="h-3 w-3" /> Adicionar voucher <ChevronDown className="h-3 w-3" />
-                  </button>
-                )}
-                {voucherError && <p className="text-[11px] text-destructive mt-0.5">{voucherError}</p>}
-              </div>
-
               <Separator />
 
               {/* CEP */}
@@ -461,8 +390,8 @@ export function CartDrawer({
             </div>
 
             {/* Totals */}
-            <div className={cn("pt-3 space-y-2", (couponDiscount > 0 || voucherDiscount > 0 || shippingCost !== null) && "border-t border-border")}>
-              {(couponDiscount > 0 || voucherDiscount > 0 || shippingCost !== null) && (
+            <div className={cn("pt-3 space-y-2", (couponDiscount > 0 || shippingCost !== null) && "border-t border-border")}>
+              {(couponDiscount > 0 || shippingCost !== null) && (
                 <>
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>Subtotal</span>
@@ -472,12 +401,6 @@ export function CartDrawer({
                     <div className="flex justify-between text-xs text-green-600">
                       <span>Cupom ({appliedCoupon})</span>
                       <span>-{formatCurrency(couponDiscount)}</span>
-                    </div>
-                  )}
-                  {voucherDiscount > 0 && (
-                    <div className="flex justify-between text-xs text-green-600">
-                      <span>Voucher ({appliedVoucher})</span>
-                      <span>-{formatCurrency(voucherDiscount)}</span>
                     </div>
                   )}
                   {shippingCost !== null && (

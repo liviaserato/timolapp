@@ -32,8 +32,6 @@ interface CheckoutState {
   subtotal: number;
   coupon: string | null;
   couponDiscount: number;
-  voucher: string | null;
-  voucherDiscount: number;
   shippingCost: number | null;
   shippingLabel: string;
   pickupUnit: string | null;
@@ -75,7 +73,7 @@ export default function Checkout() {
     );
   }
 
-  const { items, subtotal, coupon, couponDiscount, voucher, voucherDiscount, shippingCost, shippingLabel, pickupUnit, grandTotal } = state;
+  const { items, subtotal, coupon, couponDiscount, shippingCost, shippingLabel, pickupUnit, grandTotal } = state;
 
   const isPickup = !!pickupUnit;
 
@@ -101,8 +99,6 @@ export default function Checkout() {
         subtotal,
         coupon,
         couponDiscount,
-        voucher,
-        voucherDiscount,
         shippingCost,
         shippingLabel,
         pickupUnit,
@@ -330,18 +326,12 @@ export default function Checkout() {
           <CardContent className="pt-4 space-y-2">
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Subtotal</span>
-              <span>{formatCurrency(subtotal - couponDiscount - voucherDiscount)}</span>
+              <span>{formatCurrency(subtotal - couponDiscount)}</span>
             </div>
             {couponDiscount > 0 && (
               <div className="flex justify-between text-xs text-green-600">
                 <span>Cupom ({coupon})</span>
                 <span>-{formatCurrency(couponDiscount)}</span>
-              </div>
-            )}
-            {voucherDiscount > 0 && (
-              <div className="flex justify-between text-xs text-green-600">
-                <span>Voucher ({voucher})</span>
-                <span>-{formatCurrency(voucherDiscount)}</span>
               </div>
             )}
             {shippingCost !== null && (
