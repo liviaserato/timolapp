@@ -315,7 +315,7 @@ export function CartDrawer({
                       </button>
                     )}
                   </div>
-                  <Button type="submit" size="sm" variant="outline" className="h-8 text-xs px-3" disabled={shippingLoading || cep.replace(/\D/g, "").length < 8}>
+                  <Button type="submit" size="sm" variant="outline" className="h-8 text-xs px-3 w-20 shrink-0" disabled={shippingLoading || cep.replace(/\D/g, "").length < 8}>
                     {shippingLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Calcular"}
                   </Button>
                 </form>
