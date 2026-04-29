@@ -325,61 +325,6 @@ export default function Checkout() {
           </CardContent>
         </Card>
 
-        {/* Cupom de desconto */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-              <Tag className="h-4 w-4" />
-              Cupom de desconto
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {appliedCoupon ? (
-              <div className="flex items-center justify-between bg-primary/5 rounded px-3 py-2">
-                <span className="text-xs font-semibold text-primary flex items-center gap-1">
-                  <Tag className="h-3 w-3" />
-                  {appliedCoupon}
-                </span>
-                <button onClick={handleRemoveCoupon} className="text-[11px] text-destructive hover:underline">
-                  Remover
-                </button>
-              </div>
-            ) : (
-              <>
-                <form onSubmit={(e) => { e.preventDefault(); handleApplyCoupon(); }} className="flex gap-1.5">
-                  <div className="relative flex-1">
-                    <Input
-                      value={coupon}
-                      onChange={(e) => { setCoupon(e.target.value.toUpperCase()); setCouponError(""); }}
-                      placeholder="Código do cupom"
-                      className="h-8 text-xs pr-7"
-                    />
-                    {coupon && (
-                      <button
-                        type="button"
-                        onClick={() => { setCoupon(""); setCouponError(""); }}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    )}
-                  </div>
-                  <Button
-                    type="submit"
-                    size="sm"
-                    variant="outline"
-                    className="h-8 text-xs px-3 w-20 shrink-0"
-                    disabled={couponLoading || !coupon.trim()}
-                  >
-                    {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
-                  </Button>
-                </form>
-                {couponError && <p className="text-[11px] text-destructive mt-1">{couponError}</p>}
-              </>
-            )}
-          </CardContent>
-        </Card>
-
         {/* Frete */}
         <Card>
           <CardHeader className="pb-2">
@@ -493,102 +438,6 @@ export default function Checkout() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="pt-4 space-y-2">
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Subtotal</span>
-              <span>{formatCurrency(subtotal - couponDiscount)}</span>
-            </div>
-            {couponDiscount > 0 && (
-              <div className="flex justify-between text-xs text-green-600">
-                <span>Cupom ({appliedCoupon})</span>
-                <span>-{formatCurrency(couponDiscount)}</span>
-              </div>
-            )}
-            {shippingCost !== null && (
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Frete</span>
-                <span>{shippingCost === 0 ? "Grátis" : formatCurrency(shippingCost)}</span>
-              </div>
-            )}
-            {pixDiscount > 0 && (
-              <div className="flex justify-between text-xs text-green-600">
-                <span>Desconto PIX (5%)</span>
-                <span>-{formatCurrency(pixDiscount)}</span>
-              </div>
-            )}
-            {walletApplied > 0 && (
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Saldo carteira</span>
-                <span>-{formatCurrency(walletApplied)}</span>
-              </div>
-            )}
-            <Separator />
-            <div className="flex justify-between items-baseline">
-              <span className="text-sm font-semibold text-foreground">Total</span>
-              <span className="text-xl font-bold text-primary">{formatCurrency(finalTotal)}</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Wallet balance */}
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-                <Wallet className="h-4 w-4" />
-                Saldo em carteira
-              </CardTitle>
-              <span className="text-xs text-muted-foreground">
-                Disponível: <span className="font-semibold text-foreground">{formatCurrency(walletBalance - walletApplied)}</span>
-              </span>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {walletApplied > 0 ? (
-              <div className="flex items-center justify-between bg-primary/5 rounded px-3 py-2">
-                <span className="text-xs text-foreground">
-                  Aplicado: <span className="font-bold text-primary">{formatCurrency(walletApplied)}</span>
-                </span>
-                <button onClick={handleRemoveWallet} className="text-[11px] text-destructive hover:underline">
-                  Remover
-                </button>
-              </div>
-            ) : (
-              <>
-                <form
-                  onSubmit={(e) => { e.preventDefault(); handleApplyWallet(); }}
-                  className="flex gap-1.5"
-                >
-                  <Input
-                    value={walletInput}
-                    onChange={(e) => {
-                      setWalletInput(formatWalletInput(e.target.value));
-                      setWalletError("");
-                    }}
-                    placeholder="R$ 0,00"
-                    inputMode="numeric"
-                    className="h-8 text-xs flex-1"
-                    disabled={walletBalance <= 0}
-                  />
-                  <Button
-                    type="submit"
-                    size="sm"
-                    variant="outline"
-                    className="h-8 text-xs px-3 w-20 shrink-0"
-                    disabled={!walletInput.trim() || walletBalance <= 0}
-                  >
-                    Confirmar
-                  </Button>
-                </form>
-                {walletError && (
-                  <p className="text-[11px] text-destructive mt-1">{walletError}</p>
-                )}
-              </>
-            )}
-          </CardContent>
-        </Card>
-
         {/* Address / Pickup */}
         <Card>
           <CardHeader className="pb-2">
@@ -692,6 +541,171 @@ export default function Checkout() {
                   </p>
                 )}
               </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Wallet balance */}
+        <Card>
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+                <Wallet className="h-4 w-4" />
+                Saldo em carteira
+              </CardTitle>
+              <span className="text-xs text-muted-foreground">
+                Disponível: <span className="font-semibold text-foreground">{formatCurrency(walletBalance - walletApplied)}</span>
+              </span>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {walletApplied > 0 ? (
+              <div className="flex items-center justify-between bg-primary/5 rounded px-3 py-2">
+                <span className="text-xs text-foreground">
+                  Aplicado: <span className="font-bold text-primary">{formatCurrency(walletApplied)}</span>
+                </span>
+                <button onClick={handleRemoveWallet} className="text-[11px] text-destructive hover:underline">
+                  Remover
+                </button>
+              </div>
+            ) : (
+              <>
+                <form
+                  onSubmit={(e) => { e.preventDefault(); handleApplyWallet(); }}
+                  className="flex gap-1.5"
+                >
+                  <Input
+                    value={walletInput}
+                    onChange={(e) => {
+                      setWalletInput(formatWalletInput(e.target.value));
+                      setWalletError("");
+                    }}
+                    placeholder="R$ 0,00"
+                    inputMode="numeric"
+                    className="h-8 text-xs flex-1"
+                    disabled={walletBalance <= 0}
+                  />
+                  <Button
+                    type="submit"
+                    size="sm"
+                    variant="outline"
+                    className="h-8 text-xs px-3 w-20 shrink-0"
+                    disabled={!walletInput.trim() || walletBalance <= 0}
+                  >
+                    Confirmar
+                  </Button>
+                </form>
+                {walletError && (
+                  <p className="text-[11px] text-destructive mt-1">{walletError}</p>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Cupom de desconto */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+              <Tag className="h-4 w-4" />
+              Cupom de desconto
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between bg-primary/5 rounded px-3 py-2">
+                <span className="text-xs font-semibold text-primary flex items-center gap-1">
+                  <Tag className="h-3 w-3" />
+                  {appliedCoupon}
+                </span>
+                <button onClick={handleRemoveCoupon} className="text-[11px] text-destructive hover:underline">
+                  Remover
+                </button>
+              </div>
+            ) : (
+              <>
+                <form onSubmit={(e) => { e.preventDefault(); handleApplyCoupon(); }} className="flex gap-1.5">
+                  <div className="relative flex-1">
+                    <Input
+                      value={coupon}
+                      onChange={(e) => { setCoupon(e.target.value.toUpperCase()); setCouponError(""); }}
+                      placeholder="Código do cupom"
+                      className="h-8 text-xs pr-7"
+                    />
+                    {coupon && (
+                      <button
+                        type="button"
+                        onClick={() => { setCoupon(""); setCouponError(""); }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    variant="outline"
+                    className="h-8 text-xs px-3 w-20 shrink-0"
+                    disabled={couponLoading || !coupon.trim()}
+                  >
+                    {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
+                  </Button>
+                </form>
+                {couponError && <p className="text-[11px] text-destructive mt-1">{couponError}</p>}
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Totais */}
+        <Card>
+          <CardContent className="pt-4 space-y-2">
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Subtotal</span>
+              <span>{formatCurrency(subtotal)}</span>
+            </div>
+            {couponDiscount > 0 && (
+              <div className="flex justify-between text-xs text-green-600">
+                <span>Cupom ({appliedCoupon})</span>
+                <span>-{formatCurrency(couponDiscount)}</span>
+              </div>
+            )}
+            {shippingCost !== null && (
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Frete</span>
+                <span>{shippingCost === 0 ? "Grátis" : formatCurrency(shippingCost)}</span>
+              </div>
+            )}
+            <Separator />
+            <div className="flex justify-between items-baseline">
+              <span className="text-sm font-semibold text-foreground">Total a pagar</span>
+              <span className={cn(
+                "font-bold text-primary",
+                (pixDiscount > 0 || walletApplied > 0) ? "text-base" : "text-xl"
+              )}>{formatCurrency(grandTotal)}</span>
+            </div>
+
+            {(pixDiscount > 0 || walletApplied > 0) && (
+              <>
+                <Separator />
+                {walletApplied > 0 && (
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Saldo carteira</span>
+                    <span>-{formatCurrency(walletApplied)}</span>
+                  </div>
+                )}
+                {pixDiscount > 0 && (
+                  <div className="flex justify-between text-xs text-green-600">
+                    <span>Desconto PIX (5%)</span>
+                    <span>-{formatCurrency(pixDiscount)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between items-baseline pt-1">
+                  <span className="text-sm font-semibold text-foreground">Total final</span>
+                  <span className="text-xl font-bold text-primary">{formatCurrency(finalTotal)}</span>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
