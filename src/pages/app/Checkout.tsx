@@ -53,6 +53,7 @@ export default function Checkout() {
   const walletBalance = 250.00;
   const [walletInput, setWalletInput] = useState("");
   const [walletApplied, setWalletApplied] = useState(0);
+  const [walletError, setWalletError] = useState("");
 
   // Mock address from profile
   const [address, setAddress] = useState({
