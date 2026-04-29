@@ -179,6 +179,7 @@ export default function Checkout() {
         setAppliedCoupon(code);
         setCouponDiscount(subtotal * 0.1);
         setCouponError("");
+        setShowCoupon(false);
       } else {
         setCouponError("Cupom inválido ou expirado");
       }
