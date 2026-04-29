@@ -317,7 +317,16 @@ export default function Suporte() {
       )}
 
       {/* Dialog: Novo Chamado */}
-      <Dialog open={newTicketOpen} onOpenChange={(open) => { setNewTicketOpen(open); if (!open) setFieldErrors({}); }}>
+      <Dialog open={newTicketOpen} onOpenChange={(open) => {
+        setNewTicketOpen(open);
+        if (!open) {
+          setTicketCategory("");
+          setTicketSubject("");
+          setTicketDescription("");
+          setAttachedFiles([]);
+          setFieldErrors({});
+        }
+      }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader className="text-center">
             <DialogTitle className="text-lg flex items-center justify-center gap-2">
