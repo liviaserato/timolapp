@@ -48,7 +48,7 @@ export default function Checkout() {
   const isMobile = useIsMobile();
 
   const [paymentMethod, setPaymentMethod] = useState("pix");
-  const [editingAddress, setEditingAddress] = useState(false);
+  const [addressDialogOpen, setAddressDialogOpen] = useState(false);
 
   // Mock wallet balance
   const walletBalance = 250.00;
@@ -64,28 +64,32 @@ export default function Checkout() {
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
 
-  // Frete
-  const [cep, setCep] = useState("");
+  // Frete (sem CEP - calculado a partir do endereço selecionado)
   const [shippingOptions, setShippingOptions] = useState<{ id: string; label: string; detail: string; cost: number; icon: React.ReactNode }[]>([]);
   const [selectedShipping, setSelectedShipping] = useState<string | null>(null);
   const [shippingLoading, setShippingLoading] = useState(false);
-  const [shippingError, setShippingError] = useState("");
   const [selectedPickupUnit, setSelectedPickupUnit] = useState<string | null>(null);
   const [pickupUnits, setPickupUnits] = useState<{ id: string; name: string; distanceKm?: number }[]>([]);
   const [pickupLoading, setPickupLoading] = useState(false);
 
-  // Mock address from profile
-  const [address, setAddress] = useState({
-    street: "Rua das Palmeiras",
-    number: "123",
-    complement: "Apto 45",
-    neighborhood: "Centro",
-    city: "São Paulo",
-    state: "SP",
-    cep: "01001-000",
-  });
-
-  const [editAddress, setEditAddress] = useState({ ...address });
+  // Mock addresses from profile
+  const [addresses, setAddresses] = useState<Address[]>([
+    {
+      id: "addr-1",
+      label: "Casa",
+      country: "Brasil",
+      countryIso2: "BR",
+      zipCode: "01001-000",
+      street: "Rua das Palmeiras",
+      number: "123",
+      complement: "Apto 45",
+      neighborhood: "Centro",
+      city: "São Paulo",
+      state: "SP",
+      isDefault: true,
+    },
+  ]);
+  const selectedAddress = addresses.find((a) => a.isDefault) ?? addresses[0] ?? null;
 
   if (!state || !state.items || state.items.length === 0) {
     return (
