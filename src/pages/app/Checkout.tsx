@@ -12,7 +12,6 @@ import {
   Store,
   Package,
   MapPinned,
-  Wallet,
   Tag,
   MapPin,
   Loader2,
