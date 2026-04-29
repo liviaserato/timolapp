@@ -158,7 +158,19 @@ const SearchField = forwardRef<HTMLInputElement, SearchFieldProps>(
 
 SearchField.displayName = "SearchField";
 
-export default function FaqSection() {
+export default function FaqSection({ onOpenTicket }: { onOpenTicket?: () => void } = {}) {
+  const [feedback, setFeedback] = useState<Record<string, "up" | "down">>({});
+  const [askTicketKey, setAskTicketKey] = useState<string | null>(null);
+
+  function handleFeedback(key: string, type: "up" | "down") {
+    setFeedback((prev) => ({ ...prev, [key]: type }));
+    if (type === "up") {
+      toast.success("Obrigado pelo seu feedback!");
+    } else {
+      setAskTicketKey(key);
+    }
+  }
+
   const [activeTab, setActiveTab] = useState("conta");
   const [search, setSearch] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
