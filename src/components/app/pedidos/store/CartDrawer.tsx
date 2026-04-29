@@ -280,7 +280,7 @@ export function CartDrawer({
                           </button>
                         )}
                       </div>
-                      <Button type="submit" size="sm" variant="outline" className="h-8 text-xs px-3" disabled={couponLoading || !coupon.trim()}>
+                      <Button type="submit" size="sm" variant="outline" className="h-8 text-xs px-3 w-20 shrink-0" disabled={couponLoading || !coupon.trim()}>
                         {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
                       </Button>
                     </form>
