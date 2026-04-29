@@ -90,29 +90,6 @@ export function CartDrawer({
     setCouponError("");
   };
 
-  const handleApplyVoucher = () => {
-    if (!voucher.trim()) return;
-    setVoucherLoading(true);
-    setVoucherError("");
-    setTimeout(() => {
-      const code = voucher.trim().toUpperCase();
-      if (code === "VOUCHER50") {
-        setAppliedVoucher(code);
-        setVoucherDiscount(50);
-        setVoucherError("");
-      } else {
-        setVoucherError("Voucher inválido ou já utilizado");
-      }
-      setVoucherLoading(false);
-    }, 800);
-  };
-
-  const handleRemoveVoucher = () => {
-    setAppliedVoucher(null);
-    setVoucherDiscount(0);
-    setVoucher("");
-    setVoucherError("");
-  };
 
   const handleCalcShipping = async () => {
     const cleanCep = cep.replace(/\D/g, "");
