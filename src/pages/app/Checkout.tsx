@@ -151,8 +151,96 @@ export default function Checkout() {
     setWalletError("");
   };
 
+  // Cupom handlers
+  const handleApplyCoupon = () => {
+    if (!coupon.trim()) return;
+    setCouponLoading(true);
+    setCouponError("");
+    setTimeout(() => {
+      const code = coupon.trim().toUpperCase();
+      if (code === "TIMOL10") {
+        setAppliedCoupon(code);
+        setCouponDiscount(subtotal * 0.1);
+        setCouponError("");
+      } else {
+        setCouponError("Cupom inválido ou expirado");
+      }
+      setCouponLoading(false);
+    }, 500);
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setCoupon("");
+    setCouponError("");
+  };
+
+  // Frete handlers
+  const formatCep = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 8);
+    if (digits.length > 5) return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+    return digits;
+  };
+
+  const handleCalcShipping = async () => {
+    const cleanCep = cep.replace(/\D/g, "");
+    if (cleanCep.length !== 8) {
+      setShippingError("CEP inválido");
+      return;
+    }
+    setShippingLoading(true);
+    setShippingError("");
+    setShippingOptions([]);
+    setSelectedShipping(null);
+    setPickupUnits([]);
+    setSelectedPickupUnit(null);
+
+    const distancePromise = (async () => {
+      try {
+        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+        const res = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/calculate-pickup-distances`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cep: cleanCep }),
+          }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          return data.units as { id: string; name: string; distanceKm: number }[];
+        }
+      } catch (e) {
+        console.error("Error fetching pickup distances:", e);
+      }
+      return null;
+    })();
+
+    await new Promise((r) => setTimeout(r, 800));
+    setShippingOptions([
+      { id: "pac", label: "PAC", detail: "5 a 8 dias úteis", cost: 18.9, icon: <Package className="h-3.5 w-3.5" /> },
+      { id: "sedex", label: "SEDEX", detail: "1 a 3 dias úteis", cost: 32.5, icon: <Zap className="h-3.5 w-3.5" /> },
+      { id: "retirada", label: "Retirar na Timol", detail: "Escolha a unidade", cost: 0, icon: <Store className="h-3.5 w-3.5" /> },
+    ]);
+    setSelectedShipping("pac");
+    setShippingLoading(false);
+
+    setPickupLoading(true);
+    const units = await distancePromise;
+    if (units) {
+      setPickupUnits(units);
+    } else {
+      setPickupUnits([
+        { id: "salvador", name: "Unidade Salvador" },
+        { id: "sao-paulo", name: "Unidade São Paulo" },
+        { id: "uberlandia", name: "Unidade Uberlândia" },
+      ]);
+    }
+    setPickupLoading(false);
+  };
+
   const handleSaveAddress = () => {
-    // Validate required fields
     const required = ["street", "number", "neighborhood", "city", "state", "cep"] as const;
     const hasEmpty = required.some((f) => !editAddress[f].trim());
     if (hasEmpty) {
@@ -164,11 +252,19 @@ export default function Checkout() {
   };
 
   const handleGoToPayment = () => {
+    if (selectedShipping === null) {
+      toast.error("Calcule o frete antes de continuar");
+      return;
+    }
+    if (selectedShipping === "retirada" && !selectedPickupUnit) {
+      toast.error("Escolha uma unidade para retirada");
+      return;
+    }
     navigate("/app/pedidos/pagamento", {
       state: {
         items,
         subtotal,
-        coupon,
+        coupon: appliedCoupon,
         couponDiscount,
         shippingCost,
         shippingLabel,
