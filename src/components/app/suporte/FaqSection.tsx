@@ -1,5 +1,16 @@
 import { forwardRef, useRef, useState, useMemo, useCallback } from "react";
-import { Search, X, HelpCircle } from "lucide-react";
+import { Search, X, HelpCircle, ThumbsUp, ThumbsDown } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
@@ -147,7 +158,19 @@ const SearchField = forwardRef<HTMLInputElement, SearchFieldProps>(
 
 SearchField.displayName = "SearchField";
 
-export default function FaqSection() {
+export default function FaqSection({ onOpenTicket }: { onOpenTicket?: () => void } = {}) {
+  const [feedback, setFeedback] = useState<Record<string, "up" | "down">>({});
+  const [askTicketKey, setAskTicketKey] = useState<string | null>(null);
+
+  function handleFeedback(key: string, type: "up" | "down") {
+    setFeedback((prev) => ({ ...prev, [key]: type }));
+    if (type === "up") {
+      toast.success("Obrigado pelo seu feedback!");
+    } else {
+      setAskTicketKey(key);
+    }
+  }
+
   const [activeTab, setActiveTab] = useState("conta");
   const [search, setSearch] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -266,25 +289,76 @@ export default function FaqSection() {
               </p>
             ) : (
               <Accordion type="single" collapsible className="w-full">
-                {(tab.value === activeTab ? activeItems : []).map((item, idx) => (
-                  <AccordionItem
-                    key={idx}
-                    value={`${tab.value}-${idx}`}
-                    className="border-b border-border"
-                  >
-                    <AccordionTrigger className="text-sm text-left py-3 hover:no-underline">
-                      <HighlightText text={item.pergunta} query={search} />
-                    </AccordionTrigger>
-                    <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-                      <HighlightText text={item.resposta} query={search} />
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
+                {(tab.value === activeTab ? activeItems : []).map((item, idx) => {
+                  const fbKey = `${tab.value}-${idx}`;
+                  const fb = feedback[fbKey];
+                  return (
+                    <AccordionItem
+                      key={idx}
+                      value={fbKey}
+                      className="border-b border-border"
+                    >
+                      <AccordionTrigger className="text-sm text-left py-3 hover:no-underline">
+                        <HighlightText text={item.pergunta} query={search} />
+                      </AccordionTrigger>
+                      <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                        <HighlightText text={item.resposta} query={search} />
+                        <div className="mt-3 flex items-center justify-end gap-2 text-xs">
+                          <span className="text-muted-foreground">Esta resposta foi útil?</span>
+                          <button
+                            onClick={() => handleFeedback(fbKey, "up")}
+                            className={`p-1 rounded-md transition-colors ${
+                              fb === "up"
+                                ? "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40"
+                                : "text-muted-foreground hover:text-emerald-600 hover:bg-muted"
+                            }`}
+                            aria-label="Foi útil"
+                          >
+                            <ThumbsUp className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleFeedback(fbKey, "down")}
+                            className={`p-1 rounded-md transition-colors ${
+                              fb === "down"
+                                ? "text-red-600 bg-red-50 dark:bg-red-950/40"
+                                : "text-muted-foreground hover:text-red-600 hover:bg-muted"
+                            }`}
+                            aria-label="Não foi útil"
+                          >
+                            <ThumbsDown className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
               </Accordion>
             )}
           </TabsContent>
         ))}
       </Tabs>
+
+      <AlertDialog open={askTicketKey !== null} onOpenChange={(open) => !open && setAskTicketKey(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Deseja abrir um chamado?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Sentimos muito que esta resposta não tenha ajudado. Deseja abrir um chamado para tirar sua dúvida ou relatar o problema?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Agora não</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setAskTicketKey(null);
+                onOpenTicket?.();
+              }}
+            >
+              Abrir chamado
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardCard>
   );
 }
