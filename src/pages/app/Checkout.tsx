@@ -2,33 +2,27 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   ChevronLeft,
-  CreditCard,
-  Building2,
-  QrCode,
   ShoppingBag,
   Truck,
   Check,
-  Edit2,
   Store,
   Package,
-  MapPinned,
-  Tag,
   MapPin,
   Loader2,
   X,
   Zap,
+  CreditCard,
+  Receipt,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useIsMobile } from "@/hooks/use-mobile";
 import type { CartItem } from "@/hooks/useCart";
 import { AddressManager, type Address } from "@/components/app/cadastro/AddressManager";
-import { Receipt } from "lucide-react";
 import { products as allProducts } from "@/data/mock-products";
 
 function formatCurrency(v: number) {
@@ -45,17 +39,8 @@ export default function Checkout() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as CheckoutState | null;
-  const isMobile = useIsMobile();
 
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
-
-  // Mock wallet balance
-  const walletBalance = 250.00;
-  const [walletInput, setWalletInput] = useState("");
-  const [walletApplied, setWalletApplied] = useState(0);
-  const [walletError, setWalletError] = useState("");
-
-  const [showWallet, setShowWallet] = useState(false);
 
   // Cupom
   const [showCoupon, setShowCoupon] = useState(false);
@@ -111,61 +96,8 @@ export default function Checkout() {
     ? `Retirar na Timol - ${pickupUnits.find(u => u.id === selectedPickupUnit)?.name ?? ""}`
     : shippingOptions.find(o => o.id === selectedShipping)?.label ?? "";
   const pickupUnit = selectedPickupUnit ? pickupUnits.find(u => u.id === selectedPickupUnit)?.name ?? null : null;
-  const isPickup = !!pickupUnit;
 
   const grandTotal = Math.max(0, subtotal - couponDiscount + (shippingCost ?? 0));
-
-  const pixDiscount = paymentMethod === "pix" ? grandTotal * 0.05 : 0;
-  const finalTotal = Math.max(0, grandTotal - pixDiscount - walletApplied);
-
-  const totalBeforeWallet = grandTotal - pixDiscount;
-
-  // Mask: digits only -> "R$ 0,00"
-  const formatWalletInput = (raw: string) => {
-    const digits = raw.replace(/\D/g, "");
-    if (!digits) return "";
-    const num = parseInt(digits, 10) / 100;
-    return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-  };
-
-  const parseWalletInput = (masked: string): number => {
-    const digits = masked.replace(/\D/g, "");
-    if (!digits) return 0;
-    return parseInt(digits, 10) / 100;
-  };
-
-  const handleApplyWallet = () => {
-    const value = parseWalletInput(walletInput);
-    if (value <= 0) {
-      setWalletError("Informe um valor válido");
-      return;
-    }
-    if (value > walletBalance) {
-      setWalletError("Valor maior que o disponível");
-      return;
-    }
-    if (value > totalBeforeWallet) {
-      setWalletError("Valor maior que o total do pedido");
-      return;
-    }
-    setWalletError("");
-    setWalletApplied(value);
-    setShowWallet(false);
-  };
-
-  const handleRemoveWallet = () => {
-    setWalletApplied(0);
-    setWalletInput("");
-    setWalletError("");
-    setShowWallet(false);
-  };
-
-  const handleEditWallet = () => {
-    setWalletInput(formatWalletInput(String(Math.round(walletApplied * 100))));
-    setWalletApplied(0);
-    setWalletError("");
-    setShowWallet(true);
-  };
 
   // Cupom handlers
   const handleApplyCoupon = () => {
@@ -288,9 +220,6 @@ export default function Checkout() {
         shippingLabel,
         pickupUnit,
         grandTotal,
-        finalTotal,
-        paymentMethod,
-        pixDiscount,
         cep: selectedAddress?.zipCode ?? "",
       },
     });
@@ -311,364 +240,302 @@ export default function Checkout() {
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto space-y-4 pb-6">
-        {/* Items summary */}
-        <Card>
-          <CardHeader className="pb-2 border-b">
-            <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-              <ShoppingBag className="h-4 w-4" />
-              Itens do Pedido ({items.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 pt-4">
-            {items.map((item, idx) => {
-              const selStr = Object.values(item.selections).filter(Boolean).join(" · ");
-              return (
-                 <div key={idx} className="flex justify-between items-start text-sm gap-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-foreground">
-                      <span>{item.name}</span>
-                      {selStr && (
-                        <span className="text-[11px] text-muted-foreground font-normal"> ({selStr})</span>
-                      )}
-                      <span className="font-normal"> x {item.qty}</span>
-                    </p>
-                  </div>
-                  <span className="font-semibold text-foreground ml-3 whitespace-nowrap">
-                    {formatCurrency(item.price * item.qty)}
-                  </span>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
-
-        {/* Entrega + Resumo da compra (2 colunas) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
-          {/* Entrega (esquerda) */}
-          <Card className="flex flex-col">
-            <CardHeader className="pb-2">
+      <div className="flex-1 overflow-y-auto pb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+          {/* COLUNA ESQUERDA — Itens do pedido */}
+          <Card className="md:sticky md:top-0">
+            <CardHeader className="pb-2 border-b">
               <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-                <Truck className="h-4 w-4" />
-                Entrega
+                <ShoppingBag className="h-4 w-4" />
+                Itens do Pedido ({items.length})
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 flex flex-col">
-              {/* Endereço selecionado */}
-              {selectedAddress ? (
-                <div className="space-y-2">
-                  <div className="rounded-md border border-border p-2.5">
-                    <div className="flex items-start gap-2">
-                      <MapPin className="h-3.5 w-3.5 text-primary mt-0.5 flex-shrink-0" />
-                      <div className="flex-1 min-w-0 text-xs text-foreground space-y-0.5">
-                        {selectedAddress.label && (
-                          <p className="font-semibold">{selectedAddress.label}</p>
-                        )}
-                        <p>
-                          {selectedAddress.street}, {selectedAddress.number}
-                          {selectedAddress.complement ? ` · ${selectedAddress.complement}` : ""}
-                        </p>
-                        <p className="text-muted-foreground">
-                          {selectedAddress.neighborhood} · {selectedAddress.city} – {selectedAddress.state}
-                        </p>
-                        <p className="text-muted-foreground">CEP {selectedAddress.zipCode}</p>
+            <CardContent className="space-y-3 pt-4">
+              {items.map((item, idx) => {
+                const product = allProducts.find((p) => p.id === item.productId);
+                const image = product?.image;
+                const selStr = Object.values(item.selections).filter(Boolean).join(" · ");
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-stretch gap-3 rounded-md border border-border p-2"
+                  >
+                    {/* Imagem quadrada */}
+                    <div className="w-16 h-16 shrink-0 rounded-md bg-muted overflow-hidden flex items-center justify-center">
+                      {image ? (
+                        <img
+                          src={image}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <Package className="h-6 w-6 text-muted-foreground/40" />
+                      )}
+                    </div>
+
+                    {/* Conteúdo */}
+                    <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                          <p className="text-sm font-medium text-foreground truncate">
+                            {item.name}
+                          </p>
+                          <Badge
+                            variant="secondary"
+                            className="text-[10px] font-normal px-1.5 py-0 h-4"
+                          >
+                            {item.qty} {item.qty === 1 ? "unidade" : "unidades"}
+                          </Badge>
+                        </div>
+                        <span className="text-sm text-foreground whitespace-nowrap">
+                          {formatCurrency(item.price * item.qty)}
+                        </span>
                       </div>
+                      {selStr && (
+                        <p className="text-[11px] text-muted-foreground">{selStr}</p>
+                      )}
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full text-xs h-7 text-muted-foreground"
-                    onClick={() => setAddressDialogOpen(true)}
-                  >
-                    <MapPin className="h-3 w-3 mr-1" />
-                    Alterar endereço
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground text-center py-3">
-                    Nenhum endereço cadastrado.
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full text-xs h-7"
-                    onClick={() => setAddressDialogOpen(true)}
-                  >
-                    <MapPin className="h-3 w-3 mr-1" />
-                    Adicionar endereço
-                  </Button>
-                </div>
-              )}
-
-              {/* Opções de entrega */}
-              {selectedAddress && (
-                <div className="mt-3 space-y-1.5">
-                  {shippingLoading ? (
-                    <div className="flex items-center justify-center gap-2 py-3 text-muted-foreground">
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      <span className="text-[11px]">Calculando opções de entrega...</span>
-                    </div>
-                  ) : (
-                    shippingOptions.map((opt) => (
-                      <div key={opt.id}>
-                        <button
-                          onClick={() => {
-                            setSelectedShipping(opt.id);
-                            if (opt.id !== "retirada") setSelectedPickupUnit(null);
-                          }}
-                          className={cn(
-                            "w-full flex items-center gap-2 rounded border px-2.5 py-2 text-left transition-colors",
-                            selectedShipping === opt.id
-                              ? "border-primary bg-primary/5"
-                              : "border-border hover:border-muted-foreground/30"
-                          )}
-                        >
-                          <span className={selectedShipping === opt.id ? "text-primary" : "text-muted-foreground"}>{opt.icon}</span>
-                          <div className="flex-1 min-w-0">
-                            <span className={cn("text-[11px] font-semibold", selectedShipping === opt.id ? "text-primary" : "text-foreground")}>{opt.label}</span>
-                            <span className="text-[10px] text-muted-foreground ml-1.5">{opt.detail}</span>
-                          </div>
-                          <span className={cn("text-[11px] font-bold", selectedShipping === opt.id ? "text-primary" : "text-foreground")}>
-                            {opt.cost === 0 ? "Grátis" : formatCurrency(opt.cost)}
-                          </span>
-                        </button>
-                        {opt.id === "retirada" && selectedShipping === "retirada" && (
-                          <div className="ml-5 mt-1 mb-0.5 space-y-1">
-                            {pickupLoading ? (
-                              <div className="flex items-center gap-2 px-2.5 py-1.5 text-muted-foreground">
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                                <span className="text-[11px]">Calculando distâncias...</span>
-                              </div>
-                            ) : pickupUnits.length > 0 ? (
-                              pickupUnits.map((unit) => (
-                                <button
-                                  key={unit.id}
-                                  onClick={() => setSelectedPickupUnit(unit.id)}
-                                  className={cn(
-                                    "w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left transition-colors",
-                                    selectedPickupUnit === unit.id
-                                      ? "bg-primary/10 text-primary"
-                                      : "hover:bg-muted text-muted-foreground"
-                                  )}
-                                >
-                                  {selectedPickupUnit === unit.id ? (
-                                    <Check className="h-3 w-3 text-primary" />
-                                  ) : (
-                                    <Store className="h-3 w-3 opacity-40" />
-                                  )}
-                                  <span className={cn("text-[11px] flex-1", selectedPickupUnit === unit.id && "font-semibold")}>
-                                    {unit.name}
-                                  </span>
-                                  {unit.distanceKm != null && (
-                                    <span className={cn("text-[10px]", selectedPickupUnit === unit.id ? "text-primary/70" : "text-muted-foreground")}>
-                                      ~{unit.distanceKm.toLocaleString("pt-BR")}km
-                                    </span>
-                                  )}
-                                </button>
-                              ))
-                            ) : null}
-                          </div>
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
+                );
+              })}
             </CardContent>
           </Card>
 
-          {/* Resumo da compra (direita) */}
-          <Card className="flex flex-col">
-            <CardHeader className="pb-2 border-b">
-              <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-                <Receipt className="h-4 w-4" />
-                Resumo da compra
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 flex flex-col space-y-2 pt-4">
-              {/* Produtos */}
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Produtos</span>
-                <span>{formatCurrency(subtotal)}</span>
-              </div>
-
-              {/* Frete */}
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Frete</span>
-                <span>
-                  {shippingCost === null
-                    ? "—"
-                    : shippingCost === 0
-                      ? "Grátis"
-                      : formatCurrency(shippingCost)}
-                </span>
-              </div>
-
-              {/* Cupom */}
-              <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-muted-foreground flex items-center gap-1.5 flex-wrap">
-                    Cupom
-                    {appliedCoupon && (
-                      <>
-                        <span className="text-foreground font-medium">{appliedCoupon}</span>
-                        <span className="text-green-600 font-medium">-{formatCurrency(couponDiscount)}</span>
-                      </>
-                    )}
-                  </span>
-                  {appliedCoupon ? (
-                    <span className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={handleEditCoupon}
-                        className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
-                      >
-                        Editar
-                      </button>
-                      <span className="text-muted-foreground/40">·</span>
-                      <button
-                        type="button"
-                        onClick={handleRemoveCoupon}
-                        className="text-[11px] text-muted-foreground hover:text-destructive transition-colors"
-                      >
-                        Remover
-                      </button>
-                    </span>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowCoupon((v) => !v);
-                        if (showCoupon) {
-                          setCoupon("");
-                          setCouponError("");
-                        }
-                      }}
-                      className="text-[11px] text-primary hover:underline"
-                    >
-                      {showCoupon ? "Cancelar" : "Adicionar cupom"}
-                    </button>
-                  )}
-                </div>
-
-                {showCoupon && !appliedCoupon && (
-                  <div>
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        handleApplyCoupon();
-                      }}
-                      className="flex gap-1.5"
-                    >
-                      <div className="relative flex-1">
-                        <Input
-                          value={coupon}
-                          onChange={(e) => {
-                            setCoupon(e.target.value.toUpperCase());
-                            setCouponError("");
-                          }}
-                          placeholder="Código do cupom"
-                          className="h-8 text-xs pr-7"
-                          autoFocus
-                        />
-                        {coupon && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setCoupon("");
-                              setCouponError("");
-                            }}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        )}
+          {/* COLUNA DIREITA — Entrega + Resumo da compra empilhados */}
+          <div className="flex flex-col gap-4">
+            {/* Entrega */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+                  <Truck className="h-4 w-4" />
+                  Entrega
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {selectedAddress ? (
+                  <div className="space-y-2">
+                    <div className="rounded-md border border-border p-2.5">
+                      <div className="flex items-start gap-2">
+                        <MapPin className="h-3.5 w-3.5 text-primary mt-0.5 flex-shrink-0" />
+                        <div className="flex-1 min-w-0 text-xs text-foreground space-y-0.5">
+                          {selectedAddress.label && (
+                            <p className="font-semibold">{selectedAddress.label}</p>
+                          )}
+                          <p>
+                            {selectedAddress.street}, {selectedAddress.number}
+                            {selectedAddress.complement ? ` · ${selectedAddress.complement}` : ""}
+                          </p>
+                          <p className="text-muted-foreground">
+                            {selectedAddress.neighborhood} · {selectedAddress.city} – {selectedAddress.state}
+                          </p>
+                          <p className="text-muted-foreground">CEP {selectedAddress.zipCode}</p>
+                        </div>
                       </div>
-                      <Button
-                        type="submit"
-                        size="sm"
-                        variant="outline"
-                        className="h-8 text-xs px-3 w-20 shrink-0"
-                        disabled={couponLoading || !coupon.trim()}
-                      >
-                        {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
-                      </Button>
-                    </form>
-                    {couponError && (
-                      <p className="text-[11px] text-destructive mt-1 flex items-center gap-1">
-                        <X className="h-3 w-3" />
-                        {couponError}
-                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full text-xs h-7 text-muted-foreground"
+                      onClick={() => setAddressDialogOpen(true)}
+                    >
+                      <MapPin className="h-3 w-3 mr-1" />
+                      Alterar endereço
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground text-center py-3">
+                      Nenhum endereço cadastrado.
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full text-xs h-7"
+                      onClick={() => setAddressDialogOpen(true)}
+                    >
+                      <MapPin className="h-3 w-3 mr-1" />
+                      Adicionar endereço
+                    </Button>
+                  </div>
+                )}
+
+                {selectedAddress && (
+                  <div className="mt-3 space-y-1.5">
+                    {shippingLoading ? (
+                      <div className="flex items-center justify-center gap-2 py-3 text-muted-foreground">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        <span className="text-[11px]">Calculando opções de entrega...</span>
+                      </div>
+                    ) : (
+                      shippingOptions.map((opt) => (
+                        <div key={opt.id}>
+                          <button
+                            onClick={() => {
+                              setSelectedShipping(opt.id);
+                              if (opt.id !== "retirada") setSelectedPickupUnit(null);
+                            }}
+                            className={cn(
+                              "w-full flex items-center gap-2 rounded border px-2.5 py-2 text-left transition-colors",
+                              selectedShipping === opt.id
+                                ? "border-primary bg-primary/5"
+                                : "border-border hover:border-muted-foreground/30"
+                            )}
+                          >
+                            <span className={selectedShipping === opt.id ? "text-primary" : "text-muted-foreground"}>{opt.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <span className={cn("text-[11px] font-semibold", selectedShipping === opt.id ? "text-primary" : "text-foreground")}>{opt.label}</span>
+                              <span className="text-[10px] text-muted-foreground ml-1.5">{opt.detail}</span>
+                            </div>
+                            <span className={cn("text-[11px] font-bold", selectedShipping === opt.id ? "text-primary" : "text-foreground")}>
+                              {opt.cost === 0 ? "Grátis" : formatCurrency(opt.cost)}
+                            </span>
+                          </button>
+                          {opt.id === "retirada" && selectedShipping === "retirada" && (
+                            <div className="ml-5 mt-1 mb-0.5 space-y-1">
+                              {pickupLoading ? (
+                                <div className="flex items-center gap-2 px-2.5 py-1.5 text-muted-foreground">
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                  <span className="text-[11px]">Calculando distâncias...</span>
+                                </div>
+                              ) : pickupUnits.length > 0 ? (
+                                pickupUnits.map((unit) => (
+                                  <button
+                                    key={unit.id}
+                                    onClick={() => setSelectedPickupUnit(unit.id)}
+                                    className={cn(
+                                      "w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left transition-colors",
+                                      selectedPickupUnit === unit.id
+                                        ? "bg-primary/10 text-primary"
+                                        : "hover:bg-muted text-muted-foreground"
+                                    )}
+                                  >
+                                    {selectedPickupUnit === unit.id ? (
+                                      <Check className="h-3 w-3 text-primary" />
+                                    ) : (
+                                      <Store className="h-3 w-3 opacity-40" />
+                                    )}
+                                    <span className={cn("text-[11px] flex-1", selectedPickupUnit === unit.id && "font-semibold")}>
+                                      {unit.name}
+                                    </span>
+                                    {unit.distanceKm != null && (
+                                      <span className={cn("text-[10px]", selectedPickupUnit === unit.id ? "text-primary/70" : "text-muted-foreground")}>
+                                        ~{unit.distanceKm.toLocaleString("pt-BR")}km
+                                      </span>
+                                    )}
+                                  </button>
+                                ))
+                              ) : null}
+                            </div>
+                          )}
+                        </div>
+                      ))
                     )}
                   </div>
                 )}
-              </div>
+              </CardContent>
+            </Card>
 
-              <Separator />
+            {/* Resumo da compra */}
+            <Card>
+              <CardHeader className="pb-2 border-b">
+                <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+                  <Receipt className="h-4 w-4" />
+                  Resumo da compra
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 pt-4">
+                {/* Produtos */}
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Produtos</span>
+                  <span>{formatCurrency(subtotal)}</span>
+                </div>
 
-              {/* Total destacado */}
-              <div className="flex justify-between items-baseline">
-                <span className="text-sm font-semibold text-foreground">Total</span>
-                <span
-                  className={cn(
-                    "font-bold text-primary",
-                    pixDiscount > 0 || walletApplied > 0 ? "text-base" : "text-2xl"
-                  )}
-                >
-                  {formatCurrency(grandTotal)}
-                </span>
-              </div>
+                {/* Frete */}
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Frete</span>
+                  <span>
+                    {shippingCost === null
+                      ? "—"
+                      : shippingCost === 0
+                        ? "Grátis"
+                        : formatCurrency(shippingCost)}
+                  </span>
+                </div>
 
-              {/* Saldo em carteira (inline, padrão do cupom) */}
-              {walletApplied === 0 && (
+                {/* Cupom */}
                 <div className="flex flex-col gap-1.5">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-muted-foreground">Saldo em carteira</span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowWallet((v) => !v);
-                        if (showWallet) {
-                          setWalletInput("");
-                          setWalletError("");
-                        }
-                      }}
-                      className="text-[11px] text-primary hover:underline disabled:opacity-50 disabled:hover:no-underline"
-                      disabled={walletBalance <= 0}
-                    >
-                      {showWallet ? "Cancelar" : "Utilizar saldo"}
-                    </button>
+                    <span className="text-muted-foreground flex items-center gap-1.5 flex-wrap">
+                      Cupom
+                      {appliedCoupon && (
+                        <>
+                          <span className="text-foreground font-medium">{appliedCoupon}</span>
+                          <span className="text-green-600 font-medium">-{formatCurrency(couponDiscount)}</span>
+                        </>
+                      )}
+                    </span>
+                    {appliedCoupon ? (
+                      <span className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={handleEditCoupon}
+                          className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          Editar
+                        </button>
+                        <span className="text-muted-foreground/40">·</span>
+                        <button
+                          type="button"
+                          onClick={handleRemoveCoupon}
+                          className="text-[11px] text-muted-foreground hover:text-destructive transition-colors"
+                        >
+                          Remover
+                        </button>
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowCoupon((v) => !v);
+                          if (showCoupon) {
+                            setCoupon("");
+                            setCouponError("");
+                          }
+                        }}
+                        className="text-[11px] text-primary hover:underline"
+                      >
+                        {showCoupon ? "Cancelar" : "Adicionar cupom"}
+                      </button>
+                    )}
                   </div>
 
-                  {showWallet && (
+                  {showCoupon && !appliedCoupon && (
                     <div>
-                      <p className="text-[11px] text-muted-foreground mb-1.5">
-                        Disponível: <span className="font-semibold text-foreground">{formatCurrency(walletBalance)}</span>
-                      </p>
                       <form
-                        onSubmit={(e) => { e.preventDefault(); handleApplyWallet(); }}
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          handleApplyCoupon();
+                        }}
                         className="flex gap-1.5"
                       >
                         <div className="relative flex-1">
                           <Input
-                            value={walletInput}
+                            value={coupon}
                             onChange={(e) => {
-                              setWalletInput(formatWalletInput(e.target.value));
-                              setWalletError("");
+                              setCoupon(e.target.value.toUpperCase());
+                              setCouponError("");
                             }}
-                            placeholder="R$ 0,00"
-                            inputMode="numeric"
+                            placeholder="Código do cupom"
                             className="h-8 text-xs pr-7"
                             autoFocus
                           />
-                          {walletInput && (
+                          {coupon && (
                             <button
                               type="button"
                               onClick={() => {
-                                setWalletInput("");
-                                setWalletError("");
+                                setCoupon("");
+                                setCouponError("");
                               }}
                               className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                             >
@@ -681,55 +548,39 @@ export default function Checkout() {
                           size="sm"
                           variant="outline"
                           className="h-8 text-xs px-3 w-20 shrink-0"
-                          disabled={!walletInput.trim()}
+                          disabled={couponLoading || !coupon.trim()}
                         >
-                          Confirmar
+                          {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
                         </Button>
                       </form>
-                      {walletError && (
+                      {couponError && (
                         <p className="text-[11px] text-destructive mt-1 flex items-center gap-1">
                           <X className="h-3 w-3" />
-                          {walletError}
+                          {couponError}
                         </p>
                       )}
                     </div>
                   )}
                 </div>
-              )}
 
-              {(pixDiscount > 0 || walletApplied > 0) && (
-                <>
-                  <Separator />
-                  {walletApplied > 0 && (
-                    <div className="flex justify-between items-center text-xs text-muted-foreground">
-                      <span>Saldo em carteira</span>
-                      <span className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={handleRemoveWallet}
-                          aria-label="Remover saldo"
-                          className="text-muted-foreground hover:text-destructive transition-colors"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                        <span>-{formatCurrency(walletApplied)}</span>
-                      </span>
-                    </div>
-                  )}
-                  {pixDiscount > 0 && (
-                    <div className="flex justify-between text-xs text-green-600">
-                      <span>Desconto PIX (5%)</span>
-                      <span>-{formatCurrency(pixDiscount)}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between items-baseline pt-1">
-                    <span className="text-sm font-semibold text-foreground">Total a pagar</span>
-                    <span className="text-2xl font-bold text-primary">{formatCurrency(finalTotal)}</span>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                <Separator />
+
+                {/* Total — encerra aqui */}
+                <div className="flex justify-between items-baseline">
+                  <span className="text-sm font-semibold text-foreground">Total</span>
+                  <span className="text-2xl font-bold text-primary">
+                    {formatCurrency(grandTotal)}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Botão Efetuar pagamento */}
+            <Button className="w-full gap-2" size="lg" onClick={handleGoToPayment}>
+              <CreditCard className="h-5 w-5" />
+              Efetuar Pagamento
+            </Button>
+          </div>
         </div>
 
         {/* AddressManager dialog (controlled) */}
@@ -742,72 +593,6 @@ export default function Checkout() {
           open={addressDialogOpen}
           onOpenChange={setAddressDialogOpen}
         />
-        {/* Payment method */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-              <CreditCard className="h-4 w-4" />
-              Forma de Pagamento
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-2">
-              {/* PIX */}
-              <label
-                className={cn(
-                  "flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors",
-                  paymentMethod === "pix" ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
-                )}
-              >
-                <RadioGroupItem value="pix" id="pix" />
-                <QrCode className="h-5 w-5 text-primary" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">PIX</p>
-                  <p className="text-[11px] text-green-600 font-medium">5% de desconto</p>
-                </div>
-                <span className="text-sm font-bold text-primary">{formatCurrency(Math.max(0, grandTotal * 0.95 - walletApplied))}</span>
-              </label>
-
-              {/* Boleto */}
-              <label
-                className={cn(
-                  "flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors",
-                  paymentMethod === "boleto" ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
-                )}
-              >
-                <RadioGroupItem value="boleto" id="boleto" />
-                <Building2 className="h-5 w-5 text-primary" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">Boleto Bancário</p>
-                  <p className="text-[11px] text-muted-foreground">Vencimento em 3 dias</p>
-                </div>
-                <span className="text-sm font-bold text-foreground">{formatCurrency(Math.max(0, grandTotal - walletApplied))}</span>
-              </label>
-
-              {/* Credit card */}
-              <label
-                className={cn(
-                  "flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors",
-                  paymentMethod === "credit" ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
-                )}
-              >
-                <RadioGroupItem value="credit" id="credit" />
-                <CreditCard className="h-5 w-5 text-primary" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">Cartão de Crédito</p>
-                  <p className="text-[11px] text-muted-foreground">Até 12x sem juros</p>
-                </div>
-                <span className="text-sm font-bold text-foreground">{formatCurrency(Math.max(0, grandTotal - walletApplied))}</span>
-              </label>
-            </RadioGroup>
-          </CardContent>
-        </Card>
-
-        {/* Confirm */}
-        <Button className="w-full gap-2" size="lg" onClick={handleGoToPayment}>
-          <CreditCard className="h-5 w-5" />
-          Efetuar Pagamento
-        </Button>
       </div>
     </div>
   );
