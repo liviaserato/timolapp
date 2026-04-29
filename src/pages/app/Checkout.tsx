@@ -153,6 +153,39 @@ export default function Checkout() {
           </CardContent>
         </Card>
 
+        {/* Order totals */}
+        <Card>
+          <CardContent className="pt-4 space-y-2">
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Subtotal</span>
+              <span>{formatCurrency(subtotal - couponDiscount)}</span>
+            </div>
+            {couponDiscount > 0 && (
+              <div className="flex justify-between text-xs text-green-600">
+                <span>Cupom ({coupon})</span>
+                <span>-{formatCurrency(couponDiscount)}</span>
+              </div>
+            )}
+            {shippingCost !== null && (
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Frete</span>
+                <span>{shippingCost === 0 ? "Grátis" : formatCurrency(shippingCost)}</span>
+              </div>
+            )}
+            {pixDiscount > 0 && (
+              <div className="flex justify-between text-xs text-green-600">
+                <span>Desconto PIX (5%)</span>
+                <span>-{formatCurrency(pixDiscount)}</span>
+              </div>
+            )}
+            <Separator />
+            <div className="flex justify-between items-baseline">
+              <span className="text-sm font-semibold text-foreground">Total</span>
+              <span className="text-xl font-bold text-primary">{formatCurrency(finalTotal)}</span>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Address / Pickup */}
         <Card>
           <CardHeader className="pb-2">
@@ -318,39 +351,6 @@ export default function Checkout() {
                 <span className="text-sm font-bold text-foreground">{formatCurrency(grandTotal)}</span>
               </label>
             </RadioGroup>
-          </CardContent>
-        </Card>
-
-        {/* Order totals */}
-        <Card>
-          <CardContent className="pt-4 space-y-2">
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Subtotal</span>
-              <span>{formatCurrency(subtotal - couponDiscount)}</span>
-            </div>
-            {couponDiscount > 0 && (
-              <div className="flex justify-between text-xs text-green-600">
-                <span>Cupom ({coupon})</span>
-                <span>-{formatCurrency(couponDiscount)}</span>
-              </div>
-            )}
-            {shippingCost !== null && (
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Frete</span>
-                <span>{shippingCost === 0 ? "Grátis" : formatCurrency(shippingCost)}</span>
-              </div>
-            )}
-            {pixDiscount > 0 && (
-              <div className="flex justify-between text-xs text-green-600">
-                <span>Desconto PIX (5%)</span>
-                <span>-{formatCurrency(pixDiscount)}</span>
-              </div>
-            )}
-            <Separator />
-            <div className="flex justify-between items-baseline">
-              <span className="text-sm font-semibold text-foreground">Total</span>
-              <span className="text-xl font-bold text-primary">{formatCurrency(finalTotal)}</span>
-            </div>
           </CardContent>
         </Card>
 
