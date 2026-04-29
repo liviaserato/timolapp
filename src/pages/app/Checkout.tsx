@@ -54,6 +54,24 @@ export default function Checkout() {
   const [walletApplied, setWalletApplied] = useState(0);
   const [walletError, setWalletError] = useState("");
 
+  // Cupom
+  const [showCoupon, setShowCoupon] = useState(false);
+  const [coupon, setCoupon] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState("");
+
+  // Frete
+  const [cep, setCep] = useState("");
+  const [shippingOptions, setShippingOptions] = useState<{ id: string; label: string; detail: string; cost: number; icon: React.ReactNode }[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<string | null>(null);
+  const [shippingLoading, setShippingLoading] = useState(false);
+  const [shippingError, setShippingError] = useState("");
+  const [selectedPickupUnit, setSelectedPickupUnit] = useState<string | null>(null);
+  const [pickupUnits, setPickupUnits] = useState<{ id: string; name: string; distanceKm?: number }[]>([]);
+  const [pickupLoading, setPickupLoading] = useState(false);
+
   // Mock address from profile
   const [address, setAddress] = useState({
     street: "Rua das Palmeiras",
@@ -62,7 +80,7 @@ export default function Checkout() {
     neighborhood: "Centro",
     city: "São Paulo",
     state: "SP",
-    cep: state?.cep || "01001-000",
+    cep: "01001-000",
   });
 
   const [editAddress, setEditAddress] = useState({ ...address });
