@@ -157,6 +157,14 @@ export default function Checkout() {
     setWalletApplied(0);
     setWalletInput("");
     setWalletError("");
+    setShowWallet(false);
+  };
+
+  const handleEditWallet = () => {
+    setWalletInput(formatWalletInput(String(Math.round(walletApplied * 100))));
+    setWalletApplied(0);
+    setWalletError("");
+    setShowWallet(true);
   };
 
   // Cupom handlers
