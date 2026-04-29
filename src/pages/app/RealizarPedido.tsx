@@ -41,12 +41,22 @@ export default function RealizarPedido() {
   const navigate = useNavigate();
   const cart = useCart();
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
 
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("todos");
   const [searchTerm, setSearchTerm] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!carouselApi) return;
+    const interval = setInterval(() => {
+      carouselApi.scrollNext();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [carouselApi]);
 
   const layout = isMobile ? "list" : "grid";
 
