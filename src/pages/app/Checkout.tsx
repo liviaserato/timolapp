@@ -311,7 +311,7 @@ export default function Checkout() {
                     <p className="font-medium text-foreground">
                       <span>{item.name}</span>
                       {selStr && (
-                        <span className="text-[11px] text-muted-foreground font-normal"> {selStr}</span>
+                        <span className="text-[11px] text-muted-foreground font-normal"> ({selStr})</span>
                       )}
                       <span className="font-normal"> x {item.qty}</span>
                     </p>
