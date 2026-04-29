@@ -707,9 +707,10 @@ export default function Checkout() {
                         <button
                           type="button"
                           onClick={handleRemoveWallet}
-                          className="text-[11px] text-muted-foreground hover:text-destructive transition-colors"
+                          aria-label="Remover saldo"
+                          className="text-muted-foreground hover:text-destructive transition-colors"
                         >
-                          Remover
+                          <X className="h-3 w-3" />
                         </button>
                         <span>-{formatCurrency(walletApplied)}</span>
                       </span>
