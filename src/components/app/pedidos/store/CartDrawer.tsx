@@ -61,7 +61,7 @@ export function CartDrawer({
   const shippingLabel = selectedShipping === "retirada" && selectedPickupUnit
     ? `Retirar na Timol - ${pickupUnits.find(u => u.id === selectedPickupUnit)?.name ?? ""}`
     : shippingOptions.find(o => o.id === selectedShipping)?.label ?? "";
-  const totalDiscounts = couponDiscount + voucherDiscount;
+  const totalDiscounts = couponDiscount;
   const shipping = shippingCost ?? 0;
   const grandTotal = Math.max(0, totalPrice - totalDiscounts + shipping);
 
