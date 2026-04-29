@@ -293,46 +293,6 @@ export function CartDrawer({
                 {couponError && <p className="text-[11px] text-destructive mt-0.5">{couponError}</p>}
               </div>
 
-              {/* Voucher */}
-              <div>
-                {appliedVoucher ? (
-                  <div className="flex items-center justify-between bg-primary/5 rounded px-2.5 py-1.5">
-                    <span className="text-xs font-semibold text-primary flex items-center gap-1"><Ticket className="h-3 w-3" />{appliedVoucher}</span>
-                    <button onClick={handleRemoveVoucher} className="text-[11px] text-destructive hover:underline">Remover</button>
-                  </div>
-                ) : showVoucher ? (
-                  <>
-                    <button onClick={() => { setShowVoucher(false); setVoucherError(""); }} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors mb-1">
-                      <Ticket className="h-3 w-3" /> Voucher <ChevronUp className="h-3 w-3" />
-                    </button>
-                    <form onSubmit={(e) => { e.preventDefault(); handleApplyVoucher(); }} className="flex gap-1.5">
-                      <div className="relative flex-1">
-                        <Input
-                          value={voucher}
-                          onChange={(e) => { setVoucher(e.target.value.toUpperCase()); setVoucherError(""); }}
-                          placeholder="Código do voucher"
-                          className="h-8 text-xs pr-7"
-                          autoFocus
-                        />
-                        {voucher && (
-                          <button type="button" onClick={() => { setVoucher(""); setVoucherError(""); }} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                            <X className="h-3 w-3" />
-                          </button>
-                        )}
-                      </div>
-                      <Button type="submit" size="sm" variant="outline" className="h-8 text-xs px-3" disabled={voucherLoading || !voucher.trim()}>
-                        {voucherLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
-                      </Button>
-                    </form>
-                  </>
-                ) : (
-                  <button onClick={() => setShowVoucher(true)} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    <Ticket className="h-3 w-3" /> Adicionar voucher <ChevronDown className="h-3 w-3" />
-                  </button>
-                )}
-                {voucherError && <p className="text-[11px] text-destructive mt-0.5">{voucherError}</p>}
-              </div>
-
               <Separator />
 
               {/* CEP */}
