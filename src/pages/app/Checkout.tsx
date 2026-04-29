@@ -89,27 +89,42 @@ export default function Checkout() {
 
   const totalBeforeWallet = grandTotal - pixDiscount;
 
+  // Mask: digits only -> "R$ 0,00"
+  const formatWalletInput = (raw: string) => {
+    const digits = raw.replace(/\D/g, "");
+    if (!digits) return "";
+    const num = parseInt(digits, 10) / 100;
+    return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
+
+  const parseWalletInput = (masked: string): number => {
+    const digits = masked.replace(/\D/g, "");
+    if (!digits) return 0;
+    return parseInt(digits, 10) / 100;
+  };
+
   const handleApplyWallet = () => {
-    const value = parseFloat(walletInput.replace(",", "."));
-    if (isNaN(value) || value <= 0) {
-      toast.error("Informe um valor válido");
+    const value = parseWalletInput(walletInput);
+    if (value <= 0) {
+      setWalletError("Informe um valor válido");
       return;
     }
     if (value > walletBalance) {
-      toast.error("Valor maior que o saldo disponível");
+      setWalletError("Valor maior que o disponível");
       return;
     }
     if (value > totalBeforeWallet) {
-      toast.error("Valor maior que o total do pedido");
+      setWalletError("Valor maior que o total do pedido");
       return;
     }
+    setWalletError("");
     setWalletApplied(value);
-    toast.success("Saldo aplicado");
   };
 
   const handleRemoveWallet = () => {
     setWalletApplied(0);
     setWalletInput("");
+    setWalletError("");
   };
 
   const handleSaveAddress = () => {
