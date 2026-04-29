@@ -621,7 +621,7 @@ export default function Checkout() {
             )}
             <Separator />
             <div className="flex justify-between items-baseline">
-              <span className="text-sm font-semibold text-foreground">Total a pagar</span>
+              <span className="text-sm font-semibold text-foreground">Total</span>
               <span className={cn(
                 "font-bold text-primary",
                 (pixDiscount > 0 || walletApplied > 0) ? "text-base" : "text-xl"
@@ -644,7 +644,7 @@ export default function Checkout() {
                   </div>
                 )}
                 <div className="flex justify-between items-baseline pt-1">
-                  <span className="text-sm font-semibold text-foreground">Total final</span>
+                  <span className="text-sm font-semibold text-foreground">Total a pagar</span>
                   <span className="text-xl font-bold text-primary">{formatCurrency(finalTotal)}</span>
                 </div>
               </>
