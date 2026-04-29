@@ -293,13 +293,13 @@ export default function Checkout() {
       <div className="flex-1 overflow-y-auto space-y-4 pb-6">
         {/* Items summary */}
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 border-b">
             <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
               <ShoppingBag className="h-4 w-4" />
               Itens do Pedido ({items.length})
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-2 pt-4">
             {items.map((item, idx) => {
               const selStr = Object.values(item.selections).filter(Boolean).join(" · ");
               return (
