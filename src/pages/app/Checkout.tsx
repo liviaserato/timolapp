@@ -622,6 +622,105 @@ export default function Checkout() {
                 </span>
               </div>
 
+              {/* Saldo em carteira (inline, padrão do cupom) */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-muted-foreground flex items-center gap-1.5 flex-wrap">
+                    Saldo em carteira
+                    {walletApplied > 0 && (
+                      <span className="text-green-600 font-medium">-{formatCurrency(walletApplied)}</span>
+                    )}
+                  </span>
+                  {walletApplied > 0 ? (
+                    <span className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleEditWallet}
+                        className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        Editar
+                      </button>
+                      <span className="text-muted-foreground/40">·</span>
+                      <button
+                        type="button"
+                        onClick={handleRemoveWallet}
+                        className="text-[11px] text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        Remover
+                      </button>
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowWallet((v) => !v);
+                        if (showWallet) {
+                          setWalletInput("");
+                          setWalletError("");
+                        }
+                      }}
+                      className="text-[11px] text-primary hover:underline disabled:opacity-50 disabled:hover:no-underline"
+                      disabled={walletBalance <= 0}
+                    >
+                      {showWallet ? "Cancelar" : "Utilizar saldo"}
+                    </button>
+                  )}
+                </div>
+
+                {showWallet && walletApplied === 0 && (
+                  <div>
+                    <p className="text-[11px] text-muted-foreground mb-1.5">
+                      Disponível: <span className="font-semibold text-foreground">{formatCurrency(walletBalance)}</span>
+                    </p>
+                    <form
+                      onSubmit={(e) => { e.preventDefault(); handleApplyWallet(); }}
+                      className="flex gap-1.5"
+                    >
+                      <div className="relative flex-1">
+                        <Input
+                          value={walletInput}
+                          onChange={(e) => {
+                            setWalletInput(formatWalletInput(e.target.value));
+                            setWalletError("");
+                          }}
+                          placeholder="R$ 0,00"
+                          inputMode="numeric"
+                          className="h-8 text-xs pr-7"
+                          autoFocus
+                        />
+                        {walletInput && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setWalletInput("");
+                              setWalletError("");
+                            }}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        )}
+                      </div>
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant="outline"
+                        className="h-8 text-xs px-3 w-20 shrink-0"
+                        disabled={!walletInput.trim()}
+                      >
+                        Confirmar
+                      </Button>
+                    </form>
+                    {walletError && (
+                      <p className="text-[11px] text-destructive mt-1 flex items-center gap-1">
+                        <X className="h-3 w-3" />
+                        {walletError}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
               {(pixDiscount > 0 || walletApplied > 0) && (
                 <>
                   <Separator />
