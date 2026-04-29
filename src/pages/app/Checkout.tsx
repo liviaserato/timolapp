@@ -12,6 +12,7 @@ import {
   Store,
   Package,
   MapPinned,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +49,11 @@ export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState("pix");
   const [editingAddress, setEditingAddress] = useState(false);
 
+  // Mock wallet balance
+  const walletBalance = 250.00;
+  const [walletInput, setWalletInput] = useState("");
+  const [walletApplied, setWalletApplied] = useState(0);
+
   // Mock address from profile
   const [address, setAddress] = useState({
     street: "Rua das Palmeiras",
@@ -78,7 +84,32 @@ export default function Checkout() {
   const isPickup = !!pickupUnit;
 
   const pixDiscount = paymentMethod === "pix" ? grandTotal * 0.05 : 0;
-  const finalTotal = grandTotal - pixDiscount;
+  const finalTotal = Math.max(0, grandTotal - pixDiscount - walletApplied);
+
+  const totalBeforeWallet = grandTotal - pixDiscount;
+
+  const handleApplyWallet = () => {
+    const value = parseFloat(walletInput.replace(",", "."));
+    if (isNaN(value) || value <= 0) {
+      toast.error("Informe um valor válido");
+      return;
+    }
+    if (value > walletBalance) {
+      toast.error("Valor maior que o saldo disponível");
+      return;
+    }
+    if (value > totalBeforeWallet) {
+      toast.error("Valor maior que o total do pedido");
+      return;
+    }
+    setWalletApplied(value);
+    toast.success("Saldo aplicado");
+  };
+
+  const handleRemoveWallet = () => {
+    setWalletApplied(0);
+    setWalletInput("");
+  };
 
   const handleSaveAddress = () => {
     // Validate required fields
@@ -178,11 +209,67 @@ export default function Checkout() {
                 <span>-{formatCurrency(pixDiscount)}</span>
               </div>
             )}
+            {walletApplied > 0 && (
+              <div className="flex justify-between text-xs text-green-600">
+                <span>Saldo carteira</span>
+                <span>-{formatCurrency(walletApplied)}</span>
+              </div>
+            )}
             <Separator />
             <div className="flex justify-between items-baseline">
               <span className="text-sm font-semibold text-foreground">Total</span>
               <span className="text-xl font-bold text-primary">{formatCurrency(finalTotal)}</span>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Wallet balance */}
+        <Card>
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+                <Wallet className="h-4 w-4" />
+                Saldo em carteira
+              </CardTitle>
+              <span className="text-xs text-muted-foreground">
+                Disponível: <span className="font-semibold text-foreground">{formatCurrency(walletBalance - walletApplied)}</span>
+              </span>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {walletApplied > 0 ? (
+              <div className="flex items-center justify-between bg-primary/5 rounded px-3 py-2">
+                <span className="text-xs text-foreground">
+                  Aplicado: <span className="font-bold text-primary">{formatCurrency(walletApplied)}</span>
+                </span>
+                <button onClick={handleRemoveWallet} className="text-[11px] text-destructive hover:underline">
+                  Remover
+                </button>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => { e.preventDefault(); handleApplyWallet(); }}
+                className="flex gap-1.5"
+              >
+                <Input
+                  value={walletInput}
+                  onChange={(e) => setWalletInput(e.target.value.replace(/[^0-9.,]/g, ""))}
+                  placeholder="Quanto deseja usar?"
+                  inputMode="decimal"
+                  className="h-8 text-xs flex-1"
+                  disabled={walletBalance <= 0}
+                />
+                <Button
+                  type="submit"
+                  size="sm"
+                  variant="outline"
+                  className="h-8 text-xs px-3 w-20 shrink-0"
+                  disabled={!walletInput.trim() || walletBalance <= 0}
+                >
+                  Confirmar
+                </Button>
+              </form>
+            )}
           </CardContent>
         </Card>
 
