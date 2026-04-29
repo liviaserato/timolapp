@@ -237,19 +237,10 @@ export default function Pedidos() {
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [detailOrder, setDetailOrder] = useState<Order | null>(null);
   const [indicarOpen, setIndicarOpen] = useState(false);
-  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
 
   const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Auto-advance carousel every 5 seconds
-  useEffect(() => {
-    if (!carouselApi) return;
-    const interval = setInterval(() => {
-      carouselApi.scrollNext();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [carouselApi]);
 
   const filtered = mockOrders
     .filter((o) => {
