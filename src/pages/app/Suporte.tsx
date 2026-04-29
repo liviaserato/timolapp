@@ -318,7 +318,7 @@ export default function Suporte() {
 
       {/* Dialog: Novo Chamado */}
       <Dialog open={newTicketOpen} onOpenChange={(open) => { setNewTicketOpen(open); if (!open) setFieldErrors({}); }}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-md p-4 sm:p-6 max-h-[calc(100vh-2rem)] overflow-y-auto">
           <DialogHeader className="text-center">
             <DialogTitle className="text-lg flex items-center justify-center gap-2">
               <img src={faviconTimol} alt="" className="h-5 w-5" />
