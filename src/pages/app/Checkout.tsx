@@ -322,343 +322,309 @@ export default function Checkout() {
           </CardContent>
         </Card>
 
-        {/* Frete + Endereço (2 colunas) */}
+        {/* Entrega + Resumo da compra (2 colunas) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
-        {/* Frete */}
-        <Card className="flex flex-col">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              Calcular frete
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex-1">
-            <form onSubmit={(e) => { e.preventDefault(); handleCalcShipping(); }} className="flex gap-1.5">
-              <div className="relative flex-1">
-                <Input
-                  value={cep}
-                  onChange={(e) => {
-                    setCep(formatCep(e.target.value));
-                    setShippingError("");
-                    setShippingOptions([]);
-                    setSelectedShipping(null);
-                  }}
-                  placeholder="00000-000"
-                  className="h-8 text-xs pr-7"
-                  maxLength={9}
-                />
-                {cep && (
-                  <button
-                    type="button"
-                    onClick={() => { setCep(""); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                )}
-              </div>
-              <Button
-                type="submit"
-                size="sm"
-                variant="outline"
-                className="h-8 text-xs px-3 w-20 shrink-0"
-                disabled={shippingLoading || cep.replace(/\D/g, "").length < 8}
-              >
-                {shippingLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Calcular"}
-              </Button>
-            </form>
-            {shippingError && <p className="text-[11px] text-destructive mt-1">{shippingError}</p>}
-            {shippingOptions.length > 0 && (
-              <div className="mt-2 space-y-1.5">
-                {shippingOptions.map((opt) => (
-                  <div key={opt.id}>
-                    <button
-                      onClick={() => {
-                        setSelectedShipping(opt.id);
-                        if (opt.id !== "retirada") setSelectedPickupUnit(null);
-                      }}
-                      className={cn(
-                        "w-full flex items-center gap-2 rounded border px-2.5 py-2 text-left transition-colors",
-                        selectedShipping === opt.id
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-muted-foreground/30"
-                      )}
-                    >
-                      <span className={selectedShipping === opt.id ? "text-primary" : "text-muted-foreground"}>{opt.icon}</span>
-                      <div className="flex-1 min-w-0">
-                        <span className={cn("text-[11px] font-semibold", selectedShipping === opt.id ? "text-primary" : "text-foreground")}>{opt.label}</span>
-                        <span className="text-[10px] text-muted-foreground ml-1.5">{opt.detail}</span>
-                      </div>
-                      <span className={cn("text-[11px] font-bold", selectedShipping === opt.id ? "text-primary" : "text-foreground")}>
-                        {opt.cost === 0 ? "Grátis" : formatCurrency(opt.cost)}
-                      </span>
-                    </button>
-                    {opt.id === "retirada" && selectedShipping === "retirada" && (
-                      <div className="ml-5 mt-1 mb-0.5 space-y-1">
-                        {pickupLoading ? (
-                          <div className="flex items-center gap-2 px-2.5 py-1.5 text-muted-foreground">
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                            <span className="text-[11px]">Calculando distâncias...</span>
-                          </div>
-                        ) : pickupUnits.length > 0 ? (
-                          pickupUnits.map((unit) => (
-                            <button
-                              key={unit.id}
-                              onClick={() => setSelectedPickupUnit(unit.id)}
-                              className={cn(
-                                "w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left transition-colors",
-                                selectedPickupUnit === unit.id
-                                  ? "bg-primary/10 text-primary"
-                                  : "hover:bg-muted text-muted-foreground"
-                              )}
-                            >
-                              {selectedPickupUnit === unit.id ? (
-                                <Check className="h-3 w-3 text-primary" />
-                              ) : (
-                                <Store className="h-3 w-3 opacity-40" />
-                              )}
-                              <span className={cn("text-[11px] flex-1", selectedPickupUnit === unit.id && "font-semibold")}>
-                                {unit.name}
-                              </span>
-                              {unit.distanceKm != null && (
-                                <span className={cn("text-[10px]", selectedPickupUnit === unit.id ? "text-primary/70" : "text-muted-foreground")}>
-                                  ~{unit.distanceKm.toLocaleString("pt-BR")}km
-                                </span>
-                              )}
-                            </button>
-                          ))
-                        ) : null}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Address / Pickup */}
-        <Card className="flex flex-col">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
+          {/* Entrega (esquerda) */}
+          <Card className="flex flex-col">
+            <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-                {isPickup ? (
-                  <>
-                    <MapPinned className="h-4 w-4" />
-                    Endereço de Retirada
-                  </>
-                ) : (
-                  <>
-                    <Truck className="h-4 w-4" />
-                    Endereço de Entrega
-                  </>
-                )}
+                <Truck className="h-4 w-4" />
+                Entrega
               </CardTitle>
-              {!isPickup && !editingAddress && shippingOptions.length > 0 && (
-                <button onClick={() => { setEditAddress({ ...address }); setEditingAddress(true); }} className="text-primary hover:underline text-xs flex items-center gap-1">
-                  <Edit2 className="h-3 w-3" /> Alterar
-                </button>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent className="flex-1 flex flex-col">
-            {shippingOptions.length === 0 ? (
-              <div className="flex-1 flex items-center justify-center text-center">
-                <p className="text-xs text-muted-foreground">
-                  Informe o CEP ao lado para escolher o endereço de entrega ou retirada.
-                </p>
-              </div>
-            ) : isPickup ? (
-              <div className="text-sm text-foreground space-y-1.5">
-                <p className="font-medium flex items-center gap-1.5">
-                  <Store className="h-3.5 w-3.5 text-primary" />
-                  {pickupUnit}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  O endereço completo da unidade será disponibilizado após a aprovação do pedido.
-                </p>
-              </div>
-            ) : editingAddress ? (
-              <div className="space-y-2">
-                <div className="grid grid-cols-3 gap-2">
-                  <Input
-                    value={editAddress.street}
-                    onChange={(e) => setEditAddress({ ...editAddress, street: e.target.value })}
-                    placeholder="Rua *"
-                    className="col-span-2 h-8 text-xs"
-                  />
-                  <Input
-                    value={editAddress.number}
-                    onChange={(e) => setEditAddress({ ...editAddress, number: e.target.value })}
-                    placeholder="Nº *"
-                    className="h-8 text-xs"
-                  />
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <Input
-                    value={editAddress.complement}
-                    onChange={(e) => setEditAddress({ ...editAddress, complement: e.target.value })}
-                    placeholder="Complemento"
-                    className="col-span-2 h-8 text-xs"
-                  />
-                  <Input
-                    value={editAddress.neighborhood}
-                    onChange={(e) => setEditAddress({ ...editAddress, neighborhood: e.target.value })}
-                    placeholder="Bairro *"
-                    className="h-8 text-xs"
-                  />
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <Input
-                    value={editAddress.city}
-                    onChange={(e) => setEditAddress({ ...editAddress, city: e.target.value })}
-                    placeholder="Cidade *"
-                    className="col-span-2 h-8 text-xs"
-                  />
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      value={editAddress.state}
-                      onChange={(e) => setEditAddress({ ...editAddress, state: e.target.value })}
-                      placeholder="UF *"
-                      className="h-8 text-xs"
-                    />
-                    <Input
-                      value={editAddress.cep}
-                      onChange={(e) => setEditAddress({ ...editAddress, cep: e.target.value })}
-                      placeholder="CEP *"
-                      className="h-8 text-xs"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-2 pt-1">
-                  <Button size="sm" className="text-xs h-8" onClick={handleSaveAddress}>Salvar</Button>
-                  <Button size="sm" variant="ghost" className="text-xs h-8" onClick={() => setEditingAddress(false)}>Cancelar</Button>
-                </div>
-              </div>
-            ) : (
-              <div className="text-sm text-foreground space-y-0.5">
-                <p>{address.street}, {address.number}{address.complement ? ` · ${address.complement}` : ""}</p>
-                <p>{address.neighborhood} · {address.city} – {address.state}</p>
-                <p>CEP {address.cep}</p>
-                {shippingLabel && (
-                  <p className="text-xs text-primary mt-5 flex items-center gap-1">
-                    <Package className="h-3 w-3" /> {shippingLabel} · Prazo estimado: 5 a 10 dias úteis
-                  </p>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        </div>
-
-        {/* Cupom de desconto */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-              <Tag className="h-4 w-4" />
-              Cupom de desconto
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {appliedCoupon ? (
-              <div className="flex items-center justify-between bg-primary/5 rounded px-3 py-2">
-                <span className="text-xs font-semibold text-primary flex items-center gap-1">
-                  <Tag className="h-3 w-3" />
-                  {appliedCoupon}
-                </span>
-                <button onClick={handleRemoveCoupon} className="text-[11px] text-destructive hover:underline">
-                  Remover
-                </button>
-              </div>
-            ) : (
-              <>
-                <form onSubmit={(e) => { e.preventDefault(); handleApplyCoupon(); }} className="flex gap-1.5">
-                  <div className="relative flex-1">
-                    <Input
-                      value={coupon}
-                      onChange={(e) => { setCoupon(e.target.value.toUpperCase()); setCouponError(""); }}
-                      placeholder="Código do cupom"
-                      className="h-8 text-xs pr-7"
-                    />
-                    {coupon && (
-                      <button
-                        type="button"
-                        onClick={() => { setCoupon(""); setCouponError(""); }}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    )}
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col">
+              {/* Endereço selecionado */}
+              {selectedAddress ? (
+                <div className="space-y-2">
+                  <div className="rounded-md border border-border p-2.5">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="h-3.5 w-3.5 text-primary mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 min-w-0 text-xs text-foreground space-y-0.5">
+                        {selectedAddress.label && (
+                          <p className="font-semibold">{selectedAddress.label}</p>
+                        )}
+                        <p>
+                          {selectedAddress.street}, {selectedAddress.number}
+                          {selectedAddress.complement ? ` · ${selectedAddress.complement}` : ""}
+                        </p>
+                        <p className="text-muted-foreground">
+                          {selectedAddress.neighborhood} · {selectedAddress.city} – {selectedAddress.state}
+                        </p>
+                        <p className="text-muted-foreground">CEP {selectedAddress.zipCode}</p>
+                      </div>
+                    </div>
                   </div>
                   <Button
-                    type="submit"
-                    size="sm"
                     variant="outline"
-                    className="h-8 text-xs px-3 w-20 shrink-0"
-                    disabled={couponLoading || !coupon.trim()}
+                    size="sm"
+                    className="w-full text-xs h-7 text-muted-foreground"
+                    onClick={() => setAddressDialogOpen(true)}
                   >
-                    {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
+                    <MapPin className="h-3 w-3 mr-1" />
+                    Alterar endereço
                   </Button>
-                </form>
-                {couponError && <p className="text-[11px] text-destructive mt-1">{couponError}</p>}
-              </>
-            )}
-          </CardContent>
-        </Card>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground text-center py-3">
+                    Nenhum endereço cadastrado.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-xs h-7"
+                    onClick={() => setAddressDialogOpen(true)}
+                  >
+                    <MapPin className="h-3 w-3 mr-1" />
+                    Adicionar endereço
+                  </Button>
+                </div>
+              )}
 
-        {/* Totais */}
-        <Card>
-          <CardContent className="pt-4 space-y-2">
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Subtotal</span>
-              <span>{formatCurrency(subtotal)}</span>
-            </div>
-            {couponDiscount > 0 && (
-              <div className="flex justify-between text-xs text-green-600">
-                <span>Cupom ({appliedCoupon})</span>
-                <span>-{formatCurrency(couponDiscount)}</span>
+              {/* Opções de entrega */}
+              {selectedAddress && (
+                <div className="mt-3 space-y-1.5">
+                  {shippingLoading ? (
+                    <div className="flex items-center justify-center gap-2 py-3 text-muted-foreground">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <span className="text-[11px]">Calculando opções de entrega...</span>
+                    </div>
+                  ) : (
+                    shippingOptions.map((opt) => (
+                      <div key={opt.id}>
+                        <button
+                          onClick={() => {
+                            setSelectedShipping(opt.id);
+                            if (opt.id !== "retirada") setSelectedPickupUnit(null);
+                          }}
+                          className={cn(
+                            "w-full flex items-center gap-2 rounded border px-2.5 py-2 text-left transition-colors",
+                            selectedShipping === opt.id
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-muted-foreground/30"
+                          )}
+                        >
+                          <span className={selectedShipping === opt.id ? "text-primary" : "text-muted-foreground"}>{opt.icon}</span>
+                          <div className="flex-1 min-w-0">
+                            <span className={cn("text-[11px] font-semibold", selectedShipping === opt.id ? "text-primary" : "text-foreground")}>{opt.label}</span>
+                            <span className="text-[10px] text-muted-foreground ml-1.5">{opt.detail}</span>
+                          </div>
+                          <span className={cn("text-[11px] font-bold", selectedShipping === opt.id ? "text-primary" : "text-foreground")}>
+                            {opt.cost === 0 ? "Grátis" : formatCurrency(opt.cost)}
+                          </span>
+                        </button>
+                        {opt.id === "retirada" && selectedShipping === "retirada" && (
+                          <div className="ml-5 mt-1 mb-0.5 space-y-1">
+                            {pickupLoading ? (
+                              <div className="flex items-center gap-2 px-2.5 py-1.5 text-muted-foreground">
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                                <span className="text-[11px]">Calculando distâncias...</span>
+                              </div>
+                            ) : pickupUnits.length > 0 ? (
+                              pickupUnits.map((unit) => (
+                                <button
+                                  key={unit.id}
+                                  onClick={() => setSelectedPickupUnit(unit.id)}
+                                  className={cn(
+                                    "w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left transition-colors",
+                                    selectedPickupUnit === unit.id
+                                      ? "bg-primary/10 text-primary"
+                                      : "hover:bg-muted text-muted-foreground"
+                                  )}
+                                >
+                                  {selectedPickupUnit === unit.id ? (
+                                    <Check className="h-3 w-3 text-primary" />
+                                  ) : (
+                                    <Store className="h-3 w-3 opacity-40" />
+                                  )}
+                                  <span className={cn("text-[11px] flex-1", selectedPickupUnit === unit.id && "font-semibold")}>
+                                    {unit.name}
+                                  </span>
+                                  {unit.distanceKm != null && (
+                                    <span className={cn("text-[10px]", selectedPickupUnit === unit.id ? "text-primary/70" : "text-muted-foreground")}>
+                                      ~{unit.distanceKm.toLocaleString("pt-BR")}km
+                                    </span>
+                                  )}
+                                </button>
+                              ))
+                            ) : null}
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Resumo da compra (direita) */}
+          <Card className="flex flex-col">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+                <Receipt className="h-4 w-4" />
+                Resumo da compra
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col space-y-2">
+              {/* Produtos */}
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Produtos</span>
+                <span>{formatCurrency(subtotal)}</span>
               </div>
-            )}
-            {shippingCost !== null && (
+
+              {/* Frete */}
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Frete</span>
-                <span>{shippingCost === 0 ? "Grátis" : formatCurrency(shippingCost)}</span>
+                <span>
+                  {shippingCost === null
+                    ? "—"
+                    : shippingCost === 0
+                      ? "Grátis"
+                      : formatCurrency(shippingCost)}
+                </span>
               </div>
-            )}
-            <Separator />
-            <div className="flex justify-between items-baseline">
-              <span className="text-sm font-semibold text-foreground">Total</span>
-              <span className={cn(
-                "font-bold text-primary",
-                (pixDiscount > 0 || walletApplied > 0) ? "text-base" : "text-xl"
-              )}>{formatCurrency(grandTotal)}</span>
-            </div>
 
-            {(pixDiscount > 0 || walletApplied > 0) && (
-              <>
-                <Separator />
-                {walletApplied > 0 && (
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Saldo carteira</span>
-                    <span>-{formatCurrency(walletApplied)}</span>
-                  </div>
-                )}
-                {pixDiscount > 0 && (
-                  <div className="flex justify-between text-xs text-green-600">
-                    <span>Desconto PIX (5%)</span>
-                    <span>-{formatCurrency(pixDiscount)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between items-baseline pt-1">
-                  <span className="text-sm font-semibold text-foreground">Total a pagar</span>
-                  <span className="text-xl font-bold text-primary">{formatCurrency(finalTotal)}</span>
+              {/* Cupom */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-muted-foreground flex items-center gap-1.5 flex-wrap">
+                    Cupom
+                    {appliedCoupon && (
+                      <>
+                        <span className="text-foreground font-medium">{appliedCoupon}</span>
+                        <span className="text-green-600 font-medium">-{formatCurrency(couponDiscount)}</span>
+                      </>
+                    )}
+                  </span>
+                  {appliedCoupon ? (
+                    <button
+                      type="button"
+                      onClick={handleRemoveCoupon}
+                      className="text-[11px] text-muted-foreground hover:text-destructive transition-colors"
+                    >
+                      Remover
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowCoupon((v) => !v);
+                        if (showCoupon) {
+                          setCoupon("");
+                          setCouponError("");
+                        }
+                      }}
+                      className="text-[11px] text-primary hover:underline"
+                    >
+                      {showCoupon ? "Cancelar" : "Adicionar cupom"}
+                    </button>
+                  )}
                 </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
 
-        {/* Wallet balance */}
+                {showCoupon && !appliedCoupon && (
+                  <div>
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        handleApplyCoupon();
+                      }}
+                      className="flex gap-1.5"
+                    >
+                      <div className="relative flex-1">
+                        <Input
+                          value={coupon}
+                          onChange={(e) => {
+                            setCoupon(e.target.value.toUpperCase());
+                            setCouponError("");
+                          }}
+                          placeholder="Código do cupom"
+                          className="h-8 text-xs pr-7"
+                          autoFocus
+                        />
+                        {coupon && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCoupon("");
+                              setCouponError("");
+                            }}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        )}
+                      </div>
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant="outline"
+                        className="h-8 text-xs px-3 w-20 shrink-0"
+                        disabled={couponLoading || !coupon.trim()}
+                      >
+                        {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
+                      </Button>
+                    </form>
+                    {couponError && (
+                      <p className="text-[11px] text-destructive mt-1 flex items-center gap-1">
+                        <X className="h-3 w-3" />
+                        {couponError}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <Separator />
+
+              {/* Total destacado */}
+              <div className="flex justify-between items-baseline">
+                <span className="text-sm font-semibold text-foreground">Total</span>
+                <span
+                  className={cn(
+                    "font-bold text-primary",
+                    pixDiscount > 0 || walletApplied > 0 ? "text-base" : "text-2xl"
+                  )}
+                >
+                  {formatCurrency(grandTotal)}
+                </span>
+              </div>
+
+              {(pixDiscount > 0 || walletApplied > 0) && (
+                <>
+                  <Separator />
+                  {walletApplied > 0 && (
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Saldo carteira</span>
+                      <span>-{formatCurrency(walletApplied)}</span>
+                    </div>
+                  )}
+                  {pixDiscount > 0 && (
+                    <div className="flex justify-between text-xs text-green-600">
+                      <span>Desconto PIX (5%)</span>
+                      <span>-{formatCurrency(pixDiscount)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-baseline pt-1">
+                    <span className="text-sm font-semibold text-foreground">Total a pagar</span>
+                    <span className="text-2xl font-bold text-primary">{formatCurrency(finalTotal)}</span>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* AddressManager dialog (controlled) */}
+        <AddressManager
+          addresses={addresses}
+          onChange={setAddresses}
+          currentCountryIso2="BR"
+          franchiseCurrency="BRL"
+          dialogOnly
+          open={addressDialogOpen}
+          onOpenChange={setAddressDialogOpen}
+        />
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
