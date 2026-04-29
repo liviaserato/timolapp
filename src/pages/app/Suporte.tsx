@@ -201,7 +201,27 @@ export default function Suporte() {
         </div>
       )}
 
-      {view === "faq" && <FaqSection />}
+      {view === "faq" && (
+        <>
+          <FaqSection onOpenTicket={() => setNewTicketOpen(true)} />
+          <section className="rounded-[10px] overflow-hidden bg-gradient-to-r from-[hsl(var(--app-header))] to-[hsl(210,80%,45%)] p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="text-primary-foreground text-center sm:text-left">
+              <p className="font-bold text-sm">Não encontrou o que procurava?</p>
+              <p className="text-xs opacity-90 mt-0.5">Abra um chamado ou fale com um atendente.</p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button variant="outline" size="sm" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 border-0 gap-1.5 text-xs shrink-0" onClick={() => setNewTicketOpen(true)}>
+                <Ticket className="h-4 w-4" />
+                {t("suporte.openTicket")}
+              </Button>
+              <Button variant="outline" size="sm" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 border-0 gap-1.5 text-xs shrink-0" onClick={() => openWhatsAppLink("Olá! Preciso de ajuda.")}>
+                <img src={iconWhatsapp} alt="" className="h-4 w-4" />
+                {t("suporte.talkToAgent")}
+              </Button>
+            </div>
+          </section>
+        </>
+      )}
 
       {view === "chamados" && (
         <>
