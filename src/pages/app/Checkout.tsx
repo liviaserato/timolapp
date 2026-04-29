@@ -320,7 +320,174 @@ export default function Checkout() {
           </CardContent>
         </Card>
 
-        {/* Order totals */}
+        {/* Cupom de desconto */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+              <Tag className="h-4 w-4" />
+              Cupom de desconto
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between bg-primary/5 rounded px-3 py-2">
+                <span className="text-xs font-semibold text-primary flex items-center gap-1">
+                  <Tag className="h-3 w-3" />
+                  {appliedCoupon}
+                </span>
+                <button onClick={handleRemoveCoupon} className="text-[11px] text-destructive hover:underline">
+                  Remover
+                </button>
+              </div>
+            ) : (
+              <>
+                <form onSubmit={(e) => { e.preventDefault(); handleApplyCoupon(); }} className="flex gap-1.5">
+                  <div className="relative flex-1">
+                    <Input
+                      value={coupon}
+                      onChange={(e) => { setCoupon(e.target.value.toUpperCase()); setCouponError(""); }}
+                      placeholder="Código do cupom"
+                      className="h-8 text-xs pr-7"
+                    />
+                    {coupon && (
+                      <button
+                        type="button"
+                        onClick={() => { setCoupon(""); setCouponError(""); }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    variant="outline"
+                    className="h-8 text-xs px-3 w-20 shrink-0"
+                    disabled={couponLoading || !coupon.trim()}
+                  >
+                    {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
+                  </Button>
+                </form>
+                {couponError && <p className="text-[11px] text-destructive mt-1">{couponError}</p>}
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Frete */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Calcular frete
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={(e) => { e.preventDefault(); handleCalcShipping(); }} className="flex gap-1.5">
+              <div className="relative flex-1">
+                <Input
+                  value={cep}
+                  onChange={(e) => {
+                    setCep(formatCep(e.target.value));
+                    setShippingError("");
+                    setShippingOptions([]);
+                    setSelectedShipping(null);
+                  }}
+                  placeholder="00000-000"
+                  className="h-8 text-xs pr-7"
+                  maxLength={9}
+                />
+                {cep && (
+                  <button
+                    type="button"
+                    onClick={() => { setCep(""); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+              <Button
+                type="submit"
+                size="sm"
+                variant="outline"
+                className="h-8 text-xs px-3 w-20 shrink-0"
+                disabled={shippingLoading || cep.replace(/\D/g, "").length < 8}
+              >
+                {shippingLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Calcular"}
+              </Button>
+            </form>
+            {shippingError && <p className="text-[11px] text-destructive mt-1">{shippingError}</p>}
+            {shippingOptions.length > 0 && (
+              <div className="mt-2 space-y-1.5">
+                {shippingOptions.map((opt) => (
+                  <div key={opt.id}>
+                    <button
+                      onClick={() => {
+                        setSelectedShipping(opt.id);
+                        if (opt.id !== "retirada") setSelectedPickupUnit(null);
+                      }}
+                      className={cn(
+                        "w-full flex items-center gap-2 rounded border px-2.5 py-2 text-left transition-colors",
+                        selectedShipping === opt.id
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-muted-foreground/30"
+                      )}
+                    >
+                      <span className={selectedShipping === opt.id ? "text-primary" : "text-muted-foreground"}>{opt.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <span className={cn("text-[11px] font-semibold", selectedShipping === opt.id ? "text-primary" : "text-foreground")}>{opt.label}</span>
+                        <span className="text-[10px] text-muted-foreground ml-1.5">{opt.detail}</span>
+                      </div>
+                      <span className={cn("text-[11px] font-bold", selectedShipping === opt.id ? "text-primary" : "text-foreground")}>
+                        {opt.cost === 0 ? "Grátis" : formatCurrency(opt.cost)}
+                      </span>
+                    </button>
+                    {opt.id === "retirada" && selectedShipping === "retirada" && (
+                      <div className="ml-5 mt-1 mb-0.5 space-y-1">
+                        {pickupLoading ? (
+                          <div className="flex items-center gap-2 px-2.5 py-1.5 text-muted-foreground">
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                            <span className="text-[11px]">Calculando distâncias...</span>
+                          </div>
+                        ) : pickupUnits.length > 0 ? (
+                          pickupUnits.map((unit) => (
+                            <button
+                              key={unit.id}
+                              onClick={() => setSelectedPickupUnit(unit.id)}
+                              className={cn(
+                                "w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left transition-colors",
+                                selectedPickupUnit === unit.id
+                                  ? "bg-primary/10 text-primary"
+                                  : "hover:bg-muted text-muted-foreground"
+                              )}
+                            >
+                              {selectedPickupUnit === unit.id ? (
+                                <Check className="h-3 w-3 text-primary" />
+                              ) : (
+                                <Store className="h-3 w-3 opacity-40" />
+                              )}
+                              <span className={cn("text-[11px] flex-1", selectedPickupUnit === unit.id && "font-semibold")}>
+                                {unit.name}
+                              </span>
+                              {unit.distanceKm != null && (
+                                <span className={cn("text-[10px]", selectedPickupUnit === unit.id ? "text-primary/70" : "text-muted-foreground")}>
+                                  ~{unit.distanceKm.toLocaleString("pt-BR")}km
+                                </span>
+                              )}
+                            </button>
+                          ))
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <Card>
           <CardContent className="pt-4 space-y-2">
             <div className="flex justify-between text-xs text-muted-foreground">
