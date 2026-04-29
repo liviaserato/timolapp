@@ -733,7 +733,7 @@ export default function Checkout() {
                   <p className="text-sm font-medium text-foreground">PIX</p>
                   <p className="text-[11px] text-green-600 font-medium">5% de desconto</p>
                 </div>
-                <span className="text-sm font-bold text-primary">{formatCurrency(grandTotal * 0.95)}</span>
+                <span className="text-sm font-bold text-primary">{formatCurrency(Math.max(0, grandTotal * 0.95 - walletApplied))}</span>
               </label>
 
               {/* Boleto */}
@@ -749,7 +749,7 @@ export default function Checkout() {
                   <p className="text-sm font-medium text-foreground">Boleto Bancário</p>
                   <p className="text-[11px] text-muted-foreground">Vencimento em 3 dias</p>
                 </div>
-                <span className="text-sm font-bold text-foreground">{formatCurrency(grandTotal)}</span>
+                <span className="text-sm font-bold text-foreground">{formatCurrency(Math.max(0, grandTotal - walletApplied))}</span>
               </label>
 
               {/* Credit card */}
@@ -765,7 +765,7 @@ export default function Checkout() {
                   <p className="text-sm font-medium text-foreground">Cartão de Crédito</p>
                   <p className="text-[11px] text-muted-foreground">Até 12x sem juros</p>
                 </div>
-                <span className="text-sm font-bold text-foreground">{formatCurrency(grandTotal)}</span>
+                <span className="text-sm font-bold text-foreground">{formatCurrency(Math.max(0, grandTotal - walletApplied))}</span>
               </label>
             </RadioGroup>
           </CardContent>
