@@ -390,8 +390,8 @@ export function CartDrawer({
             </div>
 
             {/* Totals */}
-            <div className={cn("pt-3 space-y-2", (couponDiscount > 0 || voucherDiscount > 0 || shippingCost !== null) && "border-t border-border")}>
-              {(couponDiscount > 0 || voucherDiscount > 0 || shippingCost !== null) && (
+            <div className={cn("pt-3 space-y-2", (couponDiscount > 0 || shippingCost !== null) && "border-t border-border")}>
+              {(couponDiscount > 0 || shippingCost !== null) && (
                 <>
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>Subtotal</span>
@@ -401,12 +401,6 @@ export function CartDrawer({
                     <div className="flex justify-between text-xs text-green-600">
                       <span>Cupom ({appliedCoupon})</span>
                       <span>-{formatCurrency(couponDiscount)}</span>
-                    </div>
-                  )}
-                  {voucherDiscount > 0 && (
-                    <div className="flex justify-between text-xs text-green-600">
-                      <span>Voucher ({appliedVoucher})</span>
-                      <span>-{formatCurrency(voucherDiscount)}</span>
                     </div>
                   )}
                   {shippingCost !== null && (
