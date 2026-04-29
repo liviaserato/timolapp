@@ -183,20 +183,11 @@ export default function Checkout() {
   };
 
   // Frete handlers
-  const formatCep = (value: string) => {
-    const digits = value.replace(/\D/g, "").slice(0, 8);
-    if (digits.length > 5) return `${digits.slice(0, 5)}-${digits.slice(5)}`;
-    return digits;
-  };
-
   const handleCalcShipping = async () => {
-    const cleanCep = cep.replace(/\D/g, "");
-    if (cleanCep.length !== 8) {
-      setShippingError("CEP inválido");
-      return;
-    }
+    if (!selectedAddress) return;
+    const cleanCep = selectedAddress.zipCode.replace(/\D/g, "");
+    if (cleanCep.length !== 8) return;
     setShippingLoading(true);
-    setShippingError("");
     setShippingOptions([]);
     setSelectedShipping(null);
     setPickupUnits([]);
@@ -223,7 +214,7 @@ export default function Checkout() {
       return null;
     })();
 
-    await new Promise((r) => setTimeout(r, 800));
+    await new Promise((r) => setTimeout(r, 600));
     setShippingOptions([
       { id: "pac", label: "PAC", detail: "5 a 8 dias úteis", cost: 18.9, icon: <Package className="h-3.5 w-3.5" /> },
       { id: "sedex", label: "SEDEX", detail: "1 a 3 dias úteis", cost: 32.5, icon: <Zap className="h-3.5 w-3.5" /> },
@@ -246,16 +237,16 @@ export default function Checkout() {
     setPickupLoading(false);
   };
 
-  const handleSaveAddress = () => {
-    const required = ["street", "number", "neighborhood", "city", "state", "cep"] as const;
-    const hasEmpty = required.some((f) => !editAddress[f].trim());
-    if (hasEmpty) {
-      toast.error("Preencha todos os campos obrigatórios do endereço");
-      return;
+  // Auto-calculate when address changes
+  useEffect(() => {
+    if (selectedAddress) {
+      handleCalcShipping();
+    } else {
+      setShippingOptions([]);
+      setSelectedShipping(null);
     }
-    setAddress({ ...editAddress });
-    setEditingAddress(false);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAddress?.id]);
 
   const handleGoToPayment = () => {
     if (selectedShipping === null) {
