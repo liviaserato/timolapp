@@ -47,12 +47,6 @@ export function CartDrawer({
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
 
-  const [showVoucher, setShowVoucher] = useState(false);
-  const [voucher, setVoucher] = useState("");
-  const [appliedVoucher, setAppliedVoucher] = useState<string | null>(null);
-  const [voucherDiscount, setVoucherDiscount] = useState(0);
-  const [voucherLoading, setVoucherLoading] = useState(false);
-  const [voucherError, setVoucherError] = useState("");
 
   const [cep, setCep] = useState("");
   const [shippingOptions, setShippingOptions] = useState<{ id: string; label: string; detail: string; cost: number; icon: React.ReactNode }[]>([]);
