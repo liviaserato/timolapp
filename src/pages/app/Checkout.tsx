@@ -13,6 +13,11 @@ import {
   Package,
   MapPinned,
   Wallet,
+  Tag,
+  MapPin,
+  Loader2,
+  X,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,12 +36,6 @@ function formatCurrency(v: number) {
 interface CheckoutState {
   items: CartItem[];
   subtotal: number;
-  coupon: string | null;
-  couponDiscount: number;
-  shippingCost: number | null;
-  shippingLabel: string;
-  pickupUnit: string | null;
-  cep: string;
   grandTotal: number;
 }
 
@@ -55,6 +54,24 @@ export default function Checkout() {
   const [walletApplied, setWalletApplied] = useState(0);
   const [walletError, setWalletError] = useState("");
 
+  // Cupom
+  const [showCoupon, setShowCoupon] = useState(false);
+  const [coupon, setCoupon] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState("");
+
+  // Frete
+  const [cep, setCep] = useState("");
+  const [shippingOptions, setShippingOptions] = useState<{ id: string; label: string; detail: string; cost: number; icon: React.ReactNode }[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<string | null>(null);
+  const [shippingLoading, setShippingLoading] = useState(false);
+  const [shippingError, setShippingError] = useState("");
+  const [selectedPickupUnit, setSelectedPickupUnit] = useState<string | null>(null);
+  const [pickupUnits, setPickupUnits] = useState<{ id: string; name: string; distanceKm?: number }[]>([]);
+  const [pickupLoading, setPickupLoading] = useState(false);
+
   // Mock address from profile
   const [address, setAddress] = useState({
     street: "Rua das Palmeiras",
@@ -63,7 +80,7 @@ export default function Checkout() {
     neighborhood: "Centro",
     city: "São Paulo",
     state: "SP",
-    cep: state?.cep || "01001-000",
+    cep: "01001-000",
   });
 
   const [editAddress, setEditAddress] = useState({ ...address });
@@ -80,9 +97,16 @@ export default function Checkout() {
     );
   }
 
-  const { items, subtotal, coupon, couponDiscount, shippingCost, shippingLabel, pickupUnit, grandTotal } = state;
+  const { items, subtotal } = state;
 
+  const shippingCost = shippingOptions.find(o => o.id === selectedShipping)?.cost ?? null;
+  const shippingLabel = selectedShipping === "retirada" && selectedPickupUnit
+    ? `Retirar na Timol - ${pickupUnits.find(u => u.id === selectedPickupUnit)?.name ?? ""}`
+    : shippingOptions.find(o => o.id === selectedShipping)?.label ?? "";
+  const pickupUnit = selectedPickupUnit ? pickupUnits.find(u => u.id === selectedPickupUnit)?.name ?? null : null;
   const isPickup = !!pickupUnit;
+
+  const grandTotal = Math.max(0, subtotal - couponDiscount + (shippingCost ?? 0));
 
   const pixDiscount = paymentMethod === "pix" ? grandTotal * 0.05 : 0;
   const finalTotal = Math.max(0, grandTotal - pixDiscount - walletApplied);
@@ -127,8 +151,96 @@ export default function Checkout() {
     setWalletError("");
   };
 
+  // Cupom handlers
+  const handleApplyCoupon = () => {
+    if (!coupon.trim()) return;
+    setCouponLoading(true);
+    setCouponError("");
+    setTimeout(() => {
+      const code = coupon.trim().toUpperCase();
+      if (code === "TIMOL10") {
+        setAppliedCoupon(code);
+        setCouponDiscount(subtotal * 0.1);
+        setCouponError("");
+      } else {
+        setCouponError("Cupom inválido ou expirado");
+      }
+      setCouponLoading(false);
+    }, 500);
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setCoupon("");
+    setCouponError("");
+  };
+
+  // Frete handlers
+  const formatCep = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 8);
+    if (digits.length > 5) return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+    return digits;
+  };
+
+  const handleCalcShipping = async () => {
+    const cleanCep = cep.replace(/\D/g, "");
+    if (cleanCep.length !== 8) {
+      setShippingError("CEP inválido");
+      return;
+    }
+    setShippingLoading(true);
+    setShippingError("");
+    setShippingOptions([]);
+    setSelectedShipping(null);
+    setPickupUnits([]);
+    setSelectedPickupUnit(null);
+
+    const distancePromise = (async () => {
+      try {
+        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+        const res = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/calculate-pickup-distances`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cep: cleanCep }),
+          }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          return data.units as { id: string; name: string; distanceKm: number }[];
+        }
+      } catch (e) {
+        console.error("Error fetching pickup distances:", e);
+      }
+      return null;
+    })();
+
+    await new Promise((r) => setTimeout(r, 800));
+    setShippingOptions([
+      { id: "pac", label: "PAC", detail: "5 a 8 dias úteis", cost: 18.9, icon: <Package className="h-3.5 w-3.5" /> },
+      { id: "sedex", label: "SEDEX", detail: "1 a 3 dias úteis", cost: 32.5, icon: <Zap className="h-3.5 w-3.5" /> },
+      { id: "retirada", label: "Retirar na Timol", detail: "Escolha a unidade", cost: 0, icon: <Store className="h-3.5 w-3.5" /> },
+    ]);
+    setSelectedShipping("pac");
+    setShippingLoading(false);
+
+    setPickupLoading(true);
+    const units = await distancePromise;
+    if (units) {
+      setPickupUnits(units);
+    } else {
+      setPickupUnits([
+        { id: "salvador", name: "Unidade Salvador" },
+        { id: "sao-paulo", name: "Unidade São Paulo" },
+        { id: "uberlandia", name: "Unidade Uberlândia" },
+      ]);
+    }
+    setPickupLoading(false);
+  };
+
   const handleSaveAddress = () => {
-    // Validate required fields
     const required = ["street", "number", "neighborhood", "city", "state", "cep"] as const;
     const hasEmpty = required.some((f) => !editAddress[f].trim());
     if (hasEmpty) {
@@ -140,11 +252,19 @@ export default function Checkout() {
   };
 
   const handleGoToPayment = () => {
+    if (selectedShipping === null) {
+      toast.error("Calcule o frete antes de continuar");
+      return;
+    }
+    if (selectedShipping === "retirada" && !selectedPickupUnit) {
+      toast.error("Escolha uma unidade para retirada");
+      return;
+    }
     navigate("/app/pedidos/pagamento", {
       state: {
         items,
         subtotal,
-        coupon,
+        coupon: appliedCoupon,
         couponDiscount,
         shippingCost,
         shippingLabel,
@@ -200,7 +320,174 @@ export default function Checkout() {
           </CardContent>
         </Card>
 
-        {/* Order totals */}
+        {/* Cupom de desconto */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+              <Tag className="h-4 w-4" />
+              Cupom de desconto
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between bg-primary/5 rounded px-3 py-2">
+                <span className="text-xs font-semibold text-primary flex items-center gap-1">
+                  <Tag className="h-3 w-3" />
+                  {appliedCoupon}
+                </span>
+                <button onClick={handleRemoveCoupon} className="text-[11px] text-destructive hover:underline">
+                  Remover
+                </button>
+              </div>
+            ) : (
+              <>
+                <form onSubmit={(e) => { e.preventDefault(); handleApplyCoupon(); }} className="flex gap-1.5">
+                  <div className="relative flex-1">
+                    <Input
+                      value={coupon}
+                      onChange={(e) => { setCoupon(e.target.value.toUpperCase()); setCouponError(""); }}
+                      placeholder="Código do cupom"
+                      className="h-8 text-xs pr-7"
+                    />
+                    {coupon && (
+                      <button
+                        type="button"
+                        onClick={() => { setCoupon(""); setCouponError(""); }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    variant="outline"
+                    className="h-8 text-xs px-3 w-20 shrink-0"
+                    disabled={couponLoading || !coupon.trim()}
+                  >
+                    {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
+                  </Button>
+                </form>
+                {couponError && <p className="text-[11px] text-destructive mt-1">{couponError}</p>}
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Frete */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Calcular frete
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={(e) => { e.preventDefault(); handleCalcShipping(); }} className="flex gap-1.5">
+              <div className="relative flex-1">
+                <Input
+                  value={cep}
+                  onChange={(e) => {
+                    setCep(formatCep(e.target.value));
+                    setShippingError("");
+                    setShippingOptions([]);
+                    setSelectedShipping(null);
+                  }}
+                  placeholder="00000-000"
+                  className="h-8 text-xs pr-7"
+                  maxLength={9}
+                />
+                {cep && (
+                  <button
+                    type="button"
+                    onClick={() => { setCep(""); setShippingError(""); setShippingOptions([]); setSelectedShipping(null); }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+              <Button
+                type="submit"
+                size="sm"
+                variant="outline"
+                className="h-8 text-xs px-3 w-20 shrink-0"
+                disabled={shippingLoading || cep.replace(/\D/g, "").length < 8}
+              >
+                {shippingLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Calcular"}
+              </Button>
+            </form>
+            {shippingError && <p className="text-[11px] text-destructive mt-1">{shippingError}</p>}
+            {shippingOptions.length > 0 && (
+              <div className="mt-2 space-y-1.5">
+                {shippingOptions.map((opt) => (
+                  <div key={opt.id}>
+                    <button
+                      onClick={() => {
+                        setSelectedShipping(opt.id);
+                        if (opt.id !== "retirada") setSelectedPickupUnit(null);
+                      }}
+                      className={cn(
+                        "w-full flex items-center gap-2 rounded border px-2.5 py-2 text-left transition-colors",
+                        selectedShipping === opt.id
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-muted-foreground/30"
+                      )}
+                    >
+                      <span className={selectedShipping === opt.id ? "text-primary" : "text-muted-foreground"}>{opt.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <span className={cn("text-[11px] font-semibold", selectedShipping === opt.id ? "text-primary" : "text-foreground")}>{opt.label}</span>
+                        <span className="text-[10px] text-muted-foreground ml-1.5">{opt.detail}</span>
+                      </div>
+                      <span className={cn("text-[11px] font-bold", selectedShipping === opt.id ? "text-primary" : "text-foreground")}>
+                        {opt.cost === 0 ? "Grátis" : formatCurrency(opt.cost)}
+                      </span>
+                    </button>
+                    {opt.id === "retirada" && selectedShipping === "retirada" && (
+                      <div className="ml-5 mt-1 mb-0.5 space-y-1">
+                        {pickupLoading ? (
+                          <div className="flex items-center gap-2 px-2.5 py-1.5 text-muted-foreground">
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                            <span className="text-[11px]">Calculando distâncias...</span>
+                          </div>
+                        ) : pickupUnits.length > 0 ? (
+                          pickupUnits.map((unit) => (
+                            <button
+                              key={unit.id}
+                              onClick={() => setSelectedPickupUnit(unit.id)}
+                              className={cn(
+                                "w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left transition-colors",
+                                selectedPickupUnit === unit.id
+                                  ? "bg-primary/10 text-primary"
+                                  : "hover:bg-muted text-muted-foreground"
+                              )}
+                            >
+                              {selectedPickupUnit === unit.id ? (
+                                <Check className="h-3 w-3 text-primary" />
+                              ) : (
+                                <Store className="h-3 w-3 opacity-40" />
+                              )}
+                              <span className={cn("text-[11px] flex-1", selectedPickupUnit === unit.id && "font-semibold")}>
+                                {unit.name}
+                              </span>
+                              {unit.distanceKm != null && (
+                                <span className={cn("text-[10px]", selectedPickupUnit === unit.id ? "text-primary/70" : "text-muted-foreground")}>
+                                  ~{unit.distanceKm.toLocaleString("pt-BR")}km
+                                </span>
+                              )}
+                            </button>
+                          ))
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <Card>
           <CardContent className="pt-4 space-y-2">
             <div className="flex justify-between text-xs text-muted-foreground">
@@ -209,7 +496,7 @@ export default function Checkout() {
             </div>
             {couponDiscount > 0 && (
               <div className="flex justify-between text-xs text-green-600">
-                <span>Cupom ({coupon})</span>
+                <span>Cupom ({appliedCoupon})</span>
                 <span>-{formatCurrency(couponDiscount)}</span>
               </div>
             )}
