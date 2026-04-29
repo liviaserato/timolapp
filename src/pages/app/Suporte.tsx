@@ -328,11 +328,11 @@ export default function Suporte() {
               {t("suporte.describeIssue")}<br />{t("suporte.teamWillRespond")}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-4 mt-2">
-            <div className="space-y-1.5">
+          <div className="flex flex-col gap-4 mt-2 min-w-0 w-full">
+            <div className="space-y-1.5 min-w-0 w-full">
               <Label className="text-xs font-medium">{t("suporte.category")}</Label>
               <Select value={ticketCategory} onValueChange={(v) => { setTicketCategory(v); setFieldErrors((p) => ({ ...p, category: "" })); }}>
-                <SelectTrigger className={`text-sm ${fieldErrors.category ? "border-destructive" : ""}`}>
+                <SelectTrigger className={`text-sm w-full min-w-0 ${fieldErrors.category ? "border-destructive" : ""}`}>
                   <SelectValue placeholder={t("suporte.selectCategory")} />
                 </SelectTrigger>
                 <SelectContent>
