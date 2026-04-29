@@ -151,6 +151,7 @@ export default function Checkout() {
     }
     setWalletError("");
     setWalletApplied(value);
+    setShowWallet(false);
   };
 
   const handleRemoveWallet = () => {
