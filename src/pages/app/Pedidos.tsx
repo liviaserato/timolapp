@@ -24,14 +24,6 @@ import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-  type CarouselApi,
-} from "@/components/ui/carousel";
-import {
   Select,
   SelectContent,
   SelectItem,
