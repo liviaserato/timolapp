@@ -733,7 +733,7 @@ export default function Checkout() {
                   <p className="text-sm font-medium text-foreground">PIX</p>
                   <p className="text-[11px] text-green-600 font-medium">5% de desconto</p>
                 </div>
-                <span className="text-sm font-bold text-primary">{formatCurrency(grandTotal * 0.95)}</span>
+                <span className="text-sm font-bold text-primary">{formatCurrency(Math.max(0, grandTotal * 0.95 - walletApplied))}</span>
               </label>
 
               {/* Boleto */}
