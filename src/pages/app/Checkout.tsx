@@ -32,8 +32,6 @@ interface CheckoutState {
   subtotal: number;
   coupon: string | null;
   couponDiscount: number;
-  voucher: string | null;
-  voucherDiscount: number;
   shippingCost: number | null;
   shippingLabel: string;
   pickupUnit: string | null;
