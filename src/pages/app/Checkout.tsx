@@ -270,7 +270,7 @@ export default function Checkout() {
         finalTotal,
         paymentMethod,
         pixDiscount,
-        cep: address.cep,
+        cep: selectedAddress?.zipCode ?? "",
       },
     });
   };
