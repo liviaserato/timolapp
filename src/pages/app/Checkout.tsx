@@ -12,7 +12,6 @@ import {
   Store,
   Package,
   MapPinned,
-  Wallet,
   Tag,
   MapPin,
   Loader2,
@@ -55,6 +54,8 @@ export default function Checkout() {
   const [walletInput, setWalletInput] = useState("");
   const [walletApplied, setWalletApplied] = useState(0);
   const [walletError, setWalletError] = useState("");
+
+  const [showWallet, setShowWallet] = useState(false);
 
   // Cupom
   const [showCoupon, setShowCoupon] = useState(false);
@@ -149,12 +150,21 @@ export default function Checkout() {
     }
     setWalletError("");
     setWalletApplied(value);
+    setShowWallet(false);
   };
 
   const handleRemoveWallet = () => {
     setWalletApplied(0);
     setWalletInput("");
     setWalletError("");
+    setShowWallet(false);
+  };
+
+  const handleEditWallet = () => {
+    setWalletInput(formatWalletInput(String(Math.round(walletApplied * 100))));
+    setWalletApplied(0);
+    setWalletError("");
+    setShowWallet(true);
   };
 
   // Cupom handlers
@@ -168,6 +178,7 @@ export default function Checkout() {
         setAppliedCoupon(code);
         setCouponDiscount(subtotal * 0.1);
         setCouponError("");
+        setShowCoupon(false);
       } else {
         setCouponError("Cupom inválido ou expirado");
       }
@@ -180,6 +191,16 @@ export default function Checkout() {
     setCouponDiscount(0);
     setCoupon("");
     setCouponError("");
+    setShowCoupon(false);
+  };
+
+  const handleEditCoupon = () => {
+    const code = appliedCoupon ?? "";
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setCoupon(code);
+    setCouponError("");
+    setShowCoupon(true);
   };
 
   // Frete handlers
@@ -498,13 +519,23 @@ export default function Checkout() {
                     )}
                   </span>
                   {appliedCoupon ? (
-                    <button
-                      type="button"
-                      onClick={handleRemoveCoupon}
-                      className="text-[11px] text-muted-foreground hover:text-destructive transition-colors"
-                    >
-                      Remover
-                    </button>
+                    <span className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleEditCoupon}
+                        className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        Editar
+                      </button>
+                      <span className="text-muted-foreground/40">·</span>
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="text-[11px] text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        Remover
+                      </button>
+                    </span>
                   ) : (
                     <button
                       type="button"
@@ -590,6 +621,105 @@ export default function Checkout() {
                 </span>
               </div>
 
+              {/* Saldo em carteira (inline, padrão do cupom) */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-muted-foreground flex items-center gap-1.5 flex-wrap">
+                    Saldo em carteira
+                    {walletApplied > 0 && (
+                      <span className="text-green-600 font-medium">-{formatCurrency(walletApplied)}</span>
+                    )}
+                  </span>
+                  {walletApplied > 0 ? (
+                    <span className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleEditWallet}
+                        className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        Editar
+                      </button>
+                      <span className="text-muted-foreground/40">·</span>
+                      <button
+                        type="button"
+                        onClick={handleRemoveWallet}
+                        className="text-[11px] text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        Remover
+                      </button>
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowWallet((v) => !v);
+                        if (showWallet) {
+                          setWalletInput("");
+                          setWalletError("");
+                        }
+                      }}
+                      className="text-[11px] text-primary hover:underline disabled:opacity-50 disabled:hover:no-underline"
+                      disabled={walletBalance <= 0}
+                    >
+                      {showWallet ? "Cancelar" : "Utilizar saldo"}
+                    </button>
+                  )}
+                </div>
+
+                {showWallet && walletApplied === 0 && (
+                  <div>
+                    <p className="text-[11px] text-muted-foreground mb-1.5">
+                      Disponível: <span className="font-semibold text-foreground">{formatCurrency(walletBalance)}</span>
+                    </p>
+                    <form
+                      onSubmit={(e) => { e.preventDefault(); handleApplyWallet(); }}
+                      className="flex gap-1.5"
+                    >
+                      <div className="relative flex-1">
+                        <Input
+                          value={walletInput}
+                          onChange={(e) => {
+                            setWalletInput(formatWalletInput(e.target.value));
+                            setWalletError("");
+                          }}
+                          placeholder="R$ 0,00"
+                          inputMode="numeric"
+                          className="h-8 text-xs pr-7"
+                          autoFocus
+                        />
+                        {walletInput && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setWalletInput("");
+                              setWalletError("");
+                            }}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        )}
+                      </div>
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant="outline"
+                        className="h-8 text-xs px-3 w-20 shrink-0"
+                        disabled={!walletInput.trim()}
+                      >
+                        Confirmar
+                      </Button>
+                    </form>
+                    {walletError && (
+                      <p className="text-[11px] text-destructive mt-1 flex items-center gap-1">
+                        <X className="h-3 w-3" />
+                        {walletError}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
               {(pixDiscount > 0 || walletApplied > 0) && (
                 <>
                   <Separator />
@@ -625,63 +755,6 @@ export default function Checkout() {
           open={addressDialogOpen}
           onOpenChange={setAddressDialogOpen}
         />
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-                <Wallet className="h-4 w-4" />
-                Saldo em carteira
-              </CardTitle>
-              <span className="text-xs text-muted-foreground">
-                Disponível: <span className="font-semibold text-foreground">{formatCurrency(walletBalance - walletApplied)}</span>
-              </span>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {walletApplied > 0 ? (
-              <div className="flex items-center justify-between bg-primary/5 rounded px-3 py-2">
-                <span className="text-xs text-foreground">
-                  Aplicado: <span className="font-bold text-primary">{formatCurrency(walletApplied)}</span>
-                </span>
-                <button onClick={handleRemoveWallet} className="text-[11px] text-destructive hover:underline">
-                  Remover
-                </button>
-              </div>
-            ) : (
-              <>
-                <form
-                  onSubmit={(e) => { e.preventDefault(); handleApplyWallet(); }}
-                  className="flex gap-1.5"
-                >
-                  <Input
-                    value={walletInput}
-                    onChange={(e) => {
-                      setWalletInput(formatWalletInput(e.target.value));
-                      setWalletError("");
-                    }}
-                    placeholder="R$ 0,00"
-                    inputMode="numeric"
-                    className="h-8 text-xs flex-1"
-                    disabled={walletBalance <= 0}
-                  />
-                  <Button
-                    type="submit"
-                    size="sm"
-                    variant="outline"
-                    className="h-8 text-xs px-3 w-20 shrink-0"
-                    disabled={!walletInput.trim() || walletBalance <= 0}
-                  >
-                    Confirmar
-                  </Button>
-                </form>
-                {walletError && (
-                  <p className="text-[11px] text-destructive mt-1">{walletError}</p>
-                )}
-              </>
-            )}
-          </CardContent>
-        </Card>
-
         {/* Payment method */}
         <Card>
           <CardHeader className="pb-2">
