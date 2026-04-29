@@ -73,7 +73,7 @@ export default function Checkout() {
     );
   }
 
-  const { items, subtotal, coupon, couponDiscount, voucher, voucherDiscount, shippingCost, shippingLabel, pickupUnit, grandTotal } = state;
+  const { items, subtotal, coupon, couponDiscount, shippingCost, shippingLabel, pickupUnit, grandTotal } = state;
 
   const isPickup = !!pickupUnit;
 
