@@ -49,12 +49,22 @@ export function CartDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-sm flex flex-col">
-        <SheetHeader>
-          <SheetTitle className="flex items-center gap-2 text-primary">
-            <ShoppingBag className="h-5 w-5" />
-            Carrinho ({totalItems})
-          </SheetTitle>
+      <SheetContent className="w-full sm:max-w-sm flex flex-col h-full p-0">
+        <SheetHeader className="px-6 pt-6 pb-3 shrink-0 border-b border-border">
+          <div className="flex items-center justify-between gap-2">
+            <SheetTitle className="flex items-center gap-2 text-primary">
+              <ShoppingBag className="h-5 w-5" />
+              Carrinho ({totalItems})
+            </SheetTitle>
+            {items.length > 0 && (
+              <button
+                onClick={onClearCart}
+                className="text-[11px] text-muted-foreground hover:text-destructive underline-offset-2 hover:underline"
+              >
+                Limpar carrinho
+              </button>
+            )}
+          </div>
         </SheetHeader>
 
         {items.length === 0 ? (
