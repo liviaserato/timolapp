@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Ticket,
   ChevronRight,
@@ -12,6 +13,7 @@ import {
   Send,
   Eye,
   EyeOff,
+  HelpCircle,
 } from "lucide-react";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { Button } from "@/components/ui/button";
@@ -45,6 +47,8 @@ import FaqSection, { faqTabs } from "@/components/app/suporte/FaqSection";
 import faviconTimol from "@/assets/favicon-timol-azul-escuro.svg";
 import OfficeMap, { escritorios, type Office } from "@/components/app/suporte/OfficeMap";
 
+type SuporteView = "menu" | "faq" | "chamados" | "enderecos";
+
 function isOlderThan30Days(dateStr: string) {
   const [d, m, y] = dateStr.split("/").map(Number);
   const date = new Date(y, m - 1, d);
@@ -54,6 +58,8 @@ function isOlderThan30Days(dateStr: string) {
 
 export default function Suporte() {
   const { t } = useLanguage();
+  const location = useLocation();
+  const [view, setView] = useState<SuporteView>("menu");
   const [newTicketOpen, setNewTicketOpen] = useState(false);
   const [ticketCategory, setTicketCategory] = useState("");
   const [ticketSubject, setTicketSubject] = useState("");
@@ -66,6 +72,10 @@ export default function Suporte() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [selectedOffice, setSelectedOffice] = useState<Office | null>(null);
   const MAX_FILES = 5;
+
+  useEffect(() => {
+    setView("menu");
+  }, [location.key]);
 
   const statusMap: Record<TicketDetail["status"], { label: string; color: string; icon: typeof Clock }> = {
     em_andamento: { label: t("suporte.inProgress"), color: "bg-amber-100 text-amber-700", icon: Clock },
@@ -118,103 +128,173 @@ export default function Suporte() {
     setTicketDetailOpen(true);
   }
 
+  const menuItems: {
+    key: Exclude<SuporteView, "menu">;
+    icon: typeof HelpCircle;
+    title: string;
+    desc: string;
+  }[] = [
+    {
+      key: "faq",
+      icon: HelpCircle,
+      title: "FAQ",
+      desc: "Encontre respostas rápidas para as principais dúvidas, organizadas por categoria.",
+    },
+    {
+      key: "chamados",
+      icon: Ticket,
+      title: "Chamados",
+      desc: "Abra um novo chamado ou acompanhe o andamento dos seus atendimentos.",
+    },
+    {
+      key: "enderecos",
+      icon: MapPin,
+      title: "Nossos endereços",
+      desc: "Consulte os endereços dos escritórios e centros de distribuição da Timol.",
+    },
+  ];
+
+  const currentItem = menuItems.find((m) => m.key === view);
+
   return (
     <div className="flex flex-col gap-4">
-      <header className="mb-1">
-        <h1 className="text-2xl font-bold text-primary">{t("suporte.title")}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{t("suporte.subtitle")}</p>
-      </header>
-
-      <FaqSection />
-
-      {/* CTA Banner */}
-      <section className="rounded-[10px] overflow-hidden bg-gradient-to-r from-[hsl(var(--app-header))] to-[hsl(210,80%,45%)] p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="text-primary-foreground text-center sm:text-left">
-          <p className="font-bold text-base">{t("suporte.notFound")}</p>
-          <p className="text-xs opacity-90 mt-0.5">{t("suporte.notFoundSub")}</p>
+      {view === "menu" ? (
+        <header className="mb-1">
+          <h1 className="text-2xl font-bold text-primary">{t("suporte.title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("suporte.subtitle")}</p>
+        </header>
+      ) : (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setView("menu")}
+            className="text-primary hover:text-primary/80 transition-colors"
+            aria-label="Voltar"
+          >
+            <ChevronRight className="h-5 w-5 rotate-180" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-primary">{currentItem?.title}</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">{currentItem?.desc}</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <Button variant="outline" size="sm" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 border-0 gap-1.5 text-xs shrink-0" onClick={() => setNewTicketOpen(true)}>
-            <Ticket className="h-4 w-4" />
-            {t("suporte.openTicket")}
-          </Button>
-          <Button variant="outline" size="sm" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 border-0 gap-1.5 text-xs shrink-0" onClick={() => openWhatsAppLink("Olá! Preciso de ajuda.")}>
-            <img src={iconWhatsapp} alt="" className="h-4 w-4" />
-            {t("suporte.talkToAgent")}
-          </Button>
-        </div>
-      </section>
+      )}
 
-      {/* Meus Chamados */}
-      <section>
-        <DashboardCard icon={Ticket} title={t("suporte.myTickets")}>
-          <div className="mt-2">
-            {visibleTickets.length === 0 ? (
-              <div className="text-center py-8">
-                <MessageSquare className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">{t("suporte.noTickets")}</p>
+      {view === "menu" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.key}
+                onClick={() => setView(item.key)}
+                className="flex flex-col items-start rounded-xl border border-border bg-card p-5 text-left transition-colors hover:border-primary/30 hover:shadow-sm"
+              >
+                <div className="rounded-lg bg-app-sidebar p-2.5 mb-3">
+                  <Icon className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <p className="text-base font-bold text-app-sidebar">{item.title}</p>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{item.desc}</p>
+                <ChevronRight className="h-4 w-4 text-muted-foreground mt-auto pt-2 self-end" />
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {view === "faq" && <FaqSection />}
+
+      {view === "chamados" && (
+        <>
+          {/* CTA Banner */}
+          <section className="rounded-[10px] overflow-hidden bg-gradient-to-r from-[hsl(var(--app-header))] to-[hsl(210,80%,45%)] p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-primary-foreground text-center sm:text-left">
+              <p className="font-bold text-base">{t("suporte.notFound")}</p>
+              <p className="text-xs opacity-90 mt-0.5">{t("suporte.notFoundSub")}</p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button variant="outline" size="sm" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 border-0 gap-1.5 text-xs shrink-0" onClick={() => setNewTicketOpen(true)}>
+                <Ticket className="h-4 w-4" />
+                {t("suporte.openTicket")}
+              </Button>
+              <Button variant="outline" size="sm" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 border-0 gap-1.5 text-xs shrink-0" onClick={() => openWhatsAppLink("Olá! Preciso de ajuda.")}>
+                <img src={iconWhatsapp} alt="" className="h-4 w-4" />
+                {t("suporte.talkToAgent")}
+              </Button>
+            </div>
+          </section>
+
+          <section>
+            <DashboardCard icon={Ticket} title={t("suporte.myTickets")}>
+              <div className="mt-2">
+                {visibleTickets.length === 0 ? (
+                  <div className="text-center py-8">
+                    <MessageSquare className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
+                    <p className="text-sm text-muted-foreground">{t("suporte.noTickets")}</p>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-border">
+                    {visibleTickets.map((c) => {
+                      const st = statusMap[c.status];
+                      const StIcon = st.icon;
+                      return (
+                        <button key={c.id} onClick={() => handleOpenTicket(c)} className="w-full flex items-center gap-3 py-3 px-1 text-left hover:bg-muted/50 rounded transition-colors">
+                          <StIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">
+                              <span className="text-muted-foreground">{c.numero}</span> {c.assunto}
+                            </p>
+                            <p className="text-xs text-muted-foreground">{t("suporte.updatedAt")} {c.ultimaAtualizacao}</p>
+                          </div>
+                          <Badge variant="secondary" className={`text-[10px] shrink-0 ${st.color}`}>{st.label}</Badge>
+                          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {hasHiddenOld && (
+                  <div className="mt-3 flex justify-center">
+                    <button onClick={() => setShowOldTickets(!showOldTickets)} className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
+                      {showOldTickets ? (
+                        <><EyeOff className="h-3.5 w-3.5" />{t("suporte.hideOld")}</>
+                      ) : (
+                        <><Eye className="h-3.5 w-3.5" />{t("suporte.showOld")}</>
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="divide-y divide-border">
-                {visibleTickets.map((c) => {
-                  const st = statusMap[c.status];
-                  const StIcon = st.icon;
+            </DashboardCard>
+          </section>
+        </>
+      )}
+
+      {view === "enderecos" && (
+        <section>
+          <DashboardCard icon={MapPin} title={t("suporte.ourAddresses")}>
+            <div className="mt-2 flex flex-col lg:flex-row gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[280px] lg:shrink-0 lg:max-h-[400px] lg:overflow-y-auto">
+                {escritorios.map((e) => {
+                  const isActive = selectedOffice?.cidade === e.cidade;
                   return (
-                    <button key={c.id} onClick={() => handleOpenTicket(c)} className="w-full flex items-center gap-3 py-3 px-1 text-left hover:bg-muted/50 rounded transition-colors">
-                      <StIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">
-                          <span className="text-muted-foreground">{c.numero}</span> {c.assunto}
-                        </p>
-                        <p className="text-xs text-muted-foreground">{t("suporte.updatedAt")} {c.ultimaAtualizacao}</p>
+                    <button key={e.cidade} onClick={() => setSelectedOffice(isActive ? null : e)} className={`flex items-start gap-2.5 p-2.5 rounded-lg transition-colors text-left ${isActive ? "bg-primary/10 border border-primary/30" : "hover:bg-muted/50 border border-transparent"}`}>
+                      <span className={`shrink-0 mt-0.5 h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-bold ${isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{e.uf}</span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium">{e.cidade} – {e.uf}</p>
+                        <p className="text-xs text-muted-foreground leading-snug">{e.endereco}</p>
                       </div>
-                      <Badge variant="secondary" className={`text-[10px] shrink-0 ${st.color}`}>{st.label}</Badge>
-                      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
                     </button>
                   );
                 })}
               </div>
-            )}
-
-            {hasHiddenOld && (
-              <div className="mt-3 flex justify-center">
-                <button onClick={() => setShowOldTickets(!showOldTickets)} className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
-                  {showOldTickets ? (
-                    <><EyeOff className="h-3.5 w-3.5" />{t("suporte.hideOld")}</>
-                  ) : (
-                    <><Eye className="h-3.5 w-3.5" />{t("suporte.showOld")}</>
-                  )}
-                </button>
+              <div className="lg:flex-1 lg:min-w-0">
+                <OfficeMap selectedOffice={selectedOffice} onSelectOffice={setSelectedOffice} />
               </div>
-            )}
-          </div>
-        </DashboardCard>
-      </section>
-
-      {/* Nossos Endereços */}
-      <section>
-        <DashboardCard icon={MapPin} title={t("suporte.ourAddresses")}>
-          <div className="mt-2 flex flex-col lg:flex-row gap-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 lg:w-[280px] lg:shrink-0 lg:max-h-[400px] lg:overflow-y-auto">
-              {escritorios.map((e) => {
-                const isActive = selectedOffice?.cidade === e.cidade;
-                return (
-                  <button key={e.cidade} onClick={() => setSelectedOffice(isActive ? null : e)} className={`flex items-start gap-2.5 p-2.5 rounded-lg transition-colors text-left ${isActive ? "bg-primary/10 border border-primary/30" : "hover:bg-muted/50 border border-transparent"}`}>
-                    <span className={`shrink-0 mt-0.5 h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-bold ${isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{e.uf}</span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium">{e.cidade} – {e.uf}</p>
-                      <p className="text-xs text-muted-foreground leading-snug">{e.endereco}</p>
-                    </div>
-                  </button>
-                );
-              })}
             </div>
-            <div className="lg:flex-1 lg:min-w-0">
-              <OfficeMap selectedOffice={selectedOffice} onSelectOffice={setSelectedOffice} />
-            </div>
-          </div>
-        </DashboardCard>
-      </section>
+          </DashboardCard>
+        </section>
+      )}
 
       {/* Dialog: Novo Chamado */}
       <Dialog open={newTicketOpen} onOpenChange={(open) => { setNewTicketOpen(open); if (!open) setFieldErrors({}); }}>
