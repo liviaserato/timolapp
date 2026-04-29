@@ -49,7 +49,7 @@ export function CartDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-sm flex flex-col h-full p-0">
+      <SheetContent hideClose className="w-full sm:max-w-sm flex flex-col h-full p-0">
         <SheetHeader className="px-6 pt-6 pb-3 shrink-0 border-b border-border">
           <div className="flex items-center justify-between gap-2">
             <SheetTitle className="flex items-center gap-2 text-primary">
