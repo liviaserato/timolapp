@@ -47,7 +47,6 @@ export default function Checkout() {
   const state = location.state as CheckoutState | null;
   const isMobile = useIsMobile();
 
-  const [paymentMethod, setPaymentMethod] = useState("pix");
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
 
   // Mock wallet balance
