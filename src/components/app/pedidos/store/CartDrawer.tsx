@@ -68,14 +68,14 @@ export function CartDrawer({
         </SheetHeader>
 
         {items.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+          <div className="flex-1 flex flex-col items-center justify-center gap-3 text-muted-foreground px-6">
             <ShoppingBag className="h-12 w-12 opacity-30" />
             <p className="text-sm">Seu carrinho está vazio</p>
           </div>
         ) : (
           <>
-            {/* Items */}
-            <div className="flex-1 overflow-y-auto -mx-6 px-6 space-y-3 py-2">
+            {/* Items - scrollable */}
+            <div className="flex-1 overflow-y-auto px-6 space-y-3 py-3 min-h-0">
               {items.map((item, idx) => {
                 const selectionStr = Object.values(item.selections).filter(Boolean).join(" · ");
                 return (
@@ -117,8 +117,8 @@ export function CartDrawer({
               })}
             </div>
 
-            {/* Totals + Actions */}
-            <div className="border-t border-border pt-3 space-y-2">
+            {/* Totals + Actions - fixed at bottom */}
+            <div className="shrink-0 border-t border-border px-6 py-4 space-y-2 bg-background">
               <div className="flex justify-between text-sm">
                 <span className="font-semibold text-foreground">Total</span>
                 <span className="font-bold text-primary text-base">{formatCurrency(totalPrice)}</span>
@@ -128,12 +128,12 @@ export function CartDrawer({
                 Finalizar Pedido
               </Button>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                className="w-full text-xs text-muted-foreground"
-                onClick={onClearCart}
+                className="w-full text-xs"
+                onClick={() => onOpenChange(false)}
               >
-                Limpar carrinho
+                Continuar comprando
               </Button>
             </div>
           </>
