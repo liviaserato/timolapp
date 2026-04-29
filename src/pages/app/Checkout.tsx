@@ -329,7 +329,7 @@ export default function Checkout() {
             </div>
             {couponDiscount > 0 && (
               <div className="flex justify-between text-xs text-green-600">
-                <span>Cupom ({coupon})</span>
+                <span>Cupom ({appliedCoupon})</span>
                 <span>-{formatCurrency(couponDiscount)}</span>
               </div>
             )}
