@@ -29,6 +29,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import type { CartItem } from "@/hooks/useCart";
 import { AddressManager, type Address } from "@/components/app/cadastro/AddressManager";
 import { Receipt } from "lucide-react";
+import { products as allProducts } from "@/data/mock-products";
 
 function formatCurrency(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
