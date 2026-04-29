@@ -191,6 +191,16 @@ export default function Checkout() {
     setCouponDiscount(0);
     setCoupon("");
     setCouponError("");
+    setShowCoupon(false);
+  };
+
+  const handleEditCoupon = () => {
+    const code = appliedCoupon ?? "";
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setCoupon(code);
+    setCouponError("");
+    setShowCoupon(true);
   };
 
   // Frete handlers
