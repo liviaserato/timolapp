@@ -644,7 +644,7 @@ export default function Checkout() {
                   </div>
                 )}
                 <div className="flex justify-between items-baseline pt-1">
-                  <span className="text-sm font-semibold text-foreground">Total final</span>
+                  <span className="text-sm font-semibold text-foreground">Total a pagar</span>
                   <span className="text-xl font-bold text-primary">{formatCurrency(finalTotal)}</span>
                 </div>
               </>
