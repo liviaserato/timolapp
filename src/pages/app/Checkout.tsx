@@ -326,18 +326,12 @@ export default function Checkout() {
           <CardContent className="pt-4 space-y-2">
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Subtotal</span>
-              <span>{formatCurrency(subtotal - couponDiscount - voucherDiscount)}</span>
+              <span>{formatCurrency(subtotal - couponDiscount)}</span>
             </div>
             {couponDiscount > 0 && (
               <div className="flex justify-between text-xs text-green-600">
                 <span>Cupom ({coupon})</span>
                 <span>-{formatCurrency(couponDiscount)}</span>
-              </div>
-            )}
-            {voucherDiscount > 0 && (
-              <div className="flex justify-between text-xs text-green-600">
-                <span>Voucher ({voucher})</span>
-                <span>-{formatCurrency(voucherDiscount)}</span>
               </div>
             )}
             {shippingCost !== null && (
