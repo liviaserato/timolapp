@@ -365,9 +365,9 @@ export default function Suporte() {
                 </div>
               ))}
               {attachedFiles.length < MAX_FILES ? (
-                <label className="flex items-center gap-2 cursor-pointer border border-dashed border-border rounded-md p-3 text-sm text-muted-foreground hover:border-primary/40 transition-colors">
-                  <Paperclip className="h-4 w-4" />
-                  <span>{t("suporte.clickToAttach")}</span>
+                <label className="flex items-center gap-2 cursor-pointer border border-dashed border-border rounded-md p-3 text-sm text-muted-foreground hover:border-primary/40 transition-colors w-full min-w-0">
+                  <Paperclip className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{t("suporte.clickToAttach")}</span>
                   <input type="file" className="hidden" onChange={handleFileAttach} />
                 </label>
               ) : (
