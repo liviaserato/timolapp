@@ -226,7 +226,7 @@ export default function Checkout() {
               </div>
             )}
             {walletApplied > 0 && (
-              <div className="flex justify-between text-xs text-green-600">
+              <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Saldo carteira</span>
                 <span>-{formatCurrency(walletApplied)}</span>
               </div>
