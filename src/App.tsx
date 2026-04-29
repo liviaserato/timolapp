@@ -22,6 +22,7 @@ import Pedidos from "./pages/app/Pedidos";
 import RealizarPedido from "./pages/app/RealizarPedido";
 import Checkout from "./pages/app/Checkout";
 import OrderPayment from "./pages/app/OrderPayment";
+import PaymentSelection from "./pages/app/PaymentSelection";
 import SectionPlaceholder from "./pages/app/SectionPlaceholder";
 import EmailPreviews from "./pages/app/EmailPreviews";
 import AssistirAoVivo from "./pages/app/AssistirAoVivo";
@@ -74,7 +75,8 @@ const App = () => (
               <Route path="pedidos" element={<Pedidos />} />
               <Route path="pedidos/realizar" element={<RealizarPedido />} />
               <Route path="pedidos/checkout" element={<Checkout />} />
-              <Route path="pedidos/pagamento" element={<OrderPayment />} />
+              <Route path="pedidos/pagamento" element={<PaymentSelection />} />
+              <Route path="pedidos/pagamento/processar" element={<OrderPayment />} />
               <Route path="treinamentos" element={<Treinamentos />} />
               <Route path="treinamentos/ao-vivo/:eventId" element={<AssistirAoVivo />} />
               <Route path="suporte" element={<Suporte />} />
