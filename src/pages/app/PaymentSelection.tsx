@@ -58,6 +58,8 @@ export default function PaymentSelection() {
   const location = useLocation();
   const state = location.state as PaymentSelectionState | null;
 
+  const [multiMode, setMultiMode] = useState(false);
+  const [singleMethod, setSingleMethod] = useState<PayMethodId | null>(null);
   const [applied, setApplied] = useState<AppliedMethod[]>([]);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [activeMethod, setActiveMethod] = useState<PayMethodId | null>(null);
