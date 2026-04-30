@@ -304,7 +304,7 @@ export default function Checkout() {
           </Card>
 
           {/* COLUNA DIREITA — Entrega + Resumo da compra empilhados */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 md:sticky md:top-0">
             {/* Entrega */}
             <Card>
               <CardHeader className="pb-2">
