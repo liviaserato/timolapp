@@ -49,7 +49,7 @@ const WALLET_BALANCE = 250.0;
 const METHODS: { id: PayMethodId; label: string; icon: React.ReactNode; helper: string }[] = [
   { id: "pix", label: "PIX", icon: <QrCode className="h-5 w-5" />, helper: "5% de desconto" },
   { id: "boleto", label: "Boleto Bancário", icon: <Building2 className="h-5 w-5" />, helper: "Vencimento em 3 dias" },
-  { id: "credit", label: "Cartão de Crédito", icon: <CreditCard className="h-5 w-5" />, helper: "Até 12x sem juros" },
+  { id: "credit", label: "Cartão de Crédito", icon: <CreditCard className="h-5 w-5" />, helper: "À vista ou parcelado" },
 ];
 
 const WALLET_META = { id: "wallet" as PayMethodId, label: "Saldo em carteira", icon: <Wallet className="h-5 w-5" /> };
