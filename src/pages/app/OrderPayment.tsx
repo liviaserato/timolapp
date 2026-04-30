@@ -89,7 +89,7 @@ const BOLETO_CODE = "23793.38128 60000.000003 00000.000400 1 84340000012345";
 interface PaymentState {
   finalTotal: number;
   grandTotal: number;
-  paymentMethod: "pix" | "boleto" | "credit";
+  paymentMethod: "pix" | "boleto" | "credit" | "wallet";
   pixDiscount: number;
   pickupUnit: string | null;
 }
