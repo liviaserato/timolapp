@@ -166,24 +166,22 @@ export default function PaymentSelection() {
     setLoading(true);
 
     // If only wallet is used, treat as confirmed instantly (mock)
-    const nonWallet = applied.filter((m) => m.id !== "wallet");
+    const nonWallet = effectiveApplied.filter((m) => m.id !== "wallet");
 
     if (nonWallet.length === 0) {
-      // Fully paid with wallet → go straight to confirmation flow
       navigate("/app/pedidos/pagamento/processar", {
         state: {
           ...state,
           finalTotal: grandTotal,
           paymentMethod: "wallet",
           pixDiscount: 0,
-          walletApplied: usedWallet,
-          appliedMethods: applied,
+          walletApplied: effectiveUsedWallet,
+          appliedMethods: effectiveApplied,
         },
       });
       return;
     }
 
-    // Pick first non-wallet as primary processing method
     const primary = nonWallet[0].id;
     const primaryAmount = nonWallet[0].amount;
     const pixDiscount = primary === "pix" ? primaryAmount * 0.05 : 0;
@@ -195,8 +193,8 @@ export default function PaymentSelection() {
         finalTotal,
         paymentMethod: primary,
         pixDiscount,
-        walletApplied: usedWallet,
-        appliedMethods: applied,
+        walletApplied: effectiveUsedWallet,
+        appliedMethods: effectiveApplied,
       },
     });
   };
