@@ -227,177 +227,239 @@ export default function PaymentSelection() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 pt-4">
-              {/* Aplicados */}
-              {applied.length > 0 && (
-                <div className="space-y-2">
-                  {applied.map((m) => (
-                    <div
-                      key={m.id}
-                      className="flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 p-3"
-                    >
-                      <span className="text-primary">{methodIcon(m.id)}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground">{methodLabel(m.id)}</p>
-                        <p className="text-[11px] text-muted-foreground">{formatCurrency(m.amount)}</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveApplied(m.id)}
-                        aria-label={`Remover ${methodLabel(m.id)}`}
-                        className="text-muted-foreground hover:text-destructive transition-colors"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Picker / Add */}
-              {!isFullyPaid && (
+              {!multiMode ? (
                 <>
-                  {!pickerOpen ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full text-xs h-9 text-muted-foreground border-dashed"
-                      onClick={openMethodPicker}
-                      disabled={availableMethods.length === 0}
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      {applied.length === 0 ? "Adicionar forma de pagamento" : "Adicionar outra forma de pagamento"}
-                    </Button>
-                  ) : (
-                    <div className="space-y-2 rounded-lg border border-border p-3">
-                      {!activeMethod ? (
-                        <>
-                          <p className="text-[11px] text-muted-foreground mb-1">Escolha uma forma de pagamento</p>
-                          <div className="space-y-1.5">
-                            {availableMethods.map((m) => (
-                              <button
-                                key={m.id}
-                                type="button"
-                                onClick={() => handleSelectMethod(m.id)}
-                                className="w-full flex items-center gap-3 rounded border border-border p-2.5 text-left hover:border-primary/50 hover:bg-primary/5 transition-colors"
-                              >
-                                <span className="text-primary">{m.icon}</span>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-foreground">{m.label}</p>
-                                  <p className="text-[11px] text-muted-foreground">{m.helper}</p>
-                                </div>
-                              </button>
-                            ))}
-                          </div>
-                          <div className="pt-1">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="w-full text-xs h-7"
-                              onClick={() => setPickerOpen(false)}
-                            >
-                              Cancelar
-                            </Button>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-2 text-sm">
-                            <span className="text-primary">{methodIcon(activeMethod)}</span>
-                            <span className="font-medium text-foreground">{methodLabel(activeMethod)}</span>
-                          </div>
-                          {activeMethod === "wallet" && (
-                            <p className="text-[11px] text-muted-foreground">
-                              Disponível: <span className="font-semibold text-foreground">{formatCurrency(walletAvailable)}</span>
-                            </p>
+                  {/* Single-method: list all options exposed */}
+                  <div className="space-y-2">
+                    {METHODS.map((m) => {
+                      const selected = singleMethod === m.id;
+                      const disabled = m.id === "wallet" && WALLET_BALANCE < grandTotal;
+                      return (
+                        <button
+                          key={m.id}
+                          type="button"
+                          disabled={disabled}
+                          onClick={() => setSingleMethod(m.id)}
+                          className={cn(
+                            "w-full flex items-center gap-3 rounded-lg border p-3 text-left transition-colors",
+                            selected
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-primary/50 hover:bg-primary/5",
+                            disabled && "opacity-50 cursor-not-allowed hover:border-border hover:bg-transparent"
                           )}
-                          <p className="text-[11px] text-muted-foreground">
-                            Restante a pagar: <span className="font-semibold text-foreground">{formatCurrency(remaining)}</span>
-                          </p>
-                          <form
-                            onSubmit={(e) => {
-                              e.preventDefault();
-                              handleConfirmAmount();
-                            }}
-                            className="flex gap-1.5"
+                        >
+                          <span className="text-primary">{m.icon}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground">{m.label}</p>
+                            <p className="text-[11px] text-muted-foreground">
+                              {disabled ? "Saldo insuficiente para o total" : m.helper}
+                            </p>
+                          </div>
+                          {selected && <Check className="h-4 w-4 text-primary shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Discrete toggle for multi-method */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMultiMode(true);
+                      setSingleMethod(null);
+                    }}
+                    className="w-full text-[11px] text-muted-foreground hover:text-primary underline-offset-2 hover:underline transition-colors pt-1"
+                  >
+                    Quero usar mais de uma forma de pagamento
+                  </button>
+                </>
+              ) : (
+                <>
+                  {/* Multi-method mode */}
+                  {applied.length > 0 && (
+                    <div className="space-y-2">
+                      {applied.map((m) => (
+                        <div
+                          key={m.id}
+                          className="flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 p-3"
+                        >
+                          <span className="text-primary">{methodIcon(m.id)}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground">{methodLabel(m.id)}</p>
+                            <p className="text-[11px] text-muted-foreground">{formatCurrency(m.amount)}</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveApplied(m.id)}
+                            aria-label={`Remover ${methodLabel(m.id)}`}
+                            className="text-muted-foreground hover:text-destructive transition-colors"
                           >
-                            <div className="relative flex-1">
-                              <Input
-                                value={amountInput}
-                                onChange={(e) => {
-                                  setAmountInput(formatMoneyInput(e.target.value));
-                                  setAmountError("");
-                                }}
-                                placeholder="R$ 0,00"
-                                inputMode="numeric"
-                                className="h-8 text-xs pr-7"
-                                autoFocus
-                              />
-                              {amountInput && (
-                                <button
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {!isFullyPaid && (
+                    <>
+                      {!pickerOpen ? (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full text-xs h-9 text-muted-foreground border-dashed"
+                          onClick={openMethodPicker}
+                          disabled={availableMethods.length === 0}
+                        >
+                          <Plus className="h-4 w-4 mr-1" />
+                          {applied.length === 0 ? "Adicionar forma de pagamento" : "Adicionar outra forma de pagamento"}
+                        </Button>
+                      ) : (
+                        <div className="space-y-2 rounded-lg border border-border p-3">
+                          {!activeMethod ? (
+                            <>
+                              <p className="text-[11px] text-muted-foreground mb-1">Escolha uma forma de pagamento</p>
+                              <div className="space-y-1.5">
+                                {availableMethods.map((m) => (
+                                  <button
+                                    key={m.id}
+                                    type="button"
+                                    onClick={() => handleSelectMethod(m.id)}
+                                    className="w-full flex items-center gap-3 rounded border border-border p-2.5 text-left hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                                  >
+                                    <span className="text-primary">{m.icon}</span>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-medium text-foreground">{m.label}</p>
+                                      <p className="text-[11px] text-muted-foreground">{m.helper}</p>
+                                    </div>
+                                  </button>
+                                ))}
+                              </div>
+                              <div className="pt-1">
+                                <Button
                                   type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="w-full text-xs h-7"
+                                  onClick={() => setPickerOpen(false)}
+                                >
+                                  Cancelar
+                                </Button>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="flex items-center gap-2 text-sm">
+                                <span className="text-primary">{methodIcon(activeMethod)}</span>
+                                <span className="font-medium text-foreground">{methodLabel(activeMethod)}</span>
+                              </div>
+                              {activeMethod === "wallet" && (
+                                <p className="text-[11px] text-muted-foreground">
+                                  Disponível: <span className="font-semibold text-foreground">{formatCurrency(walletAvailable)}</span>
+                                </p>
+                              )}
+                              <p className="text-[11px] text-muted-foreground">
+                                Restante a pagar: <span className="font-semibold text-foreground">{formatCurrency(remaining)}</span>
+                              </p>
+                              <form
+                                onSubmit={(e) => {
+                                  e.preventDefault();
+                                  handleConfirmAmount();
+                                }}
+                                className="flex gap-1.5"
+                              >
+                                <div className="relative flex-1">
+                                  <Input
+                                    value={amountInput}
+                                    onChange={(e) => {
+                                      setAmountInput(formatMoneyInput(e.target.value));
+                                      setAmountError("");
+                                    }}
+                                    placeholder="R$ 0,00"
+                                    inputMode="numeric"
+                                    className="h-8 text-xs pr-7"
+                                    autoFocus
+                                  />
+                                  {amountInput && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setAmountInput("");
+                                        setAmountError("");
+                                      }}
+                                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  )}
+                                </div>
+                                <Button
+                                  type="submit"
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-8 text-xs px-3 w-20 shrink-0"
+                                  disabled={!amountInput.trim()}
+                                >
+                                  Confirmar
+                                </Button>
+                              </form>
+                              {amountError && (
+                                <p className="text-[11px] text-destructive flex items-center gap-1">
+                                  <X className="h-3 w-3" />
+                                  {amountError}
+                                </p>
+                              )}
+                              <div className="pt-1">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="w-full text-xs h-7"
                                   onClick={() => {
+                                    setActiveMethod(null);
                                     setAmountInput("");
                                     setAmountError("");
                                   }}
-                                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                                 >
-                                  <X className="h-3 w-3" />
-                                </button>
-                              )}
-                            </div>
-                            <Button
-                              type="submit"
-                              size="sm"
-                              variant="outline"
-                              className="h-8 text-xs px-3 w-20 shrink-0"
-                              disabled={!amountInput.trim()}
-                            >
-                              Confirmar
-                            </Button>
-                          </form>
-                          {amountError && (
-                            <p className="text-[11px] text-destructive flex items-center gap-1">
-                              <X className="h-3 w-3" />
-                              {amountError}
-                            </p>
+                                  Voltar
+                                </Button>
+                              </div>
+                            </>
                           )}
-                          <div className="pt-1">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="w-full text-xs h-7"
-                              onClick={() => {
-                                setActiveMethod(null);
-                                setAmountInput("");
-                                setAmountError("");
-                              }}
-                            >
-                              Voltar
-                            </Button>
-                          </div>
-                        </>
+                        </div>
                       )}
-                    </div>
+                    </>
                   )}
+
+                  {/* Status */}
+                  <div className="text-[11px] text-muted-foreground border-t border-border pt-2 flex justify-between">
+                    <span>Restante</span>
+                    <span className={cn("font-semibold", isFullyPaid ? "text-green-600" : "text-foreground")}>
+                      {isFullyPaid ? (
+                        <span className="flex items-center gap-1">
+                          <Check className="h-3 w-3" />
+                          Total coberto
+                        </span>
+                      ) : (
+                        formatCurrency(remaining)
+                      )}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMultiMode(false);
+                      setApplied([]);
+                      setPickerOpen(false);
+                      setActiveMethod(null);
+                    }}
+                    className="w-full text-[11px] text-muted-foreground hover:text-primary underline-offset-2 hover:underline transition-colors pt-1"
+                  >
+                    Usar uma única forma de pagamento
+                  </button>
                 </>
               )}
-
-              {/* Status */}
-              <div className="text-[11px] text-muted-foreground border-t border-border pt-2 flex justify-between">
-                <span>Restante</span>
-                <span className={cn("font-semibold", isFullyPaid ? "text-green-600" : "text-foreground")}>
-                  {isFullyPaid ? (
-                    <span className="flex items-center gap-1">
-                      <Check className="h-3 w-3" />
-                      Total coberto
-                    </span>
-                  ) : (
-                    formatCurrency(remaining)
-                  )}
-                </span>
-              </div>
             </CardContent>
           </Card>
 
