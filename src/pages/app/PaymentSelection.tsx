@@ -293,7 +293,7 @@ export default function PaymentSelection() {
               <Separator />
 
               <div className="flex justify-between items-baseline">
-                <span className="text-xs text-muted-foreground">Total</span>
+                <span className="text-base font-semibold text-foreground">Total</span>
                 <span className="text-base font-semibold text-foreground">
                   {formatCurrency(grandTotal)}
                 </span>
@@ -409,31 +409,71 @@ export default function PaymentSelection() {
                   </div>
                 )}
                 {walletAmount > 0 && remainingAfterWallet > 0 && !walletEditing && (
-                  <div className="mt-3 flex justify-between items-baseline px-1">
-                    <span className="text-sm font-semibold text-foreground">Valor restante</span>
-                    <span className="text-2xl font-bold text-primary">
-                      {formatCurrency(remainingAfterWallet)}
-                    </span>
+                  <div className="mt-3 px-1">
+                    {!multiMode && singleMethod === "pix" ? (
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-sm font-semibold text-foreground">Valor restante</span>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-xs text-muted-foreground line-through">
+                            {formatCurrency(remainingAfterWallet)}
+                          </span>
+                          <span className="text-2xl font-bold text-primary">
+                            {formatCurrency(remainingAfterWallet * 0.95)}
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-sm font-semibold text-foreground">Valor restante</span>
+                        <span className="text-2xl font-bold text-primary">
+                          {formatCurrency(remainingAfterWallet)}
+                        </span>
+                      </div>
+                    )}
+                    {!multiMode && singleMethod === "pix" && (
+                      <p className="text-[11px] text-green-600 font-medium text-right mt-0.5">
+                        5% de desconto PIX aplicado
+                      </p>
+                    )}
+                  </div>
+                )}
+                {walletAmount === 0 && !multiMode && singleMethod === "pix" && (
+                  <div className="mt-3 px-1">
+                    <div className="flex justify-between items-baseline">
+                      <span className="text-sm font-semibold text-foreground">Total com PIX</span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-xs text-muted-foreground line-through">
+                          {formatCurrency(grandTotal)}
+                        </span>
+                        <span className="text-2xl font-bold text-primary">
+                          {formatCurrency(grandTotal * 0.95)}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-green-600 font-medium text-right mt-0.5">
+                      5% de desconto PIX aplicado
+                    </p>
                   </div>
                 )}
               </div>
             </CardContent>
           </Card>
 
-          {/* COLUNA DIREITA — Forma de pagamento + botão */}
-          <div className="flex flex-col gap-4 h-full">
-            <Card className="flex-1">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-                  <CreditCard className="h-4 w-4" />
-                  Forma de pagamento
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 pt-4">
+          {/* COLUNA DIREITA — Forma de pagamento */}
+          <Card className="h-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+                <CreditCard className="h-4 w-4" />
+                Forma de pagamento
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 pt-4">
                 {remainingAfterWallet < 0.01 ? (
-                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs text-foreground flex items-center gap-2">
-                    <Check className="h-4 w-4 text-primary" />
-                    Pedido totalmente coberto pelo saldo em carteira.
+                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs text-foreground flex items-start gap-2">
+                    <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <span>
+                      Tudo certo! O pagamento deste pedido será feito integralmente com o saldo disponível na sua carteira.
+                    </span>
                   </div>
                 ) : !multiMode ? (
                   <>
@@ -658,9 +698,12 @@ export default function PaymentSelection() {
                     </button>
                   </>
                 )}
-              </CardContent>
-            </Card>
+            </CardContent>
+          </Card>
 
+          {/* Spacer to keep button aligned under right column on desktop */}
+          <div className="hidden md:block" />
+          <div>
             <Button
               className="w-full gap-2"
               size="lg"
@@ -668,7 +711,7 @@ export default function PaymentSelection() {
               disabled={!effectiveFullyPaid || loading}
             >
               {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
-              {loading ? "Processando..." : "Confirmar Pagamento"}
+              {loading ? "Processando..." : remainingAfterWallet < 0.01 ? "Confirmar Pagamento" : "Efetuar Pagamento"}
             </Button>
           </div>
         </div>

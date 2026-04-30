@@ -13,6 +13,7 @@ import {
   EyeOff,
   Loader2,
   Barcode,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -89,7 +90,7 @@ const BOLETO_CODE = "23793.38128 60000.000003 00000.000400 1 84340000012345";
 interface PaymentState {
   finalTotal: number;
   grandTotal: number;
-  paymentMethod: "pix" | "boleto" | "credit";
+  paymentMethod: "pix" | "boleto" | "credit" | "wallet";
   pixDiscount: number;
   pickupUnit: string | null;
 }
@@ -184,17 +185,22 @@ export default function OrderPayment() {
   };
 
   const methodLabel =
-    paymentMethod === "pix" ? "PIX" : paymentMethod === "boleto" ? "Boleto Bancário" : "Cartão de Crédito";
+    paymentMethod === "pix" ? "PIX" : paymentMethod === "boleto" ? "Boleto Bancário" : paymentMethod === "wallet" ? "Saldo em carteira" : "Cartão de Crédito";
+
+  // Wallet-only: auto-confirm
+  if (paymentMethod === "wallet") {
+    return <OrderPaymentConfirmed finalTotal={finalTotal} paymentMethod="credit" pickupUnit={pickupUnit} />;
+  }
 
   if (screen === "confirmed") {
-    return <OrderPaymentConfirmed finalTotal={finalTotal} paymentMethod={paymentMethod} pickupUnit={pickupUnit} />;
+    return <OrderPaymentConfirmed finalTotal={finalTotal} paymentMethod={paymentMethod as "pix" | "boleto" | "credit"} pickupUnit={pickupUnit} />;
   }
 
   if (screen === "pending") {
     return (
       <OrderPaymentPending
         finalTotal={finalTotal}
-        paymentMethod={paymentMethod}
+        paymentMethod={paymentMethod as "pix" | "boleto" | "credit"}
         pickupUnit={pickupUnit}
         onChangePayment={() => navigate(-1)}
       />
@@ -265,8 +271,17 @@ export default function OrderPayment() {
         {paymentMethod === "boleto" && (
           <Card>
             <CardContent className="pt-4 space-y-3 text-center">
-              <div className="mx-auto w-full h-20 bg-muted rounded-xl flex items-center justify-center">
+              <div className="relative mx-auto w-full h-20 bg-muted rounded-xl flex items-center justify-center">
                 <Barcode className="h-12 w-full text-muted-foreground px-4" />
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="absolute top-1.5 right-1.5 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-primary transition-colors px-2 py-1 rounded hover:bg-background/60"
+                  title="Baixar boleto"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  Baixar
+                </button>
               </div>
               <p className="text-xs text-muted-foreground">
                 Copie a linha digitável abaixo e pague pelo app do seu banco.
@@ -408,20 +423,37 @@ export default function OrderPayment() {
           </Card>
         )}
 
-        {/* Confirm button */}
-        <Button
-          className="w-full gap-2"
-          size="lg"
-          onClick={handleConfirm}
-          disabled={loading}
-        >
-          {loading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <Check className="h-5 w-5" />
-          )}
-          {loading ? "Processando..." : "Confirmar Pagamento"}
-        </Button>
+        {/* Confirm button (only for credit) — PIX/Boleto get a friendly waiting message */}
+        {paymentMethod === "credit" ? (
+          <Button
+            className="w-full gap-2"
+            size="lg"
+            onClick={handleConfirm}
+            disabled={loading}
+          >
+            {loading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Check className="h-5 w-5" />
+            )}
+            {loading ? "Processando..." : "Efetuar Pagamento"}
+          </Button>
+        ) : (
+          <div className="space-y-2 pt-1">
+            <p className="text-xs text-muted-foreground text-center leading-relaxed px-2">
+              O processamento do seu pagamento pode levar alguns instantes.
+              Assim que confirmado, seu pedido será preparado e enviado. 😊
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-xs text-muted-foreground hover:text-primary"
+              onClick={() => navigate("/app/pedidos")}
+            >
+              Ir para meus pedidos
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
