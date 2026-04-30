@@ -459,20 +459,21 @@ export default function PaymentSelection() {
             </CardContent>
           </Card>
 
-          {/* COLUNA DIREITA — Forma de pagamento + botão */}
-          <div className="flex flex-col gap-4 h-full">
-            <Card className="flex-1">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-                  <CreditCard className="h-4 w-4" />
-                  Forma de pagamento
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 pt-4">
+          {/* COLUNA DIREITA — Forma de pagamento */}
+          <Card className="h-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+                <CreditCard className="h-4 w-4" />
+                Forma de pagamento
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 pt-4">
                 {remainingAfterWallet < 0.01 ? (
-                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs text-foreground flex items-center gap-2">
-                    <Check className="h-4 w-4 text-primary" />
-                    Pedido totalmente coberto pelo saldo em carteira.
+                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs text-foreground flex items-start gap-2">
+                    <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <span>
+                      Tudo certo! O pagamento deste pedido será feito integralmente com o saldo disponível na sua carteira.
+                    </span>
                   </div>
                 ) : !multiMode ? (
                   <>
@@ -697,9 +698,12 @@ export default function PaymentSelection() {
                     </button>
                   </>
                 )}
-              </CardContent>
-            </Card>
+            </CardContent>
+          </Card>
 
+          {/* Spacer to keep button aligned under right column on desktop */}
+          <div className="hidden md:block" />
+          <div>
             <Button
               className="w-full gap-2"
               size="lg"
@@ -707,7 +711,7 @@ export default function PaymentSelection() {
               disabled={!effectiveFullyPaid || loading}
             >
               {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
-              {loading ? "Processando..." : "Confirmar Pagamento"}
+              {loading ? "Processando..." : remainingAfterWallet < 0.01 ? "Confirmar Pagamento" : "Efetuar Pagamento"}
             </Button>
           </div>
         </div>
