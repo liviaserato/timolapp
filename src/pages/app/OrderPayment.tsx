@@ -13,6 +13,7 @@ import {
   EyeOff,
   Loader2,
   Barcode,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
