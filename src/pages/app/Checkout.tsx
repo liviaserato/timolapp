@@ -376,9 +376,9 @@ export default function Checkout() {
                           <SelectTrigger className="h-9 text-xs">
                             <SelectValue placeholder="Selecione a forma de entrega" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="min-w-[var(--radix-select-trigger-width)]">
                             {shippingOptions.map((opt) => (
-                              <SelectItem key={opt.id} value={opt.id} className="text-xs">
+                              <SelectItem key={opt.id} value={opt.id} className="text-xs pr-6 [&>span:last-child]:w-full">
                                 <div className="flex items-center gap-2 w-full">
                                   <span className="text-muted-foreground">{opt.icon}</span>
                                   <span className="font-semibold">{opt.label}</span>
