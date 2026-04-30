@@ -423,20 +423,37 @@ export default function OrderPayment() {
           </Card>
         )}
 
-        {/* Confirm button */}
-        <Button
-          className="w-full gap-2"
-          size="lg"
-          onClick={handleConfirm}
-          disabled={loading}
-        >
-          {loading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <Check className="h-5 w-5" />
-          )}
-          {loading ? "Processando..." : "Confirmar Pagamento"}
-        </Button>
+        {/* Confirm button (only for credit) — PIX/Boleto get a friendly waiting message */}
+        {paymentMethod === "credit" ? (
+          <Button
+            className="w-full gap-2"
+            size="lg"
+            onClick={handleConfirm}
+            disabled={loading}
+          >
+            {loading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Check className="h-5 w-5" />
+            )}
+            {loading ? "Processando..." : "Efetuar Pagamento"}
+          </Button>
+        ) : (
+          <div className="space-y-2 pt-1">
+            <p className="text-xs text-muted-foreground text-center leading-relaxed px-2">
+              O processamento do seu pagamento pode levar alguns instantes.
+              Assim que confirmado, seu pedido será preparado e enviado. 😊
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-xs text-muted-foreground hover:text-primary"
+              onClick={() => navigate("/app/pedidos")}
+            >
+              Ir para meus pedidos
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
