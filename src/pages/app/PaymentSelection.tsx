@@ -87,7 +87,7 @@ export default function PaymentSelection() {
   }
 
   const { items, subtotal, couponDiscount, coupon, shippingCost, grandTotal } = state;
-  const itemsCount = items.reduce((s, it) => s + (it.quantity ?? 1), 0);
+  const itemsCount = items.reduce((s, it) => s + (it.qty ?? 1), 0);
 
   // Wallet reduces the amount to pay via other methods
   const remainingAfterWallet = Math.max(0, grandTotal - walletAmount);
