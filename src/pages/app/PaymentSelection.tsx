@@ -86,14 +86,16 @@ export default function PaymentSelection() {
     );
   }
 
-  const { subtotal, couponDiscount, coupon, shippingCost, grandTotal } = state;
+  const { items, subtotal, couponDiscount, coupon, shippingCost, grandTotal } = state;
+  const itemsCount = items.reduce((s, it) => s + (it.quantity ?? 1), 0);
+
+  // Wallet reduces the amount to pay via other methods
+  const remainingAfterWallet = Math.max(0, grandTotal - walletAmount);
+  const walletAvailable = WALLET_BALANCE - walletAmount;
 
   const totalApplied = applied.reduce((s, m) => s + m.amount, 0);
-  const remaining = Math.max(0, grandTotal - totalApplied);
+  const remaining = Math.max(0, remainingAfterWallet - totalApplied);
   const isFullyPaid = remaining < 0.01;
-
-  const usedWallet = applied.find((m) => m.id === "wallet")?.amount ?? 0;
-  const walletAvailable = WALLET_BALANCE - usedWallet;
 
   // Mask R$
   const formatMoneyInput = (raw: string) => {
@@ -122,10 +124,7 @@ export default function PaymentSelection() {
 
   const handleSelectMethod = (id: PayMethodId) => {
     setActiveMethod(id);
-    // Default amount = remaining (or wallet balance, whichever smaller for wallet)
-    let defaultAmt = remaining;
-    if (id === "wallet") defaultAmt = Math.min(remaining, walletAvailable);
-    setAmountInput(formatMoneyInput(String(Math.round(defaultAmt * 100))));
+    setAmountInput(formatMoneyInput(String(Math.round(remaining * 100))));
     setAmountError("");
   };
 
@@ -140,10 +139,6 @@ export default function PaymentSelection() {
       setAmountError("Valor maior que o restante do pedido");
       return;
     }
-    if (activeMethod === "wallet" && value > walletAvailable + 0.001) {
-      setAmountError("Valor maior que o saldo disponível");
-      return;
-    }
     setApplied((prev) => [...prev, { id: activeMethod, amount: value }]);
     setPickerOpen(false);
     setActiveMethod(null);
@@ -155,15 +150,53 @@ export default function PaymentSelection() {
     setApplied((prev) => prev.filter((m) => m.id !== id));
   };
 
-  const effectiveApplied: AppliedMethod[] = multiMode
+  // Wallet handlers
+  const openWalletEditor = () => {
+    setWalletEditing(true);
+    const def = walletAmount > 0 ? walletAmount : Math.min(grandTotal, WALLET_BALANCE);
+    setWalletInput(formatMoneyInput(String(Math.round(def * 100))));
+    setWalletError("");
+  };
+  const confirmWallet = () => {
+    const value = parseMoneyInput(walletInput);
+    if (value < 0) {
+      setWalletError("Informe um valor válido");
+      return;
+    }
+    if (value > WALLET_BALANCE + 0.001) {
+      setWalletError("Valor maior que o saldo disponível");
+      return;
+    }
+    if (value > grandTotal + 0.001) {
+      setWalletError("Valor maior que o total do pedido");
+      return;
+    }
+    setWalletAmount(value);
+    setWalletEditing(false);
+    setWalletError("");
+  };
+  const removeWallet = () => {
+    setWalletAmount(0);
+    setWalletEditing(false);
+    setWalletError("");
+  };
+
+  // Effective payment: wallet always counted; rest comes from singleMethod (covers remainingAfterWallet) or multi-mode applied list
+  const nonWalletNeeded = remainingAfterWallet;
+  const effectiveNonWallet: AppliedMethod[] = multiMode
     ? applied
-    : singleMethod
-      ? [{ id: singleMethod, amount: grandTotal }]
-      : [];
-  const effectiveTotalApplied = effectiveApplied.reduce((s, m) => s + m.amount, 0);
-  const effectiveRemaining = Math.max(0, grandTotal - effectiveTotalApplied);
-  const effectiveFullyPaid = effectiveRemaining < 0.01;
-  const effectiveUsedWallet = effectiveApplied.find((m) => m.id === "wallet")?.amount ?? 0;
+    : nonWalletNeeded < 0.01
+      ? []
+      : singleMethod
+        ? [{ id: singleMethod, amount: nonWalletNeeded }]
+        : [];
+  const effectiveNonWalletTotal = effectiveNonWallet.reduce((s, m) => s + m.amount, 0);
+  const effectiveFullyPaid = walletAmount + effectiveNonWalletTotal >= grandTotal - 0.01;
+  const effectiveApplied: AppliedMethod[] =
+    walletAmount > 0
+      ? [{ id: "wallet", amount: walletAmount }, ...effectiveNonWallet]
+      : effectiveNonWallet;
+  const effectiveUsedWallet = walletAmount;
 
   const handleConfirmPayment = async () => {
     if (!effectiveFullyPaid) {
