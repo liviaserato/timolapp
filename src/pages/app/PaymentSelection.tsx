@@ -68,6 +68,12 @@ export default function PaymentSelection() {
   const [amountError, setAmountError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Wallet (independent — lives inside Resumo da compra)
+  const [walletAmount, setWalletAmount] = useState(0);
+  const [walletEditing, setWalletEditing] = useState(false);
+  const [walletInput, setWalletInput] = useState("");
+  const [walletError, setWalletError] = useState("");
+
   if (!state || !state.items?.length) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
