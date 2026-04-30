@@ -184,17 +184,22 @@ export default function OrderPayment() {
   };
 
   const methodLabel =
-    paymentMethod === "pix" ? "PIX" : paymentMethod === "boleto" ? "Boleto Bancário" : "Cartão de Crédito";
+    paymentMethod === "pix" ? "PIX" : paymentMethod === "boleto" ? "Boleto Bancário" : paymentMethod === "wallet" ? "Saldo em carteira" : "Cartão de Crédito";
+
+  // Wallet-only: auto-confirm
+  if (paymentMethod === "wallet") {
+    return <OrderPaymentConfirmed finalTotal={finalTotal} paymentMethod="credit" pickupUnit={pickupUnit} />;
+  }
 
   if (screen === "confirmed") {
-    return <OrderPaymentConfirmed finalTotal={finalTotal} paymentMethod={paymentMethod} pickupUnit={pickupUnit} />;
+    return <OrderPaymentConfirmed finalTotal={finalTotal} paymentMethod={paymentMethod as "pix" | "boleto" | "credit"} pickupUnit={pickupUnit} />;
   }
 
   if (screen === "pending") {
     return (
       <OrderPaymentPending
         finalTotal={finalTotal}
-        paymentMethod={paymentMethod}
+        paymentMethod={paymentMethod as "pix" | "boleto" | "credit"}
         pickupUnit={pickupUnit}
         onChangePayment={() => navigate(-1)}
       />
