@@ -441,7 +441,7 @@ export default function Checkout() {
 
             {/* Resumo da compra */}
             <Card>
-              <CardHeader className="pb-2 border-b">
+              <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
                   <Receipt className="h-4 w-4" />
                   Resumo da compra
