@@ -245,7 +245,7 @@ export default function Checkout() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
           {/* COLUNA ESQUERDA — Itens do pedido */}
           <Card className="md:sticky md:top-0">
-            <CardHeader className="pb-2 border-b">
+            <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
                 <ShoppingBag className="h-4 w-4" />
                 Itens do Pedido ({items.length})
@@ -441,7 +441,7 @@ export default function Checkout() {
 
             {/* Resumo da compra */}
             <Card>
-              <CardHeader className="pb-2 border-b">
+              <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
                   <Receipt className="h-4 w-4" />
                   Resumo da compra
