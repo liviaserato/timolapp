@@ -409,11 +409,50 @@ export default function PaymentSelection() {
                   </div>
                 )}
                 {walletAmount > 0 && remainingAfterWallet > 0 && !walletEditing && (
-                  <div className="mt-3 flex justify-between items-baseline px-1">
-                    <span className="text-sm font-semibold text-foreground">Valor restante</span>
-                    <span className="text-2xl font-bold text-primary">
-                      {formatCurrency(remainingAfterWallet)}
-                    </span>
+                  <div className="mt-3 px-1">
+                    {!multiMode && singleMethod === "pix" ? (
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-sm font-semibold text-foreground">Valor restante</span>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-xs text-muted-foreground line-through">
+                            {formatCurrency(remainingAfterWallet)}
+                          </span>
+                          <span className="text-2xl font-bold text-primary">
+                            {formatCurrency(remainingAfterWallet * 0.95)}
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-sm font-semibold text-foreground">Valor restante</span>
+                        <span className="text-2xl font-bold text-primary">
+                          {formatCurrency(remainingAfterWallet)}
+                        </span>
+                      </div>
+                    )}
+                    {!multiMode && singleMethod === "pix" && (
+                      <p className="text-[11px] text-green-600 font-medium text-right mt-0.5">
+                        5% de desconto PIX aplicado
+                      </p>
+                    )}
+                  </div>
+                )}
+                {walletAmount === 0 && !multiMode && singleMethod === "pix" && (
+                  <div className="mt-3 px-1">
+                    <div className="flex justify-between items-baseline">
+                      <span className="text-sm font-semibold text-foreground">Total com PIX</span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-xs text-muted-foreground line-through">
+                          {formatCurrency(grandTotal)}
+                        </span>
+                        <span className="text-2xl font-bold text-primary">
+                          {formatCurrency(grandTotal * 0.95)}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-green-600 font-medium text-right mt-0.5">
+                      5% de desconto PIX aplicado
+                    </p>
                   </div>
                 )}
               </div>
