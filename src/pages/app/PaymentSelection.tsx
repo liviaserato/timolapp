@@ -293,8 +293,8 @@ export default function PaymentSelection() {
               <Separator />
 
               <div className="flex justify-between items-baseline">
-                <span className="text-sm font-semibold text-foreground">Total</span>
-                <span className="text-2xl font-bold text-primary">
+                <span className="text-xs text-muted-foreground">Total</span>
+                <span className="text-base font-semibold text-foreground">
                   {formatCurrency(grandTotal)}
                 </span>
               </div>
