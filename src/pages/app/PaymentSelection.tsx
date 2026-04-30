@@ -409,6 +409,14 @@ export default function PaymentSelection() {
                     </Button>
                   </div>
                 )}
+                {walletAmount > 0 && remainingAfterWallet > 0 && !walletEditing && (
+                  <div className="mt-2 flex justify-between items-baseline px-1">
+                    <span className="text-xs text-muted-foreground">Valor restante</span>
+                    <span className="text-xs font-semibold text-foreground">
+                      {formatCurrency(remainingAfterWallet)}
+                    </span>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
