@@ -257,9 +257,9 @@ export default function PaymentSelection() {
       </header>
 
       <div className="flex-1 overflow-y-auto pb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:items-stretch">
           {/* COLUNA ESQUERDA — Resumo da compra */}
-          <Card>
+          <Card className="h-full">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
                 <Receipt className="h-4 w-4" />
@@ -293,8 +293,8 @@ export default function PaymentSelection() {
               <Separator />
 
               <div className="flex justify-between items-baseline">
-                <span className="text-sm font-semibold text-foreground">Total</span>
-                <span className="text-2xl font-bold text-primary">
+                <span className="text-xs text-muted-foreground">Total</span>
+                <span className="text-base font-semibold text-foreground">
                   {formatCurrency(grandTotal)}
                 </span>
               </div>
@@ -339,8 +339,19 @@ export default function PaymentSelection() {
                     )}
                   </button>
                 ) : (
-                  <div className="space-y-2 rounded-lg border border-border p-3">
-                    <div className="flex items-center gap-2 text-sm">
+                  <div className="relative space-y-2 rounded-lg border border-primary bg-primary/5 p-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setWalletEditing(false);
+                        setWalletError("");
+                      }}
+                      aria-label="Fechar"
+                      className="absolute top-2 right-2 text-muted-foreground hover:text-destructive transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                    <div className="flex items-center gap-2 text-sm pr-6">
                       <span className="text-primary">{WALLET_META.icon}</span>
                       <span className="font-medium text-foreground">{WALLET_META.label}</span>
                     </div>
@@ -395,24 +406,12 @@ export default function PaymentSelection() {
                         {walletError}
                       </p>
                     )}
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="w-full text-xs h-7"
-                      onClick={() => {
-                        setWalletEditing(false);
-                        setWalletError("");
-                      }}
-                    >
-                      Cancelar
-                    </Button>
                   </div>
                 )}
                 {walletAmount > 0 && remainingAfterWallet > 0 && !walletEditing && (
-                  <div className="mt-2 flex justify-between items-baseline px-1">
-                    <span className="text-xs text-muted-foreground">Valor restante</span>
-                    <span className="text-xs font-semibold text-foreground">
+                  <div className="mt-3 flex justify-between items-baseline px-1">
+                    <span className="text-sm font-semibold text-foreground">Valor restante</span>
+                    <span className="text-2xl font-bold text-primary">
                       {formatCurrency(remainingAfterWallet)}
                     </span>
                   </div>
@@ -422,8 +421,8 @@ export default function PaymentSelection() {
           </Card>
 
           {/* COLUNA DIREITA — Forma de pagamento + botão */}
-          <div className="flex flex-col gap-4">
-            <Card>
+          <div className="flex flex-col gap-4 h-full">
+            <Card className="flex-1">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
                   <CreditCard className="h-4 w-4" />
