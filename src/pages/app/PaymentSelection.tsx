@@ -421,8 +421,8 @@ export default function PaymentSelection() {
           </Card>
 
           {/* COLUNA DIREITA — Forma de pagamento + botão */}
-          <div className="flex flex-col gap-4">
-            <Card>
+          <div className="flex flex-col gap-4 h-full">
+            <Card className="flex-1">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
                   <CreditCard className="h-4 w-4" />
