@@ -270,8 +270,17 @@ export default function OrderPayment() {
         {paymentMethod === "boleto" && (
           <Card>
             <CardContent className="pt-4 space-y-3 text-center">
-              <div className="mx-auto w-full h-20 bg-muted rounded-xl flex items-center justify-center">
+              <div className="relative mx-auto w-full h-20 bg-muted rounded-xl flex items-center justify-center">
                 <Barcode className="h-12 w-full text-muted-foreground px-4" />
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="absolute top-1.5 right-1.5 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-primary transition-colors px-2 py-1 rounded hover:bg-background/60"
+                  title="Baixar boleto"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  Baixar
+                </button>
               </div>
               <p className="text-xs text-muted-foreground">
                 Copie a linha digitável abaixo e pague pelo app do seu banco.
