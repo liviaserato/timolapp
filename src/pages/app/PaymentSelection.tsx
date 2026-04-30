@@ -148,9 +148,19 @@ export default function PaymentSelection() {
     setApplied((prev) => prev.filter((m) => m.id !== id));
   };
 
+  const effectiveApplied: AppliedMethod[] = multiMode
+    ? applied
+    : singleMethod
+      ? [{ id: singleMethod, amount: grandTotal }]
+      : [];
+  const effectiveTotalApplied = effectiveApplied.reduce((s, m) => s + m.amount, 0);
+  const effectiveRemaining = Math.max(0, grandTotal - effectiveTotalApplied);
+  const effectiveFullyPaid = effectiveRemaining < 0.01;
+  const effectiveUsedWallet = effectiveApplied.find((m) => m.id === "wallet")?.amount ?? 0;
+
   const handleConfirmPayment = async () => {
-    if (!isFullyPaid) {
-      toast.error("Adicione formas de pagamento até cobrir o total");
+    if (!effectiveFullyPaid) {
+      toast.error(multiMode ? "Adicione formas de pagamento até cobrir o total" : "Selecione uma forma de pagamento");
       return;
     }
     setLoading(true);
