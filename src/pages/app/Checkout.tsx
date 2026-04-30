@@ -313,7 +313,7 @@ export default function Checkout() {
                   Entrega
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 {selectedAddress ? (
                   <div className="rounded-md border border-border p-2.5">
                     <div className="flex items-start gap-2">
