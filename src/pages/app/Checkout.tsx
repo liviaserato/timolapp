@@ -315,34 +315,30 @@ export default function Checkout() {
               </CardHeader>
               <CardContent>
                 {selectedAddress ? (
-                  <div className="space-y-2">
-                    <div className="rounded-md border border-border p-2.5">
-                      <div className="flex items-start gap-2">
-                        <MapPin className="h-3.5 w-3.5 text-primary mt-0.5 flex-shrink-0" />
-                        <div className="flex-1 min-w-0 text-xs text-foreground space-y-0.5">
-                          {selectedAddress.label && (
-                            <p className="font-semibold">{selectedAddress.label}</p>
-                          )}
-                          <p>
-                            {selectedAddress.street}, {selectedAddress.number}
-                            {selectedAddress.complement ? ` · ${selectedAddress.complement}` : ""}
-                          </p>
-                          <p className="text-muted-foreground">
-                            {selectedAddress.neighborhood} · {selectedAddress.city} – {selectedAddress.state}
-                          </p>
-                          <p className="text-muted-foreground">CEP {selectedAddress.zipCode}</p>
+                  <div className="rounded-md border border-border p-2.5">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="h-3.5 w-3.5 text-primary mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 min-w-0 text-xs text-foreground space-y-0.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="font-semibold">{selectedAddress.label || "Endereço"}</p>
+                          <button
+                            type="button"
+                            onClick={() => setAddressDialogOpen(true)}
+                            className="text-[11px] text-muted-foreground hover:text-primary underline-offset-2 hover:underline transition-colors"
+                          >
+                            Alterar
+                          </button>
                         </div>
+                        <p>
+                          {selectedAddress.street}, {selectedAddress.number}
+                          {selectedAddress.complement ? ` · ${selectedAddress.complement}` : ""}
+                        </p>
+                        <p className="text-muted-foreground">
+                          {selectedAddress.neighborhood} · {selectedAddress.city} – {selectedAddress.state}
+                        </p>
+                        <p className="text-muted-foreground">CEP {selectedAddress.zipCode}</p>
                       </div>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full text-xs h-7 text-muted-foreground"
-                      onClick={() => setAddressDialogOpen(true)}
-                    >
-                      <MapPin className="h-3 w-3 mr-1" />
-                      Alterar endereço
-                    </Button>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -362,75 +358,81 @@ export default function Checkout() {
                 )}
 
                 {selectedAddress && (
-                  <div className="mt-3 space-y-1.5">
+                  <div className="mt-3 space-y-2">
                     {shippingLoading ? (
                       <div className="flex items-center justify-center gap-2 py-3 text-muted-foreground">
                         <Loader2 className="h-3 w-3 animate-spin" />
                         <span className="text-[11px]">Calculando opções de entrega...</span>
                       </div>
                     ) : (
-                      shippingOptions.map((opt) => (
-                        <div key={opt.id}>
-                          <button
-                            onClick={() => {
-                              setSelectedShipping(opt.id);
-                              if (opt.id !== "retirada") setSelectedPickupUnit(null);
-                            }}
-                            className={cn(
-                              "w-full flex items-center gap-2 rounded border px-2.5 py-2 text-left transition-colors",
-                              selectedShipping === opt.id
-                                ? "border-primary bg-primary/5"
-                                : "border-border hover:border-muted-foreground/30"
-                            )}
-                          >
-                            <span className={selectedShipping === opt.id ? "text-primary" : "text-muted-foreground"}>{opt.icon}</span>
-                            <div className="flex-1 min-w-0">
-                              <span className={cn("text-[11px] font-semibold", selectedShipping === opt.id ? "text-primary" : "text-foreground")}>{opt.label}</span>
-                              <span className="text-[10px] text-muted-foreground ml-1.5">{opt.detail}</span>
-                            </div>
-                            <span className={cn("text-[11px] font-bold", selectedShipping === opt.id ? "text-primary" : "text-foreground")}>
-                              {opt.cost === 0 ? "Grátis" : formatCurrency(opt.cost)}
-                            </span>
-                          </button>
-                          {opt.id === "retirada" && selectedShipping === "retirada" && (
-                            <div className="ml-5 mt-1 mb-0.5 space-y-1">
-                              {pickupLoading ? (
-                                <div className="flex items-center gap-2 px-2.5 py-1.5 text-muted-foreground">
-                                  <Loader2 className="h-3 w-3 animate-spin" />
-                                  <span className="text-[11px]">Calculando distâncias...</span>
+                      <>
+                        <Select
+                          value={selectedShipping ?? undefined}
+                          onValueChange={(v) => {
+                            setSelectedShipping(v);
+                            if (v !== "retirada") setSelectedPickupUnit(null);
+                          }}
+                        >
+                          <SelectTrigger className="h-9 text-xs">
+                            <SelectValue placeholder="Selecione a forma de entrega" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {shippingOptions.map((opt) => (
+                              <SelectItem key={opt.id} value={opt.id} className="text-xs">
+                                <div className="flex items-center gap-2 w-full">
+                                  <span className="text-muted-foreground">{opt.icon}</span>
+                                  <span className="font-semibold">{opt.label}</span>
+                                  <span className="text-[10px] text-muted-foreground">{opt.detail}</span>
+                                  <span className="ml-auto pl-3 font-semibold">
+                                    {opt.cost === 0 ? "Grátis" : formatCurrency(opt.cost)}
+                                  </span>
                                 </div>
-                              ) : pickupUnits.length > 0 ? (
-                                pickupUnits.map((unit) => (
-                                  <button
-                                    key={unit.id}
-                                    onClick={() => setSelectedPickupUnit(unit.id)}
-                                    className={cn(
-                                      "w-full flex items-center gap-2 rounded px-2.5 py-1.5 text-left transition-colors",
-                                      selectedPickupUnit === unit.id
-                                        ? "bg-primary/10 text-primary"
-                                        : "hover:bg-muted text-muted-foreground"
-                                    )}
-                                  >
-                                    {selectedPickupUnit === unit.id ? (
-                                      <Check className="h-3 w-3 text-primary" />
-                                    ) : (
-                                      <Store className="h-3 w-3 opacity-40" />
-                                    )}
-                                    <span className={cn("text-[11px] flex-1", selectedPickupUnit === unit.id && "font-semibold")}>
-                                      {unit.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+
+                        {selectedShipping === "retirada" && (
+                          <div className="rounded-md border border-border p-2 space-y-1">
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground px-1">
+                              Selecione a unidade
+                            </p>
+                            {pickupLoading ? (
+                              <div className="flex items-center gap-2 px-2.5 py-1.5 text-muted-foreground">
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                                <span className="text-[11px]">Calculando distâncias...</span>
+                              </div>
+                            ) : pickupUnits.length > 0 ? (
+                              pickupUnits.map((unit) => (
+                                <button
+                                  key={unit.id}
+                                  onClick={() => setSelectedPickupUnit(unit.id)}
+                                  className={cn(
+                                    "w-full flex items-center gap-2 rounded px-2 py-1.5 text-left transition-colors",
+                                    selectedPickupUnit === unit.id
+                                      ? "bg-primary/10 text-primary"
+                                      : "hover:bg-muted text-muted-foreground"
+                                  )}
+                                >
+                                  {selectedPickupUnit === unit.id ? (
+                                    <Check className="h-3 w-3 text-primary" />
+                                  ) : (
+                                    <Store className="h-3 w-3 opacity-40" />
+                                  )}
+                                  <span className={cn("text-[11px] flex-1", selectedPickupUnit === unit.id && "font-semibold")}>
+                                    {unit.name}
+                                  </span>
+                                  {unit.distanceKm != null && (
+                                    <span className={cn("text-[10px]", selectedPickupUnit === unit.id ? "text-primary/70" : "text-muted-foreground")}>
+                                      ~{unit.distanceKm.toLocaleString("pt-BR")}km
                                     </span>
-                                    {unit.distanceKm != null && (
-                                      <span className={cn("text-[10px]", selectedPickupUnit === unit.id ? "text-primary/70" : "text-muted-foreground")}>
-                                        ~{unit.distanceKm.toLocaleString("pt-BR")}km
-                                      </span>
-                                    )}
-                                  </button>
-                                ))
-                              ) : null}
-                            </div>
-                          )}
-                        </div>
-                      ))
+                                  )}
+                                </button>
+                              ))
+                            ) : null}
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 )}
