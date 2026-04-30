@@ -511,7 +511,7 @@ export default function PaymentSelection() {
               className="w-full gap-2"
               size="lg"
               onClick={handleConfirmPayment}
-              disabled={!isFullyPaid || loading}
+              disabled={!effectiveFullyPaid || loading}
             >
               {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
               {loading ? "Processando..." : "Confirmar Pagamento"}
