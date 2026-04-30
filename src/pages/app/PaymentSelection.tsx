@@ -257,9 +257,9 @@ export default function PaymentSelection() {
       </header>
 
       <div className="flex-1 overflow-y-auto pb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:items-stretch">
           {/* COLUNA ESQUERDA — Resumo da compra */}
-          <Card>
+          <Card className="h-full">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
                 <Receipt className="h-4 w-4" />
