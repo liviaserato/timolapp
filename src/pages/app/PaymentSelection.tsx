@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   ChevronLeft,
@@ -40,6 +40,7 @@ interface PaymentSelectionState {
 type PayMethodId = "pix" | "boleto" | "credit" | "wallet";
 
 interface AppliedMethod {
+  uid?: string;
   id: PayMethodId;
   amount: number;
 }
@@ -47,9 +48,9 @@ interface AppliedMethod {
 const WALLET_BALANCE = 250.0;
 
 const METHODS: { id: PayMethodId; label: string; icon: React.ReactNode; helper: string }[] = [
+  { id: "credit", label: "Cartão de Crédito", icon: <CreditCard className="h-5 w-5" />, helper: "À vista ou parcelado" },
   { id: "pix", label: "PIX", icon: <QrCode className="h-5 w-5" />, helper: "5% de desconto" },
   { id: "boleto", label: "Boleto Bancário", icon: <Building2 className="h-5 w-5" />, helper: "Vencimento em 3 dias" },
-  { id: "credit", label: "Cartão de Crédito", icon: <CreditCard className="h-5 w-5" />, helper: "À vista ou parcelado" },
 ];
 
 const WALLET_META = { id: "wallet" as PayMethodId, label: "Saldo em carteira", icon: <Wallet className="h-5 w-5" /> };
@@ -110,10 +111,8 @@ export default function PaymentSelection() {
     return parseInt(digits, 10) / 100;
   };
 
-  const availableMethods = useMemo(
-    () => METHODS.filter((m) => !applied.some((a) => a.id === m.id)),
-    [applied]
-  );
+  // In multi-mode, allow re-using the same method (e.g. two different credit cards)
+  const availableMethods = METHODS;
 
   const openMethodPicker = () => {
     setPickerOpen(true);
@@ -139,15 +138,35 @@ export default function PaymentSelection() {
       setAmountError("Valor maior que o restante do pedido");
       return;
     }
-    setApplied((prev) => [...prev, { id: activeMethod, amount: value }]);
+    setApplied((prev) => [
+      ...prev,
+      { uid: `${activeMethod}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, id: activeMethod, amount: value },
+    ]);
     setPickerOpen(false);
     setActiveMethod(null);
     setAmountInput("");
     setAmountError("");
   };
 
-  const handleRemoveApplied = (id: PayMethodId) => {
-    setApplied((prev) => prev.filter((m) => m.id !== id));
+  const handleRemoveApplied = (uid: string) => {
+    setApplied((prev) => prev.filter((m) => m.uid !== uid));
+  };
+
+  // Navigate to processing screen for a specific method+amount slice
+  const handlePaySlice = (method: PayMethodId, amount: number) => {
+    const pixDiscount = method === "pix" ? amount * 0.05 : 0;
+    const finalTotal = Math.max(0, amount - pixDiscount);
+    navigate("/app/pedidos/pagamento/processar", {
+      state: {
+        ...state,
+        finalTotal,
+        grandTotal: amount,
+        paymentMethod: method,
+        pixDiscount,
+        walletApplied: 0,
+        appliedMethods: [{ id: method, amount }],
+      },
+    });
   };
 
   // Wallet handlers
@@ -225,12 +244,13 @@ export default function PaymentSelection() {
     const primary = nonWallet[0].id;
     const primaryAmount = nonWallet[0].amount;
     const pixDiscount = primary === "pix" ? primaryAmount * 0.05 : 0;
-    const finalTotal = Math.max(0, grandTotal - pixDiscount);
+    const finalTotal = Math.max(0, primaryAmount - pixDiscount);
 
     navigate("/app/pedidos/pagamento/processar", {
       state: {
         ...state,
         finalTotal,
+        grandTotal: primaryAmount,
         paymentMethod: primary,
         pixDiscount,
         walletApplied: effectiveUsedWallet,
@@ -462,10 +482,31 @@ export default function PaymentSelection() {
           {/* COLUNA DIREITA — Forma de pagamento */}
           <Card className="h-full">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-                <CreditCard className="h-4 w-4" />
-                Forma de pagamento
-              </CardTitle>
+              <div className="flex items-center justify-between gap-2">
+                <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+                  <CreditCard className="h-4 w-4" />
+                  Forma de pagamento
+                </CardTitle>
+                {remainingAfterWallet >= 0.01 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (multiMode) {
+                        setMultiMode(false);
+                        setApplied([]);
+                        setPickerOpen(false);
+                        setActiveMethod(null);
+                      } else {
+                        setMultiMode(true);
+                        setSingleMethod(null);
+                      }
+                    }}
+                    className="text-[11px] text-muted-foreground hover:text-primary underline-offset-2 hover:underline transition-colors shrink-0"
+                  >
+                    {multiMode ? "Forma única" : "Várias formas"}
+                  </button>
+                )}
+              </div>
             </CardHeader>
             <CardContent className="space-y-3 pt-4">
                 {remainingAfterWallet < 0.01 ? (
@@ -476,66 +517,60 @@ export default function PaymentSelection() {
                     </span>
                   </div>
                 ) : !multiMode ? (
-                  <>
-                    {/* Single-method: list all options exposed */}
-                    <div className="space-y-2">
-                      {METHODS.map((m) => {
-                        const selected = singleMethod === m.id;
-                        return (
-                          <button
-                            key={m.id}
-                            type="button"
-                            onClick={() => setSingleMethod(m.id)}
-                            className={cn(
-                              "w-full flex items-center gap-3 rounded-lg border p-3 text-left transition-colors",
-                              selected
-                                ? "border-primary bg-primary/5"
-                                : "border-border hover:border-primary/50 hover:bg-primary/5"
-                            )}
-                          >
-                            <span className="text-primary">{m.icon}</span>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-foreground">{m.label}</p>
-                              <p className="text-[11px] text-muted-foreground">{m.helper}</p>
-                            </div>
-                            {selected && <Check className="h-4 w-4 text-primary shrink-0" />}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* Discrete toggle for multi-method */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMultiMode(true);
-                        setSingleMethod(null);
-                      }}
-                      className="w-full text-[11px] text-muted-foreground hover:text-primary underline-offset-2 hover:underline transition-colors pt-1"
-                    >
-                      Quero usar mais de uma forma de pagamento
-                    </button>
-                  </>
+                  <div className="space-y-2">
+                    {METHODS.map((m) => {
+                      const selected = singleMethod === m.id;
+                      return (
+                        <button
+                          key={m.id}
+                          type="button"
+                          onClick={() => setSingleMethod(m.id)}
+                          className={cn(
+                            "w-full flex items-center gap-3 rounded-lg border p-3 text-left transition-colors",
+                            selected
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-primary/50 hover:bg-primary/5"
+                          )}
+                        >
+                          <span className="text-primary">{m.icon}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground">{m.label}</p>
+                            <p className="text-[11px] text-muted-foreground">{m.helper}</p>
+                          </div>
+                          {selected && <Check className="h-4 w-4 text-primary shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
                 ) : (
                   <>
-                    {/* Multi-method mode */}
+                    {/* Multi-method mode — each slice paid independently */}
                     {applied.length > 0 && (
                       <div className="space-y-2">
                         {applied.map((m) => (
                           <div
-                            key={m.id}
-                            className="flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 p-3"
+                            key={m.uid}
+                            className="relative flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 p-3 pr-8"
                           >
                             <span className="text-primary">{methodIcon(m.id)}</span>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-foreground">{methodLabel(m.id)}</p>
                               <p className="text-[11px] text-muted-foreground">{formatCurrency(m.amount)}</p>
                             </div>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              className="h-8 text-xs px-3 shrink-0"
+                              onClick={() => handlePaySlice(m.id, m.amount)}
+                            >
+                              Pagar
+                            </Button>
                             <button
                               type="button"
-                              onClick={() => handleRemoveApplied(m.id)}
+                              onClick={() => handleRemoveApplied(m.uid!)}
                               aria-label={`Remover ${methodLabel(m.id)}`}
-                              className="text-muted-foreground hover:text-destructive transition-colors"
+                              className="absolute top-2 right-2 text-muted-foreground hover:text-destructive transition-colors"
                             >
                               <X className="h-4 w-4" />
                             </button>
@@ -552,16 +587,28 @@ export default function PaymentSelection() {
                             variant="outline"
                             className="w-full text-xs h-9 text-muted-foreground border-dashed"
                             onClick={openMethodPicker}
-                            disabled={availableMethods.length === 0}
                           >
                             <Plus className="h-4 w-4 mr-1" />
                             {applied.length === 0 ? "Adicionar forma de pagamento" : "Adicionar outra forma de pagamento"}
                           </Button>
                         ) : (
-                          <div className="space-y-2 rounded-lg border border-border p-3">
+                          <div className="relative space-y-2 rounded-lg border border-border p-3">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPickerOpen(false);
+                                setActiveMethod(null);
+                                setAmountInput("");
+                                setAmountError("");
+                              }}
+                              aria-label="Fechar"
+                              className="absolute top-2 right-2 text-muted-foreground hover:text-destructive transition-colors"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
                             {!activeMethod ? (
                               <>
-                                <p className="text-[11px] text-muted-foreground mb-1">Escolha uma forma de pagamento</p>
+                                <p className="text-[11px] text-muted-foreground mb-1 pr-6">Escolha uma forma de pagamento</p>
                                 <div className="space-y-1.5">
                                   {availableMethods.map((m) => (
                                     <button
@@ -578,21 +625,10 @@ export default function PaymentSelection() {
                                     </button>
                                   ))}
                                 </div>
-                                <div className="pt-1">
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="w-full text-xs h-7"
-                                    onClick={() => setPickerOpen(false)}
-                                  >
-                                    Cancelar
-                                  </Button>
-                                </div>
                               </>
                             ) : (
                               <>
-                                <div className="flex items-center gap-2 text-sm">
+                                <div className="flex items-center gap-2 text-sm pr-6">
                                   <span className="text-primary">{methodIcon(activeMethod)}</span>
                                   <span className="font-medium text-foreground">{methodLabel(activeMethod)}</span>
                                 </div>
@@ -647,21 +683,6 @@ export default function PaymentSelection() {
                                     {amountError}
                                   </p>
                                 )}
-                                <div className="pt-1">
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="w-full text-xs h-7"
-                                    onClick={() => {
-                                      setActiveMethod(null);
-                                      setAmountInput("");
-                                      setAmountError("");
-                                    }}
-                                  >
-                                    Voltar
-                                  </Button>
-                                </div>
                               </>
                             )}
                           </div>
@@ -683,37 +704,28 @@ export default function PaymentSelection() {
                         )}
                       </span>
                     </div>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMultiMode(false);
-                        setApplied([]);
-                        setPickerOpen(false);
-                        setActiveMethod(null);
-                      }}
-                      className="w-full text-[11px] text-muted-foreground hover:text-primary underline-offset-2 hover:underline transition-colors pt-1"
-                    >
-                      Usar uma única forma de pagamento
-                    </button>
                   </>
                 )}
             </CardContent>
           </Card>
 
-          {/* Spacer to keep button aligned under right column on desktop */}
-          <div className="hidden md:block" />
-          <div>
-            <Button
-              className="w-full gap-2"
-              size="lg"
-              onClick={handleConfirmPayment}
-              disabled={!effectiveFullyPaid || loading}
-            >
-              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
-              {loading ? "Processando..." : remainingAfterWallet < 0.01 ? "Confirmar Pagamento" : "Efetuar Pagamento"}
-            </Button>
-          </div>
+          {!multiMode && (
+            <>
+              {/* Spacer to keep button aligned under right column on desktop */}
+              <div className="hidden md:block" />
+              <div>
+                <Button
+                  className="w-full gap-2"
+                  size="lg"
+                  onClick={handleConfirmPayment}
+                  disabled={!effectiveFullyPaid || loading}
+                >
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
+                  {loading ? "Processando..." : remainingAfterWallet < 0.01 ? "Confirmar Pagamento" : "Efetuar Pagamento"}
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
