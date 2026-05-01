@@ -40,6 +40,7 @@ interface PaymentSelectionState {
 type PayMethodId = "pix" | "boleto" | "credit" | "wallet";
 
 interface AppliedMethod {
+  uid: string;
   id: PayMethodId;
   amount: number;
 }
