@@ -111,10 +111,8 @@ export default function PaymentSelection() {
     return parseInt(digits, 10) / 100;
   };
 
-  const availableMethods = useMemo(
-    () => METHODS.filter((m) => !applied.some((a) => a.id === m.id)),
-    [applied]
-  );
+  // In multi-mode, allow re-using the same method (e.g. two different credit cards)
+  const availableMethods = METHODS;
 
   const openMethodPicker = () => {
     setPickerOpen(true);
@@ -140,15 +138,35 @@ export default function PaymentSelection() {
       setAmountError("Valor maior que o restante do pedido");
       return;
     }
-    setApplied((prev) => [...prev, { id: activeMethod, amount: value }]);
+    setApplied((prev) => [
+      ...prev,
+      { uid: `${activeMethod}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, id: activeMethod, amount: value },
+    ]);
     setPickerOpen(false);
     setActiveMethod(null);
     setAmountInput("");
     setAmountError("");
   };
 
-  const handleRemoveApplied = (id: PayMethodId) => {
-    setApplied((prev) => prev.filter((m) => m.id !== id));
+  const handleRemoveApplied = (uid: string) => {
+    setApplied((prev) => prev.filter((m) => m.uid !== uid));
+  };
+
+  // Navigate to processing screen for a specific method+amount slice
+  const handlePaySlice = (method: PayMethodId, amount: number) => {
+    const pixDiscount = method === "pix" ? amount * 0.05 : 0;
+    const finalTotal = Math.max(0, amount - pixDiscount);
+    navigate("/app/pedidos/pagamento/processar", {
+      state: {
+        ...state,
+        finalTotal,
+        grandTotal: amount,
+        paymentMethod: method,
+        pixDiscount,
+        walletApplied: 0,
+        appliedMethods: [{ id: method, amount }],
+      },
+    });
   };
 
   // Wallet handlers
