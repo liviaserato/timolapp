@@ -43,6 +43,17 @@ export default function Checkout() {
 
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
 
+  // Itens locais (permite remoção sem mexer no carrinho global)
+  const [localItems, setLocalItems] = useState<CartItem[]>(state?.items ?? []);
+  useEffect(() => {
+    if (state?.items) setLocalItems(state.items);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleRemoveItem = (idx: number) => {
+    setLocalItems((prev) => prev.filter((_, i) => i !== idx));
+  };
+
   // Cupom
   const [showCoupon, setShowCoupon] = useState(false);
   const [coupon, setCoupon] = useState("");
