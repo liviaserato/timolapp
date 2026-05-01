@@ -89,7 +89,7 @@ export default function Checkout() {
   ]);
   const selectedAddress = addresses.find((a) => a.isDefault) ?? addresses[0] ?? null;
 
-  if (!state || !state.items || state.items.length === 0) {
+  if (!state || !state.items || state.items.length === 0 || localItems.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
         <ShoppingBag className="h-16 w-16 text-muted-foreground/30" />
@@ -101,7 +101,8 @@ export default function Checkout() {
     );
   }
 
-  const { items, subtotal } = state;
+  const items = localItems;
+  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
 
   const shippingCost = shippingOptions.find(o => o.id === selectedShipping)?.cost ?? null;
   const shippingLabel = selectedShipping === "retirada" && selectedPickupUnit
