@@ -244,12 +244,13 @@ export default function PaymentSelection() {
     const primary = nonWallet[0].id;
     const primaryAmount = nonWallet[0].amount;
     const pixDiscount = primary === "pix" ? primaryAmount * 0.05 : 0;
-    const finalTotal = Math.max(0, grandTotal - pixDiscount);
+    const finalTotal = Math.max(0, primaryAmount - pixDiscount);
 
     navigate("/app/pedidos/pagamento/processar", {
       state: {
         ...state,
         finalTotal,
+        grandTotal: primaryAmount,
         paymentMethod: primary,
         pixDiscount,
         walletApplied: effectiveUsedWallet,
