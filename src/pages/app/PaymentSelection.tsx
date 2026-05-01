@@ -481,10 +481,31 @@ export default function PaymentSelection() {
           {/* COLUNA DIREITA — Forma de pagamento */}
           <Card className="h-full">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
-                <CreditCard className="h-4 w-4" />
-                Forma de pagamento
-              </CardTitle>
+              <div className="flex items-center justify-between gap-2">
+                <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+                  <CreditCard className="h-4 w-4" />
+                  Forma de pagamento
+                </CardTitle>
+                {remainingAfterWallet >= 0.01 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (multiMode) {
+                        setMultiMode(false);
+                        setApplied([]);
+                        setPickerOpen(false);
+                        setActiveMethod(null);
+                      } else {
+                        setMultiMode(true);
+                        setSingleMethod(null);
+                      }
+                    }}
+                    className="text-[11px] text-muted-foreground hover:text-primary underline-offset-2 hover:underline transition-colors shrink-0"
+                  >
+                    {multiMode ? "Forma única" : "Várias formas"}
+                  </button>
+                )}
+              </div>
             </CardHeader>
             <CardContent className="space-y-3 pt-4">
                 {remainingAfterWallet < 0.01 ? (
@@ -495,66 +516,60 @@ export default function PaymentSelection() {
                     </span>
                   </div>
                 ) : !multiMode ? (
-                  <>
-                    {/* Single-method: list all options exposed */}
-                    <div className="space-y-2">
-                      {METHODS.map((m) => {
-                        const selected = singleMethod === m.id;
-                        return (
-                          <button
-                            key={m.id}
-                            type="button"
-                            onClick={() => setSingleMethod(m.id)}
-                            className={cn(
-                              "w-full flex items-center gap-3 rounded-lg border p-3 text-left transition-colors",
-                              selected
-                                ? "border-primary bg-primary/5"
-                                : "border-border hover:border-primary/50 hover:bg-primary/5"
-                            )}
-                          >
-                            <span className="text-primary">{m.icon}</span>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-foreground">{m.label}</p>
-                              <p className="text-[11px] text-muted-foreground">{m.helper}</p>
-                            </div>
-                            {selected && <Check className="h-4 w-4 text-primary shrink-0" />}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* Discrete toggle for multi-method */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMultiMode(true);
-                        setSingleMethod(null);
-                      }}
-                      className="w-full text-[11px] text-muted-foreground hover:text-primary underline-offset-2 hover:underline transition-colors pt-1"
-                    >
-                      Quero usar mais de uma forma de pagamento
-                    </button>
-                  </>
+                  <div className="space-y-2">
+                    {METHODS.map((m) => {
+                      const selected = singleMethod === m.id;
+                      return (
+                        <button
+                          key={m.id}
+                          type="button"
+                          onClick={() => setSingleMethod(m.id)}
+                          className={cn(
+                            "w-full flex items-center gap-3 rounded-lg border p-3 text-left transition-colors",
+                            selected
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-primary/50 hover:bg-primary/5"
+                          )}
+                        >
+                          <span className="text-primary">{m.icon}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground">{m.label}</p>
+                            <p className="text-[11px] text-muted-foreground">{m.helper}</p>
+                          </div>
+                          {selected && <Check className="h-4 w-4 text-primary shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
                 ) : (
                   <>
-                    {/* Multi-method mode */}
+                    {/* Multi-method mode — each slice paid independently */}
                     {applied.length > 0 && (
                       <div className="space-y-2">
                         {applied.map((m) => (
                           <div
-                            key={m.id}
-                            className="flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 p-3"
+                            key={m.uid}
+                            className="relative flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 p-3 pr-8"
                           >
                             <span className="text-primary">{methodIcon(m.id)}</span>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-foreground">{methodLabel(m.id)}</p>
                               <p className="text-[11px] text-muted-foreground">{formatCurrency(m.amount)}</p>
                             </div>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              className="h-8 text-xs px-3 shrink-0"
+                              onClick={() => handlePaySlice(m.id, m.amount)}
+                            >
+                              Pagar
+                            </Button>
                             <button
                               type="button"
-                              onClick={() => handleRemoveApplied(m.id)}
+                              onClick={() => handleRemoveApplied(m.uid!)}
                               aria-label={`Remover ${methodLabel(m.id)}`}
-                              className="text-muted-foreground hover:text-destructive transition-colors"
+                              className="absolute top-2 right-2 text-muted-foreground hover:text-destructive transition-colors"
                             >
                               <X className="h-4 w-4" />
                             </button>
@@ -571,16 +586,28 @@ export default function PaymentSelection() {
                             variant="outline"
                             className="w-full text-xs h-9 text-muted-foreground border-dashed"
                             onClick={openMethodPicker}
-                            disabled={availableMethods.length === 0}
                           >
                             <Plus className="h-4 w-4 mr-1" />
                             {applied.length === 0 ? "Adicionar forma de pagamento" : "Adicionar outra forma de pagamento"}
                           </Button>
                         ) : (
-                          <div className="space-y-2 rounded-lg border border-border p-3">
+                          <div className="relative space-y-2 rounded-lg border border-border p-3">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPickerOpen(false);
+                                setActiveMethod(null);
+                                setAmountInput("");
+                                setAmountError("");
+                              }}
+                              aria-label="Fechar"
+                              className="absolute top-2 right-2 text-muted-foreground hover:text-destructive transition-colors"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
                             {!activeMethod ? (
                               <>
-                                <p className="text-[11px] text-muted-foreground mb-1">Escolha uma forma de pagamento</p>
+                                <p className="text-[11px] text-muted-foreground mb-1 pr-6">Escolha uma forma de pagamento</p>
                                 <div className="space-y-1.5">
                                   {availableMethods.map((m) => (
                                     <button
@@ -597,21 +624,10 @@ export default function PaymentSelection() {
                                     </button>
                                   ))}
                                 </div>
-                                <div className="pt-1">
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="w-full text-xs h-7"
-                                    onClick={() => setPickerOpen(false)}
-                                  >
-                                    Cancelar
-                                  </Button>
-                                </div>
                               </>
                             ) : (
                               <>
-                                <div className="flex items-center gap-2 text-sm">
+                                <div className="flex items-center gap-2 text-sm pr-6">
                                   <span className="text-primary">{methodIcon(activeMethod)}</span>
                                   <span className="font-medium text-foreground">{methodLabel(activeMethod)}</span>
                                 </div>
@@ -666,21 +682,6 @@ export default function PaymentSelection() {
                                     {amountError}
                                   </p>
                                 )}
-                                <div className="pt-1">
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="w-full text-xs h-7"
-                                    onClick={() => {
-                                      setActiveMethod(null);
-                                      setAmountInput("");
-                                      setAmountError("");
-                                    }}
-                                  >
-                                    Voltar
-                                  </Button>
-                                </div>
                               </>
                             )}
                           </div>
@@ -702,19 +703,6 @@ export default function PaymentSelection() {
                         )}
                       </span>
                     </div>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMultiMode(false);
-                        setApplied([]);
-                        setPickerOpen(false);
-                        setActiveMethod(null);
-                      }}
-                      className="w-full text-[11px] text-muted-foreground hover:text-primary underline-offset-2 hover:underline transition-colors pt-1"
-                    >
-                      Usar uma única forma de pagamento
-                    </button>
                   </>
                 )}
             </CardContent>
