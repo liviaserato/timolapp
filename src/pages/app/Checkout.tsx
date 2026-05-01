@@ -43,6 +43,17 @@ export default function Checkout() {
 
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
 
+  // Itens locais (permite remoção sem mexer no carrinho global)
+  const [localItems, setLocalItems] = useState<CartItem[]>(state?.items ?? []);
+  useEffect(() => {
+    if (state?.items) setLocalItems(state.items);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleRemoveItem = (idx: number) => {
+    setLocalItems((prev) => prev.filter((_, i) => i !== idx));
+  };
+
   // Cupom
   const [showCoupon, setShowCoupon] = useState(false);
   const [coupon, setCoupon] = useState("");
@@ -78,7 +89,7 @@ export default function Checkout() {
   ]);
   const selectedAddress = addresses.find((a) => a.isDefault) ?? addresses[0] ?? null;
 
-  if (!state || !state.items || state.items.length === 0) {
+  if (!state || !state.items || state.items.length === 0 || localItems.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
         <ShoppingBag className="h-16 w-16 text-muted-foreground/30" />
@@ -90,7 +101,8 @@ export default function Checkout() {
     );
   }
 
-  const { items, subtotal } = state;
+  const items = localItems;
+  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
 
   const shippingCost = shippingOptions.find(o => o.id === selectedShipping)?.cost ?? null;
   const shippingLabel = selectedShipping === "retirada" && selectedPickupUnit
@@ -259,8 +271,16 @@ export default function Checkout() {
                 return (
                   <div
                     key={idx}
-                    className="flex items-stretch gap-3 rounded-md border border-border p-2"
+                    className="relative flex items-stretch gap-3 rounded-md border border-border p-2"
                   >
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveItem(idx)}
+                      aria-label={`Remover ${item.name}`}
+                      className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-background border border-border text-muted-foreground hover:text-destructive hover:border-destructive flex items-center justify-center transition-colors shadow-sm"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
                     {/* Imagem quadrada */}
                     <div className="w-16 h-16 shrink-0 rounded-md bg-muted overflow-hidden flex items-center justify-center">
                       {image ? (
@@ -289,7 +309,7 @@ export default function Checkout() {
                             {item.qty} {item.qty === 1 ? "unidade" : "unidades"}
                           </Badge>
                         </div>
-                        <span className="text-sm text-foreground whitespace-nowrap">
+                        <span className="text-sm text-foreground whitespace-nowrap pr-3">
                           {formatCurrency(item.price * item.qty)}
                         </span>
                       </div>
