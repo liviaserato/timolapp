@@ -413,7 +413,7 @@ export default function OrderPayment() {
                   <SelectContent>
                     {installmentOptions.map((opt) => (
                       <SelectItem key={opt.n} value={String(opt.n)}>
-                        {opt.n}x de {formatCurrency(opt.value)} sem juros
+                        {opt.n}x de {formatCurrency(opt.value)}
                       </SelectItem>
                     ))}
                   </SelectContent>
