@@ -271,8 +271,16 @@ export default function Checkout() {
                 return (
                   <div
                     key={idx}
-                    className="flex items-stretch gap-3 rounded-md border border-border p-2"
+                    className="relative flex items-stretch gap-3 rounded-md border border-border p-2"
                   >
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveItem(idx)}
+                      aria-label={`Remover ${item.name}`}
+                      className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-background border border-border text-muted-foreground hover:text-destructive hover:border-destructive flex items-center justify-center transition-colors shadow-sm"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
                     {/* Imagem quadrada */}
                     <div className="w-16 h-16 shrink-0 rounded-md bg-muted overflow-hidden flex items-center justify-center">
                       {image ? (
@@ -301,7 +309,7 @@ export default function Checkout() {
                             {item.qty} {item.qty === 1 ? "unidade" : "unidades"}
                           </Badge>
                         </div>
-                        <span className="text-sm text-foreground whitespace-nowrap">
+                        <span className="text-sm text-foreground whitespace-nowrap pr-3">
                           {formatCurrency(item.price * item.qty)}
                         </span>
                       </div>
