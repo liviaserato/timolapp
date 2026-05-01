@@ -708,19 +708,23 @@ export default function PaymentSelection() {
             </CardContent>
           </Card>
 
-          {/* Spacer to keep button aligned under right column on desktop */}
-          <div className="hidden md:block" />
-          <div>
-            <Button
-              className="w-full gap-2"
-              size="lg"
-              onClick={handleConfirmPayment}
-              disabled={!effectiveFullyPaid || loading}
-            >
-              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
-              {loading ? "Processando..." : remainingAfterWallet < 0.01 ? "Confirmar Pagamento" : "Efetuar Pagamento"}
-            </Button>
-          </div>
+          {!multiMode && (
+            <>
+              {/* Spacer to keep button aligned under right column on desktop */}
+              <div className="hidden md:block" />
+              <div>
+                <Button
+                  className="w-full gap-2"
+                  size="lg"
+                  onClick={handleConfirmPayment}
+                  disabled={!effectiveFullyPaid || loading}
+                >
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
+                  {loading ? "Processando..." : remainingAfterWallet < 0.01 ? "Confirmar Pagamento" : "Efetuar Pagamento"}
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
