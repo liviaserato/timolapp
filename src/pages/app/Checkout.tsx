@@ -554,28 +554,19 @@ export default function Checkout() {
                       {appliedCoupon && (
                         <>
                           <span className="text-foreground font-medium">{appliedCoupon}</span>
-                          <span className="text-green-600 font-medium">-{formatCurrency(couponDiscount)}</span>
+                          <button
+                            type="button"
+                            onClick={handleRemoveCoupon}
+                            className="inline-flex h-4 w-4 items-center justify-center rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                            aria-label="Remover cupom"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
                         </>
                       )}
                     </span>
                     {appliedCoupon ? (
-                      <span className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={handleEditCoupon}
-                          className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
-                        >
-                          Editar
-                        </button>
-                        <span className="text-muted-foreground/40">·</span>
-                        <button
-                          type="button"
-                          onClick={handleRemoveCoupon}
-                          className="text-[11px] text-muted-foreground hover:text-destructive transition-colors"
-                        >
-                          Remover
-                        </button>
-                      </span>
+                      <span className="text-green-600 font-medium">-{formatCurrency(couponDiscount)}</span>
                     ) : (
                       <button
                         type="button"
