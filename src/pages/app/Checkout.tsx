@@ -69,6 +69,14 @@ export default function Checkout() {
   const [selectedPickupUnit, setSelectedPickupUnit] = useState<string | null>(null);
   const [pickupUnits, setPickupUnits] = useState<{ id: string; name: string; distanceKm?: number }[]>([]);
   const [pickupLoading, setPickupLoading] = useState(false);
+  const [showAllUnits, setShowAllUnits] = useState(false);
+
+  // Mock pickup availability per unit (days for pickup readiness)
+  const pickupAvailability: Record<string, { days: string; partial?: boolean }> = {
+    "sao-paulo": { days: "Disponível em 1 dia útil" },
+    "uberlandia": { days: "Disponível em 2 dias úteis" },
+    "salvador": { days: "Disponível em 5 a 7 dias úteis", partial: true },
+  };
 
   // Mock addresses from profile
   const [addresses, setAddresses] = useState<Address[]>([
