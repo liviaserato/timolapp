@@ -433,7 +433,11 @@ export default function Checkout() {
                               <>
                                 <div className="flex items-center justify-between px-1">
                                   <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                                    {showAllUnits ? "Selecione a unidade" : "Unidade mais próxima"}
+                                    {showAllUnits
+                                      ? "Selecione a unidade"
+                                      : selectedPickupUnit && selectedPickupUnit !== pickupUnits[0]?.id
+                                        ? "Unidade selecionada"
+                                        : "Unidade mais próxima"}
                                   </p>
                                   <button
                                     type="button"
