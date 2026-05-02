@@ -600,6 +600,14 @@ export default function Checkout() {
                               setCoupon(e.target.value.toUpperCase());
                               setCouponError("");
                             }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Escape") {
+                                e.preventDefault();
+                                setShowCoupon(false);
+                                setCoupon("");
+                                setCouponError("");
+                              }
+                            }}
                             placeholder="Código do cupom"
                             className="h-8 text-xs pr-7"
                             autoFocus
