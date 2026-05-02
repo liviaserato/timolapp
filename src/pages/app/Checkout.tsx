@@ -13,6 +13,7 @@ import {
   Zap,
   CreditCard,
   Receipt,
+  Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,6 +70,14 @@ export default function Checkout() {
   const [selectedPickupUnit, setSelectedPickupUnit] = useState<string | null>(null);
   const [pickupUnits, setPickupUnits] = useState<{ id: string; name: string; distanceKm?: number }[]>([]);
   const [pickupLoading, setPickupLoading] = useState(false);
+  const [showAllUnits, setShowAllUnits] = useState(false);
+
+  // Mock pickup availability per unit (days for pickup readiness)
+  const pickupAvailability: Record<string, { days: string; partial?: boolean }> = {
+    "sao-paulo": { days: "Disponível em 1 dia útil" },
+    "uberlandia": { days: "Disponível em 2 dias úteis" },
+    "salvador": { days: "Disponível em 5 a 7 dias úteis", partial: true },
+  };
 
   // Mock addresses from profile
   const [addresses, setAddresses] = useState<Address[]>([
@@ -158,6 +167,7 @@ export default function Checkout() {
     setSelectedShipping(null);
     setPickupUnits([]);
     setSelectedPickupUnit(null);
+    setShowAllUnits(false);
 
     const distancePromise = (async () => {
       try {
@@ -414,41 +424,82 @@ export default function Checkout() {
 
                         {selectedShipping === "retirada" && (
                           <div className="rounded-md border border-border p-2 space-y-1">
-                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground px-1">
-                              Selecione a unidade
-                            </p>
                             {pickupLoading ? (
                               <div className="flex items-center gap-2 px-2.5 py-1.5 text-muted-foreground">
                                 <Loader2 className="h-3 w-3 animate-spin" />
                                 <span className="text-[11px]">Calculando distâncias...</span>
                               </div>
                             ) : pickupUnits.length > 0 ? (
-                              pickupUnits.map((unit) => (
-                                <button
-                                  key={unit.id}
-                                  onClick={() => setSelectedPickupUnit(unit.id)}
-                                  className={cn(
-                                    "w-full flex items-center gap-2 rounded px-2 py-1.5 text-left transition-colors",
-                                    selectedPickupUnit === unit.id
-                                      ? "bg-primary/10 text-primary"
-                                      : "hover:bg-muted text-muted-foreground"
-                                  )}
-                                >
-                                  {selectedPickupUnit === unit.id ? (
-                                    <Check className="h-3 w-3 text-primary" />
-                                  ) : (
-                                    <Store className="h-3 w-3 opacity-40" />
-                                  )}
-                                  <span className={cn("text-[11px] flex-1", selectedPickupUnit === unit.id && "font-semibold")}>
-                                    {unit.name}
-                                  </span>
-                                  {unit.distanceKm != null && (
-                                    <span className={cn("text-[10px]", selectedPickupUnit === unit.id ? "text-primary/70" : "text-muted-foreground")}>
-                                      ~{unit.distanceKm.toLocaleString("pt-BR")}km
-                                    </span>
-                                  )}
-                                </button>
-                              ))
+                              <>
+                                <div className="flex items-center justify-between px-1">
+                                  <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                                    {showAllUnits ? "Selecione a unidade" : "Unidade mais próxima"}
+                                  </p>
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowAllUnits((v) => !v)}
+                                    className="text-[10px] text-muted-foreground hover:text-primary underline-offset-2 hover:underline transition-colors"
+                                  >
+                                    {showAllUnits ? "ver menos" : "outras unidades"}
+                                  </button>
+                                </div>
+                                {(() => {
+                                  const visibleUnits = showAllUnits
+                                    ? pickupUnits
+                                    : selectedPickupUnit
+                                      ? pickupUnits.filter((u) => u.id === selectedPickupUnit)
+                                      : pickupUnits.slice(0, 1);
+                                  return visibleUnits.map((unit) => {
+                                    const avail = pickupAvailability[unit.id];
+                                    const isSelected = selectedPickupUnit === unit.id;
+                                    return (
+                                      <div key={unit.id} className="space-y-1">
+                                        <button
+                                          onClick={() => {
+                                            setSelectedPickupUnit(unit.id);
+                                            setShowAllUnits(false);
+                                          }}
+                                          className={cn(
+                                            "w-full flex items-center gap-2 rounded px-2 py-1.5 text-left transition-colors",
+                                            isSelected
+                                              ? "bg-primary/10 text-primary"
+                                              : "hover:bg-muted text-muted-foreground"
+                                          )}
+                                        >
+                                          {isSelected ? (
+                                            <Check className="h-3 w-3 text-primary" />
+                                          ) : (
+                                            <Store className="h-3 w-3 opacity-40" />
+                                          )}
+                                          <div className="flex-1 min-w-0 flex flex-col">
+                                            <span className={cn("text-[11px] truncate", isSelected && "font-semibold")}>
+                                              {unit.name}
+                                            </span>
+                                            {avail && (
+                                              <span className={cn("text-[10px]", isSelected ? "text-primary/70" : "text-muted-foreground")}>
+                                                {avail.days}
+                                              </span>
+                                            )}
+                                          </div>
+                                          {unit.distanceKm != null && (
+                                            <span className={cn("text-[10px] shrink-0", isSelected ? "text-primary/70" : "text-muted-foreground")}>
+                                              ~{unit.distanceKm.toLocaleString("pt-BR")}km
+                                            </span>
+                                          )}
+                                        </button>
+                                        {avail?.partial && isSelected && (
+                                          <div className="flex items-start gap-1.5 rounded bg-amber-50 border border-amber-200 px-2 py-1.5 text-[10px] text-amber-800 leading-snug">
+                                            <Info className="h-3 w-3 mt-0.5 shrink-0 text-amber-600" />
+                                            <span>
+                                              No momento, esta unidade não possui todos os itens do seu pedido. A retirada pode levar mais tempo, mas você será notificado assim que estiver disponível.
+                                            </span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  });
+                                })()}
+                              </>
                             ) : null}
                           </div>
                         )}
