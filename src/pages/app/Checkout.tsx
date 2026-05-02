@@ -167,6 +167,7 @@ export default function Checkout() {
     setSelectedShipping(null);
     setPickupUnits([]);
     setSelectedPickupUnit(null);
+    setShowAllUnits(false);
 
     const distancePromise = (async () => {
       try {
