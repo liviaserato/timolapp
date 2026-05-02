@@ -133,6 +133,11 @@ export default function Checkout() {
         setCouponDiscount(subtotal * 0.1);
         setCouponError("");
         setShowCoupon(false);
+      } else if (code === "TESTE") {
+        setAppliedCoupon(code);
+        setCouponDiscount(Math.min(10, subtotal));
+        setCouponError("");
+        setShowCoupon(false);
       } else {
         setCouponError("Cupom inválido ou expirado");
       }
