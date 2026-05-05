@@ -270,7 +270,7 @@ export function BonusExtractTable({ data, currency, showPerson = false }: Props)
             <TableBody>
               {displayedRows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-8">
+                  <TableCell colSpan={showPerson ? 8 : 7} className="text-center text-xs text-muted-foreground py-8">
                     Nenhuma movimentação encontrada.
                   </TableCell>
                 </TableRow>
