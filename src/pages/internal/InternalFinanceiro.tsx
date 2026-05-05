@@ -70,6 +70,7 @@ export default function InternalFinanceiro() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFranchisee, setSelectedFranchisee] = useState<typeof mockFranchisees[string] | null>(null);
   const [activeExtract, setActiveExtract] = useState<ExtractView>("bonus");
+  const [aggregatedExtract, setAggregatedExtract] = useState<ExtractView>("bonus");
 
   function handleSearch() {
     if (!searchQuery.trim()) {
