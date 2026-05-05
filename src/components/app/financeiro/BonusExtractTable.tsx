@@ -259,6 +259,9 @@ export function BonusExtractTable({ data, currency, showPerson = false }: Props)
                 <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-left">Pedido</TableHead>
                 <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-left hidden lg:table-cell">Qualificação</TableHead>
                 <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-center">ID</TableHead>
+                {showPerson && (
+                  <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-left hidden sm:table-cell">Nome</TableHead>
+                )}
                 <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-center">Tipo</TableHead>
                 <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-right">Pontos</TableHead>
                 <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-right">Valor</TableHead>
