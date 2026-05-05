@@ -11,6 +11,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 interface Props {
   data: BonusExtractRow[];
   currency: CurrencyConfig;
+  showPerson?: boolean;
 }
 
 const PAGE_SIZE = 30;
@@ -45,7 +46,7 @@ function daysBetween(from: string, to: string): number {
   return Math.ceil(Math.abs(b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-export function BonusExtractTable({ data, currency }: Props) {
+export function BonusExtractTable({ data, currency, showPerson = false }: Props) {
   const { t, language } = useLanguage();
   const [filterMode, setFilterMode] = useState<"month" | "custom">("month");
   const [monthRef, setMonthRef] = useState(new Date());
@@ -106,7 +107,7 @@ export function BonusExtractTable({ data, currency }: Props) {
       if (from && row.date < from) return false;
       if (to && row.date > to) return false;
       if (selectedTypes.size > 0 && !selectedTypes.has(row.type)) return false;
-      if (searchId && !row.id.includes(searchId) && !row.orderNumber.includes(searchId)) return false;
+      if (searchId && !row.id.includes(searchId) && !row.orderNumber.includes(searchId) && !(row.personName ?? "").toLowerCase().includes(searchId.toLowerCase())) return false;
       return true;
     });
   }, [data, filterMode, monthRef, dateFrom, dateTo, selectedTypes, searchId]);
@@ -258,6 +259,9 @@ export function BonusExtractTable({ data, currency }: Props) {
                 <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-left">Pedido</TableHead>
                 <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-left hidden lg:table-cell">Qualificação</TableHead>
                 <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-center">ID</TableHead>
+                {showPerson && (
+                  <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-left hidden sm:table-cell">Nome</TableHead>
+                )}
                 <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-center">Tipo</TableHead>
                 <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-right">Pontos</TableHead>
                 <TableHead className="text-xs px-1.5 sm:px-3 py-1.5 text-right">Valor</TableHead>
@@ -266,7 +270,7 @@ export function BonusExtractTable({ data, currency }: Props) {
             <TableBody>
               {displayedRows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-8">
+                  <TableCell colSpan={showPerson ? 8 : 7} className="text-center text-xs text-muted-foreground py-8">
                     Nenhuma movimentação encontrada.
                   </TableCell>
                 </TableRow>
@@ -302,7 +306,21 @@ export function BonusExtractTable({ data, currency }: Props) {
                       <TableCell className="text-xs px-1.5 sm:px-3 py-1 text-left hidden lg:table-cell">
                         {q ? q.label : row.qualification}
                       </TableCell>
-                      <TableCell className="text-xs font-mono px-1.5 sm:px-3 py-1 text-center">{row.id}</TableCell>
+                      <TableCell className="text-xs font-mono px-1.5 sm:px-3 py-1 text-center">
+                        <div className="flex flex-col items-center">
+                          <span>{row.id}</span>
+                          {showPerson && row.personName && (
+                            <span className="block sm:hidden text-[10px] text-muted-foreground font-sans font-normal truncate max-w-[100px]">
+                              {row.personName}
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                      {showPerson && (
+                        <TableCell className="text-xs px-1.5 sm:px-3 py-1 text-left hidden sm:table-cell truncate max-w-[160px]">
+                          {row.personName ?? "-"}
+                        </TableCell>
+                      )}
                       <TableCell className="text-xs px-1.5 sm:px-3 py-1 text-center">{row.type}</TableCell>
                       <TableCell className="text-xs text-right px-1.5 sm:px-3 py-1">{row.points ?? "-"}</TableCell>
                       <TableCell className={`text-xs text-right font-medium px-1.5 sm:px-3 py-1 ${row.value < 0 ? "text-negative" : ""}`}>

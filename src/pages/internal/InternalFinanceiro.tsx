@@ -334,7 +334,7 @@ export default function InternalFinanceiro() {
 
           <div className="mt-4">
             {aggregatedExtract === "bonus" ? (
-              <BonusExtractTable data={mockBonusExtract} currency={currency} />
+              <BonusExtractTable data={mockBonusExtract} currency={currency} showPerson />
             ) : (
               <BancoTimolExtractTable data={mockBancoTimolExtract} currency={currency} />
             )}

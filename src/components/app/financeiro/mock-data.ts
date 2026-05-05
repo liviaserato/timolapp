@@ -18,6 +18,7 @@ export interface BonusExtractRow {
   type: MovementType;
   points: number | null;
   value: number;
+  personName?: string;
 }
 
 export interface BancoTimolExtractRow {
@@ -50,14 +51,14 @@ export const mockFranchiseStatus = {
 };
 
 export const mockBonusExtract: BonusExtractRow[] = [
-  { date: "2026-03-06", orderNumber: "#4521", id: "100231", qualification: "lider", type: "Pedido", points: 45, value: 89.9 },
-  { date: "2026-03-05", orderNumber: "#4520", id: "200587", qualification: "distribuidor", type: "Unilevel", points: 12, value: 24.0 },
-  { date: "2026-03-04", orderNumber: "#4519", id: "300142", qualification: "consultor", type: "Binário", points: 8, value: 16.0 },
-  { date: "2026-03-03", orderNumber: "#4518", id: "100231", qualification: "lider", type: "Fixo", points: null, value: 50.0 },
-  { date: "2026-03-02", orderNumber: "#4517", id: "400321", qualification: "rubi", type: "Unilevel", points: 20, value: 40.0 },
-  { date: "2026-03-01", orderNumber: "#4516", id: "100231", qualification: "lider", type: "Depósito", points: null, value: 500.0 },
-  { date: "2026-02-28", orderNumber: "#4515", id: "500110", qualification: "esmeralda", type: "Depósito", points: null, value: 300.0 },
-  { date: "2026-02-27", orderNumber: "#4514", id: "100231", qualification: "lider", type: "Pedido", points: 30, value: 59.9 },
+  { date: "2026-03-06", orderNumber: "#4521", id: "100231", qualification: "lider", type: "Pedido", points: 45, value: 89.9, personName: "Lívia Serato" },
+  { date: "2026-03-05", orderNumber: "#4520", id: "200587", qualification: "distribuidor", type: "Unilevel", points: 12, value: 24.0, personName: "Carlos Eduardo Mendes" },
+  { date: "2026-03-04", orderNumber: "#4519", id: "300142", qualification: "consultor", type: "Binário", points: 8, value: 16.0, personName: "Ana Paula Costa" },
+  { date: "2026-03-03", orderNumber: "#4518", id: "100231", qualification: "lider", type: "Fixo", points: null, value: 50.0, personName: "Lívia Serato" },
+  { date: "2026-03-02", orderNumber: "#4517", id: "400321", qualification: "rubi", type: "Unilevel", points: 20, value: 40.0, personName: "Roberto Almeida Filho" },
+  { date: "2026-03-01", orderNumber: "#4516", id: "100231", qualification: "lider", type: "Depósito", points: null, value: 500.0, personName: "Lívia Serato" },
+  { date: "2026-02-28", orderNumber: "#4515", id: "500110", qualification: "esmeralda", type: "Depósito", points: null, value: 300.0, personName: "Fernanda Oliveira Santos" },
+  { date: "2026-02-27", orderNumber: "#4514", id: "100231", qualification: "lider", type: "Pedido", points: 30, value: 59.9, personName: "Lívia Serato" },
 ];
 
 export const mockBancoTimolExtract: BancoTimolExtractRow[] = [
