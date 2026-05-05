@@ -46,7 +46,7 @@ function daysBetween(from: string, to: string): number {
   return Math.ceil(Math.abs(b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-export function BonusExtractTable({ data, currency }: Props) {
+export function BonusExtractTable({ data, currency, showPerson = false }: Props) {
   const { t, language } = useLanguage();
   const [filterMode, setFilterMode] = useState<"month" | "custom">("month");
   const [monthRef, setMonthRef] = useState(new Date());
