@@ -18,6 +18,7 @@ export interface BonusExtractRow {
   type: MovementType;
   points: number | null;
   value: number;
+  personName?: string;
 }
 
 export interface BancoTimolExtractRow {
