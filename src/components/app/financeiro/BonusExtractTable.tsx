@@ -11,6 +11,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 interface Props {
   data: BonusExtractRow[];
   currency: CurrencyConfig;
+  showPerson?: boolean;
 }
 
 const PAGE_SIZE = 30;
