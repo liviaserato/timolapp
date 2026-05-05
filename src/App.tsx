@@ -37,6 +37,7 @@ const InternalLayout = lazy(() => import("./pages/InternalLayout"));
 const InternalDashboard = lazy(() => import("./pages/internal/InternalDashboard"));
 const InternalCadastros = lazy(() => import("./pages/internal/InternalCadastros"));
 const InternalFinanceiro = lazy(() => import("./pages/internal/InternalFinanceiro"));
+const InternalPagamentoBonus = lazy(() => import("./pages/internal/InternalPagamentoBonus"));
 const InternalRede = lazy(() => import("./pages/internal/InternalRede"));
 const InternalClientes = lazy(() => import("./pages/internal/InternalClientes"));
 const InternalProdutos = lazy(() => import("./pages/internal/InternalProdutos"));
@@ -99,6 +100,7 @@ const App = () => (
               <Route index element={<Suspense fallback={<LazyFallback />}><InternalDashboard /></Suspense>} />
               <Route path="cadastros" element={<Suspense fallback={<LazyFallback />}><InternalCadastros /></Suspense>} />
               <Route path="financeiro" element={<Suspense fallback={<LazyFallback />}><InternalFinanceiro /></Suspense>} />
+              <Route path="financeiro/pagamento-bonus" element={<Suspense fallback={<LazyFallback />}><InternalPagamentoBonus /></Suspense>} />
               <Route path="rede" element={<Suspense fallback={<LazyFallback />}><InternalRede /></Suspense>} />
               <Route path="clientes" element={<Suspense fallback={<LazyFallback />}><InternalClientes /></Suspense>} />
               <Route path="produtos" element={<Suspense fallback={<LazyFallback />}><InternalProdutos /></Suspense>} />
