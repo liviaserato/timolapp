@@ -306,7 +306,21 @@ export function BonusExtractTable({ data, currency, showPerson = false }: Props)
                       <TableCell className="text-xs px-1.5 sm:px-3 py-1 text-left hidden lg:table-cell">
                         {q ? q.label : row.qualification}
                       </TableCell>
-                      <TableCell className="text-xs font-mono px-1.5 sm:px-3 py-1 text-center">{row.id}</TableCell>
+                      <TableCell className="text-xs font-mono px-1.5 sm:px-3 py-1 text-center">
+                        <div className="flex flex-col items-center">
+                          <span>{row.id}</span>
+                          {showPerson && row.personName && (
+                            <span className="block sm:hidden text-[10px] text-muted-foreground font-sans font-normal truncate max-w-[100px]">
+                              {row.personName}
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                      {showPerson && (
+                        <TableCell className="text-xs px-1.5 sm:px-3 py-1 text-left hidden sm:table-cell truncate max-w-[160px]">
+                          {row.personName ?? "-"}
+                        </TableCell>
+                      )}
                       <TableCell className="text-xs px-1.5 sm:px-3 py-1 text-center">{row.type}</TableCell>
                       <TableCell className="text-xs text-right px-1.5 sm:px-3 py-1">{row.points ?? "-"}</TableCell>
                       <TableCell className={`text-xs text-right font-medium px-1.5 sm:px-3 py-1 ${row.value < 0 ? "text-negative" : ""}`}>
