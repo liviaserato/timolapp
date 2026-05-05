@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TrendingUp, Wallet, Search, Users, ArrowDownUp, X, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DashboardCard } from "@/components/app/DashboardCard";
 import { BonusExtractTable } from "@/components/app/financeiro/BonusExtractTable";
 import { BancoTimolExtractTable } from "@/components/app/financeiro/BancoTimolExtractTable";
 import { getCurrencyConfig, formatCurrency, CurrencyConfig } from "@/components/app/financeiro/currency-helpers";
