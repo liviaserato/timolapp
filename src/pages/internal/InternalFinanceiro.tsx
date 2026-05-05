@@ -89,6 +89,7 @@ export default function InternalFinanceiro() {
   }
 
   const showingIndividual = !!selectedFranchisee;
+  const [aggregatedExtract, setAggregatedExtract] = useState<ExtractView>("bonus");
 
   return (
     <div>
