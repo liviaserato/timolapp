@@ -107,7 +107,7 @@ export function BonusExtractTable({ data, currency, showPerson = false }: Props)
       if (from && row.date < from) return false;
       if (to && row.date > to) return false;
       if (selectedTypes.size > 0 && !selectedTypes.has(row.type)) return false;
-      if (searchId && !row.id.includes(searchId) && !row.orderNumber.includes(searchId)) return false;
+      if (searchId && !row.id.includes(searchId) && !row.orderNumber.includes(searchId) && !(row.personName ?? "").toLowerCase().includes(searchId.toLowerCase())) return false;
       return true;
     });
   }, [data, filterMode, monthRef, dateFrom, dateTo, selectedTypes, searchId]);
