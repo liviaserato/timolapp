@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { TrendingUp, Wallet, Search, Users, ArrowDownUp, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { TrendingUp, Wallet, Search, Users, ArrowDownUp, X, CalendarClock } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { DashboardCard } from "@/components/app/DashboardCard";
 import { BonusExtractTable } from "@/components/app/financeiro/BonusExtractTable";
 import { BancoTimolExtractTable } from "@/components/app/financeiro/BancoTimolExtractTable";
@@ -66,6 +68,7 @@ function normalize(str: string): string {
 }
 
 export default function InternalFinanceiro() {
+  const navigate = useNavigate();
   const currency = getCurrencyConfig(FRANCHISE_COUNTRY, FRANCHISE_CURRENCY);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFranchisee, setSelectedFranchisee] = useState<typeof mockFranchisees[string] | null>(null);
@@ -93,9 +96,20 @@ export default function InternalFinanceiro() {
 
   return (
     <div>
-      <header className="mb-4">
-        <h1 className="text-2xl font-bold text-primary">Financeiro</h1>
-        <p className="text-sm text-muted-foreground mt-1">Visão geral financeira de todas as franquias</p>
+      <header className="mb-4 flex items-start justify-between gap-3 flex-wrap">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold text-primary">Financeiro</h1>
+          <p className="text-sm text-muted-foreground mt-1">Visão geral financeira de todas as franquias</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="text-muted-foreground"
+          onClick={() => navigate("/internal/financeiro/pagamento-bonus")}
+        >
+          <CalendarClock className="h-4 w-4 mr-1.5" />
+          Pagamento Semanal de Bônus
+        </Button>
       </header>
 
       {/* KPI Cards - Aggregated */}
