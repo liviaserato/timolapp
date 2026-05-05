@@ -276,6 +276,71 @@ export default function InternalFinanceiro() {
           </div>
         </div>
       )}
+
+      {!showingIndividual && (
+        <>
+          <div className="mt-6 mb-4 border-t border-app-card-border" />
+          <h2 className="text-xl font-bold text-primary">Extrato Consolidado</h2>
+          <p className="text-sm text-muted-foreground mt-1 mb-3">Movimentações financeiras agregadas de toda a rede</p>
+
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setAggregatedExtract("bonus")}
+              className={cn(
+                "flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
+                aggregatedExtract === "bonus"
+                  ? "border-primary bg-primary/5 shadow-sm"
+                  : "border-app-card-border bg-card hover:border-primary/30"
+              )}
+            >
+              <div className={cn(
+                "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
+                aggregatedExtract === "bonus" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+              )}>
+                <TrendingUp className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <p className={cn("text-sm font-bold", aggregatedExtract === "bonus" ? "text-primary" : "text-foreground")}>
+                  Bônus e Pontos
+                </p>
+                <p className="text-[11px] text-muted-foreground hidden sm:block">Extrato de movimentações</p>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => setAggregatedExtract("banco")}
+              className={cn(
+                "flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
+                aggregatedExtract === "banco"
+                  ? "border-primary bg-primary/5 shadow-sm"
+                  : "border-app-card-border bg-card hover:border-primary/30"
+              )}
+            >
+              <div className={cn(
+                "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
+                aggregatedExtract === "banco" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+              )}>
+                <Wallet className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <p className={cn("text-sm font-bold", aggregatedExtract === "banco" ? "text-primary" : "text-foreground")}>
+                  Carteira
+                </p>
+                <p className="text-[11px] text-muted-foreground hidden sm:block">Extrato de saldo</p>
+              </div>
+            </button>
+          </div>
+
+          <div className="mt-4">
+            {aggregatedExtract === "bonus" ? (
+              <BonusExtractTable data={mockBonusExtract} currency={currency} />
+            ) : (
+              <BancoTimolExtractTable data={mockBancoTimolExtract} currency={currency} />
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
